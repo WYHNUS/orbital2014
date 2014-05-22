@@ -14,31 +14,46 @@ public class GridRenderer implements Renderer {
 	public GridRenderer (int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
-		float[] v = new float[4 * 2 * (rows + columns + 2)];
+		float[] v = new float[4 * 2 * (rows + columns)]; // changed
 		int c = 0;
-		for (int i = 0; i <= rows; i++) {
-			v[c++] = -1;
-			v[c++] = 2f / rows * i - 1;
-			v[c++] = 0;
+		for (int i = 0; i <= columns; i++) {
+			v[c++] = 2f / columns * i - 1;
 			v[c++] = 1;
-			v[c++] = 1;
-			v[c++] = 2f / rows * i - 1;
 			v[c++] = 0;
 			v[c++] = 1;
 		}
 		for (int i = 0; i <= columns; i++) {
-			v[c++] = 2f / columns * i - 1;
+			v[c++] = 2f / columns * i -1;
 			v[c++] = -1;
 			v[c++] = 0;
 			v[c++] = 1;
-			v[c++] = 2f / columns * i - 1;
-			v[c++] = 1;
+		}
+		for (int i = 1; i < rows; i++) {
+			v[c++] = -1;
+			v[c++] = 2f / rows * i - 1;
 			v[c++] = 0;
 			v[c++] = 1;
 		}
+		for (int i = 1; i < rows; i++) {
+			v[c++] = 1;
+			v[c++] = 2f / rows * i - 1;
+			v[c++] = 0;
+			v[c++] = 1;
+		}
+		c = 0;
 		int[] idx = new int[2 * (rows + columns + 2)];
-		for (int i = 0; i < 2 * (rows + columns + 2); i++)
-			idx[i] = i;
+		for (int i = 0; i <= columns; i++) {
+			idx[c++] = i;
+			idx[c++] = columns + i + 1;
+		}
+		idx[c++] = 0;
+		idx[c++] = columns;
+		idx[c++] = columns + 1;
+		idx[c++] = 2 * columns + 1;
+		for (int i = 2; i <= rows; i++) {
+			idx[c++] = 2 * columns + i;
+			idx[c++] = 2 * columns + i + rows - 1;
+		}
 		final String
 			vsSrc = "attribute vec4 vPosition;"
 					+ "uniform mat4 mMVP;"
@@ -92,7 +107,7 @@ public class GridRenderer implements Renderer {
 		if (error != 0)
 			throw new RuntimeException ("OpenGL: error: " + error);
 		// draw
-		GL11.glDrawElements(GL11.GL_LINES, 2 * (rows + columns + 2), GL11.GL_UNSIGNED_INT, 0);
+		GL11.glDrawElements(GL11.GL_LINES, 2 * (columns + rows + 2), GL11.GL_UNSIGNED_INT, 0);
 		error = GL11.glGetError();
 		if (error != 0)
 			throw new RuntimeException ("OpenGL: error: " + error);
