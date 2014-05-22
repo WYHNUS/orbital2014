@@ -47,7 +47,7 @@ public class GridRenderer implements Renderer {
 					+ "}",
 			fsSrc = "uniform vec4 vColor;"
 					+ "void main () {"
-						+ "gl_FragColor = vColor;"
+						+ "gl_FragColor = vec4(1,1,1,0);"
 					+ "}";
 		program = new GenericProgram(vsSrc, fsSrc);
 		FloatBuffer fBuf = BufferUtils.createFloatBuffer(v.length).put(v);
@@ -85,9 +85,9 @@ public class GridRenderer implements Renderer {
 		// pass MVP values
 		// pass indices to gl
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBuf);
-		// set uniform colour vector
+		// TODO: set uniform colour vector
 		int vColor = GL20.glGetAttribLocation(program.getProgramId(), "vColor");
-		GL20.glUniform4f(vColor, 0f, 0f, 0f, 1f);
+		GL20.glUniform4f(vColor, 1f, 1f, 1f, 0f);
 		error = GL11.glGetError();
 		if (error != 0)
 			throw new RuntimeException ("OpenGL: error: " + error);
