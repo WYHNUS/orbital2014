@@ -57,12 +57,14 @@ public class GridRenderer implements Renderer {
 		final String
 			vsSrc = "attribute vec4 vPosition;"
 					+ "uniform mat4 mMVP;"
+					+ "varying vec2 textureCoord;"
 					+ "void main () {"
 						+ "gl_Position = mMVP * vPosition;"
 					+ "}",
 			fsSrc = "uniform vec4 vColor;"
+					+ "uniform sampler2D texture;"
 					+ "void main () {"
-						+ "gl_FragColor = vec4(1,1,1,0);"
+						+ "gl_FragColor = vec4(1,1,1,1);"
 					+ "}";
 		program = new GenericProgram(vsSrc, fsSrc);
 		FloatBuffer fBuf = BufferUtils.createFloatBuffer(v.length).put(v);
