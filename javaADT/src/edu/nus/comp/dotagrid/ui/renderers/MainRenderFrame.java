@@ -29,6 +29,9 @@ public class MainRenderFrame {
 		boolean mouseClickLeft = false, mouseClickRight = false;
 		int mouseClickStartX = 0, mouseClickStartY = 0;
 		int mouseClickDeltaX = 0, mouseClickDeltaY = 0;
+		long mouseClickStartTime = 0;
+		final long singleClickTime = 10;
+		MVPTransform t = new MVPTransform();
 		while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			// main drawing loop
 			boolean changeZoom = true, changeTranslation = true, changePerspective = true;
@@ -46,6 +49,7 @@ public class MainRenderFrame {
 				if (!mouseClickLeft) {
 					mouseClickStartX = Mouse.getX();
 					mouseClickStartY = Mouse.getY();
+					mouseClickStartTime = System.currentTimeMillis();
 					// Assuming Window Mode
 					// TODO: Add Full Screen Mode Support for mouse clicks
 				}
@@ -54,6 +58,7 @@ public class MainRenderFrame {
 				if (!mouseClickRight) {
 					mouseClickStartX = Mouse.getX();
 					mouseClickStartY = Mouse.getY();
+					mouseClickStartTime = System.currentTimeMillis();
 				}
 				mouseClickRight = true;
 			} else
@@ -68,7 +73,10 @@ public class MainRenderFrame {
 				// not supported
 			} else if (mouseClickLeft) {
 				// left - translation
-				
+				if (System.currentTimeMillis() - mouseClickStartTime > singleClickTime) {
+					// translation recognised
+					
+				}
 			} else if (mouseClickRight) {
 			} else {
 				// all cleared
