@@ -41,46 +41,11 @@ public class Screen extends JPanel implements Runnable {
 			g.setColor(Color.WHITE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 
-			Button start = new Button("START A NEW GAME");
-			Button help = new Button("HELP");
-			Button acknowledgement = new Button("ACKNOWLEDGEMENT");
-
-			start.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					scene = 1;
-				}
-			});
-
-			help.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					scene = 2;
-				}
-			});
-
-			acknowledgement.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					scene = 3;
-				}
-			});
-
-			frame.add(start);
-			frame.add(help);
-			frame.add(acknowledgement);
-
 		} else if (scene == 1) {
 			// game menu
 			// background
 			g.setColor(Color.GREEN);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
-
-		} else if (scene == 2) {
-			// help list
-
-		} else if (scene == 3) {
-			// acknowledgement list
 
 		} else {
 			g.setColor(Color.WHITE);

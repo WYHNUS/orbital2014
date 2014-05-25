@@ -19,9 +19,5 @@ public class Frame extends JFrame{
 		// add screen to JFrame
 		this.add(screen);
 	}
-	
-	public static void main(String[] args) {
-		new Frame();
-	}
-	
+
 }
