@@ -20,6 +20,12 @@ public class Screen extends JPanel implements Runnable {
 	public int hand = 0;
 	public int handXPos = 0;
 	public int handYPos = 0;
+	
+	public double gridWidth = 1.0;
+	public double gridHeight = 1.0;
+	
+	public final int COLUMN_NUMBER = 200;
+	public final int ROW_NUMBER = 200;
 
 	public boolean running = false;
 
@@ -29,6 +35,9 @@ public class Screen extends JPanel implements Runnable {
 
 		this.frame.addKeyListener(new KeyHandler(this));
 		this.frame.addMouseListener(new MouseHandler(this));
+		
+		gridWidth = this.frame.getWidth() / (1440 / 1100.0) / 25.0;
+		gridHeight = this.frame.getHeight() / (900 / 700.0) / 14.0;
 
 		thread.start();
 	}
@@ -37,15 +46,27 @@ public class Screen extends JPanel implements Runnable {
 		g.clearRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 
 		if (scene == 0) {
-			// main menu
-			g.setColor(Color.WHITE);
+			// load game
+			g.setColor(Color.BLACK);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 
 		} else if (scene == 1) {
-			// game menu
+			// start game
+
 			// background
 			g.setColor(Color.GREEN);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
+
+			// grid
+			g.setColor(Color.GRAY);
+			for (int x = 0; x < ROW_NUMBER; x++) {
+				for (int y = 0; y < COLUMN_NUMBER; y++) {
+					g.drawRect(50 + (x * (int) gridWidth),
+							50 + (y * (int) gridHeight), (int) gridWidth,
+							(int) gridHeight);
+				}
+			}
+
 
 		} else {
 			g.setColor(Color.WHITE);

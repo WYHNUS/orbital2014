@@ -1,19 +1,9 @@
 package edu.nus.comp.dotagrid.logic;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
+import java.awt.event.*;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 public class MainMenu {
 	
@@ -81,7 +71,6 @@ public class MainMenu {
 		JFrame frame = new JFrame("Exit");
 		final JLabel label = new JLabel("Are You Sure To Exit ?");
 		JButton yesButton = new JButton("YES");
-		JButton noButton = new JButton("NO");
 		
 		yesButton.addActionListener(new ActionListener() {
 			@Override
@@ -90,23 +79,9 @@ public class MainMenu {
 			}
 		});
 		
-		noButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				
-			}
-		});
-		
 		frame.setLayout(new BorderLayout());
 		frame.add("Center", label);
-		frame.add("North", yesButton);
-		frame.add("South", noButton);
-		
-		frame.addWindowListener(new WindowAdapter(){
-			public void windowClosing(WindowEvent e){
-				System.exit(0);
-			}
-		});
+		frame.add("South", yesButton);
 		
 		frame.pack();
 		frame.setSize(200, 400);
