@@ -79,24 +79,25 @@ public class GridRenderer implements Renderer {
 		indexBuf = GL15.glGenBuffers();
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBuf);
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, iBuf, GL15.GL_STATIC_DRAW);
-		setMVP(IdentityMatrix4x4);
+		setMVP(IdentityMatrix4x4());
 	}
 	@Override
 	public void draw() {
-		int error;
 		// enable grid program
 		GL20.glUseProgram(program.getProgramId());
 		// get attribute index in the program
 		int vPosition = GL20.glGetAttribLocation(program.getProgramId(), "vPosition");
+		checkError();
 		int mMVP = GL20.glGetUniformLocation(program.getProgramId(), "mMVP");
+		checkError();
 		mMVPBuf.flip();
-		GL20.glUniformMatrix4(mMVP, false, mMVPBuf);
+		GL20.glUniformMatrix4(mMVP, true, mMVPBuf);
+		checkError();
 		// pass pointer of the vertex buffer to the attribute
 		GL20.glVertexAttribPointer(vPosition, 4, GL11.GL_FLOAT, false, 0, 0);
+		checkError();
 		GL20.glEnableVertexAttribArray(vPosition);
-		error = GL11.glGetError();
-		if (error != 0)
-			throw new RuntimeException ("OpenGL: error: " + error);
+		checkError();
 		// pass vertices to vPosition
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBuf);
 		// pass MVP values
@@ -105,14 +106,10 @@ public class GridRenderer implements Renderer {
 		// TODO: set uniform colour vector
 		int vColor = GL20.glGetAttribLocation(program.getProgramId(), "vColor");
 		GL20.glUniform4f(vColor, 1f, 1f, 1f, 0f);
-		error = GL11.glGetError();
-		if (error != 0)
-			throw new RuntimeException ("OpenGL: error: " + error);
+		checkError();
 		// draw
 		GL11.glDrawElements(GL11.GL_LINES, 2 * (columns + rows + 2), GL11.GL_UNSIGNED_INT, 0);
-		error = GL11.glGetError();
-		if (error != 0)
-			throw new RuntimeException ("OpenGL: error: " + error);
+		checkError();
 		GL20.glDisableVertexAttribArray(vPosition);
 	}
 	@Override
@@ -125,5 +122,11 @@ public class GridRenderer implements Renderer {
 		if (matrix.length != 16)
 			throw new RuntimeException ("Invalid Matrix");
 		mMVPBuf = BufferUtils.createFloatBuffer(matrix.length).put(matrix);
+	}
+	
+	private void checkError() {/*
+		int error = GL11.glGetError();
+		if (error != 0)
+			throw new RuntimeException ("OpenGL: error: " + error);*/
 	}
 }

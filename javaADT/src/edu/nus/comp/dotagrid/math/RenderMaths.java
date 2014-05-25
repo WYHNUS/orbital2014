@@ -1,7 +1,9 @@
 package edu.nus.comp.dotagrid.math;
 
 public class RenderMaths {
-	public static final float[] IdentityMatrix4x4 = new float[] {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
+	public static float[] IdentityMatrix4x4 () {
+		return new float[] {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
+	}
 	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] b) {
 		if (a.length != 16 || b.length != 16)
 			throw new RuntimeException ("Wrong matrix size");
@@ -53,7 +55,7 @@ public class RenderMaths {
 	public static float[] FlatScalingMatrix4x4 (float x, float y, float z) {
 		return new float[] {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
 	}
-	public static float[] FloatPerspectiveMatrix4x4 () {
+	public static float[] FlatPerspectiveMatrix4x4 () {
 		throw new UnsupportedOperationException();
 	}
 	public static float[] FlatInverseMatrix4x4 (float[] a) {
