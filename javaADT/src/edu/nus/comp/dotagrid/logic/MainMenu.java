@@ -45,6 +45,8 @@ public class MainMenu {
 		
 		JPanel pane = new JPanel();
 		
+		pane.setLayout(new GridLayout(4, 1));
+		
 		pane.add(start);
 		pane.add(help);
 		pane.add(acknowledgement);
@@ -68,9 +70,10 @@ public class MainMenu {
 	}
 	
 	protected void confirmExit() {
-		JFrame frame = new JFrame("Exit");
+		final JFrame frame = new JFrame("Exit");
 		final JLabel label = new JLabel("Are You Sure To Exit ?");
 		JButton yesButton = new JButton("YES");
+		JButton noButton = new JButton("NO");
 		
 		yesButton.addActionListener(new ActionListener() {
 			@Override
@@ -79,9 +82,23 @@ public class MainMenu {
 			}
 		});
 		
+		noButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				frame.dispose();
+			}
+		});
+		
 		frame.setLayout(new BorderLayout());
 		frame.add("Center", label);
-		frame.add("South", yesButton);
+		
+		JPanel pane = new JPanel();
+		pane.setLayout(new GridLayout(1, 2));
+		
+		pane.add(yesButton);
+		pane.add(noButton);
+		
+		frame.add("South", pane);
 		
 		frame.pack();
 		frame.setSize(200, 400);

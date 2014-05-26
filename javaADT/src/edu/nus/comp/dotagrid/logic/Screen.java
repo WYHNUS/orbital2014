@@ -24,8 +24,8 @@ public class Screen extends JPanel implements Runnable {
 	public double gridWidth = 1.0;
 	public double gridHeight = 1.0;
 	
-	public final int COLUMN_NUMBER = 200;
-	public final int ROW_NUMBER = 200;
+	public static final int gridRowNumberInScreen = 20;
+	public static final int gridColNumberInScreen = 14;
 
 	public boolean running = false;
 
@@ -36,8 +36,8 @@ public class Screen extends JPanel implements Runnable {
 		this.frame.addKeyListener(new KeyHandler(this));
 		this.frame.addMouseListener(new MouseHandler(this));
 		
-		gridWidth = this.frame.getWidth() / (1440 / 1100.0) / 25.0;
-		gridHeight = this.frame.getHeight() / (900 / 700.0) / 14.0;
+		gridWidth = this.frame.getWidth() / ((1440 - 250) / 1100.0) / gridRowNumberInScreen;
+		gridHeight = this.frame.getHeight() / (900 / 700.0) / gridColNumberInScreen;
 
 		thread.start();
 	}
@@ -47,26 +47,12 @@ public class Screen extends JPanel implements Runnable {
 
 		if (scene == 0) {
 			// load game
-			g.setColor(Color.BLACK);
+			g.setColor(Color.BLUE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 
 		} else if (scene == 1) {
 			// start game
-
-			// background
-			g.setColor(Color.GREEN);
-			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
-
-			// grid
-			g.setColor(Color.GRAY);
-			for (int x = 0; x < ROW_NUMBER; x++) {
-				for (int y = 0; y < COLUMN_NUMBER; y++) {
-					g.drawRect(50 + (x * (int) gridWidth),
-							50 + (y * (int) gridHeight), (int) gridWidth,
-							(int) gridHeight);
-				}
-			}
-
+			new WorldMap(g, this.frame);
 
 		} else {
 			g.setColor(Color.WHITE);
@@ -88,7 +74,7 @@ public class Screen extends JPanel implements Runnable {
 	public void startGame(User user) {
 		user.createPlayer();
 
-		this.scene = 1; // level 1
+		this.scene = 1; // enter game!
 	}
 
 	@Override
@@ -141,15 +127,13 @@ public class Screen extends JPanel implements Runnable {
 		public void mouseDown(MouseEvent e) {
 			mouseDown = true;
 
-			if (hand != 0) {
-				// place tower
-				hand = 0;
-			}
+			if (false) {}
 
 			updateMouse(e);
 		}
 	} // end inner class MouseHeld
 
+	
 	public class KeyTyped {
 		public void keyESC() {
 			running = false;
