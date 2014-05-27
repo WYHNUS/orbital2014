@@ -1,14 +1,12 @@
 package edu.nus.comp.dotagrid.ui.renderers;
-import java.io.Closeable;
-import java.io.IOException;
 
-import org.lwjgl.*;
+import java.io.IOException;
 import org.lwjgl.opengl.GL20;
 
 /* Generic Program
  * Default Shaders Compiling Routines
  */
-public class GenericProgram implements Closeable {
+public class GenericProgram implements AutoCloseable {
 	int programId, vs, fs;
 	public GenericProgram (String vsSrc, String fsSrc) {
 		vs = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
@@ -40,6 +38,7 @@ public class GenericProgram implements Closeable {
 
 	@Override
 	public void close() throws IOException {
+		GL20.glUseProgram(0);
 		GL20.glDeleteProgram(programId);
 		GL20.glDeleteShader(vs);
 		GL20.glDeleteProgram(fs);

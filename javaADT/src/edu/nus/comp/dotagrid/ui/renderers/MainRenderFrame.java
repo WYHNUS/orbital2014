@@ -1,13 +1,19 @@
 package edu.nus.comp.dotagrid.ui.renderers;
 
+import javax.imageio.ImageIO;
+
+import java.io.*;
+import java.awt.image.*;
+
 import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.*;
+
 import static edu.nus.comp.dotagrid.math.RenderMaths.*;
 
 public class MainRenderFrame {
-	public static void main (String[] args) throws LWJGLException {
+	public static void main (String[] args) throws LWJGLException, IOException {
 		// setup
 		final int displayWidth = 800, displayHeight = 600;
 		Display.setDisplayMode(new DisplayMode(displayWidth,displayHeight));
@@ -23,10 +29,16 @@ public class MainRenderFrame {
 		GL11.glEnable(GL11.GL_3D_COLOR_TEXTURE);
 		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		// get shader
+		// read map file
+		// TODO: Change map file path
+		final String mapFile = "C:\\Users\\dingxiangfei\\Downloads\\reimu_original.jpg";
+		BufferedImage map = ImageIO.read(new File(mapFile));
+		// set up renderer
 		final short gridWidth = 10, gridHeight = 10;
-		//Renderer r = new CrossRenderer ();//gridWidth, gridHeight);
-		Renderer r = new GridRenderer (gridWidth, gridHeight);
+		int framebuffer = GL30.glGenFramebuffers();
+		// GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
+		Renderer r = new GridRenderer (gridWidth, gridHeight, new Texture2D (map));
+		r.setFrameBufferHandler(framebuffer);
 		int zoom = 100;
 		boolean mouseClickLeft = false, mouseClickRight = false;
 		boolean changeZoom, changeTranslation = false, changePerspective = true, processingTranslation = false;
