@@ -15,7 +15,7 @@ import static edu.nus.comp.dotagrid.math.RenderMaths.*;
 public class MainRenderFrame {
 	public static void main (String[] args) throws LWJGLException, IOException, Exception {
 		// setup
-		final int displayWidth = 800, displayHeight = 600;
+		final int displayWidth = 1280, displayHeight = 800;
 		Display.setDisplayMode(new DisplayMode(displayWidth,displayHeight));
 		Display.setFullscreen(false);
 		Display.create(new PixelFormat(), new ContextAttribs(3,2).withProfileCompatibility(true));
@@ -23,7 +23,7 @@ public class MainRenderFrame {
 		Mouse.setGrabbed(false);
 		Mouse.create();
 		// clear scene
-		GL11.glViewport(0, 0, 800, 600);
+		GL11.glViewport(0, 0, displayWidth, displayHeight);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glEnable(GL11.GL_3D_COLOR_TEXTURE);
