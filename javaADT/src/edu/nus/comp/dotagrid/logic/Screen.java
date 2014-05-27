@@ -2,7 +2,10 @@ package edu.nus.comp.dotagrid.logic;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.image.CropImageFilter;
+import java.awt.image.FilteredImageSource;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 public class Screen extends JPanel implements Runnable {
@@ -11,6 +14,10 @@ public class Screen extends JPanel implements Runnable {
 
 	Frame frame;
 	User user;
+	
+	WorldMap worldMap;
+	WorldMapFile worldMapFile;
+	
 
 	private int fps = 0;
 
@@ -21,13 +28,25 @@ public class Screen extends JPanel implements Runnable {
 	public int handXPos = 0;
 	public int handYPos = 0;
 	
+	public static final int ROW_NUMBER = 200;
+	public static final int COLUMN_NUMBER = 200;
+	
 	public double gridWidth = 1.0;
 	public double gridHeight = 1.0;
 	
-	public static final int gridRowNumberInScreen = 20;
-	public static final int gridColNumberInScreen = 14;
-
+	public int gridRowNumberInScreen = 14;
+	public int gridColNumberInScreen = 20;
+	
 	public boolean running = false;
+	
+	public int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
+	
+	// default starting position: left bottom corner of the map
+	public int currentGridXPos = 0;
+	public int currentGridYPos = ROW_NUMBER - gridRowNumberInScreen - 1;
+	
+	// store terrain Images
+	public Image[] terrain = new Image[100];
 
 	// constructor
 	public Screen(Frame frame) {
@@ -35,10 +54,13 @@ public class Screen extends JPanel implements Runnable {
 
 		this.frame.addKeyListener(new KeyHandler(this));
 		this.frame.addMouseListener(new MouseHandler(this));
+		this.frame.addMouseMotionListener(new MouseHandler(this));
 		
-		gridWidth = this.frame.getWidth() / ((1440 - 250) / 1100.0) / gridRowNumberInScreen;
-		gridHeight = this.frame.getHeight() / (900 / 700.0) / gridColNumberInScreen;
-
+		double gameFrameGridWidth = (frame.getWidth() - 2 * GameFrame.FRAME_BORDER_WIDTH) / GameFrame.GRID_COL_NUMBER_IN_SCREEN;
+		double gameFrameGridHeight = (frame.getHeight() - 2 * GameFrame.FRAME_BORDER_HEIGHT) / GameFrame.GRID_ROW_NUMBER_IN_SCREEN;		
+		gridWidth = (int) (GameFrame.FRAME_COL_NUMBER_OCCUPIED * gameFrameGridWidth / gridColNumberInScreen);
+		gridHeight = (int) (GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen);
+		
 		thread.start();
 	}
 
@@ -51,8 +73,28 @@ public class Screen extends JPanel implements Runnable {
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 
 		} else if (scene == 1) {
-			// start game
-			new WorldMap(g, this.frame);
+			// start game!
+			
+			// draw game frame
+			new GameFrame(g, this.frame);
+			
+			// game grid 
+			g.setColor(Color.BLACK);
+			
+			for (int x=0; x<gridColNumberInScreen; x++) {
+				for (int y=0; y<gridRowNumberInScreen; y++) {
+					
+					g.drawImage(terrain[map[x + currentGridXPos][y + currentGridYPos]],
+							(int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+							(int) gridHeight, null);
+					
+					g.drawRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+							(int) gridHeight);
+
+				}
+			}
 
 		} else {
 			g.setColor(Color.WHITE);
@@ -62,17 +104,28 @@ public class Screen extends JPanel implements Runnable {
 		// FPS at the bottom -> paint then clear the rectangle
 		g.drawString(fps + "", 10, 10);
 
-	} // end method paintComponent
+	} // end override method paintComponent
 
 	// first time
 	public void loadGame() {
 		user = new User(this);
+		worldMapFile = new WorldMapFile();
+		
+		for (int y = 0; y < 10; y++) {
+			for (int x = 0; x < 10; x++) {
+				int z = x + (y * 10);
+				terrain[z] = new ImageIcon("res/WorldMap/terrian" + "/terrian" + z + ".png").getImage();
+			}
+		}
 
 		running = true;
 	}
 
 	public void startGame(User user) {
 		user.createPlayer();
+		
+		this.worldMap = worldMapFile.getWorldMap();
+		this.map = this.worldMap.map;
 
 		this.scene = 1; // enter game!
 	}
