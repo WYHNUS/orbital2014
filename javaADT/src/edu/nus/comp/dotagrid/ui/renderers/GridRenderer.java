@@ -9,11 +9,14 @@ import org.lwjgl.opengl.*;
 import static edu.nus.comp.dotagrid.math.RenderMaths.*;
 
 public class GridRenderer implements Renderer {
+	private VertexBufferManager vBufMan;
 	private int rows, columns;
 	private int vertexBuf, indexBuf, textBuf = -1, mapVertexBuf, mapIndexBuf, textVertexBuf, frameBuf;
 	private GenericProgram gridProgram, mapProgram;
 	private FloatBuffer mMVPBuf;
-	public GridRenderer (int rows, int columns) {
+	private boolean firstTime = true;
+	public GridRenderer (VertexBufferManager bufMan, int rows, int columns) {
+		vBufMan = bufMan;
 		this.rows = rows;
 		this.columns = columns;
 		float[] v = new float[4 * 2 * (rows + columns)]; // changed
@@ -42,6 +45,7 @@ public class GridRenderer implements Renderer {
 			v[c++] = 0;
 			v[c++] = 1;
 		}
+		vBufMan.setVertexBuffer("GridPointBuffer", v);
 		c = 0;
 		int[] idx = new int[2 * (rows + columns + 2)];
 		for (int i = 0; i <= columns; i++) {
@@ -56,6 +60,7 @@ public class GridRenderer implements Renderer {
 			idx[c++] = 2 * columns + i;
 			idx[c++] = 2 * columns + i + rows - 1;
 		}
+		vBufMan.setIndexBuffer("GridPointMeshIndex", idx);
 		final String
 			vsSrc = "attribute vec4 vPosition;"
 					+ "uniform mat4 mMVP;"
@@ -64,21 +69,10 @@ public class GridRenderer implements Renderer {
 					+ "}",
 			fsSrc = "uniform vec4 vColor;"
 					+ "void main () {"
-						+ "gl_FragColor = vec4(1,1,1,1);"
+						+ "gl_FragColor = vec4(1,0,0,1);"
 					+ "}";
 		gridProgram = new GenericProgram(vsSrc, fsSrc);
-		FloatBuffer fBuf = BufferUtils.createFloatBuffer(v.length).put(v);
-		fBuf.flip();
-		IntBuffer iBuf = BufferUtils.createIntBuffer(idx.length).put(idx);
-		iBuf.flip();
-		// configure vertex buffer
-		vertexBuf = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBuf);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, fBuf, GL15.GL_STATIC_DRAW);
 		// configure indices buffer
-		indexBuf = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBuf);
-		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, iBuf, GL15.GL_STATIC_DRAW);
 		setMVP(IdentityMatrix4x4());
 		// configure map
 		final String
@@ -96,27 +90,15 @@ public class GridRenderer implements Renderer {
 					+ "in vec2 autoTextureCoord;"
 					+ "out vec4 color;"
 					+ "void main () {"
-						+ "color = /*texture2D (texture, autoTextureCoord).rgba*/ vec4 (1,1,1,1);"
+						+ "color = texture2D (texture, autoTextureCoord).rgba;"
 					+ "}";
 		mapProgram = new GenericProgram (mapvsSrc, mapfsSrc);
-		fBuf = BufferUtils.createFloatBuffer(16).put(new float[]{1,1,0,1,1,-1,0,1,-1,-1,0,1,-1,1,0,1});
-		fBuf.flip();
-		iBuf = BufferUtils.createIntBuffer(4).put(new int[]{0,1,3,2});
-		iBuf.flip();
-		mapVertexBuf = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, mapVertexBuf);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, fBuf, GL15.GL_STATIC_DRAW);
-		mapIndexBuf = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mapIndexBuf);
-		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, iBuf, GL15.GL_STATIC_DRAW);
-		fBuf = BufferUtils.createFloatBuffer(8).put(new float[]{0,0,1,0,1,1,1,0});
-		textVertexBuf = GL15.glGenBuffers();
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textVertexBuf);
-		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, fBuf, GL15.GL_STATIC_DRAW);
-		// initiate framebuffer
+		vBufMan.setVertexBuffer("GenericFullSquare", new float[]{1,1,0,1,1,-1,0,1,-1,-1,0,1,-1,1,0,1});
+		vBufMan.setIndexBuffer("GenericFullSquareIndex", new int[]{0,1,3,2});
+		vBufMan.setVertexBuffer("GenericFullSquareTexture", new float[]{0,0,0,1,1,1,1,0});
 	}
-	public GridRenderer (int row, int height, Texture2D texture) {
-		this (row, height);
+	public GridRenderer (VertexBufferManager bufMan, int row, int height, Texture2D texture) {
+		this (bufMan, row, height);
 		// TODO: texture support
 		textBuf = GL11.glGenTextures();
 		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textBuf);
@@ -125,66 +107,67 @@ public class GridRenderer implements Renderer {
 		buf.flip();
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, texture.getWidth(), texture.getHeight(), 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buf);
 	}
-	@Override
-	public void draw() {
+	private void drawGrid() {
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
 		int vPosition, mMVP;
+		GL20.glUseProgram(gridProgram.getProgramId());
+		vPosition = GL20.glGetAttribLocation(gridProgram.getProgramId(), "vPosition");
+		mMVP = GL20.glGetUniformLocation(gridProgram.getProgramId(), "mMVP");
+		// it seems that screen goes black if mMVPBuf.flip(); is done twice
+		GL20.glUniformMatrix4(mMVP, true, mMVPBuf);	// 2nd param set to false to use perspective transformation
+		GL20.glEnableVertexAttribArray(vPosition);
+		GL20.glVertexAttribPointer(vPosition, 4, GL11.GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GridPointBuffer"));
+		GL11.glDrawElements(GL11.GL_LINES, 2 * (columns + rows + 2), GL11.GL_UNSIGNED_INT, vBufMan.getIndexBufferOffset("GridPointMeshIndex"));
+		GL20.glDisableVertexAttribArray(vPosition);
+	}
+	private void drawMap() {
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+		int vPosition, mMVP, textureLocation, textureCoord;
 		// enable grid program
 		GL20.glUseProgram(mapProgram.getProgramId());
 		// draw background first
 		vPosition = GL20.glGetAttribLocation(mapProgram.getProgramId(), "vPosition");
 		mMVP = GL20.glGetUniformLocation(mapProgram.getProgramId(), "mMVP");
-		mMVPBuf.flip();
 		GL20.glUniformMatrix4(mMVP, true, mMVPBuf);
 		// vertex buffer bind
 		GL20.glEnableVertexAttribArray(vPosition);
-		GL20.glVertexAttribPointer(vPosition, 4, GL11.GL_FLOAT, false, 0, 0);
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, mapVertexBuf);
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mapIndexBuf);
+		GL20.glVertexAttribPointer(vPosition, 4, GL11.GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GenericFullSquare"));
 		// bind texture
-		//GL11.glBindTexture(GL11.GL_TEXTURE_2D, textBuf);
+		GL11.glBindTexture(GL11.GL_TEXTURE_2D, textBuf);
 		// texture vertex
-//		int textureLocation = GL20.glGetUniformLocation(mapProgram.getProgramId(), "texture");
-//		GL20.glUniform1i(textureLocation, 0);
-//		int textureCoord = GL20.glGetAttribLocation(mapProgram.getProgramId(), "textureCoord");
-//		GL20.glEnableVertexAttribArray(textureCoord);
-//		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textVertexBuf);
-//		GL20.glVertexAttribPointer(textureCoord, 2, GL11.GL_FLOAT, false, 0, 0);
+		textureLocation = GL20.glGetUniformLocation(mapProgram.getProgramId(), "texture");
+		GL20.glUniform1i(textureLocation, 0);
+		textureCoord = GL20.glGetAttribLocation(mapProgram.getProgramId(), "textureCoord");
+		GL20.glEnableVertexAttribArray(textureCoord);
+		GL20.glVertexAttribPointer(textureCoord, 2, GL11.GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GenericFullSquareTexture"));
 		// draw
-		//GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, 6, GL11.GL_UNSIGNED_INT, 0);
+		GL11.glDrawElements(GL11.GL_TRIANGLE_STRIP, 6, GL11.GL_UNSIGNED_INT, vBufMan.getIndexBufferOffset("GenericFullSquareIndex"));
 		GL20.glDisableVertexAttribArray(vPosition);
-//		GL20.glDisableVertexAttribArray(textureCoord);
+		GL20.glDisableVertexAttribArray(textureCoord);
+	}
+	@Override
+	public void draw() {
 		// draw grid lines
-		GL20.glUseProgram(gridProgram.getProgramId());
-		// get attribute index in the program
-		vPosition = GL20.glGetAttribLocation(gridProgram.getProgramId(), "vPosition");
-		checkError();
-		mMVP = GL20.glGetUniformLocation(gridProgram.getProgramId(), "mMVP");
-		//mMVPBuf.flip();
-		GL20.glUniformMatrix4(mMVP, true, mMVPBuf);	// 2nd param set to false to use perspective transformation
-		// pass pointer of the vertex buffer to the attribute
-		GL20.glVertexAttribPointer(vPosition, 4, GL11.GL_FLOAT, false, 0, 0);
-		GL20.glEnableVertexAttribArray(vPosition);
-		// pass vertices to vPosition
-		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vertexBuf);
-		// pass MVP values
-		// pass indices to gl
-		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, indexBuf);
-		// TODO: set uniform colour vector
-		int vColor = GL20.glGetAttribLocation(gridProgram.getProgramId(), "vColor");
-		GL20.glUniform4f(vColor, 1f, 1f, 1f, 0f);
-		checkError();
-		// draw
-		GL11.glDrawElements(GL11.GL_LINES, 2 * (columns + rows + 2), GL11.GL_UNSIGNED_INT, 0);
-		checkError();
-		GL20.glDisableVertexAttribArray(vPosition);
+		mMVPBuf.flip();
+		drawGrid();
+		drawMap();
+//		if (firstTime) {
+//			drawMap();
+//			firstTime = false;
+//		} else
+//			firstTime = true;
 	}
 	@Override
 	public void close() throws IOException {
 		// delete buffers
+		mapProgram.close();
+		gridProgram.close();
 		GL15.glDeleteBuffers(vertexBuf);
 		GL15.glDeleteBuffers(indexBuf);
 		if (textBuf >= 0)
-			GL11.glDeleteTextures(textBuf);;
+			GL11.glDeleteTextures(textBuf);
 	}
 	@Override
 	public void setMVP(float[] matrix) {
@@ -194,6 +177,9 @@ public class GridRenderer implements Renderer {
 	}
 	
 	private void checkError() {
+		int error = GL11.glGetError();
+		if (error != 0)
+			throw new RuntimeException ("OpenGL: " + error);
 	}
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {frameBuf = framebuffer;}

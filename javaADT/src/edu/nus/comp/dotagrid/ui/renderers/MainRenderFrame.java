@@ -13,7 +13,7 @@ import org.lwjgl.opengl.*;
 import static edu.nus.comp.dotagrid.math.RenderMaths.*;
 
 public class MainRenderFrame {
-	public static void main (String[] args) throws LWJGLException, IOException {
+	public static void main (String[] args) throws LWJGLException, IOException, Exception {
 		// setup
 		final int displayWidth = 800, displayHeight = 600;
 		Display.setDisplayMode(new DisplayMode(displayWidth,displayHeight));
@@ -31,24 +31,22 @@ public class MainRenderFrame {
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		// read map file
 		// TODO: Change map file path
-		final String mapFile = "C:\\Users\\dingxiangfei\\Downloads\\reimu_original.jpg";
-		BufferedImage map = ImageIO.read(new File(mapFile));
+		final String mapPath = "C:\\Users\\dingxiangfei\\Downloads\\reimu_original.jpg"; 
+		BufferedImage map = ImageIO.read(MainRenderFrame.class.getResource("reimu_original.jpg"));
 		// set up renderer
+		VertexBufferManager m = new VertexBufferManager();
 		final short gridWidth = 10, gridHeight = 10;
-		int framebuffer = GL30.glGenFramebuffers();
-		// GL30.glBindFramebuffer(GL30.GL_FRAMEBUFFER, framebuffer);
-		Renderer r = new GridRenderer (gridWidth, gridHeight, new Texture2D (map));
-		r.setFrameBufferHandler(framebuffer);
+		Renderer r = new GridRenderer (m, gridWidth, gridHeight, new Texture2D (map));
 		int zoom = 100;
-		boolean mouseClickLeft = false, mouseClickRight = false;
-		boolean changeZoom, changeTranslation = false, changePerspective = true, processingTranslation = false;
+		boolean mouseClickLeft = false, mouseClickRight = false, mouseWasClickLeft = false, mouseWasClickRight = false;
+		boolean changeZoom, changeTranslation = false, changePerspective = false, processingTranslation = false, processingPerspective = false;
 		boolean viewDirty;
 		int mouseClickStartX = 0, mouseClickStartY = 0;
 		long mouseClickStartTime = 0;
-		final long singleClickTime = 10;
+		final long singleClickTime = 200;
 		MVPTransform t = new MVPTransform();
-		float[] scaling = IdentityMatrix4x4(), translation = IdentityMatrix4x4();
-		float[] processingTranslationMat = IdentityMatrix4x4();
+		float[] scaling = IdentityMatrix4x4(), translation = IdentityMatrix4x4(), perspective = IdentityMatrix4x4();
+		float[] processingTranslationMat = IdentityMatrix4x4(), processingPerspectiveMat = IdentityMatrix4x4();
 		while (!Display.isCloseRequested() && !Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
 			// main drawing loop
 			changeZoom = true;
@@ -79,17 +77,21 @@ public class MainRenderFrame {
 					mouseClickStartTime = System.currentTimeMillis();
 				}
 				mouseClickRight = true;
-			} else
+			} else {
 				// clear mouse click flags
+				mouseWasClickLeft = mouseClickLeft;
+				mouseWasClickRight = mouseClickRight;
 				mouseClickLeft = mouseClickRight = false;
+			}
 			// TODO: mouse click reverse transforms
 			// game control - render section
 			// mouse clicks
-			if (mouseClickLeft && mouseClickRight) {
-				// not supported
-			} else if (mouseClickLeft) {
+			if (mouseClickLeft && mouseClickRight)
+				processingTranslation = processingPerspective = false;
+			else if (mouseClickLeft) {
 				// left - translation
-				if (System.currentTimeMillis() - mouseClickStartTime > singleClickTime) {
+				double dist = Math.hypot((Mouse.getX() - mouseClickStartX) / (double) displayWidth, (Mouse.getY() - mouseClickStartY) / (double) displayHeight);
+				if (System.currentTimeMillis() - mouseClickStartTime > singleClickTime || dist > 1e-2) {
 					// translation recognised
 					processingTranslation = true;
 					changeTranslation = false;
@@ -99,11 +101,27 @@ public class MainRenderFrame {
 					processingTranslationMat = FlatMatrix4x4Multiplication(viewTransform,translation);
 				}
 			} else if (mouseClickRight) {
-				// not supported
+				// left - translation
+				double dist = Math.hypot((Mouse.getX() - mouseClickStartX) / (double) displayWidth, (Mouse.getY() - mouseClickStartY) / (double) displayHeight);
+				if (System.currentTimeMillis() - mouseClickStartTime > singleClickTime || dist > 1e-2) {
+					// translation recognised
+					processingPerspective = true;
+					changePerspective = false;
+					float deltaX = (Mouse.getX() - mouseClickStartX) / (float) displayWidth,
+							deltaY = (Mouse.getY() - mouseClickStartY) / (float) displayHeight;
+					processingPerspectiveMat = new float[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, deltaX, deltaY, 0, 1};
+				}
 			} else {
 				// all cleared
 				if (System.currentTimeMillis() - mouseClickStartTime <= singleClickTime) {
 					// apply mouse single click
+					if (mouseWasClickLeft)
+						System.out.println("Single Left Click at X:" + mouseClickStartX + " Y: " + mouseClickStartY);
+					else
+						System.out.println("Single Right Click at X:" + mouseClickStartX + " Y: " + mouseClickStartY);
+					// mouse click processed
+					mouseWasClickLeft = mouseWasClickRight = false;
+					mouseClickStartTime = 0;
 				} else if (processingTranslation) {
 					// apply translation permanently
 					float deltaX = (Mouse.getX() - mouseClickStartX) / (float) displayWidth,
@@ -114,6 +132,11 @@ public class MainRenderFrame {
 					processingTranslation = false;
 				} else if (changePerspective) {
 					// not supported - orthographic at this time
+					float deltaX = (Mouse.getX() - mouseClickStartX) / (float) displayWidth,
+							deltaY = (Mouse.getY() - mouseClickStartY) / (float) displayHeight;
+					perspective = new float[]{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, deltaX, deltaY, 0, 1};
+					changePerspective = true;
+					processingPerspective = false;
 				}
 				mouseClickStartX = mouseClickStartY = -1;
 				mouseClickStartTime = 0;
@@ -124,12 +147,13 @@ public class MainRenderFrame {
 				viewDirty = true;
 			}
 			// translation
-			if (processingTranslation || changeTranslation)
+			if (processingTranslation || changeTranslation || processingPerspective || changePerspective)
 				viewDirty = true;
 			if (viewDirty) {
 				// re-compose
 				t.setView(FlatMatrix4x4Multiplication(scaling, processingTranslation ? processingTranslationMat : translation));
-				changeZoom = changeTranslation = false;
+				t.setProjection(processingPerspective ? processingPerspectiveMat : perspective);
+				changeZoom = changeTranslation = changePerspective = false;
 			}
 			// draw routine
 			if (Display.isVisible()) {
@@ -148,5 +172,6 @@ public class MainRenderFrame {
 				Display.sync(60);
 			}
 		}
+		r.close();
 	}
 }

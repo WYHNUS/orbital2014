@@ -18,7 +18,7 @@ public class MVPTransform {
 	public float[] getProjection() {return projection.clone();}
 	public float[] setProjection(float[] projection) {
 		dirty = true;
-		return this.projection = (projection == null) ? IdentityMatrix4x4():view;
+		return this.projection = (projection == null) ? IdentityMatrix4x4():projection;
 	}
 	
 	public boolean isDirty() {return dirty;}
