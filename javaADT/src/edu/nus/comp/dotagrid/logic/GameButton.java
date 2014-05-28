@@ -47,7 +47,9 @@ public class GameButton {
 	}	
 	
 	public void drawString(Graphics g) {
-		g.drawString(string, xPos + 15, yPos + 20);
+		int xPosAllign = 15;
+		int yPosAllign = 20;
+		g.drawString(string, xPos + xPosAllign, yPos + yPosAllign);
 	}
 	
 	public void drawImage(Graphics g) {

@@ -1,0 +1,96 @@
+planned features:
+
+
+
+Done: 
+
+Feature 1: 
+A movable and rescalable DOTA-like map implemented in both PC and Android platform. (including game frame and control panel)
+
+Feature 2:
+Come up with a rudimentary set of game rules.
+
+
+
+
+
+Features to be done before next milestone:
+
+Feature 3:
+Design a few heroes feature for player to control throughout the game. (both in PC and in Android)
+
+Feature 4:
+Allow hero to move around in the game map. (both in PC and in Android)
+
+Feature 5:
+Design a few items for player to purchase. (both in PC and in Android)
+
+Feature 6:
+Allow hero to attack, use skill, buy item and other actions. (both in PC and in Android)
+
+Feature 7:
+Design towers. (both in PC and in Android)
+
+Feature 8:
+Design line creeps. (both in PC and in Android)
+
+
+
+
+
+Advanced Features (to be done before next next milestone) :
+
+Feature 9:
+Design towers AI. (both in PC and in Android)
+
+Feature 10:
+Design rudimentary line creeps AI. (both in PC and in Android)
+
+Feature 11:
+Design a more detailed map with better graphics. (both in PC and in Android)
+
+Feature 12:
+Design rudimentary hero AI. (both in PC and in Android)
+
+Feature 13:
+Allow player to game with AI. (one on one) (both in PC and in Android)
+
+Feature 14:
+Design help menu to show game features and how to play the game. (both in PC and in Android)
+
+
+
+
+
+
+Be-A-Real-Game Features (to be done before splash-down):
+
+Feature 15:
+Allow player to game with AI. (team fight) (both in PC and in Android)
+
+Feature 16:
+Design and add neutral creeps. (both in PC and in Android)
+
+Feature 17:
+Design neutral creeps AI. (both in PC and in Android)
+
+Feature 18:
+More advanced line creep AI. (team fight) (both in PC and in Android)
+
+Feature 19:
+More advanced hero AI. (team fight) (both in PC and in Android)
+
+Feature 20:
+Add more game features(if possible) to the game. (team fight) (both in PC and in Android)
+
+
+
+
+
+GOD-LIKE Features (might have to be implemented in the future):
+
+Feature 21:
+Test and balance the game, fix potential game bugs, etc.
+
+Feature 22:
+Internet connection, allow multiple players! (both in PC and in Android)

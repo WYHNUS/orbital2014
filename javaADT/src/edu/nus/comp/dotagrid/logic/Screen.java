@@ -2,8 +2,6 @@ package edu.nus.comp.dotagrid.logic;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.image.CropImageFilter;
-import java.awt.image.FilteredImageSource;
 
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
