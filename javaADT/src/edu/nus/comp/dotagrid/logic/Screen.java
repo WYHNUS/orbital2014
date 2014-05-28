@@ -71,18 +71,21 @@ public class Screen extends JPanel implements Runnable {
 			// load game
 			g.setColor(Color.BLUE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
+			
+			g.setColor(Color.BLACK);
+			g.drawString("Enter SPACE to load the game.  Enter ESC to quit the game.", (int) (10 * gridWidth), (int) (7 * gridHeight));
 
 		} else if (scene == 1) {
-			// start game!
+			// start game!	
+			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 			
 			// draw game frame
-			new GameFrame(g, this.frame);
+			new GameFrame(g, this.frame.getWidth(), this.frame.getHeight());
 			
 			// game grid 
-			g.setColor(Color.BLACK);
 			
 			for (int x=0; x<gridColNumberInScreen; x++) {
-				for (int y=0; y<gridRowNumberInScreen; y++) {
+				for (int y=0; y<gridRowNumberInScreen; y++) { 
 					
 					g.drawImage(terrain[map[x + currentGridXPos][y + currentGridYPos]],
 							(int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
