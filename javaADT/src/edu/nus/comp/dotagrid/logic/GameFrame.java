@@ -4,9 +4,8 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
-public class GameFrame {
-	
-	Graphics g;
+
+public class GameFrame{
 	
 	public int frameWidth;
 	public int frameHeight;
@@ -24,8 +23,9 @@ public class GameFrame {
 	public static final int FRAME_ROW_NUMBER_OCCUPIED = 14;
 	public static final int FRAME_COL_NUMBER_OCCUPIED = 20;
 	
-	public double gridWidth = (frameWidth - 2 * FRAME_BORDER_WIDTH) / GRID_COL_NUMBER_IN_SCREEN;
-	public double gridHeight = (frameHeight - 2 * FRAME_BORDER_HEIGHT) / GRID_ROW_NUMBER_IN_SCREEN;
+	public double gridWidth = 1.0;
+	public double gridHeight = 1.0;
+
 	
 	
 	// main game grid frame
@@ -85,10 +85,11 @@ public class GameFrame {
 
 	public GameFrame(Graphics g, int frameWidth, int frameHeight) {
 		
-		this.g = g;
-		
 		this.frameWidth = frameWidth;
 		this.frameHeight = frameHeight;
+		
+		gridWidth = (frameWidth - (2.0 * FRAME_BORDER_WIDTH)) / GRID_COL_NUMBER_IN_SCREEN;
+		gridHeight = (frameHeight - (2.0 * FRAME_BORDER_HEIGHT)) / GRID_ROW_NUMBER_IN_SCREEN;
 		
 		// construct game frame
 
@@ -96,85 +97,85 @@ public class GameFrame {
 		initializeAllButtons();
 		
 		// draw game frame
-		displayAllButtons();
-		
+		displayAllButtons(g);
 		
 	}
 
 	
-	private void displayAllButtons() {
+	private void displayAllButtons(Graphics g) {
 		g.setColor(defaultColor);
 		
 		// draw main game frame
-		mainGame.drawRect();
+		mainGame.drawRect(g);
 		
 		// stuff displayed at the bottom of the screen
 		
-		characterIcon.drawRect();
+		characterIcon.drawRect(g);
 		
-		characterName.drawRect();
-		characterName.drawString();
+		characterName.drawRect(g);
+		characterName.drawString(g);
 		
-		characterHP.drawRect();
-		characterHP.drawString();
 		
-		characterMP.drawRect();
-		characterMP.drawString();
+		characterHP.drawRect(g);
+		characterHP.drawString(g);
 		
-		characterStrength.drawRect();
-		characterStrength.drawString();
+		characterMP.drawRect(g);
+		characterMP.drawString(g);
+		
+		characterStrength.drawRect(g);
+		characterStrength.drawString(g);
 
-		characterAgility.drawRect();
-		characterAgility.drawString();
+		characterAgility.drawRect(g);
+		characterAgility.drawString(g);
 
-		characterIntelligence.drawRect();
-		characterIntelligence.drawString();
+		characterIntelligence.drawRect(g);
+		characterIntelligence.drawString(g);
 		
-		characterAttack.drawRect();
-		characterAttack.drawString();
+		characterAttack.drawRect(g);
+		characterAttack.drawString(g);
 		
-		characterDefense.drawRect();
-		characterDefense.drawString();
+		characterDefense.drawRect(g);
+		characterDefense.drawString(g);
 		
-		characterLevel.drawRect();
-		characterLevel.drawString();
+		characterLevel.drawRect(g);
+		characterLevel.drawString(g);
 		
-		characterExperience.drawRect();
-		characterExperience.drawString();
+		characterExperience.drawRect(g);
+		characterExperience.drawString(g);
 		
 		// display item list
 		for (int i=0; i<MAX_ITEM_NUMBER; i++) {
-			items[i].drawRect();
+			items[i].drawRect(g);
 		}
 		
 		// display skill list
 		for (int i=0; i<MAX_SKILL_NUMBER; i++) {
-			skills[i].drawRect();
+			skills[i].drawRect(g);
 		}
 		
 		
 		// stuff displayed at the right hand side of the screen
 		
-		versionID.drawRect();
-		versionID.drawString();
+		versionID.drawRect(g);
+		versionID.drawString(g);
 		
-		turnCounter.drawRect();
+		turnCounter.drawRect(g);
 
-		KDA[0].drawRect();
-		KDA[1].drawRect();
-		KDA[2].drawRect();
+		KDA[0].drawRect(g);
+		KDA[1].drawRect(g);
+		KDA[2].drawRect(g);
 		
-		money.drawRect();
-		actionPoints.drawRect();
+		money.drawRect(g);
+		actionPoints.drawRect(g);
 		
 		// display Action List 
 		for(int i=0; i<MAX_ACTION_NUMBER; i++){
-			actionList[i].drawRect();
+			actionList[i].drawRect(g);
 		}
 		
 		// display move mainGame buttons
 		for(int i=0; i<DIRECTION_NUMBER; i++){
-			directions[i].drawRect();
+			directions[i].drawRect(g);
 		}
 		
 		
@@ -187,109 +188,109 @@ public class GameFrame {
 		int startingXPos = FRAME_BORDER_WIDTH + (int) (gridWidth * (FRAME_COL_NUMBER_OCCUPIED + 1));	
 		
 		// main game frame
-		mainGame = new GameButton(g, "main game", null, FRAME_BORDER_WIDTH, FRAME_BORDER_HEIGHT, (int) (FRAME_COL_NUMBER_OCCUPIED * gridWidth), (int) (FRAME_ROW_NUMBER_OCCUPIED * gridHeight));
+		mainGame = new GameButton("main game", null, FRAME_BORDER_WIDTH, FRAME_BORDER_HEIGHT, (int) (FRAME_COL_NUMBER_OCCUPIED * gridWidth), (int) (FRAME_ROW_NUMBER_OCCUPIED * gridHeight));
 		
 		// image of the character selected
-		characterIcon = new GameButton(g, "characterIcon", null, FRAME_BORDER_WIDTH, startingYPos, (int) (2 * gridWidth), (int) (2 * gridHeight));
+		characterIcon = new GameButton("characterIcon", null, FRAME_BORDER_WIDTH, startingYPos, (int) (2 * gridWidth), (int) (2 * gridHeight));
 		
 		// Name, HP , MP
-		characterName = new GameButton(g, "Name: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos, (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
-		characterHP = new GameButton(g, "HP: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
-		characterMP = new GameButton(g, "MP: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos + (int) (4.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
+		characterName = new GameButton("Name: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos, (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
+		characterHP = new GameButton("HP: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
+		characterMP = new GameButton("MP: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos + (int) (4.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		
 		// Strength, Agility, Intelligence
-		characterStrength = new GameButton(g, "Strength: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos, (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
-		characterAgility = new GameButton(g, "Agility: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
-		characterIntelligence = new GameButton(g, "Intelligence: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos + (int) (4.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
+		characterStrength = new GameButton("Strength: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos, (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
+		characterAgility = new GameButton("Agility: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
+		characterIntelligence = new GameButton("Intelligence: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos + (int) (4.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 
 		// Attack, Defense
-		characterAttack = new GameButton(g, "Attack: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
-		characterDefense = new GameButton(g, "Defense: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 2), (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
+		characterAttack = new GameButton("Attack: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
+		characterDefense = new GameButton("Defense: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 2), (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
 
 		// Level, Experience
-		characterLevel = new GameButton(g, "Level: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 3));
-		characterExperience = new GameButton(g, "Experience: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (2.5 * gridWidth), (int) (4.0 * gridHeight / 3));
+		characterLevel = new GameButton("Level: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 3));
+		characterExperience = new GameButton("Experience: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (2.5 * gridWidth), (int) (4.0 * gridHeight / 3));
 
 		
 		// Item List (numbers are marked from top to bottom first, then left to right)
 		items = new GameButton[MAX_ITEM_NUMBER];
 		
-		items[0] = new GameButton(g, "item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
-		items[1] = new GameButton(g, "item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
-		items[2] = new GameButton(g, "item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
-		items[3] = new GameButton(g, "item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
-		items[4] = new GameButton(g, "item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
-		items[5] = new GameButton(g, "item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
+		items[0] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
+		items[1] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
+		items[2] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
+		items[3] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
+		items[4] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
+		items[5] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
 			
 		// Skill List (numbers are marked from top to bottom first, then left to right)
 		skills = new GameButton[MAX_SKILL_NUMBER];
 		
-		skills[0] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
-		skills[1] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
-		skills[2] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
-		skills[3] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
-		skills[4] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 2 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
-		skills[5] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 2 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
-		skills[6] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
-		skills[7] = new GameButton(g, "skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
+		skills[0] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
+		skills[1] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
+		skills[2] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
+		skills[3] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
+		skills[4] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 2 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
+		skills[5] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 2 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
+		skills[6] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
+		skills[7] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
 					
 
 
 		// Version Info
-		versionID = new GameButton(g, "C-DOTA 1.0", null, startingXPos, FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
+		versionID = new GameButton("C-DOTA 1.0", null, startingXPos, FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
 		
 		// turn count
-		turnCounter = new GameButton(g, "turnCounter", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
+		turnCounter = new GameButton("turnCounter", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
 		
 		// KDA
 		KDA = new GameButton[3];
-		KDA[0] = new GameButton(g, "Kill", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
-		KDA[1] = new GameButton(g, "Death", null, startingXPos + (int) (4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
-		KDA[2] = new GameButton(g, "Assist", null, startingXPos + (int) (2 * 4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		KDA[0] = new GameButton("Kill", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		KDA[1] = new GameButton("Death", null, startingXPos + (int) (4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		KDA[2] = new GameButton("Assist", null, startingXPos + (int) (2 * 4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
 
 		// Money & Action Points
-		money = new GameButton(g, "Money: ", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
-		actionPoints = new GameButton(g, "Action Points: ", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
+		money = new GameButton("Money: ", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
+		actionPoints = new GameButton("Action Points: ", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
 
 		// Action List 
 		// (draw from left to right first, then top to bottom)
 		actionList = new GameButton[MAX_ACTION_NUMBER];
 		
-		actionList[0] = new GameButton(g, "action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);	
-		actionList[1] = new GameButton(g, "action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[2] = new GameButton(g, "action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[3] = new GameButton(g, "action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[4] = new GameButton(g, "action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[5] = new GameButton(g, "action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[6] = new GameButton(g, "action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[7] = new GameButton(g, "action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[8] = new GameButton(g, "action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[9] = new GameButton(g, "action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[10] = new GameButton(g, "action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[11] = new GameButton(g, "action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[12] = new GameButton(g, "action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[13] = new GameButton(g, "action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[14] = new GameButton(g, "action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[15] = new GameButton(g, "action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[0] = new GameButton("action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);	
+		actionList[1] = new GameButton("action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[2] = new GameButton("action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[3] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[4] = new GameButton("action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[5] = new GameButton("action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[6] = new GameButton("action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[7] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[8] = new GameButton("action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[9] = new GameButton("action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[10] = new GameButton("action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[11] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 2.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[12] = new GameButton("action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[13] = new GameButton("action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[14] = new GameButton("action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[15] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 			
 
 		// move mainGame buttons
 		directions = new GameButton[DIRECTION_NUMBER];
 		
 		// Up button
-		directions[0] = new GameButton(g, "up", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (4 * gridHeight), (int) gridWidth, (int) gridHeight);	
+		directions[0] = new GameButton("up", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (4 * gridHeight), (int) gridWidth, (int) gridHeight);	
 		
 		// Left button
-		directions[1] = new GameButton(g, "left", null, startingXPos + (int) (0.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
+		directions[1] = new GameButton("left", null, startingXPos + (int) (0.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
 			
 		// Game Icon
-		directions[2] = new GameButton(g, "game icon", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);	
+		directions[2] = new GameButton("game icon", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);	
 		
 		// Right button
-		directions[3] = new GameButton(g, "right", null, startingXPos + (int) (2.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
+		directions[3] = new GameButton("right", null, startingXPos + (int) (2.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
 		
 		// Down button
-		directions[4] = new GameButton(g, "down", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (2 * gridHeight), (int) gridWidth, (int) gridHeight);
+		directions[4] = new GameButton("down", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (2 * gridHeight), (int) gridWidth, (int) gridHeight);
 		
 	}
 

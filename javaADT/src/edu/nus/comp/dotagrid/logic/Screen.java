@@ -56,24 +56,28 @@ public class Screen extends JPanel implements Runnable {
 		this.frame.addMouseListener(new MouseHandler(this));
 		this.frame.addMouseMotionListener(new MouseHandler(this));
 		
-		double gameFrameGridWidth = (frame.getWidth() - 2 * GameFrame.FRAME_BORDER_WIDTH) / GameFrame.GRID_COL_NUMBER_IN_SCREEN;
-		double gameFrameGridHeight = (frame.getHeight() - 2 * GameFrame.FRAME_BORDER_HEIGHT) / GameFrame.GRID_ROW_NUMBER_IN_SCREEN;		
-		gridWidth = (int) (GameFrame.FRAME_COL_NUMBER_OCCUPIED * gameFrameGridWidth / gridColNumberInScreen);
-		gridHeight = (int) (GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen);
+		double gameFrameGridWidth = (frame.getWidth() - 2.0 * GameFrame.FRAME_BORDER_WIDTH) / GameFrame.GRID_COL_NUMBER_IN_SCREEN;
+		double gameFrameGridHeight = (frame.getHeight() - 2.0 * GameFrame.FRAME_BORDER_HEIGHT) / GameFrame.GRID_ROW_NUMBER_IN_SCREEN;	
+		
+		gridWidth = GameFrame.FRAME_COL_NUMBER_OCCUPIED * gameFrameGridWidth / gridColNumberInScreen;
+		gridHeight = GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen;
 		
 		thread.start();
 	}
+	
 
 	public void paintComponent(Graphics g) {
 		g.clearRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 		super.paintComponent(g);
 		if (scene == 0) {
+			
 			// load game
 			g.setColor(Color.BLUE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 			
 			g.setColor(Color.BLACK);
 			g.drawString("Enter SPACE to load the game.  Enter ESC to quit the game.", (int) (10 * gridWidth), (int) (7 * gridHeight));
+			
 
 		} else if (scene == 1) {
 			// start game!	
@@ -108,6 +112,7 @@ public class Screen extends JPanel implements Runnable {
 		g.drawString(fps + "", 10, 10);
 
 	} // end override method paintComponent
+
 
 	// first time
 	public void loadGame() {
