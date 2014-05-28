@@ -6,7 +6,7 @@ import android.support.v4.view.*;
 import android.util.AttributeSet;
 import android.view.*;
 
-public class MainSurfaceView extends GLSurfaceView{
+public class MainSurfaceView extends GLSurfaceView {
 	private MainRenderer r = null;
 	public MainSurfaceView(Context context) {
 		super(context);
@@ -21,7 +21,7 @@ public class MainSurfaceView extends GLSurfaceView{
 	private void init(Context context) {
 		setEGLContextClientVersion(2);
 		setRenderer(r = new MainRenderer(context));
-		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
+//		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 	
 	@Override

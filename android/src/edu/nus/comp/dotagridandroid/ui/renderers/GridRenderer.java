@@ -12,7 +12,7 @@ public class GridRenderer implements Renderer {
 	private Map<String, Texture2D> textures;
 	private int rows, columns;
 	private GenericProgram gridProgram, mapProgram;
-	private FloatBuffer mMVPBuf;
+	private float[] mvp;
 	private boolean firstTime = true;
 	public GridRenderer (VertexBufferManager bufMan, int rows, int columns) {
 		vBufMan = bufMan;
@@ -97,7 +97,7 @@ public class GridRenderer implements Renderer {
 		vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition");
 		mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP");
 		// it seems that screen goes black if mMVPBuf.flip(); is done twice
-		glUniformMatrix4fv(mMVP, 1, true, mMVPBuf);	// 2nd param set to false to use perspective transformation
+		glUniformMatrix4fv(mMVP, 1, false, mvp, 0);	// 2nd param set to false to use perspective transformation
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GridPointBuffer"));
 		glDrawElements(GL_LINES, 2 * (columns + rows + 2), GL_UNSIGNED_INT, vBufMan.getIndexBufferOffset("GridPointMeshIndex"));
@@ -112,7 +112,7 @@ public class GridRenderer implements Renderer {
 		// draw background first
 		vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition");
 		mMVP = glGetUniformLocation(mapProgram.getProgramId(), "mMVP");
-		glUniformMatrix4fv(mMVP, 1, true, mMVPBuf);
+		glUniformMatrix4fv(mMVP, 1, false, mvp, 0);
 		// vertex buffer bind
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GenericFullSquare"));
@@ -132,7 +132,6 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void draw() {
 		// draw grid lines
-		mMVPBuf.position(0);
 		drawGrid();
 		drawMap();
 	}
@@ -144,9 +143,7 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public void setMVP(float[] matrix) {
-		if (matrix.length != 16)
-			throw new RuntimeException ("Invalid Matrix");
-		mMVPBuf = BufferUtils.createFloatBuffer(16).put(matrix);
+		mvp = matrix;
 	}
 	
 	private void checkError() {

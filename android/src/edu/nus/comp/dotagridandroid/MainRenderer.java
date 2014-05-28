@@ -24,7 +24,8 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-	     gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
+	     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	     glClearColor(1, 0, 0, 1);
 	     // TODO: set MVP
 	     r.draw();
 	}
@@ -33,13 +34,13 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
 		this.width = width;
 		this.height = height;
-		gl.glViewport(0, 0, width, height);
+		glViewport(0, 0, width, height);
 		float ratio = (float) width / height;
-		gl.glEnable(GL_BLEND);
-		gl.glEnable(GL_DEPTH_TEST);
-		gl.glEnable(GL_TEXTURE);
-		gl.glDepthFunc(GL_LESS);
-		gl.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glEnable(GL_BLEND);
+		glEnable(GL_DEPTH_TEST);
+		glEnable(GL_TEXTURE);
+		glDepthFunc(GL_LESS);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		if (firstRun) {
 			// initialise
 			vBufMan = new VertexBufferManager();
@@ -56,8 +57,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 
 	@Override
 	public void onSurfaceCreated(GL10 gl, EGLConfig config) {
-		// black background
-		glClearColor(0f, 0f, 0f, 1f);
+		//gl.glClearColor(1, 0, 0, 1);
 	}
 
 	protected void setProcessingTranslation (float x, float y, float z) {
