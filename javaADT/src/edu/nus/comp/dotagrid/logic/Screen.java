@@ -66,7 +66,7 @@ public class Screen extends JPanel implements Runnable {
 
 	public void paintComponent(Graphics g) {
 		g.clearRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
-
+		super.paintComponent(g);
 		if (scene == 0) {
 			// load game
 			g.setColor(Color.BLUE);
