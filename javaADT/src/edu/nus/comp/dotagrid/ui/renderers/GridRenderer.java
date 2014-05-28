@@ -93,9 +93,6 @@ public class GridRenderer implements Renderer {
 						+ "color = texture2D (texture, autoTextureCoord).rgba;"
 					+ "}";
 		mapProgram = new GenericProgram (mapvsSrc, mapfsSrc);
-		vBufMan.setVertexBuffer("GenericFullSquare", new float[]{1,1,0,1,1,-1,0,1,-1,-1,0,1,-1,1,0,1});
-		vBufMan.setIndexBuffer("GenericFullSquareIndex", new int[]{0,1,3,2});
-		vBufMan.setVertexBuffer("GenericFullSquareTexture", new float[]{1,0,1,1,0,1,0,0});
 	}
 	public GridRenderer (VertexBufferManager bufMan, int row, int height, Texture2D texture) {
 		this (bufMan, row, height);

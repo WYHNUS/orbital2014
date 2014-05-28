@@ -35,6 +35,7 @@ public class MainRenderFrame {
 		BufferedImage map = ImageIO.read(MainRenderFrame.class.getResource("reimu_original.jpg"));
 		// set up renderer
 		VertexBufferManager m = new VertexBufferManager();
+		CommonShapes cShapes = new CommonShapes(m);
 		final short gridWidth = 10, gridHeight = 10;
 		Renderer r = new GridRenderer (m, gridWidth, gridHeight, new Texture2D (map));
 		int zoom = 100;
