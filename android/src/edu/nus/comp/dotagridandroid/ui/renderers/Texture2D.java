@@ -17,13 +17,13 @@ public class Texture2D implements Closeable {
 		glBindTexture(GL_TEXTURE_2D, textureHandler);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		GLUtils.texImage2D(GL_ACTIVE_TEXTURE, 0, image, 0);
+		GLUtils.texImage2D(GL_TEXTURE_2D, 0, image, 0);
 	}
 	public int getWidth() {return width;}
 	public int getHeight() {return height;}
 	public int getTexture() {return textureHandler;}
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		glDeleteTextures(1, new int[]{textureHandler}, 0);
 	}
 }

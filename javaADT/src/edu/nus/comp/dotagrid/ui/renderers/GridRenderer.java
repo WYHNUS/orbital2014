@@ -150,11 +150,6 @@ public class GridRenderer implements Renderer {
 		mMVPBuf.flip();
 		drawGrid();
 		drawMap();
-//		if (firstTime) {
-//			drawMap();
-//			firstTime = false;
-//		} else
-//			firstTime = true;
 	}
 	@Override
 	public void close() throws IOException {
