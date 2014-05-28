@@ -11,7 +11,7 @@ public class BufferUtils {
 	}
 	public static IntBuffer createIntBuffer(int size) {
 		return ByteBuffer
-				.allocate(size * INT_BYTES)
+				.allocateDirect(size * INT_BYTES)
 				.order(ByteOrder.nativeOrder())
 				.asIntBuffer();
 	}

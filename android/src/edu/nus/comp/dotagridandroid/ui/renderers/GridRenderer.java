@@ -66,8 +66,7 @@ public class GridRenderer implements Renderer {
 					+ "void main () {"
 						+ "gl_Position = mMVP * vPosition;"
 					+ "}",
-			fsSrc = "uniform vec4 vColor;"
-					+ "void main () {"
+			fsSrc = "void main () {"
 						+ "gl_FragColor = vec4(1,0,0,1);"
 					+ "}";
 		gridProgram = new GenericProgram(vsSrc, fsSrc);
@@ -99,10 +98,10 @@ public class GridRenderer implements Renderer {
 		mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP");
 		// it seems that screen goes black if mMVPBuf.flip(); is done twice
 		glUniformMatrix4fv(mMVP, 1, true, mMVPBuf);	// 2nd param set to false to use perspective transformation
-//		glEnableVertexAttribArray(vPosition);
-//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GridPointBuffer"));
-//		glDrawElements(GL_LINES, 2 * (columns + rows + 2), GL_UNSIGNED_INT, vBufMan.getIndexBufferOffset("GridPointMeshIndex"));
-//		glDisableVertexAttribArray(vPosition);
+		glEnableVertexAttribArray(vPosition);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GridPointBuffer"));
+		glDrawElements(GL_LINES, 2 * (columns + rows + 2), GL_UNSIGNED_INT, vBufMan.getIndexBufferOffset("GridPointMeshIndex"));
+		glDisableVertexAttribArray(vPosition);
 	}
 	private void drawMap() {
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
@@ -135,7 +134,7 @@ public class GridRenderer implements Renderer {
 		// draw grid lines
 		mMVPBuf.position(0);
 		drawGrid();
-//		drawMap();
+		drawMap();
 	}
 
 	public void close() {
@@ -147,7 +146,7 @@ public class GridRenderer implements Renderer {
 	public void setMVP(float[] matrix) {
 		if (matrix.length != 16)
 			throw new RuntimeException ("Invalid Matrix");
-		mMVPBuf = BufferUtils.createFloatBuffer(matrix.length).put(matrix);
+		mMVPBuf = BufferUtils.createFloatBuffer(16).put(matrix);
 	}
 	
 	private void checkError() {

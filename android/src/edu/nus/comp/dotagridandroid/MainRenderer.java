@@ -49,6 +49,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 			// TODO: allow decoding from network, stream, files etc
 			texture2d.put("GridMapBackground", new Texture2D(BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
 			r = new GridRenderer(vBufMan, gridHeight, gridWidth);
+			r.setTexture2D(texture2d);
 			firstRun = false;
 		}
 	}
