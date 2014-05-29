@@ -4,16 +4,19 @@ import java.nio.*;
 import static android.opengl.GLES20.*;
 /*
  * Centralised static vertex buffer storage
+ * FOR MOBILE:
+ * WARNING:
+ * OpenGL ES only support unsigned short as indices
  */
 public class VertexBufferManager {
 	private int[] bufs = new int[2];
 	private int vBufHandler, iBufHandler;
 	private Map<String, Integer> vOffset = new HashMap<>(), iOffset = new HashMap<>();
 	private Map<String, float[]> vBuf = new HashMap<>();
-	private Map<String, int[]> iBuf = new HashMap<>();
+	private Map<String, short[]> iBuf = new HashMap<>();
 	private boolean dirtyVertex = false, dirtyIndex = false;
 	private int capacity = 0, indexes = 0;
-	final static int FLOAT_BYTES = Float.SIZE / 8, INT_BYTES = Integer.SIZE / 8;
+	final static int FLOAT_BYTES = Float.SIZE / 8, SHORT_BYTES = Short.SIZE / 8;
 	public VertexBufferManager () {
 		glGenBuffers(2, bufs, 0);
 		vBufHandler = bufs[0];
@@ -37,19 +40,26 @@ public class VertexBufferManager {
 		}
 	}
 	public void setIndexBuffer (String name, int[] idx) {
-		if (name == null || iBuf.get(name) == idx || Arrays.equals(iBuf.get(name), idx))
+		if (name == null)
 			return;
-		dirtyIndex = true;
-		if (idx == null) {
+		else if (idx == null) {
+			if (iBuf.get(name) != null)
+				return;
 			indexes -= iBuf.remove(name).length;
 			iOffset.remove(name);
-		} else {
-			int[] org = iBuf.put(name, idx);
-			if (org == null)
-				indexes += idx.length;
-			else
-				indexes = indexes - org.length + idx.length;
+			return;
 		}
+		short[] v = new short[idx.length];
+		for (int i = 0; i < v.length; i++)
+			v[i] = (short) (0xffff & idx[i]);
+		if (Arrays.equals(iBuf.get(name), v))
+			return;
+		dirtyIndex = true;
+		short[] org = iBuf.put(name, v);
+		if (org == null)
+			indexes += v.length;
+		else
+			indexes = indexes - org.length + v.length;
 	}
 	public int getVertexBuffer () {return vBufHandler;}
 	public int getIndexBuffer () {return iBufHandler;}
@@ -61,7 +71,7 @@ public class VertexBufferManager {
 	public int getIndexBufferOffset (String name) {
 		if (dirtyIndex)
 			updateIndex();
-		return iOffset.get(name) * INT_BYTES;
+		return iOffset.get(name) * SHORT_BYTES;
 	}
 	public void updateVertex() {
 		FloatBuffer fBuf = BufferUtils.createFloatBuffer(capacity);
@@ -79,18 +89,18 @@ public class VertexBufferManager {
 		dirtyVertex = false;
 	}
 	public void updateIndex() {
-		IntBuffer intBuf = BufferUtils.createIntBuffer(indexes);
-		int i = 0;
-		for (Map.Entry<String, int[]> v : iBuf.entrySet()) {
-			iOffset.put(v.getKey(), i);
-			int[] data = v.getValue();
+		ShortBuffer intBuf = BufferUtils.createShortBuffer(indexes);
+		int c = 0;
+		for (Map.Entry<String, short[]> v : iBuf.entrySet()) {
+			iOffset.put(v.getKey(), c);
+			short[] data = v.getValue();
 			intBuf.put(data);
-			i += data.length;
+			c += data.length;
 		}
-		if (i != indexes)
+		if (c != indexes)
 			throw new RuntimeException ("Index count mismatch");
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iBufHandler);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes * INT_BYTES, intBuf.position(0), GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexes * SHORT_BYTES, intBuf.position(0), GL_STATIC_DRAW);
 		dirtyIndex = false;
 	}
 	

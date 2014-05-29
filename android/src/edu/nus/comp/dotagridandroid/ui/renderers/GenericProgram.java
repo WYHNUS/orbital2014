@@ -1,6 +1,5 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
-import java.io.IOException;
 import static android.opengl.GLES20.*;
 
 /* Generic Program
@@ -13,23 +12,23 @@ public class GenericProgram implements Closeable {
 		glShaderSource(vs, vsSrc);
 		glCompileShader(vs);
 		String errStr = glGetShaderInfoLog(vs);
-//		if (errStr.length() > 0)
-//			System.out.println("Vertex Shader error:\n" + errStr);
+		if (errStr.length() > 0)
+			System.out.println("Vertex Shader error:\n" + errStr);
 		
 		fs = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(fs, fsSrc);
 		glCompileShader(fs);
 		errStr = glGetShaderInfoLog(fs);
-//		if (errStr.length() > 0)
-//			System.out.println("Fragment Shader error:\n" + errStr);
+		if (errStr.length() > 0)
+			System.out.println("Fragment Shader error:\n" + errStr);
 		
 		programId = glCreateProgram();
 		glAttachShader(programId, vs);
 		glAttachShader(programId, fs);
 		glLinkProgram(programId);
 		errStr = glGetProgramInfoLog(programId);
-//		if (errStr.length() > 0)
-//			System.out.println("Program Linking error:\n" + errStr);
+		if (errStr.length() > 0)
+			System.out.println("Program Linking error:\n" + errStr);
 	}
 	
 	public int getProgramId () {

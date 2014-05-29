@@ -26,7 +26,7 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 	@Override
 	public void onDrawFrame(GL10 gl) {
 	     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	     glClearColor(0, 0, 0, 1);
+	     glClearColor(.4f, .6f, .9f, 1);
 	     // TODO: set MVP
 	     r.draw();
 	}
@@ -46,7 +46,6 @@ public class MainRenderer implements GLSurfaceView.Renderer {
 		glEnable(GL_TEXTURE);
 		glDepthFunc(GL_LESS);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		//gl.glClearColor(1, 0, 0, 1);
 		vBufMan = new VertexBufferManager();
 		cs = new CommonShapes(vBufMan);
 		// TODO: different resolution of maps
