@@ -41,6 +41,6 @@ public class GenericProgram implements AutoCloseable {
 		GL20.glUseProgram(0);
 		GL20.glDeleteProgram(programId);
 		GL20.glDeleteShader(vs);
-		GL20.glDeleteProgram(fs);
+		GL20.glDeleteShader(fs);
 	}
 }

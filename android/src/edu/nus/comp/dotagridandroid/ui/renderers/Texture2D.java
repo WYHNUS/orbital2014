@@ -1,8 +1,5 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
-import java.nio.*;
-
-import android.R;
 import android.graphics.*;
 import android.opengl.*;
 import static android.opengl.GLES20.*;

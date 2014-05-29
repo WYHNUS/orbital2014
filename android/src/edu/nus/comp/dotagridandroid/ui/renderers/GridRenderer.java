@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.*;
 import java.util.Map;
 
+import android.opengl.GLES20;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
@@ -60,16 +61,7 @@ public class GridRenderer implements Renderer {
 			idx[c++] = 2 * columns + i + rows - 1;
 		}
 		vBufMan.setIndexBuffer("GridPointMeshIndex", idx);
-		final String
-			vsSrc = "attribute vec4 vPosition;"
-					+ "uniform mat4 mMVP;"
-					+ "void main () {"
-						+ "gl_Position = mMVP * vPosition;"
-					+ "}",
-			fsSrc = "void main () {"
-						+ "gl_FragColor = vec4(1,0,0,1);"
-					+ "}";
-		gridProgram = new GenericProgram(vsSrc, fsSrc);
+//		gridProgram = new GenericProgram(CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY);
 		// configure indices buffer
 		setMVP(IdentityMatrix4x4());
 		// configure map
@@ -87,17 +79,22 @@ public class GridRenderer implements Renderer {
 					+ "void main () {"
 						+ "gl_FragColor = texture2D (texture, autoTextureCoord).rgba;"
 					+ "}";
-		mapProgram = new GenericProgram (mapvsSrc, mapfsSrc);
+//		mapProgram = new GenericProgram (mapvsSrc, mapfsSrc);
+		if (!mapvsSrc.equals(CommonShaders.VS_IDENTITY_TEXTURED) || !mapfsSrc.equals(CommonShaders.FS_IDENTITY_TEXTURED))
+			throw new RuntimeException();
+		mapProgram = new GenericProgram (CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
 	}
 	private void drawGrid() {
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
-		int vPosition, mMVP;
+		int vPosition, mMVP, vColor;
 		glUseProgram(gridProgram.getProgramId());
 		vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition");
 		mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP");
+		vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor");
 		// it seems that screen goes black if mMVPBuf.flip(); is done twice
-		glUniformMatrix4fv(mMVP, 1, false, mvp, 0);	// 2nd param set to false to use perspective transformation
+		glUniformMatrix4fv(mMVP, 1, false, mvp, 0);
+		glUniform4f(vColor, 1, 0, 0, 1);
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GridPointBuffer"));
 		glDrawElements(GL_LINES, 2 * (columns + rows + 2), GL_UNSIGNED_INT, vBufMan.getIndexBufferOffset("GridPointMeshIndex"));
@@ -106,19 +103,17 @@ public class GridRenderer implements Renderer {
 	private void drawMap() {
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
-		int vPosition, mMVP, textureLocation, textureCoord;
-		// enable grid program
+		int vPosition, mMVP, textureColorTone, textureLocation, textureCoord;
 		glUseProgram(mapProgram.getProgramId());
-		// draw background first
 		vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition");
 		mMVP = glGetUniformLocation(mapProgram.getProgramId(), "mMVP");
+//		textureColorTone = glGetUniformLocation(mapProgram.getProgramId(), "textureColorTone");
 		glUniformMatrix4fv(mMVP, 1, false, mvp, 0);
-		// vertex buffer bind
+//		glUniform4f(textureColorTone, 1, 1, 1, 1);
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vBufMan.getVertexBufferOffset("GenericFullSquare"));
-		// bind texture
+//		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textures.get("GridMapBackground").getTexture());
-		// texture vertex
 		textureLocation = glGetUniformLocation(mapProgram.getProgramId(), "texture");
 		glUniform1i(textureLocation, 0);
 		textureCoord = glGetAttribLocation(mapProgram.getProgramId(), "textureCoord");
@@ -132,7 +127,7 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void draw() {
 		// draw grid lines
-		drawGrid();
+//		drawGrid();
 		drawMap();
 	}
 
