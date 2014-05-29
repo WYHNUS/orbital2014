@@ -1,6 +1,8 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.util.Map;
+
+import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
@@ -8,6 +10,9 @@ public class GridRenderer implements Renderer {
 	private VertexBufferManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private int rows, columns;
+	private GameLogicManager manager;
+	private float ratio;
+	// owned resources
 	private GenericProgram gridProgram, mapProgram;
 	private float[] mvp;
 	public GridRenderer (VertexBufferManager bufMan, int rows, int columns) {
@@ -56,28 +61,12 @@ public class GridRenderer implements Renderer {
 			idx[c++] = 2 * columns + i + rows - 1;
 		}
 		vBufMan.setIndexBuffer("GridPointMeshIndex", idx);
-		gridProgram = new 			GenericProgram(
+		gridProgram = new GenericProgram(
 				new String(CommonShaders.VS_IDENTITY),
 				new String(CommonShaders.FS_IDENTITY));
 		// configure indices buffer
 		setMVP(IdentityMatrix4x4());
 		// configure map
-//		final String
-//			mapvsSrc = "attribute vec4 vPosition;"
-//					+ "attribute vec2 textureCoord;"
-//					+ "uniform mat4 mMVP;"
-//					+ "varying vec2 autoTextureCoord;"
-//					+ "void main() {"
-//						+ "gl_Position = mMVP * vPosition;"
-//						+ "autoTextureCoord = textureCoord;"
-//					+ "}",
-//			mapfsSrc = "precision mediump float;"
-//					+ "uniform sampler2D texture;"
-//					+ "varying vec2 autoTextureCoord;"
-//					+ "void main () {"
-//						+ "gl_FragColor = texture2D (texture, autoTextureCoord).rgba;"
-//					+ "}";
-//		mapProgram = new GenericProgram (mapvsSrc, mapfsSrc);
 		mapProgram = new GenericProgram (
 				new String(CommonShaders.VS_IDENTITY_TEXTURED),
 				new String(CommonShaders.FS_IDENTITY_TEXTURED_TONED));
@@ -146,4 +135,8 @@ public class GridRenderer implements Renderer {
 	public void setTexture2D(Map<String, Texture2D> textures) {
 		this.textures = textures;
 	}
+	@Override
+	public void setAspectRatio(float ratio) {this.ratio = ratio;}
+	@Override
+	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
 }

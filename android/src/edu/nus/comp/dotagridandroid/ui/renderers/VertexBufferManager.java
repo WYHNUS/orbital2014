@@ -8,7 +8,7 @@ import static android.opengl.GLES20.*;
  * WARNING:
  * OpenGL ES only support unsigned short as indices
  */
-public class VertexBufferManager {
+public class VertexBufferManager implements Closeable {
 	private int[] bufs = new int[2];
 	private int vBufHandler, iBufHandler;
 	private Map<String, Integer> vOffset = new HashMap<>(), iOffset = new HashMap<>();
@@ -104,7 +104,8 @@ public class VertexBufferManager {
 		dirtyIndex = false;
 	}
 	
-	public void close() throws Exception {
+	@Override
+	public void close() {
 		glDeleteBuffers(2, bufs, 0);
 	}
 }

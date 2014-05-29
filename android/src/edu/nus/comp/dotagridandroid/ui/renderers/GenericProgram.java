@@ -35,6 +35,7 @@ public class GenericProgram implements Closeable {
 		return programId;
 	}
 
+	@Override
 	public void close() {
 		glUseProgram(0);
 		glDeleteProgram(programId);

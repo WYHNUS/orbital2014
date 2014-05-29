@@ -1,7 +1,9 @@
 package edu.nus.comp.dotagridandroid;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
+import android.os.Parcelable;
 import android.support.v4.view.*;
 import android.util.AttributeSet;
 import android.view.*;
@@ -22,6 +24,7 @@ public class MainSurfaceView extends GLSurfaceView {
 		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 		setEGLContextClientVersion(2);
 		setRenderer(r = new MainRenderer(context));
+		// just in case: turn on the below will reduce draw cycles, but we probably don't need it
 //		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 	
@@ -34,9 +37,16 @@ public class MainSurfaceView extends GLSurfaceView {
 		case MotionEvent.ACTION_MOVE:
 			return true;
 		case MotionEvent.ACTION_UP:
-			// changes to glview
+			// apply changes to glview
 			return true;
 		}
 		return super.onTouchEvent(e);
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		// clean up
+		super.onConfigurationChanged(newConfig);
+		r.close();
 	}
 }
