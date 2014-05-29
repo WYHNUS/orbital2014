@@ -3,7 +3,6 @@ package edu.nus.comp.dotagridandroid;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.opengl.GLSurfaceView;
-import android.os.Parcelable;
 import android.support.v4.view.*;
 import android.util.AttributeSet;
 import android.view.*;

@@ -19,7 +19,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	private CommonShapes cs;
 	private Renderer r;
 	private int width, height;
-	final static int gridWidth = 10, gridHeight = 10;
+	final static int gridWidth = 16, gridHeight = 9;
 	private Map<String, Texture2D> texture2d = new HashMap<>();
 	private GameLogicManager manager;
 	public MainRenderer (Context context) {

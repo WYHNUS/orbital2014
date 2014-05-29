@@ -3,8 +3,9 @@ package edu.nus.comp.dotagridandroid.ui.renderers;
 import java.util.Map;
 
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
+import android.renderscript.*;
 import static android.opengl.GLES20.*;
-import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
+import static edu.nus.comp.dotagridandroid.math.RenderMathsAccelerated.*;
 
 public class GridRenderer implements Renderer {
 	private VertexBufferManager vBufMan;
@@ -71,14 +72,14 @@ public class GridRenderer implements Renderer {
 				new String(CommonShaders.VS_IDENTITY_TEXTURED),
 				new String(CommonShaders.FS_IDENTITY_TEXTURED_TONED));
 	}
-	private void drawGrid() {
+	private void drawGrid(float[] mat) {
 		int vOffset = vBufMan.getVertexBufferOffset("GridPointBuffer"),
 			iOffset = vBufMan.getIndexBufferOffset("GridPointMeshIndex");
 		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
 			mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
 			vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor");
 		glUseProgram(gridProgram.getProgramId());
-		glUniformMatrix4fv(mMVP, 1, false, mvp, 0);
+		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
 		glUniform4f(vColor, 1, 0, 0, 1);
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
@@ -87,7 +88,7 @@ public class GridRenderer implements Renderer {
 		glDrawElements(GL_LINES, 2 * (columns + rows + 2), GL_UNSIGNED_SHORT, iOffset);
 		glDisableVertexAttribArray(vPosition);
 	}
-	private void drawMap() {
+	private void drawMap(float[] mat) {
 		int vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTexture"),
 			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
@@ -97,8 +98,8 @@ public class GridRenderer implements Renderer {
 			textureLocation = glGetUniformLocation(mapProgram.getProgramId(), "texture"),
 			textureCoord = glGetAttribLocation(mapProgram.getProgramId(), "textureCoord");
 		glUseProgram(mapProgram.getProgramId());
-		glUniformMatrix4fv(mMVP, 1, false, mvp, 0);
-		glUniform4f(textureColorTone, 0.5f, 0, 0, -0.9f);
+		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
+		glUniform4f(textureColorTone, 0.5f, 0, 0, 0f);
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
 		glActiveTexture(GL_TEXTURE0);
@@ -116,8 +117,31 @@ public class GridRenderer implements Renderer {
 	public void draw() {
 		// draw grid lines
 //		drawMap();
-		drawGrid();
-		drawMap();
+		float x = 1, y = 1;
+		if (rows > columns)
+//			mat = FlatScalingMatrix4x4((float) columns / rows, 1, 1);
+			x = (float) columns / rows;
+		else if (rows < columns)
+//			mat = FlatScalingMatrix4x4(1, (float) rows / columns, 1);
+			y = (float) rows / columns;
+//		else
+//			mat = IdentityMatrix4x4();
+		if (ratio > 1)
+//			mat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1/ratio, 1, 1), mat);
+			x /= ratio;
+		else
+//			mat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1, ratio, 1), mat);
+			y *= ratio;
+		if (x > y) {
+			y /= x;
+			x = 1;
+		} else {
+			x /= y;
+			y = 1;
+		}
+		float[] mat = FlatMatrix4x4Transpose(FlatMatrix4x4Multiplication(mvp, FlatScalingMatrix4x4(x, y, 1)));
+		drawGrid(mat);
+		drawMap(mat);
 	}
 
 	public void close() {

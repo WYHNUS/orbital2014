@@ -46,7 +46,7 @@ public class RenderMaths {
 				a[3]*b[3]
 		};
 	}
-	public static float[] FlatRotationMatrix4x4 (float angleRadians) {
+	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
 		throw new UnsupportedOperationException();
 	}
 	public static float[] FlatTranslationMatrix4x4 (float x, float y, float z) {
@@ -82,5 +82,13 @@ public class RenderMaths {
 		};
 		else
 			throw new RuntimeException ("Matrix not invertible");
+	}
+	public static float[] FlatMatrix4x4Transpose (float[] a) {
+		return new float[] {
+				a[0], a[4], a[8], a[12],
+				a[1], a[5], a[9], a[13],
+				a[2], a[6], a[10], a[14],
+				a[3], a[7], a[11], a[15]
+		};
 	}
 }
