@@ -21,10 +21,6 @@ public class Screen extends JPanel implements Runnable {
 
 	// control the states of the game
 	public int scene;
-
-	public int hand = 0;
-	public int handXPos = 0;
-	public int handYPos = 0;
 	
 	public static final int ROW_NUMBER = 200;
 	public static final int COLUMN_NUMBER = 200;
@@ -49,17 +45,16 @@ public class Screen extends JPanel implements Runnable {
 	// constructor
 	public Screen(Frame frame) {
 		this.frame = frame;
-
+		
 		this.frame.addKeyListener(new KeyHandler(this));
-		this.frame.addMouseListener(new MouseHandler(this));
-		this.frame.addMouseMotionListener(new MouseHandler(this));
+		this.frame.addMouseListener(new GameFrame());
 		
 		double gameFrameGridWidth = (frame.getWidth() - 2.0 * GameFrame.FRAME_BORDER_WIDTH) / GameFrame.GRID_COL_NUMBER_IN_SCREEN;
 		double gameFrameGridHeight = (frame.getHeight() - 2.0 * GameFrame.FRAME_BORDER_HEIGHT) / GameFrame.GRID_ROW_NUMBER_IN_SCREEN;	
 		
 		gridWidth = GameFrame.FRAME_COL_NUMBER_OCCUPIED * gameFrameGridWidth / gridColNumberInScreen;
 		gridHeight = GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen;
-		
+			
 		thread.start();
 	}
 	
@@ -82,7 +77,7 @@ public class Screen extends JPanel implements Runnable {
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 			
 			// draw game frame
-			new GameFrame(g, this.frame.getWidth(), this.frame.getHeight());
+			new GameFrame(g, this.frame);
 			
 			// game grid 
 			
@@ -166,32 +161,6 @@ public class Screen extends JPanel implements Runnable {
 
 		System.exit(0);
 	} // end method run
-
-	public class MouseHeld {
-		boolean mouseDown = false;
-
-		public void mouseMoved(MouseEvent e) {
-			handXPos = e.getXOnScreen();
-			handYPos = e.getYOnScreen();
-		}
-
-		public void updateMouse(MouseEvent e) {
-			if (scene == 1) {
-				if (mouseDown && hand == 0) {
-
-				}
-			}
-		}
-
-		public void mouseDown(MouseEvent e) {
-			mouseDown = true;
-
-			if (false) {}
-
-			updateMouse(e);
-		}
-	} // end inner class MouseHeld
-
 	
 	public class KeyTyped {
 		public void keyESC() {
