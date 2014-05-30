@@ -23,12 +23,15 @@ public class GridFrame {
 	public static final int ROW_NUMBER = 200;
 	public static final int COLUMN_NUMBER = 200;
 	
+	public static final int minRowNumberInScreen = 7;
+	public static final int minColNumberInScreen = 10;
+	
 	private static int gridRowNumberInScreen = 14;
 	private static int gridColNumberInScreen = 20;
 		
 	// default starting position: left bottom corner of the map
 	private static int currentGridXPos = 0;
-	private static int currentGridYPos = Screen.ROW_NUMBER - gridRowNumberInScreen - 1;
+	private static int currentGridYPos = ROW_NUMBER - gridRowNumberInScreen - 1;
 	
 	private double gridWidth = 1.0;
 	private double gridHeight = 1.0;
@@ -90,6 +93,42 @@ public class GridFrame {
 		
 	}
 	
+	
+	
+	
+	
+	/* 
+	 * Other methods to change the display size of the game grid frame
+	 * 
+	 */
+	
+	public static int getGridRowNumberInScreen(){
+		return gridRowNumberInScreen;
+	}
+	
+	public static void setGridRowNumberInScreen(int changedGridRowNumberInScreen){
+		if (changedGridRowNumberInScreen <= minRowNumberInScreen) {
+			gridRowNumberInScreen = minRowNumberInScreen;
+		} else if (changedGridRowNumberInScreen >= ROW_NUMBER) {
+			gridRowNumberInScreen = ROW_NUMBER;
+		} else {
+			gridRowNumberInScreen = changedGridRowNumberInScreen;
+		}
+	}
+	
+	public static int getGridColNumberInScreen(){
+		return gridColNumberInScreen;
+	}
+	
+	public static void setGridColNumberInScreen(int changedGridColNumberInScreen){
+		if (changedGridColNumberInScreen <= minColNumberInScreen) {
+			gridColNumberInScreen = minColNumberInScreen;
+		} else if (changedGridColNumberInScreen >= COLUMN_NUMBER) {
+			gridColNumberInScreen = COLUMN_NUMBER;
+		} else {
+			gridColNumberInScreen = changedGridColNumberInScreen;
+		}
+	}
 	
 	
 	public static int getCurrentGridXPos(){

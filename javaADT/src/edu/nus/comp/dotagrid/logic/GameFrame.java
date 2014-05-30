@@ -3,8 +3,6 @@ package edu.nus.comp.dotagrid.logic;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 
@@ -86,7 +84,13 @@ public class GameFrame{
 	GameButton[] directions;
 	public final int DIRECTION_NUMBER = 5;
 	
+	// zoom in button and zoom out button
+	GameButton zoomIn;
+	GameButton zoomOut;
+	
+	
 
+	// constructor
 	public GameFrame(Graphics g, Frame frame) {
 		this.frameWidth = frame.getWidth();
 		this.frameHeight = frame.getHeight();
@@ -288,6 +292,16 @@ public class GameFrame{
 		allGameButtons.add(directions[2]);
 		allGameButtons.add(directions[3]);
 		allGameButtons.add(directions[4]);
+		
+		// zoom in button and zoom out button
+		zoomIn = new GameButton("zoomIn", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (10.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		zoomOut = new GameButton("zoomOut", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (10.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		
+		zoomIn.setActionNumber(5);
+		zoomOut.setActionNumber(6);
+		
+		allGameButtons.add(zoomIn);
+		allGameButtons.add(zoomOut);
 		
 	}
 
