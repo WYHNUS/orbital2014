@@ -8,7 +8,7 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
 
-public class GameFrame implements MouseListener{
+public class GameFrame{
 	
 	public int frameWidth;
 	public int frameHeight;
@@ -29,12 +29,10 @@ public class GameFrame implements MouseListener{
 	public double gridWidth = 1.0;
 	public double gridHeight = 1.0;
 
-	private int handXPos;
-	private int handYPos;
 	
 	
 	// an ArrayList of GameButton which store all the GameButtons on the GameFrame
-	private ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
+	private static ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
 	
 	// image of the character selected
 	GameButton characterIcon;
@@ -268,18 +266,22 @@ public class GameFrame implements MouseListener{
 		
 		// Up button
 		directions[0] = new GameButton("up", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (4 * gridHeight), (int) gridWidth, (int) gridHeight);	
+		directions[0].setActionNumber(1);
 		
 		// Left button
 		directions[1] = new GameButton("left", null, startingXPos + (int) (0.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
-			
+		directions[1].setActionNumber(3);
+		
 		// Game Icon
 		directions[2] = new GameButton("game icon", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);	
 		
 		// Right button
 		directions[3] = new GameButton("right", null, startingXPos + (int) (2.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
+		directions[3].setActionNumber(4);
 		
 		// Down button
 		directions[4] = new GameButton("down", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (2 * gridHeight), (int) gridWidth, (int) gridHeight);
+		directions[4].setActionNumber(2);
 		
 		allGameButtons.add(directions[0]);
 		allGameButtons.add(directions[1]);
@@ -290,50 +292,16 @@ public class GameFrame implements MouseListener{
 	}
 
 	
-	public void invokeEvent(int handXPos, int handYPos){
+	public static void invokeEvent(int handXPos, int handYPos){
 		
-		//display allGameButtons
+		// check through allGameButtons for the correct button that has been pressed
 		for (int i=0; i<allGameButtons.size(); i++) {
 			if (allGameButtons.get(i).checkEvent(handXPos, handYPos)) {
-				allGameButtons.get(i).actionPerformed();
+				allGameButtons.get(i).actionPerformed(allGameButtons.get(i).getActionNumber());
 				break;
 			}
 		}
 
-	}
-	
-	
-	@Override
-	public void mouseClicked(MouseEvent e) {
-		handXPos = e.getXOnScreen();
-		handYPos = e.getYOnScreen();
-		
-		invokeEvent(handXPos, handYPos);
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		// TODO Auto-generated method stub
-		
 	}
 
 }
