@@ -47,7 +47,6 @@ public class Screen extends JPanel implements Runnable {
 		this.frame = frame;
 		
 		this.frame.addKeyListener(new KeyHandler(this));
-		this.frame.addMouseListener(new GameFrame());
 		
 		double gameFrameGridWidth = (frame.getWidth() - 2.0 * GameFrame.FRAME_BORDER_WIDTH) / GameFrame.GRID_COL_NUMBER_IN_SCREEN;
 		double gameFrameGridHeight = (frame.getHeight() - 2.0 * GameFrame.FRAME_BORDER_HEIGHT) / GameFrame.GRID_ROW_NUMBER_IN_SCREEN;	
@@ -63,6 +62,8 @@ public class Screen extends JPanel implements Runnable {
 		g.clearRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 		super.paintComponent(g);
 		if (scene == 0) {
+			
+			this.frame.addMouseListener(new GameFrame(g, frame));
 			
 			// load game
 			g.setColor(Color.BLUE);
