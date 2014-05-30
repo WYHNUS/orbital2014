@@ -1,16 +1,19 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class GameButton extends Component{
+public class GameButton{
 	
 	private String string;
 	private Image image;
+	
+	private boolean isClicked;
+	
+	private int actionNumber;
 	
 	private int xPos = 0;
 	private int yPos = 0; 
@@ -18,6 +21,7 @@ public class GameButton extends Component{
 	private int height = 0;
 	
 	
+	// constructor
 	public GameButton(String string, Image image, int xPos, int yPos, int width, int height) {
 		this.string = string;
 		this.image = image;
@@ -25,6 +29,18 @@ public class GameButton extends Component{
 		this.yPos = yPos;
 		this.width = width;
 		this.height = height;
+		
+		isClicked = false;
+	}
+	
+	
+	// accessor and mutator
+	public int getActionNumber() {
+		return this.actionNumber;
+	}
+	
+	public void setActionNumber(int actionNumber) {
+		this.actionNumber = actionNumber;
 	}
 	
 	public String getString(){
@@ -44,6 +60,7 @@ public class GameButton extends Component{
 	}
 	
 	
+	// other methods
 	public void fillRect(Graphics g){
 		g.fillRect(xPos, yPos, width, height);
 	}
@@ -64,9 +81,7 @@ public class GameButton extends Component{
 	}
 	
 	
-	public boolean checkEvent(int handXPos, int handYPos) {
-		boolean isClicked = false;
-		
+	public boolean checkEvent(int handXPos, int handYPos) {		
 		// within x-axis position
 		if (handXPos > xPos && handXPos < (xPos + width)) {
 			// within y-axis position
@@ -80,10 +95,9 @@ public class GameButton extends Component{
 	}
 	
 	
-	public void actionPerformed(){
-		System.out.println(string + " has been invoked!");
+	public void actionPerformed(int actionNumber) {
+		System.out.println(actionNumber);
+		new GameButtonActions(actionNumber);
 	}
-
-
 	
 }
