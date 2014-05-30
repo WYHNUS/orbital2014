@@ -10,7 +10,8 @@ A movable and rescalable DOTA-like map implemented in both PC and Android platfo
 Feature 2:
 Come up with a rudimentary set of game rules.
 
-
+Feature 2.5:
+Setup Basic Rendering and Game Controls. (Both on Android and PC)
 
 
 
@@ -19,8 +20,14 @@ Features to be done before next milestone:
 Feature 3:
 Design a few heroes feature for player to control throughout the game. (both in PC and in Android)
 
+Feature 3.5:
+Hero modeling in renders
+
 Feature 4:
 Allow hero to move around in the game map. (both in PC and in Android)
+
+Feature 4.5:
+Advanced Mathematics Acceleration Framework (Intel OpenCL, Renderscript, Accelerate.framework)
 
 Feature 5:
 Design a few items for player to purchase. (both in PC and in Android)

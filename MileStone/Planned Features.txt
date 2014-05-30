@@ -20,8 +20,14 @@ Features to be done before next milestone:
 Feature 3:
 Design a few heroes feature for player to control throughout the game. (both in PC and in Android)
 
+Feature 3.5:
+Hero modeling in renders
+
 Feature 4:
 Allow hero to move around in the game map. (both in PC and in Android)
+
+Feature 4.5:
+Advanced Mathematics Acceleration Framework (Intel OpenCL, Renderscript, Accelerate.framework)
 
 Feature 5:
 Design a few items for player to purchase. (both in PC and in Android)
@@ -43,6 +49,12 @@ Advanced Features (to be done before next next milestone) :
 
 Feature 9:
 Design towers AI. (both in PC and in Android)
+
+Feature 9.1:
+Customisable Map Mesh
+
+Feature 9.2:
+Better Graphics: Lighting
 
 Feature 10:
 Design rudimentary line creeps AI. (both in PC and in Android)

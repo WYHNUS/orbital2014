@@ -36,13 +36,32 @@ public class RenderMaths {
 				a*b[12], a*b[13], a*b[14], a*b[15]
 		};
 	}
+	public static float[] FlatMatrix4x4Vector4Multiplication(float[] a, float[] b) {
+		if (a.length != 16 || b.length != 4)
+			throw new RuntimeException ("Wrong sizes");
+		return new float[] {
+				a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3],
+				a[4] * b[0] + a[5] * b[1] + a[6] * b[2] + a[7] * b[3],
+				a[8] * b[0] + a[9] * b[1] + a[10] * b[2] + a[11] * b[3],
+				a[12] * b[0] + a[13] * b[1] + a[14] * b[2] + a[15] * b[3],
+		};
+	}
 	public static float Vector4InnerProduct (float[] a, float[] b) {
 		if (a.length != 4 || b.length != 4)
 			throw new RuntimeException ("Wrong vector size");
 		return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	}
 	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
-		throw new UnsupportedOperationException();
+		final float len = (float) Math.sqrt(Math.scalb(x, 1) + Math.scalb(y, 1) + Math.scalb(z, 1));
+		final float sin_theta = (float) Math.sin(angleRadians), one_minus_cos_theta = (float) (1 - Math.cos(angleRadians));
+		final float nx = x / len, ny = y = len, nz = z / len;
+		final float nx2 = Math.scalb(nx, 1), ny2 = Math.scalb(ny, 1), nz2 = Math.scalb(nz, 1);
+		return new float[] {
+				1 - one_minus_cos_theta * (ny2 + nz2), -nz * sin_theta + one_minus_cos_theta * nx * ny, ny * sin_theta + one_minus_cos_theta * nx * nz, 0,
+				nz * sin_theta + one_minus_cos_theta * nx * ny, 1 - one_minus_cos_theta * (nx2 + nz2), -nx * sin_theta + one_minus_cos_theta * ny * nz, 0,
+				-ny * sin_theta + one_minus_cos_theta * nx * nz, nx * sin_theta + one_minus_cos_theta * ny * nz, 1 - one_minus_cos_theta * (nx2 + ny2), 0,
+				0, 0, 0, 1
+		};
 	}
 	public static float[] FlatTranslationMatrix4x4 (float x, float y, float z) {
 		return new float[] {1,0,0,x,0,1,0,y,0,0,1,z,0,0,0,1};
@@ -50,8 +69,13 @@ public class RenderMaths {
 	public static float[] FlatScalingMatrix4x4 (float x, float y, float z) {
 		return new float[] {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
 	}
-	public static float[] FlatPerspectiveMatrix4x4 () {
-		throw new UnsupportedOperationException();
+	public static float[] FlatPerspectiveMatrix4x4 (float near, float far, float left, float right, float top, float bottom) {
+		return new float[] {
+				2 * near / (right - left), 0, (right + left) / (right - left), 0,
+				0, 2 * near / (top - bottom), (top + bottom) / (top - bottom), 0,
+				0, 0, (near + far) / (near - far), 2 * near * far / (near - far),
+				0, 0, -1, 0
+		};
 	}
 	public static float[] FlatInverseMatrix4x4 (float[] a) {
 		// TODO: Check formulae

@@ -5,7 +5,9 @@ public class CommonShaders {
 		= "attribute vec4 vPosition;"
 		+ "uniform mat4 mMVP;"
 		+ "void main() {"
-			+ "gl_Position = mMVP * vPosition;"
+			+ "vec4 pos = mMVP * vPosition;"
+//			+ "pos.w = 1.0;"
+			+ "gl_Position = pos;"
 		+ "}";
 	public static final String FS_IDENTITY
 		= "precision mediump float;"

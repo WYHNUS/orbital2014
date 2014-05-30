@@ -6,7 +6,7 @@ import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import android.renderscript.*;
 import static android.opengl.GLES20.*;
-import static edu.nus.comp.dotagridandroid.math.RenderMathsAccelerated.*;
+import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class GridRenderer implements Renderer {
 	private VertexBufferManager vBufMan;
@@ -14,9 +14,24 @@ public class GridRenderer implements Renderer {
 	private int rows, columns;
 	private GameLogicManager manager;
 	private float ratio;
+	// camera - x, y, z, lookX, lookY, lookZ, near, far
+	private float[] cameraParams = new float[] {
+			0, 0, 1,
+			0, 0, 0,
+			0.2f, 1f
+	};
 	// owned resources
 	private GenericProgram gridProgram, mapProgram;
-	private float[] mvp;
+	private float[]
+			model = IdentityMatrix4x4(),
+			view = IdentityMatrix4x4(),
+			processingView = IdentityMatrix4x4(),
+			projection = IdentityMatrix4x4(),
+			processingProjection = IdentityMatrix4x4();
+	private boolean processingTranslation = false, processingPerspective = false;
+	private boolean mvpDirty = false;
+	// debug
+	private boolean hasRay = false;
 	public GridRenderer (VertexBufferManager bufMan, int rows, int columns) {
 		vBufMan = bufMan;
 		this.rows = rows;
@@ -66,8 +81,6 @@ public class GridRenderer implements Renderer {
 		gridProgram = new GenericProgram(
 				new String(CommonShaders.VS_IDENTITY),
 				new String(CommonShaders.FS_IDENTITY));
-		// configure indices buffer
-		setMVP(IdentityMatrix4x4());
 		// configure map
 		mapProgram = new GenericProgram (
 				new String(CommonShaders.VS_IDENTITY_TEXTURED),
@@ -114,8 +127,29 @@ public class GridRenderer implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
 	}
+	private void drawRay(float[] mat) {
+//		if (!hasRay)
+//			return;
+		float[] v = new float[16];
+		glUseProgram(gridProgram.getProgramId());
+	}
 	@Override
 	public void draw() {
+		// compose mvp every time
+		// TODO: use mvpDirty to save computation
+		float[] mat = FlatMatrix4x4Multiplication(projection, FlatMatrix4x4Multiplication(view, model));
+		drawGrid(mat);
+//		drawMap(mat);
+		drawRay(mat);
+	}
+	@Override
+	public void setFrameBufferHandler(int framebuffer) {}
+	@Override
+	public void setTexture2D(Map<String, Texture2D> textures) {this.textures = textures;}
+	@Override
+	public void setAspectRatio(float ratio) {
+		// model parameter
+		this.ratio = ratio;
 		float x = 1, y = 1;
 		if (rows > columns)
 			x = (float) columns / rows;
@@ -132,36 +166,65 @@ public class GridRenderer implements Renderer {
 			x /= y;
 			y = 1;
 		}
-		float[] mat = FlatMatrix4x4Transpose(FlatMatrix4x4Multiplication(mvp, FlatScalingMatrix4x4(x, y, 1)));
-		drawGrid(mat);
-		drawMap(mat);
+//		projection = FlatScalingMatrix4x4(0.5f,0.5f,1);
+		projection = FlatPerspectiveMatrix4x4(cameraParams[6], cameraParams[7], -1, 1, -ratio, ratio);
+		model = FlatScalingMatrix4x4(x,y,1);
+		model = FlatMatrix4x4Multiplication (FlatTranslationMatrix4x4(0,0,-.3f), model);
 	}
-
-	public void close() {
-		// delete buffers
-		mapProgram.close();
-		gridProgram.close();
-	}
-	@Override
-	public void setMVP(float[] matrix) {
-		mvp = matrix;
-	}
-	@Override
-	public void setFrameBufferHandler(int framebuffer) {}
-	@Override
-	public void setTexture2D(Map<String, Texture2D> textures) {
-		this.textures = textures;
-	}
-	@Override
-	public void setAspectRatio(float ratio) {this.ratio = ratio;}
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
 	@Override
 	public void passEvent(ControlEvent e) {
 		// Remember: normalise
-		if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT) {
-			// tap
-//			if (e.data.eventTime - )
+		if (e.type == ControlEvent.TYPE_CLICK) {
+			// tap start
+		} else if (e.type == ControlEvent.TYPE_DRAG) {
+			// tap with movements
+			onProcessingTranslation(e);
+			onProcessingPerspective(e);
+		} else if (e.type == ControlEvent.TYPE_CLEAR) {
+			if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT / ratio && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT * ratio) {
+				// tap
+				if (e.data.eventTime - e.data.startTime > ControlEvent.TAP_LONG_TIME_LIMIT)
+					System.out.println("Long tap");	// long tap
+				else
+					System.out.println("Short tap");	// short tap
+			}
+			onProcessingTranslationDone(e);
+			onProcessingPerspectiveDone(e);
 		}
+	}
+	private void onProcessingPerspectiveDone(ControlEvent e) {
+		// TODO Auto-generated method stub
+		if (processingPerspective) {
+			
+		}
+		processingPerspective = false;
+	}
+	private void onProcessingTranslationDone(ControlEvent e) {
+		if (processingTranslation) {
+			
+		}
+		processingTranslation = false;
+	}
+	private void onProcessingPerspective(ControlEvent e) {
+		if (e.data.pointerCount != 2)
+			return;
+		if (processingTranslation)
+			onProcessingTranslationDone(e);
+		if (!processingPerspective) {
+		}
+	}
+	private void onProcessingTranslation(ControlEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+	private void rayTrace() {
+	}
+	@Override
+	public void close() {
+		// delete buffers
+		mapProgram.close();
+		gridProgram.close();
 	}
 }

@@ -25,8 +25,10 @@ public class RenderMathsAccelerated {
 	public static float[] FlatScalingMatrix4x4 (float x, float y, float z) {
 		return new float[] {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
 	}
-	public static float[] FlatPerspectiveMatrix4x4 () {
-		throw new UnsupportedOperationException();
+	public static float[] FlatPerspectiveMatrix4x4 (float near, float far, float left, float right, float top, float bottom) {
+		Matrix4f matA = new Matrix4f();
+		matA.loadFrustum(left, right, bottom, top, near, far);
+		return matA.getArray().clone();
 	}
 	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
 		Matrix4f matA = new Matrix4f();

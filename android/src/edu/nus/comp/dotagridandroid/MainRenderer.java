@@ -69,11 +69,11 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	public void passEvent (ControlEvent event) {
 		if (r != null) {
 			// normalise
-			event.data.deltaX = event.data.deltaX / width * 2 - 1;
-			event.data.deltaY = event.data.deltaY / height * 2 - 1;
+			event.data.deltaX /= width;
+			event.data.deltaY /= height;
 			for (int i = event.data.pointerCount - 1; i >= 0; i--) {
 				event.data.x[i] = event.data.x[i] / width * 2 - 1;
-				event.data.y[i] = event.data.y[i] / height * 2 - 1;
+				event.data.y[i] = 1 - event.data.y[i] / height * 2;
 			}
 			r.passEvent(event);
 		}
