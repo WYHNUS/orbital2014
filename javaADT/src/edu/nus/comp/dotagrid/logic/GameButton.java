@@ -1,10 +1,13 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
-public class GameButton {
+public class GameButton extends Component{
 	
 	private String string;
 	private Image image;
@@ -22,6 +25,10 @@ public class GameButton {
 		this.yPos = yPos;
 		this.width = width;
 		this.height = height;
+	}
+	
+	public String getString(){
+		return this.string;
 	}
 	
 	public void setString(String string){
@@ -55,5 +62,28 @@ public class GameButton {
 	public void drawImage(Graphics g) {
 		g.drawImage(image, xPos, yPos, width, height, null);
 	}
+	
+	
+	public boolean checkEvent(int handXPos, int handYPos) {
+		boolean isClicked = false;
+		
+		// within x-axis position
+		if (handXPos > xPos && handXPos < (xPos + width)) {
+			// within y-axis position
+			if(handYPos > yPos && handYPos < (yPos + height)) {
+				// do the mouse event
+				isClicked = true;
+			} 
+		}
+		
+		return isClicked;
+	}
+	
+	
+	public void actionPerformed(){
+		System.out.println(string + " has been invoked!");
+	}
+
+
 	
 }
