@@ -36,15 +36,10 @@ public class RenderMaths {
 				a*b[12], a*b[13], a*b[14], a*b[15]
 		};
 	}
-	public static float[] Vector4InnerProduct (float[] a, float[] b) {
+	public static float Vector4InnerProduct (float[] a, float[] b) {
 		if (a.length != 4 || b.length != 4)
 			throw new RuntimeException ("Wrong vector size");
-		return new float[] {
-				a[0]*b[0],
-				a[1]*b[1],
-				a[2]*b[2],
-				a[3]*b[3]
-		};
+		return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	}
 	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
 		throw new UnsupportedOperationException();

@@ -14,15 +14,10 @@ public class RenderMathsAccelerated {
 		matA.scale(a, a, a);
 		return matA.getArray().clone();
 	}
-	public static float[] Vector4InnerProduct (float[] a, float[] b) {
+	public static float Vector4InnerProduct (float[] a, float[] b) {
 		if (a.length != 4 || b.length != 4)
 			throw new RuntimeException ("Wrong vector size");
-		return new float[] {
-				a[0]*b[0],
-				a[1]*b[1],
-				a[2]*b[2],
-				a[3]*b[3]
-		};
+		return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	}
 	public static float[] FlatTranslationMatrix4x4 (float x, float y, float z) {
 		return new float[] {1,0,0,x,0,1,0,y,0,0,1,z,0,0,0,1};
