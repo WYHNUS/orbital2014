@@ -3,8 +3,6 @@ package edu.nus.comp.dotagrid.logic;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class GameButton{
 	
@@ -92,6 +90,10 @@ public class GameButton{
 		}
 		
 		return isClicked;
+	}
+	
+	public void resetBoolean(){
+		this.isClicked = false;
 	}
 	
 	

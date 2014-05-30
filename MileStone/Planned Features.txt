@@ -107,3 +107,9 @@ Test and balance the game, fix potential game bugs, etc.
 
 Feature 22:
 Internet connection, allow multiple players! (both in PC and in Android)
+
+Feature 23:
+Sound effect! (both in PC and in Android)
+
+Feature 24:
+Animation! (both in PC and in Android)

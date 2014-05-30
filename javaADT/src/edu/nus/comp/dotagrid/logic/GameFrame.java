@@ -297,6 +297,7 @@ public class GameFrame{
 		// check through allGameButtons for the correct button that has been pressed
 		for (int i=0; i<allGameButtons.size(); i++) {
 			if (allGameButtons.get(i).checkEvent(handXPos, handYPos)) {
+				allGameButtons.get(i).resetBoolean();
 				allGameButtons.get(i).actionPerformed(allGameButtons.get(i).getActionNumber());
 				break;
 			}
