@@ -71,11 +71,16 @@ public class MainSurfaceView
 			return true;
 		case MotionEvent.ACTION_CANCEL:
 		case MotionEvent.ACTION_UP:
-			actionIndex = -1;
-			System.out.println("CLEAR TIME=" + event.getDownTime());
-			d = new EventData();
+			actionIndex = MotionEventCompat.findPointerIndex(event, pointerActive);
+			d = new EventData(1);
 			d.startTime = event.getDownTime();
 			d.eventTime = event.getEventTime();
+			d.x[actionIndex] = MotionEventCompat.getX(event, actionIndex);
+			d.y[actionIndex] = MotionEventCompat.getY(event, actionIndex);
+			d.deltaX = MotionEventCompat.getX(event, actionIndex) - pointerStartX;
+			d.deltaY = MotionEventCompat.getY(event, actionIndex) - pointerStartY;
+			pointerActive = -1;
+			System.out.println("CLEAR TIME=" + event.getDownTime() + "X");
 			r.passEvent(new ControlEvent(ControlEvent.TYPE_CLEAR, d));
 			return true;
 		case MotionEvent.ACTION_POINTER_DOWN:
