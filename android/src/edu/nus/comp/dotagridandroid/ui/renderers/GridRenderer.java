@@ -3,6 +3,7 @@ package edu.nus.comp.dotagridandroid.ui.renderers;
 import java.util.Map;
 
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
+import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import android.renderscript.*;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMathsAccelerated.*;
@@ -115,22 +116,14 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public void draw() {
-		// draw grid lines
-//		drawMap();
 		float x = 1, y = 1;
 		if (rows > columns)
-//			mat = FlatScalingMatrix4x4((float) columns / rows, 1, 1);
 			x = (float) columns / rows;
 		else if (rows < columns)
-//			mat = FlatScalingMatrix4x4(1, (float) rows / columns, 1);
 			y = (float) rows / columns;
-//		else
-//			mat = IdentityMatrix4x4();
 		if (ratio > 1)
-//			mat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1/ratio, 1, 1), mat);
 			x /= ratio;
 		else
-//			mat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1, ratio, 1), mat);
 			y *= ratio;
 		if (x > y) {
 			y /= x;
@@ -163,4 +156,12 @@ public class GridRenderer implements Renderer {
 	public void setAspectRatio(float ratio) {this.ratio = ratio;}
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
+	@Override
+	public void passEvent(ControlEvent e) {
+		// Remember: normalise
+		if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT) {
+			// tap
+//			if (e.data.eventTime - )
+		}
+	}
 }

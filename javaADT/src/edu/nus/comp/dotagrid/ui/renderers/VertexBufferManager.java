@@ -56,12 +56,12 @@ public class VertexBufferManager implements AutoCloseable {
 	public long getVertexBufferOffset (String name) {
 		if (dirtyVertex)
 			updateVertex();
-		return vOffset.get(name) * Float.BYTES;
+		return vOffset.get(name) * Float.SIZE / 8;
 	}
 	public long getIndexBufferOffset (String name) {
 		if (dirtyIndex)
 			updateIndex();
-		return iOffset.get(name) * Integer.BYTES;
+		return iOffset.get(name) * Integer.SIZE / 8;
 	}
 	public void updateVertex() {
 		FloatBuffer fBuf = BufferUtils.createFloatBuffer(capacity);
