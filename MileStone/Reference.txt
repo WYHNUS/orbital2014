@@ -4,6 +4,12 @@ references used:
 
 2. Let's Create a Game in Java Tower Defense Episode
 （你帮忙google搜一下这个视频集youtube的URL吧 给个Episode 1的链接 谢了~）
+www.youtube.com/watch?v=_7dU6-L0Dps
 
 
 (还有github的url到时候也给一个~ 谢了！)
+3. OpenGL tutorials
+http://www.opengl.org/sdk/docs/tutorials/TyphoonLabs/Chapter_4.pdf
+http://ovcharov.me/2011/01/14/android-opengl-es-ray-picking/
+stackoverflow.com
+http://www.songho.ca/opengl/gl_projectionmatrix.html

@@ -1,9 +1,11 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
+import java.nio.FloatBuffer;
 import java.util.Map;
 
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
+import android.opengl.GLES20;
 import android.renderscript.*;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
@@ -130,15 +132,46 @@ public class GridRenderer implements Renderer {
 	private void drawRay(float[] mat) {
 //		if (!hasRay)
 //			return;
+		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
+				mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
+				vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor");
 		float[] v = new float[16];
+		final float[][] a = new float[][] {
+				new float[] {1,1,-.3f,1},
+				new float[] {1,-1,0,1},
+				new float[] {-1,1,-.3f,1},
+				new float[] {-1,-1,0,1}
+		}; 
 		glUseProgram(gridProgram.getProgramId());
+		for (int i = 0; i < 4; i++) {
+			float[] result = FlatMatrix4x4Vector4Multiplication (mat, a[i]);
+			v[i * 4] = result[0];
+			v[i * 4 + 1] = result[1];
+			v[i * 4 + 2] = result[2];
+			v[i * 4 + 3] = result[3];
+		}
+//		for (int i = 0; i < 4; i++) {
+//			v[i * 4] = a[i][0];
+//			v[i * 4 + 1] = a[i][1];
+//			v[i * 4 + 2] = a[i][2];
+//			v[i * 4 + 3] = a[i][3];
+//		}
+		glUniformMatrix4fv(mMVP, 1, false, IdentityMatrix4x4(), 0);
+//		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
+		glUniform4f(vColor, 1, 0, 0, 1);
+		FloatBuffer fb = BufferUtils.createFloatBuffer(16);
+		fb.put(v);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fb.position(0));
+		glEnableVertexAttribArray(vPosition);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDisableVertexAttribArray(vPosition);
 	}
 	@Override
 	public void draw() {
 		// compose mvp every time
 		// TODO: use mvpDirty to save computation
 		float[] mat = FlatMatrix4x4Multiplication(projection, FlatMatrix4x4Multiplication(view, model));
-		drawGrid(mat);
+//		drawGrid(mat);
 //		drawMap(mat);
 		drawRay(mat);
 	}
@@ -166,8 +199,7 @@ public class GridRenderer implements Renderer {
 			x /= y;
 			y = 1;
 		}
-//		projection = FlatScalingMatrix4x4(0.5f,0.5f,1);
-		projection = FlatPerspectiveMatrix4x4(cameraParams[6], cameraParams[7], -1, 1, -ratio, ratio);
+		projection = FlatPerspectiveMatrix4x4(cameraParams[6], cameraParams[7], -1, 1, ratio, -ratio);
 		model = FlatScalingMatrix4x4(x,y,1);
 		model = FlatMatrix4x4Multiplication (FlatTranslationMatrix4x4(0,0,-.3f), model);
 	}
