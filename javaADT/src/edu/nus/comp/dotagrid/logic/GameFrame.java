@@ -34,7 +34,7 @@ public class GameFrame implements MouseListener{
 	
 	
 	// an ArrayList of GameButton which store all the GameButtons on the GameFrame
-	private ArrayList<GameButton> allGameButtons;
+	private ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
 	
 	// image of the character selected
 	GameButton characterIcon;
@@ -88,9 +88,6 @@ public class GameFrame implements MouseListener{
 	GameButton[] directions;
 	public final int DIRECTION_NUMBER = 5;
 	
-	
-	public GameFrame(){}
-	
 
 	public GameFrame(Graphics g, Frame frame) {
 		this.frameWidth = frame.getWidth();
@@ -98,8 +95,6 @@ public class GameFrame implements MouseListener{
 		
 		gridWidth = (frameWidth - (2.0 * FRAME_BORDER_WIDTH)) / GRID_COL_NUMBER_IN_SCREEN;
 		gridHeight = (frameHeight - (2.0 * FRAME_BORDER_HEIGHT)) / GRID_ROW_NUMBER_IN_SCREEN;
-		
-		allGameButtons = new ArrayList<GameButton>();
 		
 		// construct game frame
 
@@ -115,44 +110,11 @@ public class GameFrame implements MouseListener{
 	private void displayAllButtons(Graphics g) {
 		g.setColor(defaultColor);
 		
-		// stuff displayed at the bottom of the screen
-		
 		//display allGameButtons
 		for (int i=0; i<allGameButtons.size(); i++) {
 			allGameButtons.get(i).drawRect(g);
 			allGameButtons.get(i).drawString(g);
 		}
-		
-		// display item list
-		for (int i=0; i<MAX_ITEM_NUMBER; i++) {
-			items[i].drawRect(g);
-		}
-		
-		// display skill list
-		for (int i=0; i<MAX_SKILL_NUMBER; i++) {
-			skills[i].drawRect(g);
-		}
-		
-		
-		// stuff displayed at the right hand side of the screen
-		
-		//display allGameButtons
-		for (int i=0; i<allGameButtons.size(); i++) {
-			allGameButtons.get(i).drawRect(g);
-			allGameButtons.get(i).drawString(g);
-		}
-		
-		// display Action List 
-		for(int i=0; i<MAX_ACTION_NUMBER; i++){
-			actionList[i].drawRect(g);
-		}
-		
-		// display move mainGame buttons
-		for(int i=0; i<DIRECTION_NUMBER; i++){
-			directions[i].drawRect(g);
-		}
-		
-		
 	}
 
 	
@@ -337,7 +299,7 @@ public class GameFrame implements MouseListener{
 				break;
 			}
 		}
-		
+
 	}
 	
 	
