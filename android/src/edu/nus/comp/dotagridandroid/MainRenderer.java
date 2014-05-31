@@ -51,8 +51,8 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		glEnable(GL_TEXTURE);
 		glDepthFunc(GL_LESS);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		glStencilFunc(GL_ALWAYS, 1, 1);
-		glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+//		glStencilFunc(GL_ALWAYS, 1, 1);
+//		glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 		vBufMan = new VertexBufferManager();
 		cs = new CommonShapes(vBufMan);
 		// TODO: different resolution of maps
@@ -77,18 +77,6 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 			}
 			r.passEvent(event);
 		}
-	}
-
-	protected void setProcessingTranslation (float x, float y, float z) {
-		
-	}
-	
-	protected void setScaling (float scale) {
-		
-	}
-	
-	protected void setProcessingPerspective (float x, float y, float z) {
-		
 	}
 
 	@Override

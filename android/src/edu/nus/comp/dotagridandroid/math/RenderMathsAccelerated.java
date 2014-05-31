@@ -1,13 +1,23 @@
 package edu.nus.comp.dotagridandroid.math;
 import android.support.v8.renderscript.*;
 public class RenderMathsAccelerated {
+	public static final float PI = (float) Math.PI;
 	public static float[] IdentityMatrix4x4 () {
 		return new float[] {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
 	}
 	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] b) {
 		Matrix4f matA = new Matrix4f(a), matB = new Matrix4f(b);
-		matA.multiply(matB);
-		return matA.getArray().clone();
+		matB.multiply(matA);
+		return matB.getArray().clone();
+	}
+	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] b, float[] ...fs) {
+		final int len = fs.length;
+		Matrix4f matResult = new Matrix4f (fs[len - 1]);
+		for (int i = len - 2; i >= 0; i--)
+			matResult.multiply(new Matrix4f (fs[i]));
+		matResult.multiply(new Matrix4f(b));
+		matResult.multiply(new Matrix4f(a));
+		return matResult.getArray().clone();
 	}
 	public static float[] FlatMatrix4x4ScalarMultiplication (float a, float[] b) {
 		Matrix4f matA = new Matrix4f(b);
@@ -28,11 +38,13 @@ public class RenderMathsAccelerated {
 	public static float[] FlatPerspectiveMatrix4x4 (float near, float far, float left, float right, float top, float bottom) {
 		Matrix4f matA = new Matrix4f();
 		matA.loadFrustum(left, right, bottom, top, near, far);
+		matA.transpose();
 		return matA.getArray().clone();
 	}
 	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
 		Matrix4f matA = new Matrix4f();
-		matA.loadRotate(angleRadians, x, y, z);
+		matA.loadRotate(angleRadians / PI * 180, x, y, z);
+		matA.transpose();
 		return matA.getArray().clone();
 	}
 	public static float[] FlatInverseMatrix4x4 (float[] a) {

@@ -1,39 +1,48 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
-import java.nio.FloatBuffer;
 import java.util.Map;
-
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
-import android.opengl.GLES20;
-import android.renderscript.*;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class GridRenderer implements Renderer {
+	public static final float BASE_ZOOM_FACTOR = 0.5f;
+	
 	private VertexBufferManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private int rows, columns;
 	private GameLogicManager manager;
 	private float ratio;
 	// camera - x, y, z, lookX, lookY, lookZ, near, far
-	private float[] cameraParams = new float[] {
-			0, 0, 1,
-			0, 0, 0,
-			0.2f, 1f
+	private final float[] cameraParams = new float[] {
+			0, 0, 0.8f,	// 0: posX, 1: posY, 2: posZ
+			0, 0, 0,	// 3: lookX, 4: lookY, 5: lookZ
+			0, 1, 0,	// 6: upX, 7: upY, 8: upZ
+			.01f, 5, PI / 3f	// 9: near (const), 10: far (const), 11: FoV (in radians, const)
 	};
 	// owned resources
 	private GenericProgram gridProgram, mapProgram;
 	private float[]
 			model = IdentityMatrix4x4(),
 			view = IdentityMatrix4x4(),
-			processingView = IdentityMatrix4x4(),
 			projection = IdentityMatrix4x4(),
-			processingProjection = IdentityMatrix4x4();
-	private boolean processingTranslation = false, processingPerspective = false;
-	private boolean mvpDirty = false;
+			mvpCache;
 	// debug
 	private boolean hasRay = false;
+	// gesture states
+	private boolean processingTranslation = false, processingPerspective = false;
+	private boolean mvpDirty = false;
+	private final float[] translationDeltaCoord = new float[]{-1,-1};
+	private final float[] perspectiveStartCoord = new float[]{-1,-1,-1,-1};
+	private final float[] perspectiveLastCoord = new float[]{0,0,0,0};
+	private final float[] processingCameraPosCoord = new float[]{0,0,0};
+	private final long[] tapTimeQueue = new long[]{0,0,0};
+	private final float[] tapXQueue = new float[]{0,0,0}, tapYQueue = new float[]{0,0,0};
+	private final byte tapQueueLength = 3;
+	private byte tapQueueHead = 0;
+	private boolean doubleTap = false;
+//	private final float[] 
 	public GridRenderer (VertexBufferManager bufMan, int rows, int columns) {
 		vBufMan = bufMan;
 		this.rows = rows;
@@ -87,7 +96,17 @@ public class GridRenderer implements Renderer {
 		mapProgram = new GenericProgram (
 				new String(CommonShaders.VS_IDENTITY_TEXTURED),
 				new String(CommonShaders.FS_IDENTITY_TEXTURED_TONED));
+		// calculate model
+		if (rows > columns)
+			model = FlatScalingMatrix4x4((float) columns / rows * BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR);
+		else if (rows < columns)
+			model = FlatScalingMatrix4x4(BASE_ZOOM_FACTOR, (float) rows / columns * BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR);
+		model = FlatMatrix4x4Multiplication (FlatRotationMatrix4x4(-1f,0,0,1), model);
+		// board IS at the origin so not need translation
+		// calculate view
+		calculateView();
 	}
+	// draw functions
 	private void drawGrid(float[] mat) {
 		int vOffset = vBufMan.getVertexBufferOffset("GridPointBuffer"),
 			iOffset = vBufMan.getIndexBufferOffset("GridPointMeshIndex");
@@ -132,48 +151,33 @@ public class GridRenderer implements Renderer {
 	private void drawRay(float[] mat) {
 //		if (!hasRay)
 //			return;
-		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
-				mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
-				vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor");
-		float[] v = new float[16];
-		final float[][] a = new float[][] {
-				new float[] {1,1,-.3f,1},
-				new float[] {1,-1,0,1},
-				new float[] {-1,1,-.3f,1},
-				new float[] {-1,-1,0,1}
-		}; 
-		glUseProgram(gridProgram.getProgramId());
-		for (int i = 0; i < 4; i++) {
-			float[] result = FlatMatrix4x4Vector4Multiplication (mat, a[i]);
-			v[i * 4] = result[0];
-			v[i * 4 + 1] = result[1];
-			v[i * 4 + 2] = result[2];
-			v[i * 4 + 3] = result[3];
-		}
-//		for (int i = 0; i < 4; i++) {
-//			v[i * 4] = a[i][0];
-//			v[i * 4 + 1] = a[i][1];
-//			v[i * 4 + 2] = a[i][2];
-//			v[i * 4 + 3] = a[i][3];
-//		}
-		glUniformMatrix4fv(mMVP, 1, false, IdentityMatrix4x4(), 0);
+//		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
+//				mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
+//				vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor");
+//		float[] v = new float[]{
+//				1,-1,0,1,
+//				1,1,-.3f,1,
+//				-1,-1,0,1,
+//				-1,1,-.3f,1
+//		};
+//		glUseProgram(gridProgram.getProgramId());
 //		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
-		glUniform4f(vColor, 1, 0, 0, 1);
-		FloatBuffer fb = BufferUtils.createFloatBuffer(16);
-		fb.put(v);
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fb.position(0));
-		glEnableVertexAttribArray(vPosition);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-		glDisableVertexAttribArray(vPosition);
+//		glUniform4f(vColor, 1, 0, 0, 1);
+//		FloatBuffer fb = BufferUtils.createFloatBuffer(16).put(v);
+//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fb.position(0));
+//		glEnableVertexAttribArray(vPosition);
+//		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+//		glDisableVertexAttribArray(vPosition);
 	}
 	@Override
 	public void draw() {
-		// compose mvp every time
-		// TODO: use mvpDirty to save computation
-		float[] mat = FlatMatrix4x4Multiplication(projection, FlatMatrix4x4Multiplication(view, model));
-//		drawGrid(mat);
-//		drawMap(mat);
-		drawRay(mat);
+		if (mvpDirty) {
+			mvpCache = FlatMatrix4x4Multiplication(projection, view, model);
+			mvpDirty = false;
+		}
+		drawGrid(mvpCache);
+		drawMap(mvpCache);
+//		drawRay(mat);
 	}
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}
@@ -183,25 +187,20 @@ public class GridRenderer implements Renderer {
 	public void setAspectRatio(float ratio) {
 		// model parameter
 		this.ratio = ratio;
-		float x = 1, y = 1;
-		if (rows > columns)
-			x = (float) columns / rows;
-		else if (rows < columns)
-			y = (float) rows / columns;
+		mvpDirty = true;
+		final float lens_radius = cameraParams[9] * (float) Math.tan(cameraParams[11] / 2);
 		if (ratio > 1)
-			x /= ratio;
+			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
 		else
-			y *= ratio;
-		if (x > y) {
-			y /= x;
-			x = 1;
-		} else {
-			x /= y;
-			y = 1;
-		}
-		projection = FlatPerspectiveMatrix4x4(cameraParams[6], cameraParams[7], -1, 1, ratio, -ratio);
-		model = FlatScalingMatrix4x4(x,y,1);
-		model = FlatMatrix4x4Multiplication (FlatTranslationMatrix4x4(0,0,-.3f), model);
+			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius * ratio, lens_radius * ratio, lens_radius, -lens_radius);
+		calculateView();
+	}
+	public void calculateView () {
+		mvpDirty = true;
+		if (processingTranslation)
+			view = FlatTranslationMatrix4x4(-cameraParams[0]-translationDeltaCoord[0],-cameraParams[1]-translationDeltaCoord[1],-cameraParams[2]);
+		else
+			view = FlatTranslationMatrix4x4(-cameraParams[0],-cameraParams[1],-cameraParams[2]);
 	}
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
@@ -209,35 +208,77 @@ public class GridRenderer implements Renderer {
 	public void passEvent(ControlEvent e) {
 		// Remember: normalise
 		if (e.type == ControlEvent.TYPE_CLICK) {
-			// tap start
+			// unknown just yet
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
 			// tap with movements
-			onProcessingTranslation(e);
-			onProcessingPerspective(e);
+			if (e.data.eventTime - e.data.startTime > ControlEvent.DRAG_TIME_LIMIT ||
+					Math.abs(e.data.deltaX) > ControlEvent.TAP_DRIFT_LIMIT / ratio ||
+					Math.abs(e.data.deltaY) > ControlEvent.TAP_DRIFT_LIMIT * ratio) {
+				if (e.data.pointerCount == 1)
+					onProcessingTranslation(e);
+				else if (e.data.pointerCount == 2)
+					onProcessingPerspective(e);
+			}
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
 			if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT / ratio && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT * ratio) {
 				// tap
-				if (e.data.eventTime - e.data.startTime > ControlEvent.TAP_LONG_TIME_LIMIT)
+				if (e.data.eventTime - e.data.startTime > ControlEvent.TAP_LONG_TIME_LIMIT) {
 					System.out.println("Long tap");	// long tap
-				else
+				} else {
 					System.out.println("Short tap");	// short tap
+					if (e.data.eventTime - tapTimeQueue[tapQueueHead] > ControlEvent.TAP_DOUBLE_TIME_LIMIT ||
+							Math.abs(tapXQueue[tapQueueHead] - e.data.x[0]) > ControlEvent.TAP_DRIFT_LIMIT / ratio ||
+							Math.abs(tapYQueue[tapQueueHead] - e.data.y[0]) > ControlEvent.TAP_DRIFT_LIMIT * ratio) {
+						final ControlEvent passedEvt = new ControlEvent(e);
+						new Thread() {
+							private ControlEvent evt;
+							// <init>
+							{
+								evt = passedEvt;
+							}
+							@Override
+							public void run() {
+								try{
+									Thread.sleep(ControlEvent.TAP_DOUBLE_TIME_LIMIT);
+								} catch (Exception e) {}
+								if (doubleTap) {
+									doubleTap = false;
+									onDoubleTap(evt);
+								} else
+									onSingleTap(evt);
+							}
+						}.start();
+					} else
+						doubleTap = true;
+					tapQueueHead = (byte) ((tapQueueHead + 1) % tapQueueLength);
+					tapTimeQueue[tapQueueHead] = e.data.eventTime;
+					tapXQueue[tapQueueHead] = e.data.x[0]; tapYQueue[tapQueueHead] = e.data.y[0];
+				}
 			}
 			onProcessingTranslationDone(e);
 			onProcessingPerspectiveDone(e);
 		}
 	}
+	private void onDoubleTap(ControlEvent e) {
+		System.out.println("Double Tap");
+	}
+	private void onSingleTap(ControlEvent e) {
+		System.out.println("Single Tap");
+		rayTrace();
+	}
 	private void onProcessingPerspectiveDone(ControlEvent e) {
-		// TODO Auto-generated method stub
 		if (processingPerspective) {
-			
+			// finalise
+			processingPerspective = false;
 		}
-		processingPerspective = false;
 	}
 	private void onProcessingTranslationDone(ControlEvent e) {
 		if (processingTranslation) {
-			
+			cameraParams[0] += e.data.deltaX;
+			cameraParams[0] += e.data.deltaY;
+			processingTranslation = false;
+			calculateView();
 		}
-		processingTranslation = false;
 	}
 	private void onProcessingPerspective(ControlEvent e) {
 		if (e.data.pointerCount != 2)
@@ -248,9 +289,16 @@ public class GridRenderer implements Renderer {
 		}
 	}
 	private void onProcessingTranslation(ControlEvent e) {
-		// TODO Auto-generated method stub
-		
+		if (e.data.pointerCount != 1)
+			return;
+		if (processingPerspective)
+			onProcessingPerspectiveDone(e);
+		if (!processingTranslation) {
+			// set up processing 
+		}
+		processingTranslation = true;
 	}
+	// ray trace code
 	private void rayTrace() {
 	}
 	@Override

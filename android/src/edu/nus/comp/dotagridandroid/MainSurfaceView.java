@@ -25,7 +25,7 @@ public class MainSurfaceView
 	}
 	
 	private void init(Context context) {
-		setEGLConfigChooser(8, 8, 8, 8, 16, 8);
+		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 		setEGLContextClientVersion(2);
 		setRenderer(r = new MainRenderer(context));
 		// just in case: turn on the below will reduce draw cycles, but we probably don't need it
@@ -53,7 +53,7 @@ public class MainSurfaceView
 			System.out.println("TAP X=" + d.x + " Y= " + d.y);
 			d.startTime = event.getDownTime();
 			d.eventTime = event.getEventTime();
-			r.passEvent(new ControlEvent(ControlEvent.TYPE_CLICK, d));
+			r.passEvent(new ControlEvent(ControlEvent.TYPE_DOWN, d));
 			return true;
 		case MotionEvent.ACTION_MOVE:
 			actionIndex = MotionEventCompat.findPointerIndex(event, pointerActive);
@@ -70,6 +70,7 @@ public class MainSurfaceView
 			r.passEvent(new ControlEvent(ControlEvent.TYPE_DRAG, d));
 			return true;
 		case MotionEvent.ACTION_CANCEL:
+			// TODO: Is this useful?
 		case MotionEvent.ACTION_UP:
 			actionIndex = MotionEventCompat.findPointerIndex(event, pointerActive);
 			d = new EventData(1);

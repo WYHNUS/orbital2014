@@ -1,6 +1,8 @@
 package edu.nus.comp.dotagridandroid.math;
 
 public class RenderMaths {
+	public static final float PI = (float) Math.PI;
+	
 	public static float[] IdentityMatrix4x4 () {
 		return new float[] {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
 	}
@@ -25,6 +27,13 @@ public class RenderMaths {
 				a[12]*b[2] + a[13]*b[6] + a[14]*b[10] + a[15]*b[14],
 				a[12]*b[3] + a[13]*b[7] + a[14]*b[11] + a[15]*b[15],
 		};
+	}
+	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] b, float[] ...fs) {
+		final int len = fs.length;
+		float[] result = fs[len - 1];
+		for (int i = len - 2; i >= 0; i--)
+			result = FlatMatrix4x4Multiplication(fs[i], result);
+		return FlatMatrix4x4Multiplication(a, FlatMatrix4x4Multiplication(b, result));
 	}
 	public static float[] FlatMatrix4x4ScalarMultiplication (float a, float[] b) {
 		if (b.length != 16)
@@ -52,10 +61,10 @@ public class RenderMaths {
 		return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	}
 	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
-		final float len = (float) Math.sqrt(Math.scalb(x, 1) + Math.scalb(y, 1) + Math.scalb(z, 1));
+		final float len = (float) Math.sqrt(x*x + y*y + z*z);
 		final float sin_theta = (float) Math.sin(angleRadians), one_minus_cos_theta = (float) (1 - Math.cos(angleRadians));
-		final float nx = x / len, ny = y = len, nz = z / len;
-		final float nx2 = Math.scalb(nx, 1), ny2 = Math.scalb(ny, 1), nz2 = Math.scalb(nz, 1);
+		final float nx = x / len, ny = y / len, nz = z / len;
+		final float nx2 = nx*nx, ny2 = ny*ny, nz2 = nz*nz;
 		return new float[] {
 				1 - one_minus_cos_theta * (ny2 + nz2), -nz * sin_theta + one_minus_cos_theta * nx * ny, ny * sin_theta + one_minus_cos_theta * nx * nz, 0,
 				nz * sin_theta + one_minus_cos_theta * nx * ny, 1 - one_minus_cos_theta * (nx2 + nz2), -nx * sin_theta + one_minus_cos_theta * ny * nz, 0,

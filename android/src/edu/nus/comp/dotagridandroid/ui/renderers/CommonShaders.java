@@ -1,23 +1,14 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 public class CommonShaders {
-//	public static final String VS_IDENTITY
-//		= "attribute vec4 vPosition;"
-//		+ "uniform mat4 mMVP;"
-//		+ "void main() {"
-//			+ "vec4 pos = mMVP * vPosition;"
-////			+ "pos.xyz /= pos.w;"
-//			+ "gl_Position = vec4 (pos.x / 0.3, pos.y / 0.3, pos.z / 0.6, 1.0);"
-//		+ "}";
 	public static final String VS_IDENTITY
 		= "attribute vec4 vPosition;"
 		+ "uniform mat4 mMVP;"
 		+ "void main() {"
-			+ "vec4 pos = mMVP * vPosition;"
-			+ "gl_Position = pos;"
+			+ "gl_Position = vPosition * mMVP;"
 		+ "}";
 	public static final String FS_IDENTITY
-		= "precision mediump float;"
+		= "precision highp float;"
 		+ "uniform vec4 vColor;"
 		+ "void main () {"
 			+ "gl_FragColor = vColor;"
@@ -29,7 +20,7 @@ public class CommonShaders {
 		+ "uniform mat4 mMVP;"
 		+ "varying vec2 autoTextureCoord;"
 		+ "void main() {"
-			+ "gl_Position = mMVP * vPosition;"
+			+ "gl_Position = vPosition * mMVP;"
 			+ "autoTextureCoord = textureCoord;"
 		+ "}";
 	public static final String FS_IDENTITY_TEXTURED
