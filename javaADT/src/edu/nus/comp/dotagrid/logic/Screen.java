@@ -15,9 +15,6 @@ public class Screen extends JPanel implements Runnable {
 
 	// control the states of the game
 	public int scene;
-	
-	public static final int ROW_NUMBER = 200;
-	public static final int COLUMN_NUMBER = 200;
 
 	private boolean running = false;
 
