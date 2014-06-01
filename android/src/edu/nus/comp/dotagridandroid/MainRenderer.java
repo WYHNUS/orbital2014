@@ -53,13 +53,14 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //		glStencilFunc(GL_ALWAYS, 1, 1);
 //		glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+		close();
 		vBufMan = new VertexBufferManager();
 		cs = new CommonShapes(vBufMan);
 		// TODO: different resolution of maps
 		// TODO: change resource name
 		// TODO: allow decoding from network, stream, files etc
 		Bitmap image;
-		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
+		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_crimson)));
 		image.recycle();
 		r = new GridRenderer(vBufMan, gridHeight, gridWidth);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));
@@ -70,7 +71,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		if (r != null) {
 			// normalise
 			event.data.deltaX /= width;
-			event.data.deltaY /= height;
+			event.data.deltaY /= -height;
 			for (int i = event.data.pointerCount - 1; i >= 0; i--) {
 				event.data.x[i] = event.data.x[i] / width * 2 - 1;
 				event.data.y[i] = 1 - event.data.y[i] / height * 2;
@@ -81,9 +82,11 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void close() {
-		r.close();
+		if (r != null)
+			r.close();
+		if (vBufMan != null)
+			vBufMan.close();
 		for (Texture2D t : texture2d.values())
 			t.close();
-		vBufMan.close();
 	}
 }

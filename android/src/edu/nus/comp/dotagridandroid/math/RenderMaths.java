@@ -2,6 +2,7 @@ package edu.nus.comp.dotagridandroid.math;
 
 public class RenderMaths {
 	public static final float PI = (float) Math.PI;
+	public static final float ERROR = 1e-7f;
 	
 	public static float[] IdentityMatrix4x4 () {
 		return new float[] {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
@@ -61,7 +62,9 @@ public class RenderMaths {
 		return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	}
 	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
-		final float len = (float) Math.sqrt(x*x + y*y + z*z);
+		final float len = (float) Math.abs(Math.sqrt(x*x + y*y + z*z));
+		if (len < ERROR)
+			return IdentityMatrix4x4();
 		final float sin_theta = (float) Math.sin(angleRadians), one_minus_cos_theta = (float) (1 - Math.cos(angleRadians));
 		final float nx = x / len, ny = y / len, nz = z / len;
 		final float nx2 = nx*nx, ny2 = ny*ny, nz2 = nz*nz;
@@ -86,9 +89,14 @@ public class RenderMaths {
 				0, 0, -1, 0
 		};
 	}
+	public static float FlatMatrix4x4Determinant (float[] a) {
+		if (a.length != 16)
+			throw new RuntimeException ("Wrong matrix size");
+		return a[0]*a[5]*a[10]*a[15]+a[0]*a[6]*a[11]*a[13]+a[0]*a[7]*a[9]*a[14]-a[0]*a[7]*a[10]*a[13]-a[0]*a[6]*a[9]*a[15]-a[0]*a[5]*a[11]*a[14]-a[1]*a[4]*a[10]*a[15]-a[1]*a[6]*a[11]*a[12]-a[1]*a[7]*a[8]*a[14]+a[1]*a[7]*a[10]*a[12]+a[1]*a[6]*a[8]*a[15]+a[1]*a[4]*a[11]*a[14]+a[2]*a[4]*a[9]*a[5]+a[2]*a[5]*a[11]*a[12]+a[2]*a[7]*a[8]*a[13]-a[2]*a[7]*a[9]*a[12]-a[2]*a[5]*a[8]*a[15]-a[2]*a[4]*a[11]*a[13]-a[3]*a[4]*a[9]*a[14]-a[3]*a[5]*a[10]*a[12]-a[3]*a[6]*a[8]*a[13]+a[3]*a[6]*a[9]*a[12]+a[3]*a[5]*a[8]*a[14]+a[3]*a[4]*a[10]*a[13];
+	}
 	public static float[] FlatInverseMatrix4x4 (float[] a) {
 		// TODO: Check formulae
-		float det = a[0]*a[5]*a[10]*a[15]+a[0]*a[6]*a[11]*a[13]+a[0]*a[7]*a[9]*a[14]-a[0]*a[7]*a[10]*a[13]-a[0]*a[6]*a[9]*a[15]-a[0]*a[5]*a[11]*a[14]-a[1]*a[4]*a[10]*a[15]-a[1]*a[6]*a[11]*a[12]-a[1]*a[7]*a[8]*a[14]+a[1]*a[7]*a[10]*a[12]+a[1]*a[6]*a[8]*a[15]+a[1]*a[4]*a[11]*a[14]+a[2]*a[4]*a[9]*a[5]+a[2]*a[5]*a[11]*a[12]+a[2]*a[7]*a[8]*a[13]-a[2]*a[7]*a[9]*a[12]-a[2]*a[5]*a[8]*a[15]-a[2]*a[4]*a[11]*a[13]-a[3]*a[4]*a[9]*a[14]-a[3]*a[5]*a[10]*a[12]-a[3]*a[6]*a[8]*a[13]+a[3]*a[6]*a[9]*a[12]+a[3]*a[5]*a[8]*a[14]+a[3]*a[4]*a[10]*a[13];
+		float det = FlatMatrix4x4Determinant (a);
 		if (det != 0)
 			return new float[] {
 				(a[5]*a[10]*a[15]+a[6]*a[11]*a[13]+a[7]*a[9]*a[14]-a[7]*a[10]*a[13]-a[6]*a[9]*a[15]-a[5]*a[11]*a[14])/det,
@@ -118,5 +126,38 @@ public class RenderMaths {
 				a[2], a[6], a[10], a[14],
 				a[3], a[7], a[11], a[15]
 		};
+	}
+	public static float FlatMatrix3x3Determinant (float[] a) {
+		if (a.length != 9)
+			throw new RuntimeException ("Wrong matrix size");
+		return a[0]*a[4]*a[8]+a[1]*a[5]*a[6]+a[2]*a[3]*a[7]-a[2]*a[4]*a[6]-a[1]*a[3]*a[8]-a[0]*a[5]*a[7];
+	}
+	public static float FlatMatrix2x2Determinant (float[] a) {
+		if (a.length != 4)
+			throw new RuntimeException ("Wrong matrix size");
+		return a[0] * a[3] - a[1] * a[2];
+	}
+	public static float[] Vector3CrossProduct(float[] a, float[] b) {
+		if (a.length != 4 || b.length != 4)
+			throw new RuntimeException ("Wrong vector size");
+		return new float[] {
+				a[1] * b[2] - a[2] * b[1],
+				a[2] * b[0] - a[0] * b[2],
+				a[0] * b[1] - a[1] * b[0]
+		};
+	}
+	public static float[] NormalisedVector3(float[] a) {
+		if (a.length != 3)
+			throw new RuntimeException("Wrong vector size");
+		final float len = (float) Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
+		if (Math.abs(len) < ERROR)
+			return new float[] {0,0,0};
+		else
+			return new float[] {a[0]/len,a[1]/len,a[2]/len};
+	}
+	public static float[] Vector3Addition(float[] a, float[] b, float ka, float kb) {
+		if (a.length != 3 || b.length != 3)
+			throw new RuntimeException("Wrong vector size");
+		return new float[]{a[0]*ka + b[0]*kb,a[1]*ka + b[1]*kb,a[2]*ka+b[2]*kb};
 	}
 }

@@ -17,7 +17,8 @@ public class ControlEvent {
 	public static final int TYPE_DRAG = 0x04;
 	// event definitions
 	public static final double TAP_DRIFT_LIMIT = 0.01;
-	public static final long TAP_LONG_TIME_LIMIT = 250;
-	public static final long TAP_DOUBLE_TIME_LIMIT = 80;
+	public static final long TAP_LONG_TIME_LIMIT = 800;
+	public static final long TAP_DOUBLE_TIME_LIMIT = 300;
+	public static final double TAP_DOUBLE_DRIFT_LIMIT = 0.1;
 	public static final long DRAG_TIME_LIMIT = 80;
 }
