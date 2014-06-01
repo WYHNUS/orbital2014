@@ -1,0 +1,191 @@
+Game Description: (from wiki XD)
+
+DotA pits two teams of players against each other: the Sentinel and the Scourge. 
+Players on the Sentinel team are based at the southwest corner of the map, and those on the Scourge team are based at the northeast corner. 
+Each base is defended by towers and waves of units which guard the main paths leading to their base.
+In the center of each base is the "Ancient", a building that must be destroyed to win the game.
+
+
+
+
+(all the constants used are defined at the end of the file)
+
+Game Flow:
+
+1. Player select a hero from a fixed hero pool.
+
+
+There are three main types of hero, namely strength, agility and intelligence.
+Each hero belongs to one of the three types, which characterizes its main attribute.
+
+
+Each hero will have at least five skills depending on different hero model.
+
+
+
+Each Hero in the game will have different:
+
+startingStrength
+startingAgility
+startingIntelligence
+strengthGrowth
+agilityGrowth
+intelligenceGrowth
+
+
+totalStrength = startingStrength + strengthGrowth * level + strengthGainFromItem + strengthGainFromSkill 
+totalAgility = startingAgility + agilityGrowth * level + agilityGainFromItem + agilityGainFromSkill 
+totalIntelligence = startingIntelligence + intelligenceGrowth * level + intelligenceGainFromItem + intelligenceGainFromSkill 
+
+
+Below are other hero's attributes determined by strength, agility and intelligence:
+
+HP = startingHP + STRENGTH_ADD_HP_RATIO * totalStrength + HPAddFromItem + HPAddFromSkill
+MP = startingMP + INTELLIGENCE_ADD_MP_RATIO * totalIntelligence + MPAddFromItem + MPAddFromSkill
+
+
+HPGainPerRound = STRENGTH_ADD_HP_PER_ROUND * totalStrength + HPGainPerRoundFromItem + HPGainPerRoundFromSkill
+MPGainPerRound = INTELLIGENCE_ADD_MP_PER_ROUND * totalIntelligence + MPGainPerRoundFromItem + MPGainPerRoundFromSkill
+
+
+physicalDefence = startingPhysicalDefence + AGILITY_ADD_PHYSICAL_DEFENCE_RATIO * totalAgility + physicalDefenceGainFromItem + physicalDefenceGainFromSkill
+
+physicalAttackSpeed = startingPhysicalAttackSpeed + AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO * totalAgility + physicalAttackSpeedGainFromItem + physicalAttackSpeedGainFromSkill
+
+physicalAttack = startingPhysicalAttack + (main attribute of the selected hero: strength/agility/intelligence) * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO + physicalAttackGainFromItem + physicalAttackGainFromSkill 
+
+
+
+Other Attributes hero prossess:
+
+magicResistance = initialMagicResistance + magicResistanceGainFromItem + magicResistanceGainFromSkill
+
+movementSpeed = initialMovementSpeed + movementSpeedGainFromItem + movementSpeedGainFromSkill
+
+
+
+
+
+
+
+2. Player controls a hero starting from a fixed grid position ([playerStartingGridXPos][playerStartingGridYPos])
+
+
+
+
+
+
+
+3. In each round of the game, if player's hero is alive, player will have some ActionPoint(AP) to perform actions
+h
+AP = startingAP + APGainFromItem + APGainFromSkill 
+
+
+Each action will consume a certain amount of AP depending on the hero's attributes
+
+
+
+Actions player can perform:
+
+3.1 Buy Item
+Player can buy at most six items from a fixed item pool for their heros
+
+
+3.2 Sell Item
+Sell an equiped item for half of the original price
+
+
+3.3 Move
+Hero can move through the movable game grid frame and each movement event consumes AP
+Consume AP = MIN_MOVEMENT_CONSUME_AP + (1 - movementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP
+
+
+3.4 Physocal Attack
+Attack a selected target
+
+damage = (1 - physicalDefence * 0.06 / (1 + 0.06 * physicalDefence) ) * physicalAttack
+
+Consume AP = MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - physicalAttackSpeed / MAX_PHYSICAL_ATTACK_SPEED) * PHYSICAL_ATTACK_CONSUME_AP
+
+
+3.5 Use Item
+Use an equipped item
+Consume AP = depends on individual item
+
+
+3.6 Use Skill
+Use a skill
+Consume AP = depends on individual skill
+
+
+3.7 
+
+
+
+
+
+
+
+
+
+
+4. Other Possible Scenarios and Consequence after player performs an action:
+
+4.1 Kill a LineCreep
+Some money will be awarded to hero.
+
+4.2 Kill a hero
+Some money will be awarded to hero and the killed hero (be it controled by player or computer) will respawn after a certain round (depending on hero's level).
+
+4.3 Destroy a tower
+All friendly hero will gain a money bonus and if the tower is destroyed by a hero, this hero will have an extra money bonus.
+
+4.4 Be killed
+A certain amount of money will be deduced from the hero's money account.
+The hero will respawn after a certain round (depending on hero's level) from the fixed grid position (starting grid position).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+All constants used: (cater to change)
+
+STRENGTH_ADD_HP_RATIO = 19
+INTELLIGENCE_ADD_MP_RATIO = 13
+
+STRENGTH_ADD_HP_PER_ROUND = 3
+INTELLIGENCE_ADD_MP_PER_ROUND = 4
+AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 1 / 7
+
+AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO = 1%
+
+MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO = 1.0
+
+MIN_MOVEMENT_CONSUME_AP = 
+MOVEMENT_CONSUME_AP =
+MAX_PHYSICAL_ATTACK_SPEED = 
+
+MIN_PHYSICAL_ATTACK_CONSUME_AP = 
+PHYSICAL_ATTACK_CONSUME_AP =
+MAX_MOVEMENT_SPEED = 522
+
+
+
+
+
+
+
+
+
