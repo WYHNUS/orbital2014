@@ -42,6 +42,7 @@ public class GridRenderer implements Renderer {
 	// perspective
 	private final float[] perspectiveStartCoord = new float[]{-1,-1,-1,-1};
 	private final float[] perspectiveLastCoord = new float[]{0,0,0,0};
+	private final float[] perspectiveLookAt = new float[]{0,0};
 	private float perspectiveStartDeltaVecX, perspectiveStartDeltaVecY, perspectiveRotationAngle, perspectiveCameraZoom;
 	// for tap monitoring - calculate intervals between double taps
 	private final long[] tapTimeQueue = new long[]{0,0,0};
@@ -221,9 +222,9 @@ public class GridRenderer implements Renderer {
 		}
 		// TODO: changing angle of attack
 		float[] lookVec;
-		if (processingTranslation)
+		if (processingPerspective)
 			lookVec = NormalisedVector3 (
-					new float[]{cameraParams[3]-cameraParams[0], cameraParams[4]-cameraParams[1], cameraParams[5]-cameraParams[2]});
+					new float[]{cameraParams[3]-cameraParams[0]+perspectiveLookAt[0], cameraParams[4]-cameraParams[1]+perspectiveLookAt[1], cameraParams[5]-cameraParams[2]});
 		else
 			lookVec = NormalisedVector3 (
 					new float[]{cameraParams[3]-cameraParams[0], cameraParams[4]-cameraParams[1], cameraParams[5]-cameraParams[2]});
@@ -322,6 +323,8 @@ public class GridRenderer implements Renderer {
 		if (processingPerspective) {
 			// finalise
 			cameraParams[2] += perspectiveCameraZoom;
+			cameraParams[3] += perspectiveLookAt[0];
+			cameraParams[4] += perspectiveLookAt[1];
 			mapRotation += perspectiveRotationAngle;
 			processingPerspective = false;
 			calculateModel();
@@ -367,9 +370,11 @@ public class GridRenderer implements Renderer {
 				lenLast = (float) Math.hypot(deltaX, deltaY);
 		final float perspectiveLastDeltaVecX = deltaX / lenLast,
 				perspectiveLastDeltaVecY = deltaY / lenLast;
+		// map rotation
 		perspectiveRotationAngle = (float) Math.acos(perspectiveStartDeltaVecX * perspectiveLastDeltaVecX + perspectiveStartDeltaVecY * perspectiveLastDeltaVecY);
 		if (perspectiveStartDeltaVecX * perspectiveLastDeltaVecY - perspectiveStartDeltaVecY * perspectiveLastDeltaVecX < 0)
 			perspectiveRotationAngle = -perspectiveRotationAngle;
+		// zoom factor
 		final float lenFirst = (float) Math.hypot(perspectiveStartCoord[2] - perspectiveStartCoord[0], perspectiveStartCoord[3] - perspectiveStartCoord[1]);
 		final float zoomDelta = lenFirst - lenLast;
 		// TODO: Camera Parameter Calibration
@@ -379,6 +384,9 @@ public class GridRenderer implements Renderer {
 			perspectiveCameraZoom = 4f - cameraParams[2];
 		else
 			perspectiveCameraZoom = zoomDelta;
+		// look-at displacement
+		perspectiveLookAt[0] = Math.scalb(perspectiveStartCoord[0] + perspectiveStartCoord[2] - perspectiveLastCoord[0] - perspectiveLastCoord[2], -1);
+		perspectiveLookAt[1] = Math.scalb(perspectiveStartCoord[1] + perspectiveStartCoord[3] - perspectiveLastCoord[1] - perspectiveLastCoord[3], -1);
 //		System.out.println("Angle="+perspectiveRotationAngle);
 		calculateModel();
 		calculateView();
