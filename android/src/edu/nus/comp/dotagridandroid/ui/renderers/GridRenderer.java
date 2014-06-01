@@ -1,18 +1,22 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
+import java.nio.*;
 import java.util.Map;
+import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static android.opengl.GLES20.*;
-import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
+import static edu.nus.comp.dotagridandroid.math.RenderMathsAccelerated.*;
 
 public class GridRenderer implements Renderer {
+	public static final float BOARD_Z_COORD = 0.1f;
 	public static final float BASE_ZOOM_FACTOR = 0.5f;
 	
 	private VertexBufferManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private int rows, columns;
 	private GameLogicManager manager;
+	private MainRenderer responder;
 	// configurations
 	// aspect ratio - width : height
 	private float ratio;
@@ -50,7 +54,8 @@ public class GridRenderer implements Renderer {
 	private final byte tapQueueLength = 3;
 	private byte tapQueueHead = 0;
 	private boolean doubleTap = false;
-//	private final float[] 
+	// ray tracing
+	private float[] orgGridPoint;
 	public GridRenderer (VertexBufferManager bufMan, int rows, int columns) {
 		vBufMan = bufMan;
 		this.rows = rows;
@@ -154,43 +159,54 @@ public class GridRenderer implements Renderer {
 		glDisableVertexAttribArray(textureCoord);
 	}
 	private void drawRay(float[] mat) {
-//		if (!hasRay)
-//			return;
-//		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
-//				mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
-//				vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor");
-//		float[] v = new float[]{
-//				1,-1,0,1,
-//				1,1,-.3f,1,
-//				-1,-1,0,1,
-//				-1,1,-.3f,1
-//		};
-//		glUseProgram(gridProgram.getProgramId());
-//		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
-//		glUniform4f(vColor, 1, 0, 0, 1);
-//		FloatBuffer fb = BufferUtils.createFloatBuffer(16).put(v);
-//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fb.position(0));
-//		glEnableVertexAttribArray(vPosition);
-//		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-//		glDisableVertexAttribArray(vPosition);
+		if (!hasRay)
+			return;
+		float[] v = new float[]{
+//				orgPoint[0], orgPoint[1], orgPoint[2], orgPoint[3],
+				orgGridPoint[0], orgGridPoint[1], orgGridPoint[2], orgGridPoint[3],
+				orgGridPoint[0]+0.01f, orgGridPoint[1], orgGridPoint[2], orgGridPoint[3],
+				orgGridPoint[0], orgGridPoint[1]+0.01f, orgGridPoint[2], orgGridPoint[3],
+				orgGridPoint[0]+0.01f, orgGridPoint[1]+0.01f, orgGridPoint[2], orgGridPoint[3],
+//				1,1,0.1f,1,
+//				-1,-1,0.1f,1
+		};
+		vBufMan.setVertexBuffer("RayTracer", v);
+		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
+				mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
+				vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor"),
+				vOffset = vBufMan.getVertexBufferOffset("RayTracer");
+		glUseProgram(gridProgram.getProgramId());
+		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
+		glUniform4f(vColor, 0, 0, 1, 1);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glEnableVertexAttribArray(vPosition);
+		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		glDisableVertexAttribArray(vPosition);
 	}
-	@Override
-	public void draw() {
+	private void composeMVP() {
 		if (mvpDirty) {
 			mvpCache = FlatMatrix4x4Multiplication(projection, view, model);
 			mvpDirty = false;
 		}
+	}
+	@Override
+	public void draw() {
+		composeMVP();
 		drawGrid(mvpCache);
-		drawMap(mvpCache);
-//		drawRay(mat);
+//		drawMap(mvpCache);
+		drawRay(mvpCache);
 	}
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}
 	@Override
 	public void setTexture2D(Map<String, Texture2D> textures) {this.textures = textures;}
+	
+	// coordinate calculations
 	@Override
 	public void setAspectRatio(float ratio) {
-		// model parameter
+		// projection parameters - constant for this aspect ratio
 		this.ratio = ratio;
 		mvpDirty = true;
 		final float lens_radius = cameraParams[9] * (float) Math.tan(cameraParams[11] / 2);
@@ -198,6 +214,7 @@ public class GridRenderer implements Renderer {
 			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
 		else
 			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius * ratio, lens_radius * ratio, lens_radius, -lens_radius);
+		responder.updateGraphics();
 	}
 	private void calculateModel() {
 		mvpDirty = true;
@@ -205,11 +222,14 @@ public class GridRenderer implements Renderer {
 			model = FlatScalingMatrix4x4((float) columns / rows * BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR);
 		else if (rows < columns)
 			model = FlatScalingMatrix4x4(BASE_ZOOM_FACTOR, (float) rows / columns * BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR);
+		else
+			model = IdentityMatrix4x4();
 		// set map rotation
 		if (processingPerspective)
 			model = FlatMatrix4x4Multiplication(FlatRotationMatrix4x4(mapRotation + perspectiveRotationAngle, 0, 0, 1),model);
 		else
 			model = FlatMatrix4x4Multiplication(FlatRotationMatrix4x4(mapRotation, 0, 0, 1),model);
+		model = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0,0,BOARD_Z_COORD), model);
 	}
 	private void calculateView () {
 		mvpDirty = true;
@@ -224,7 +244,7 @@ public class GridRenderer implements Renderer {
 		float[] lookVec;
 		if (processingPerspective)
 			lookVec = NormalisedVector3 (
-					new float[]{cameraParams[3]-cameraParams[0]+perspectiveLookAt[0], cameraParams[4]-cameraParams[1]+perspectiveLookAt[1], cameraParams[5]-cameraParams[2]});
+					new float[]{cameraParams[3]-cameraParams[0]+perspectiveLookAt[0], cameraParams[4]-cameraParams[1]+perspectiveLookAt[1], cameraParams[5]-cameraParams[2]-perspectiveCameraZoom});
 		else
 			lookVec = NormalisedVector3 (
 					new float[]{cameraParams[3]-cameraParams[0], cameraParams[4]-cameraParams[1], cameraParams[5]-cameraParams[2]});
@@ -235,8 +255,10 @@ public class GridRenderer implements Renderer {
 				FlatRotationMatrix4x4((float) Math.acos(cameraParams[7]), -cameraParams[8], 0, cameraParams[6])
 				,view);
 	}
+	// game logic
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
+	// event intepretors
 	@Override
 	public void passEvent(ControlEvent e) {
 		// Remember: normalise
@@ -253,6 +275,7 @@ public class GridRenderer implements Renderer {
 					onProcessingPerspective(e);
 				else if (e.data.pointerCount == 3)
 					onProcessingAttackAngle(e);
+				responder.updateGraphics();
 			}
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
 			if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT / ratio && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT * ratio) {
@@ -298,6 +321,7 @@ public class GridRenderer implements Renderer {
 			onProcessingTranslationDone(e);
 			onProcessingPerspectiveDone(e);
 			onProcessingAttackAngleDone(e);
+			responder.updateGraphics();
 		}
 	}
 	private void onDoubleTap(ControlEvent e) {
@@ -311,9 +335,12 @@ public class GridRenderer implements Renderer {
 		mapRotation = 0;
 		calculateModel();
 		calculateView();
+		hasRay = false;
+		responder.updateGraphics();
 	}
 	private void onSingleTap(ControlEvent e) {
 //		System.out.println("Single Tap");
+//		e.data.x[0] = 0; e.data.y[0] = 0;
 		rayTrace(e);
 	}
 	private void onProcessingAttackAngleDone(ControlEvent e) {
@@ -405,12 +432,41 @@ public class GridRenderer implements Renderer {
 	}
 	// ray trace code
 	private void rayTrace(ControlEvent e) {
-		final float x = e.data.x[0], y = e.data.y[0];
+		// Note: start with normalized device coordinates
+		calculateModel();
+		calculateView();
+		final float[] projPoint = new float[]{e.data.x[0] * cameraParams[9], e.data.y[0] * cameraParams[9], -cameraParams[9], cameraParams[9]};
+		final float[] orgProjectedPoint = FlatMatrix4x4Vector4Multiplication (FlatInverseMatrix4x4(projection), projPoint);
+		final float[] worldCoord = FlatMatrix4x4Vector4Multiplication(FlatInverseMatrix4x4(view), orgProjectedPoint);
+		final float lambda = (BOARD_Z_COORD - worldCoord[2]) / (cameraParams[2] - worldCoord[2]);
+		if (Math.abs(lambda) > ERROR)
+			orgGridPoint = new float[] {
+				lambda * cameraParams[0] + (1-lambda) * worldCoord[0],
+				lambda * cameraParams[1] + (1-lambda) * worldCoord[1],
+				BOARD_Z_COORD, 1
+			};
+		else
+			orgGridPoint = new float[] {worldCoord[0], worldCoord[1], BOARD_Z_COORD, 1};
+		System.out.println("Before Restore X=" + orgGridPoint[0] + " Y=" + orgGridPoint[1] + " Z=" +orgGridPoint[2]);
+		orgGridPoint = FlatMatrix4x4Vector4Multiplication(FlatInverseMatrix4x4(model), orgGridPoint);
+		System.out.println("After Restore X=" + orgGridPoint[0] + " Y=" + orgGridPoint[1] + " Z=" +orgGridPoint[2]);
+		hasRay = true;
+		// report coordinate
+		final int rownum = (int) Math.floor(Math.scalb(orgGridPoint[1] + 1, -1) * rows),
+				colnum = (int) Math.floor(Math.scalb(orgGridPoint[0] + 1, -1) * columns);
+		System.out.println("Tap on Row " + rownum + " Column " + colnum);
+//		System.out.println("Direction Vector:X="+rayDir[0]+",Y="+rayDir[1]+",Z="+rayDir[2]);
+		responder.updateGraphics();
 	}
 	@Override
 	public void close() {
 		// delete buffers
 		mapProgram.close();
 		gridProgram.close();
+	}
+	@Override
+	public void setGraphicsResponder(MainRenderer mainRenderer) {
+		// TODO Auto-generated method stub
+		responder = mainRenderer;
 	}
 }

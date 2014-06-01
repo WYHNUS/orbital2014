@@ -81,6 +81,7 @@ public class RenderMaths {
 	public static float[] FlatScalingMatrix4x4 (float x, float y, float z) {
 		return new float[] {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
 	}
+	// Note: Projection Matrix Inverts Z Depth
 	public static float[] FlatPerspectiveMatrix4x4 (float near, float far, float left, float right, float top, float bottom) {
 		return new float[] {
 				2 * near / (right - left), 0, (right + left) / (right - left), 0,
@@ -92,7 +93,10 @@ public class RenderMaths {
 	public static float FlatMatrix4x4Determinant (float[] a) {
 		if (a.length != 16)
 			throw new RuntimeException ("Wrong matrix size");
-		return a[0]*a[5]*a[10]*a[15]+a[0]*a[6]*a[11]*a[13]+a[0]*a[7]*a[9]*a[14]-a[0]*a[7]*a[10]*a[13]-a[0]*a[6]*a[9]*a[15]-a[0]*a[5]*a[11]*a[14]-a[1]*a[4]*a[10]*a[15]-a[1]*a[6]*a[11]*a[12]-a[1]*a[7]*a[8]*a[14]+a[1]*a[7]*a[10]*a[12]+a[1]*a[6]*a[8]*a[15]+a[1]*a[4]*a[11]*a[14]+a[2]*a[4]*a[9]*a[5]+a[2]*a[5]*a[11]*a[12]+a[2]*a[7]*a[8]*a[13]-a[2]*a[7]*a[9]*a[12]-a[2]*a[5]*a[8]*a[15]-a[2]*a[4]*a[11]*a[13]-a[3]*a[4]*a[9]*a[14]-a[3]*a[5]*a[10]*a[12]-a[3]*a[6]*a[8]*a[13]+a[3]*a[6]*a[9]*a[12]+a[3]*a[5]*a[8]*a[14]+a[3]*a[4]*a[10]*a[13];
+		return a[0]*a[5]*a[10]*a[15]+a[0]*a[6]*a[11]*a[13]+a[0]*a[7]*a[9]*a[14]-a[0]*a[7]*a[10]*a[13]-a[0]*a[6]*a[9]*a[15]-a[0]*a[5]*a[11]*a[14]
+				-a[1]*a[4]*a[10]*a[15]-a[1]*a[6]*a[11]*a[12]-a[1]*a[7]*a[8]*a[14]+a[1]*a[7]*a[10]*a[12]+a[1]*a[6]*a[8]*a[15]+a[1]*a[4]*a[11]*a[14]
+				+a[2]*a[4]*a[9]*a[15]+a[2]*a[5]*a[11]*a[12]+a[2]*a[7]*a[8]*a[13]-a[2]*a[7]*a[9]*a[12]-a[2]*a[5]*a[8]*a[15]-a[2]*a[4]*a[11]*a[13]
+				-a[3]*a[4]*a[9]*a[14]-a[3]*a[5]*a[10]*a[12]-a[3]*a[6]*a[8]*a[13]+a[3]*a[6]*a[9]*a[12]+a[3]*a[5]*a[8]*a[14]+a[3]*a[4]*a[10]*a[13];
 	}
 	public static float[] FlatInverseMatrix4x4 (float[] a) {
 		// TODO: Check formulae
@@ -109,7 +113,7 @@ public class RenderMaths {
 				(a[0]*a[6]*a[11]+a[2]*a[7]*a[8]+a[3]*a[4]*a[10]-a[3]*a[6]*a[8]-a[2]*a[4]*a[11]-a[0]*a[7]*a[10])/det,
 				(a[4]*a[9]*a[15]+a[5]*a[11]*a[12]+a[7]*a[8]*a[13]-a[7]*a[9]*a[12]-a[5]*a[8]*a[15]-a[4]*a[11]*a[13])/det,
 				(a[3]*a[9]*a[12]+a[1]*a[8]*a[15]+a[0]*a[11]*a[13]-a[0]*a[9]*a[15]-a[1]*a[11]*a[12]-a[3]*a[8]*a[13])/det,
-				(a[0]*a[5]*a[15]+a[1]*a[7]*a[12]+a[3]*a[4]*a[13]-a[3]*a[5]*a[12]-a[1]*a[14]*a[15]-a[0]*a[7]*a[13])/det,
+				(a[0]*a[5]*a[15]+a[1]*a[7]*a[12]+a[3]*a[4]*a[13]-a[3]*a[5]*a[12]-a[1]*a[4]*a[15]-a[0]*a[7]*a[13])/det,
 				(a[3]*a[5]*a[8]+a[1]*a[4]*a[11]+a[0]*a[7]*a[9]-a[0]*a[5]*a[11]-a[1]*a[7]*a[8]-a[3]*a[4]*a[9])/det,
 				(a[6]*a[9]*a[12]+a[5]*a[8]*a[14]+a[4]*a[10]*a[13]-a[4]*a[9]*a[14]-a[5]*a[10]*a[12]-a[6]*a[8]*a[13])/det,
 				(a[0]*a[9]*a[14]+a[1]*a[10]*a[12]+a[2]*a[8]*a[13]-a[2]*a[9]*a[12]-a[1]*a[8]*a[14]-a[0]*a[10]*a[13])/det,
