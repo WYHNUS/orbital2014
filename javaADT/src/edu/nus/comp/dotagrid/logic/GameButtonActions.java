@@ -60,6 +60,19 @@ public class GameButtonActions {
 		// zoom out game grid screen
 		GridFrame.setGridColNumberInScreen((int) (GridFrame.getGridColNumberInScreen() * zoomFactor));
 		GridFrame.setGridRowNumberInScreen((int) (GridFrame.getGridRowNumberInScreen() * zoomFactor));
+		
+		// check the boundary conditions:
+		
+		// x-axis position has gone beyond the maximum column number
+		if(GridFrame.getCurrentGridXPos() + GridFrame.getGridColNumberInScreen() >= GridFrame.COLUMN_NUMBER) {
+			GridFrame.setCurrentGridXPos((int) (GridFrame.COLUMN_NUMBER - GridFrame.getGridColNumberInScreen()));
+		}
+		
+		// y-axis position has gone beyond the maximum row number
+		if(GridFrame.getCurrentGridYPos() + GridFrame.getGridRowNumberInScreen() >= GridFrame.ROW_NUMBER) {
+			GridFrame.setCurrentGridYPos((int) (GridFrame.ROW_NUMBER - GridFrame.getGridRowNumberInScreen()));
+		}
+		
 		System.out.println("zoomOutGameGrid has been invoked!");
 	}
 
