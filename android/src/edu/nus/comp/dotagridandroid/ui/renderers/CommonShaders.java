@@ -23,15 +23,16 @@ public class CommonShaders {
 			+ "gl_Position = vPosition * model * view * projection;"
 			+ "autoTextureCoord = textureCoord;"
 		+ "}";
-	public static final String VS_IDENTITY_TEXTURED_OFFSET
+	public static final String VS_IDENTITY_TEXTURED_SCALED_OFFSET
 		= "attribute vec4 vPosition;"
 		+ "attribute vec2 textureCoord;"
-		+ "uniform vec2 textureCoordOffset, positionOffset;"
+		+ "uniform vec2 textureCoordOffset, textureScale;"
 		+ "uniform mat4 model, view, projection;"
 		+ "varying vec2 autoTextureCoord;"
 		+ "void main () {"
-			+ "gl_Position = vPosition * model * view * projection;"
-			+ "autoTextureCoord = textureCoord + textureCoordOffset;"
+			+ "vec4 pos = vPosition;"
+			+ "gl_Position = pos * model * view * projection;"
+			+ "autoTextureCoord = textureScale * (textureCoord + textureCoordOffset);"
 		+ "}";
 	public static final String FS_IDENTITY_TEXTURED
 		= "precision mediump float;"

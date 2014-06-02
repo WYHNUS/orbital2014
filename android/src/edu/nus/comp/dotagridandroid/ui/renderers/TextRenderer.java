@@ -1,6 +1,6 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
-import java.util.Map;
+import java.util.*;
 
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer;
@@ -18,12 +18,12 @@ public class TextRenderer implements Renderer {
 	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
 	// text attrs
 	private TextFont font;
-	private String text;
-	private float[] textColour;
+	private List<String> text = Collections.emptyList();
+	private float[] textColour = {0,-1,-1,0};
 	
 	public TextRenderer () {
 		textProgram = new GenericProgram(
-				CommonShaders.VS_IDENTITY_TEXTURED_OFFSET,
+				CommonShaders.VS_IDENTITY_TEXTURED_SCALED_OFFSET,
 				CommonShaders.FS_IDENTITY_TEXTURED_TONED);
 	}
 	
@@ -39,16 +39,23 @@ public class TextRenderer implements Renderer {
 
 	@Override
 	public void close() {
+		textProgram.close();
 	}
 	
-	public void setText (String text) {this.text = text;}
+	public void setText (String text) {
+		if (text != null && text.length() > 0)
+			this.text = Collections.singletonList(text);
+		responder.updateGraphics();
+	}
+	public void setTexts (String[] text) {
+		this.text = Arrays.asList(text);
+		responder.updateGraphics();
+	}
 	public void setTextColour (float[] colour) {textColour = colour;}
 	public void setTextFont (TextFont font) {this.font = font;}
 
 	@Override
 	public void draw() {
-		if (text == null || text.length() == 0)
-			return;
 		int
 			vPosition = glGetAttribLocation(textProgram.getProgramId(), "vPosition"),
 			vTexture = glGetAttribLocation(textProgram.getProgramId(), "textureCoord"),
@@ -56,7 +63,7 @@ public class TextRenderer implements Renderer {
 			mView = glGetUniformLocation(textProgram.getProgramId(), "view"),
 			mProjection = glGetUniformLocation(textProgram.getProgramId(), "projection"),
 			charMapOffset = glGetUniformLocation(textProgram.getProgramId(), "textureCoordOffset"),
-			positionOffset = glGetUniformLocation(textProgram.getProgramId(), "positionOffset"),
+			textureScale = glGetUniformLocation(textProgram.getProgramId(), "textureScale"),
 			textureColourTone = glGetUniformLocation(textProgram.getProgramId(), "textureColourTone"),
 			texture = glGetUniformLocation(textProgram.getProgramId(), "texture");
 		int
@@ -64,11 +71,11 @@ public class TextRenderer implements Renderer {
 			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex"),
 			vTexOffset = vBufMan.getIndexBufferOffset("GenericFullSquareTexture");
 		glUseProgram(textProgram.getProgramId());
-		glUniformMatrix4fv(mModel, 1, false, model, 0);
+		glUniform2fv(textureScale, 1, new float[]{1/(float) TextFont.CHARACTER_MAP_LENGTH,1}, 0);
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures.get("TextFontMap").getTexture());
+		glBindTexture(GL_TEXTURE_2D, font.getTexture());
 		glUniform1i(texture, 0);
 		glUniform4fv(textureColourTone, 1, textColour, 0);
 		glEnableVertexAttribArray(vPosition);
@@ -77,24 +84,26 @@ public class TextRenderer implements Renderer {
 		glVertexAttribPointer(vTexture, 4, GL_FLOAT, false, 0, vTexOffset);
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
-		for (int i = 0, len = text.length(); i < len; i++) {
-			glUniform2fv(charMapOffset, 1, new float[]{}, 0);
-			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+		byte lines = 1;
+		for (String str : text) {
+			for (int i = 0; i < str.length(); i++) {
+				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(
+						FlatMatrix4x4Multiplication(model,FlatTranslationMatrix4x4(i, -lines, 0)),
+						FlatScalingMatrix4x4(font.getCharacterSizeRatio(),1,1)), 0);
+				glUniform2fv(charMapOffset, 1, font.getCharacterOffset(str.charAt(i)), 0);
+				glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+			}
+			lines++;
 		}
 		glDisableVertexAttribArray(vTexture);
 		glDisableVertexAttribArray(vPosition);
 	}
 
 	@Override
-	public void setFrameBufferHandler(int framebuffer) {
-		// TODO Auto-generated method stub
-		
-	}
+	public void setFrameBufferHandler(int framebuffer) {}
 
 	@Override
-	public void setTexture2D(Map<String, Texture2D> textures) {
-		this.textures = textures;
-	}
+	public void setTexture2D(Map<String, Texture2D> textures) {this.textures = textures;}
 
 	@Override
 	public void setAspectRatio(float ratio) {}

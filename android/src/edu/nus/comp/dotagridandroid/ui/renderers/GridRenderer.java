@@ -29,7 +29,7 @@ public class GridRenderer implements Renderer {
 	};
 	// map rotation - in radians
 	private float mapRotation = 0;
-	// owned resources
+	// possessing resources
 	private GenericProgram gridProgram, mapProgram;
 	private float[]
 			model = IdentityMatrix4x4(),
@@ -37,6 +37,7 @@ public class GridRenderer implements Renderer {
 			projection = IdentityMatrix4x4(),
 			mvpCache;
 	private float[] selectGridMat;
+	private TextRenderer textRender;
 	// gesture states
 	private boolean hasRay = false;
 	private boolean processingTranslation = false, processingPerspective = false;
@@ -117,6 +118,11 @@ public class GridRenderer implements Renderer {
 		// board IS at the origin so not need translation
 		// calculate view
 		calculateView();
+		// text test
+		textRender = new TextRenderer();
+		textRender.setTexture2D(textures);
+		textRender.setText("DotaGrid on Android!");
+		textRender.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 	}
 	// draw functions
 	private void drawGrid() {
@@ -205,6 +211,9 @@ public class GridRenderer implements Renderer {
 		drawMap();
 		drawGrid();
 		drawRay();
+		if (textRender != null) {
+			textRender.draw();
+		}
 	}
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}
@@ -462,6 +471,8 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void close() {
 		// delete buffers
+		if (textRender != null)
+			textRender.close();
 		mapProgram.close();
 		gridProgram.close();
 	}
@@ -470,4 +481,6 @@ public class GridRenderer implements Renderer {
 		// TODO Auto-generated method stub
 		responder = mainRenderer;
 	}
+	@Override
+	public void setMVP(float[] model, float[] view, float[] projection){};
 }

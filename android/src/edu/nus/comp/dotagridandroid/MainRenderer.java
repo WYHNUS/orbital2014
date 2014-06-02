@@ -53,6 +53,8 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		Bitmap image;
 		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
 		image.recycle();
+		texture2d.put("DefaultTextFontMap", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
+		image.recycle();
 		r = new GridRenderer(vBufMan, gridHeight, gridWidth);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));
 		r.setGameLogicManager(manager);

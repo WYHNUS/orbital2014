@@ -43,4 +43,7 @@ public class GameStatusRenderer implements Renderer {
 	public void setGraphicsResponder(MainRenderer mainRenderer) {
 	}
 
+	@Override
+	public void setMVP(float[] model, float[] view, float[] projection) {}
+
 }

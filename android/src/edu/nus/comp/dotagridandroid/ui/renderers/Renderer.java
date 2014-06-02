@@ -11,4 +11,5 @@ public interface Renderer extends Closeable {
 	void setGameLogicManager(GameLogicManager manager);
 	boolean passEvent(ControlEvent e);
 	void setGraphicsResponder(MainRenderer mainRenderer);
+	void setMVP(float[] model, float[] view, float[] projection);
 }

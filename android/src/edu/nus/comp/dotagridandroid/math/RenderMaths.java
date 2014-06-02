@@ -100,7 +100,7 @@ public class RenderMaths {
 	}
 	public static float[] FlatInverseMatrix4x4 (float[] a) {
 		// TODO: Check formulae
-		float det = FlatMatrix4x4Determinant (a);
+		final float det = FlatMatrix4x4Determinant (a);
 		if (det != 0)
 			return new float[] {
 				(a[5]*a[10]*a[15]+a[6]*a[11]*a[13]+a[7]*a[9]*a[14]-a[7]*a[10]*a[13]-a[6]*a[9]*a[15]-a[5]*a[11]*a[14])/det,
