@@ -8,7 +8,7 @@ public class CommonShaders {
 			+ "gl_Position = vPosition * mMVP;"
 		+ "}";
 	public static final String FS_IDENTITY
-		= "precision highp float;"
+		= "precision mediump float;"
 		+ "uniform vec4 vColor;"
 		+ "void main () {"
 			+ "gl_FragColor = vColor;"

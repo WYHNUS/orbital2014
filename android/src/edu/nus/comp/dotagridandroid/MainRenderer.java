@@ -33,6 +33,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	public void onDrawFrame(GL10 gl) {
 	     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	     glClearColor(.4f, .6f, .9f, 1);
+//	     glClearColor(0,0,0,0);
 	     // TODO: set MVP
 	     r.draw();
 	}
@@ -50,7 +51,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		// TODO: change resource name
 		// TODO: allow decoding from network, stream, files etc
 		Bitmap image;
-		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_crimson)));
+		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
 		image.recycle();
 		r = new GridRenderer(vBufMan, gridHeight, gridWidth);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));
@@ -65,7 +66,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE);
 		glDepthFunc(GL_LESS);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 //		glStencilFunc(GL_ALWAYS, 1, 1);
 //		glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 	}

@@ -26,7 +26,9 @@ public class MainSurfaceView
 	}
 	
 	private void init(Context context) {
-		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
+		EGLConfiguration config = new EGLConfiguration(((Main) context).getGameLogicManager());
+		setEGLConfigChooser(config);
+//		setEGLConfigChooser(8, 8, 8, 8, 16, 0);
 		setEGLContextClientVersion(2);
 		setRenderer(r = new MainRenderer(context, this));
 		// just in case: turn on the below will reduce draw cycles, but we probably don't need it

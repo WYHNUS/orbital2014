@@ -9,6 +9,6 @@ public interface Renderer extends Closeable {
 	void setTexture2D(Map<String, Texture2D> textures);
 	void setAspectRatio(float ratio);
 	void setGameLogicManager(GameLogicManager manager);
-	void passEvent(ControlEvent e);
+	boolean passEvent(ControlEvent e);
 	void setGraphicsResponder(MainRenderer mainRenderer);
 }

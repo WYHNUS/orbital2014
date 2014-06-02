@@ -16,6 +16,9 @@ public class Texture2D implements Closeable {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		GLUtils.texImage2D(GL_TEXTURE_2D, 0, image, 0);
 	}
+	public Texture2D(int framebuffer) {
+		// TODO: render to texture
+	}
 	public int getWidth() {return width;}
 	public int getHeight() {return height;}
 	public int getTexture() {return textureHandler;}
