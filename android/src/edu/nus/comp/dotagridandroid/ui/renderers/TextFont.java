@@ -6,10 +6,10 @@ public class TextFont {
 	private final float characterRatio;
 	public TextFont (Texture2D textureHandler) {
 		this.textureHandler = textureHandler;
-		this.characterRatio = textureHandler.getHeight() * CHARACTER_MAP_LENGTH / textureHandler.getWidth();
+		this.characterRatio = textureHandler.getWidth() / (float) CHARACTER_MAP_LENGTH / textureHandler.getHeight();
 	}
 	public float getCharacterSizeRatio() {
-		return 0;
+		return characterRatio;
 	}
 	public int getTexture() {
 		return textureHandler.getTexture();

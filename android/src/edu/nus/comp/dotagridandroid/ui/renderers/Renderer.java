@@ -5,6 +5,7 @@ import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 public interface Renderer extends Closeable {
 	void draw();
+	void setVertexBufferManager (VertexBufferManager manager);
 	void setFrameBufferHandler (int framebuffer);
 	void setTexture2D(Map<String, Texture2D> textures);
 	void setAspectRatio(float ratio);
@@ -12,4 +13,5 @@ public interface Renderer extends Closeable {
 	boolean passEvent(ControlEvent e);
 	void setGraphicsResponder(MainRenderer mainRenderer);
 	void setMVP(float[] model, float[] view, float[] projection);
+	void setRenderReady();
 }

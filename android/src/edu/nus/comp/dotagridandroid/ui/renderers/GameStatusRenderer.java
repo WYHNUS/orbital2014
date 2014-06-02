@@ -9,15 +9,7 @@ import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 public class GameStatusRenderer implements Renderer {
 	private GameLogicManager manager;
 	private float ratio;
-
-	@Override
-	public void close() {
-	}
-
-	@Override
-	public void draw() {
-	}
-
+	
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {
 	}
@@ -32,12 +24,7 @@ public class GameStatusRenderer implements Renderer {
 	}
 
 	@Override
-	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
-
-	@Override
-	public boolean passEvent(ControlEvent e) {
-		return false;
-	}
+	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}	
 
 	@Override
 	public void setGraphicsResponder(MainRenderer mainRenderer) {
@@ -45,5 +32,30 @@ public class GameStatusRenderer implements Renderer {
 
 	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {}
+
+	@Override
+	public void setRenderReady() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setVertexBufferManager(VertexBufferManager manager) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void draw() {
+	}
+
+	@Override
+	public boolean passEvent(ControlEvent e) {
+		return false;
+	}
+	
+	@Override
+	public void close() {
+	}
 
 }

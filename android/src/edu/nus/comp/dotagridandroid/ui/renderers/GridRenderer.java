@@ -34,8 +34,7 @@ public class GridRenderer implements Renderer {
 	private float[]
 			model = IdentityMatrix4x4(),
 			view = IdentityMatrix4x4(),
-			projection = IdentityMatrix4x4(),
-			mvpCache;
+			projection = IdentityMatrix4x4();
 	private float[] selectGridMat;
 	private TextRenderer textRender;
 	// gesture states
@@ -58,11 +57,37 @@ public class GridRenderer implements Renderer {
 	// ray tracing
 	private float[] orgGridPoint;
 	private int [] orgGridIndex;
-	public GridRenderer (VertexBufferManager bufMan, int rows, int columns) {
-		vBufMan = bufMan;
+	public GridRenderer (int rows, int columns) {
 		this.rows = rows;
 		this.columns = columns;
-		float[] v = new float[4 * 2 * (rows + columns)]; // changed
+		gridProgram = new GenericProgram(
+				new String(CommonShaders.VS_IDENTITY),
+				new String(CommonShaders.FS_IDENTITY));
+		// configure map
+		mapProgram = new GenericProgram (
+				new String(CommonShaders.VS_IDENTITY_TEXTURED),
+				new String(CommonShaders.FS_IDENTITY_TEXTURED_TONED));
+		// coord configurations
+		selectGridMat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1f/columns, 1f/rows, 1), FlatTranslationMatrix4x4(1,1,0));
+		// calculate model
+		calculateModel();
+		// board IS at the origin so not need translation
+		// calculate view
+		calculateView();
+		// text test
+		textRender = new TextRenderer();
+	}
+	@Override
+	public void setGraphicsResponder(MainRenderer mainRenderer) {
+		responder = mainRenderer;
+		textRender.setGraphicsResponder(responder);
+	}
+	@Override
+	public void setMVP(float[] model, float[] view, float[] projection) {}
+	@Override
+	public void setVertexBufferManager(VertexBufferManager manager) {
+		vBufMan = manager;
+		float[] v = new float[4 * 2 * (rows + columns)];
 		int c = 0;
 		for (int i = 0; i <= columns; i++) {
 			v[c++] = 2f / columns * i - 1;
@@ -104,25 +129,36 @@ public class GridRenderer implements Renderer {
 			idx[c++] = 2 * columns + i + rows - 1;
 		}
 		vBufMan.setIndexBuffer("GridPointMeshIndex", idx);
-		gridProgram = new GenericProgram(
-				new String(CommonShaders.VS_IDENTITY),
-				new String(CommonShaders.FS_IDENTITY));
-		// configure map
-		mapProgram = new GenericProgram (
-				new String(CommonShaders.VS_IDENTITY_TEXTURED),
-				new String(CommonShaders.FS_IDENTITY_TEXTURED_TONED));
-		// coord configurations
-		selectGridMat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1f/columns, 1f/rows, 1), FlatTranslationMatrix4x4(1,1,0));
-		// calculate model
-		calculateModel();
-		// board IS at the origin so not need translation
-		// calculate view
-		calculateView();
-		// text test
-		textRender = new TextRenderer();
-		textRender.setTexture2D(textures);
-		textRender.setText("DotaGrid on Android!");
+		textRender.setVertexBufferManager(vBufMan);
+	};
+	@Override
+	public void setFrameBufferHandler(int framebuffer) {}
+	@Override
+	public void setTexture2D(Map<String, Texture2D> textures) {
+		this.textures = textures;
 		textRender.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+	}
+	@Override
+	public void setAspectRatio(float ratio) {
+		// projection parameters - constant for this aspect ratio
+		this.ratio = ratio;
+		mvpDirty = true;
+		final float lens_radius = cameraParams[9] * (float) Math.tan(cameraParams[11] / 2);
+		if (ratio > 1)
+			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
+		else
+			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius * ratio, lens_radius * ratio, lens_radius, -lens_radius);
+		textRender.setAspectRatio(ratio);
+	}
+	@Override
+	public void setGameLogicManager(GameLogicManager manager) {
+		this.manager = manager;
+	}
+	@Override
+	public void setRenderReady() {
+		textRender.setRenderReady();
+		textRender.setText("~");
+		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, 0),FlatScalingMatrix4x4(0.1f,0.1f,1)), null, null);
 	}
 	// draw functions
 	private void drawGrid() {
@@ -199,40 +235,16 @@ public class GridRenderer implements Renderer {
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 		glDisableVertexAttribArray(vPosition);
 	}
-	private void composeMVP() {
-		if (mvpDirty) {
-			mvpCache = FlatMatrix4x4Multiplication(projection, view, model);
-			mvpDirty = false;
-		}
-	}
 	@Override
 	public void draw() {
-		composeMVP();
-		drawMap();
-		drawGrid();
-		drawRay();
-		if (textRender != null) {
+//		drawMap();
+//		drawGrid();
+//		drawRay();
+//		if (textRender != null) {
 			textRender.draw();
-		}
+//		}
 	}
-	@Override
-	public void setFrameBufferHandler(int framebuffer) {}
-	@Override
-	public void setTexture2D(Map<String, Texture2D> textures) {this.textures = textures;}
-	
 	// coordinate calculations
-	@Override
-	public void setAspectRatio(float ratio) {
-		// projection parameters - constant for this aspect ratio
-		this.ratio = ratio;
-		mvpDirty = true;
-		final float lens_radius = cameraParams[9] * (float) Math.tan(cameraParams[11] / 2);
-		if (ratio > 1)
-			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
-		else
-			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius * ratio, lens_radius * ratio, lens_radius, -lens_radius);
-		responder.updateGraphics();
-	}
 	private void calculateModel() {
 		mvpDirty = true;
 		if (rows > columns)
@@ -272,9 +284,6 @@ public class GridRenderer implements Renderer {
 				FlatRotationMatrix4x4((float) Math.acos(cameraParams[7]), -cameraParams[8], 0, cameraParams[6])
 				,view);
 	}
-	// game logic
-	@Override
-	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
 	// event intepretors
 	@Override
 	public boolean passEvent(ControlEvent e) {
@@ -300,9 +309,9 @@ public class GridRenderer implements Renderer {
 				if (e.data.wasMultiTouch) {
 					// DO NOTHING
 				} else if (e.data.eventTime - e.data.startTime > ControlEvent.TAP_LONG_TIME_LIMIT) {
-//					System.out.println("Long tap");	// long tap
+					// long tap
 				} else {
-//					System.out.println("Short tap");	// short tap
+					// short tap
 					if (e.data.eventTime - tapTimeQueue[tapQueueHead] > ControlEvent.TAP_DOUBLE_TIME_LIMIT ||
 							Math.abs(tapXQueue[tapQueueHead] - e.data.x[0]) > ControlEvent.TAP_DOUBLE_DRIFT_LIMIT / ratio ||
 							Math.abs(tapYQueue[tapQueueHead] - e.data.y[0]) > ControlEvent.TAP_DOUBLE_DRIFT_LIMIT * ratio) {
@@ -426,7 +435,6 @@ public class GridRenderer implements Renderer {
 		// look-at displacement
 		perspectiveLookAt[0] = Math.scalb(perspectiveStartCoord[0] + perspectiveStartCoord[2] - perspectiveLastCoord[0] - perspectiveLastCoord[2], -1);
 		perspectiveLookAt[1] = Math.scalb(perspectiveStartCoord[1] + perspectiveStartCoord[3] - perspectiveLastCoord[1] - perspectiveLastCoord[3], -1);
-//		System.out.println("Angle="+perspectiveRotationAngle);
 		calculateModel();
 		calculateView();
 	}
@@ -471,16 +479,8 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void close() {
 		// delete buffers
-		if (textRender != null)
-			textRender.close();
+		textRender.close();
 		mapProgram.close();
 		gridProgram.close();
 	}
-	@Override
-	public void setGraphicsResponder(MainRenderer mainRenderer) {
-		// TODO Auto-generated method stub
-		responder = mainRenderer;
-	}
-	@Override
-	public void setMVP(float[] model, float[] view, float[] projection){};
 }

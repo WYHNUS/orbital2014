@@ -13,13 +13,12 @@ public class TextRenderer implements Renderer {
 	private GenericProgram textProgram;
 	private MainRenderer responder;
 	private VertexBufferManager vBufMan;
-	private Map<String, Texture2D> textures;
 	// render params
 	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
 	// text attrs
 	private TextFont font;
 	private List<String> text = Collections.emptyList();
-	private float[] textColour = {0,-1,-1,0};
+	private float[] textColour = {1,-1,-1,0};
 	
 	public TextRenderer () {
 		textProgram = new GenericProgram(
@@ -64,14 +63,15 @@ public class TextRenderer implements Renderer {
 			mProjection = glGetUniformLocation(textProgram.getProgramId(), "projection"),
 			charMapOffset = glGetUniformLocation(textProgram.getProgramId(), "textureCoordOffset"),
 			textureScale = glGetUniformLocation(textProgram.getProgramId(), "textureScale"),
-			textureColourTone = glGetUniformLocation(textProgram.getProgramId(), "textureColourTone"),
+			textureColourTone = glGetUniformLocation(textProgram.getProgramId(), "textureColorTone"),
 			texture = glGetUniformLocation(textProgram.getProgramId(), "texture");
 		int
 			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex"),
-			vTexOffset = vBufMan.getIndexBufferOffset("GenericFullSquareTexture");
+			vTexOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTexture");
 		glUseProgram(textProgram.getProgramId());
-		glUniform2fv(textureScale, 1, new float[]{1/(float) TextFont.CHARACTER_MAP_LENGTH,1}, 0);
+		final float[] scale = {1/(float) TextFont.CHARACTER_MAP_LENGTH,1};
+		glUniform2fv(textureScale, 1, scale, 0);
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
 		glActiveTexture(GL_TEXTURE0);
@@ -87,9 +87,10 @@ public class TextRenderer implements Renderer {
 		byte lines = 1;
 		for (String str : text) {
 			for (int i = 0; i < str.length(); i++) {
-				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(
-						FlatMatrix4x4Multiplication(model,FlatTranslationMatrix4x4(i, -lines, 0)),
-						FlatScalingMatrix4x4(font.getCharacterSizeRatio(),1,1)), 0);
+//				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(
+//						FlatMatrix4x4Multiplication(model,FlatTranslationMatrix4x4(i, -lines, 0)),
+//						FlatScalingMatrix4x4(font.getCharacterSizeRatio(),1,1)), 0);
+				glUniformMatrix4fv(mModel, 1, false, IdentityMatrix4x4(), 0);
 				glUniform2fv(charMapOffset, 1, font.getCharacterOffset(str.charAt(i)), 0);
 				glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 			}
@@ -103,7 +104,7 @@ public class TextRenderer implements Renderer {
 	public void setFrameBufferHandler(int framebuffer) {}
 
 	@Override
-	public void setTexture2D(Map<String, Texture2D> textures) {this.textures = textures;}
+	public void setTexture2D(Map<String, Texture2D> textures) {}
 
 	@Override
 	public void setAspectRatio(float ratio) {}
@@ -120,5 +121,14 @@ public class TextRenderer implements Renderer {
 	@Override
 	public void setGraphicsResponder(MainRenderer mainRenderer) {
 		this.responder = mainRenderer;
+	}
+
+	@Override
+	public void setRenderReady() {
+	}
+
+	@Override
+	public void setVertexBufferManager(VertexBufferManager manager) {
+		vBufMan = manager;
 	}
 }

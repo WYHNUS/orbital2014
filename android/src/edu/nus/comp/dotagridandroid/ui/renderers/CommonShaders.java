@@ -32,7 +32,8 @@ public class CommonShaders {
 		+ "void main () {"
 			+ "vec4 pos = vPosition;"
 			+ "gl_Position = pos * model * view * projection;"
-			+ "autoTextureCoord = textureScale * (textureCoord + textureCoordOffset);"
+//			+ "autoTextureCoord = (textureCoord + textureCoordOffset) * textureScale;"
+			+ "autoTextureCoord = textureCoord;"// * textureScale + vec2(0.001,0);"
 		+ "}";
 	public static final String FS_IDENTITY_TEXTURED
 		= "precision mediump float;"
