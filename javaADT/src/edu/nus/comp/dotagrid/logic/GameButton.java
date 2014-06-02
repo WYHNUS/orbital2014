@@ -4,10 +4,14 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 
-public class GameButton {
+public class GameButton{
 	
 	private String string;
 	private Image image;
+	
+	private boolean isClicked;
+	
+	private int actionNumber;
 	
 	private int xPos = 0;
 	private int yPos = 0; 
@@ -15,6 +19,7 @@ public class GameButton {
 	private int height = 0;
 	
 	
+	// constructor
 	public GameButton(String string, Image image, int xPos, int yPos, int width, int height) {
 		this.string = string;
 		this.image = image;
@@ -22,6 +27,22 @@ public class GameButton {
 		this.yPos = yPos;
 		this.width = width;
 		this.height = height;
+		
+		isClicked = false;
+	}
+	
+	
+	// accessor and mutator
+	public int getActionNumber() {
+		return this.actionNumber;
+	}
+	
+	public void setActionNumber(int actionNumber) {
+		this.actionNumber = actionNumber;
+	}
+	
+	public String getString(){
+		return this.string;
 	}
 	
 	public void setString(String string){
@@ -37,6 +58,7 @@ public class GameButton {
 	}
 	
 	
+	// other methods
 	public void fillRect(Graphics g){
 		g.fillRect(xPos, yPos, width, height);
 	}
@@ -54,6 +76,30 @@ public class GameButton {
 	
 	public void drawImage(Graphics g) {
 		g.drawImage(image, xPos, yPos, width, height, null);
+	}
+	
+	
+	public boolean checkEvent(int handXPos, int handYPos) {		
+		// within x-axis position
+		if (handXPos > xPos && handXPos < (xPos + width)) {
+			// within y-axis position
+			if(handYPos > yPos && handYPos < (yPos + height)) {
+				// do the mouse event
+				isClicked = true;
+			} 
+		}
+		
+		return isClicked;
+	}
+	
+	public void resetBoolean(){
+		this.isClicked = false;
+	}
+	
+	
+	public void actionPerformed(int actionNumber) {
+		System.out.println(actionNumber);
+		new GameButtonActions(actionNumber);
 	}
 	
 }

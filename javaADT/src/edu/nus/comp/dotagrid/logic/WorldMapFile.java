@@ -20,7 +20,7 @@ public class WorldMapFile {
 			
 			scanner = new Scanner(reader);
 			
-			worldMap.map = new int[Screen.ROW_NUMBER][Screen.COLUMN_NUMBER];
+			worldMap.map = new int[GridFrame.ROW_NUMBER][GridFrame.COLUMN_NUMBER];
 			
 			int x = 0;
 			int y = 0;
@@ -28,7 +28,7 @@ public class WorldMapFile {
 			while (scanner.hasNext()) {
 				worldMap.map[x][y] = scanner.nextInt();
 				
-				if (x < Screen.ROW_NUMBER - 1) {
+				if (x < GridFrame.ROW_NUMBER - 1) {
 					x++;
 				} else {
 					y++;

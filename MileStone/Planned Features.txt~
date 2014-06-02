@@ -50,12 +50,6 @@ Advanced Features (to be done before next next milestone) :
 Feature 9:
 Design towers AI. (both in PC and in Android)
 
-Feature 9.1:
-Customisable Map Mesh
-
-Feature 9.2:
-Better Graphics: Lighting
-
 Feature 10:
 Design rudimentary line creeps AI. (both in PC and in Android)
 
@@ -107,9 +101,3 @@ Test and balance the game, fix potential game bugs, etc.
 
 Feature 22:
 Internet connection, allow multiple players! (both in PC and in Android)
-
-Feature 23:
-Sound effect! (both in PC and in Android)
-
-Feature 24:
-Animation! (both in PC and in Android)

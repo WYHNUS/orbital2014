@@ -5,10 +5,10 @@ public class CommonShaders {
 		= "attribute vec4 vPosition;"
 		+ "uniform mat4 mMVP;"
 		+ "void main() {"
-			+ "gl_Position = mMVP * vPosition;"
+			+ "gl_Position = vPosition * mMVP;"
 		+ "}";
 	public static final String FS_IDENTITY
-		= "precision mediump float;"
+		= "precision highp float;"
 		+ "uniform vec4 vColor;"
 		+ "void main () {"
 			+ "gl_FragColor = vColor;"
@@ -20,7 +20,7 @@ public class CommonShaders {
 		+ "uniform mat4 mMVP;"
 		+ "varying vec2 autoTextureCoord;"
 		+ "void main() {"
-			+ "gl_Position = mMVP * vPosition;"
+			+ "gl_Position = vPosition * mMVP;"
 			+ "autoTextureCoord = textureCoord;"
 		+ "}";
 	public static final String FS_IDENTITY_TEXTURED

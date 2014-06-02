@@ -3,6 +3,7 @@ package edu.nus.comp.dotagrid.logic;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.util.ArrayList;
 
 
 public class GameFrame{
@@ -28,8 +29,8 @@ public class GameFrame{
 
 	
 	
-	// main game grid frame
-	GameButton mainGame;
+	// an ArrayList of GameButton which store all the GameButtons on the GameFrame
+	private static ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
 	
 	// image of the character selected
 	GameButton characterIcon;
@@ -67,7 +68,9 @@ public class GameFrame{
 	GameButton turnCounter;
 	
 	// KDA
-	GameButton[] KDA;
+	GameButton Kill;
+	GameButton Death;
+	GameButton Assist;
 	
 	// Money & Action Points
 	GameButton money;
@@ -81,12 +84,16 @@ public class GameFrame{
 	GameButton[] directions;
 	public final int DIRECTION_NUMBER = 5;
 	
+	// zoom in button and zoom out button
+	GameButton zoomIn;
+	GameButton zoomOut;
+	
 	
 
-	public GameFrame(Graphics g, int frameWidth, int frameHeight) {
-		
-		this.frameWidth = frameWidth;
-		this.frameHeight = frameHeight;
+	// constructor
+	public GameFrame(Graphics g, Frame frame) {
+		this.frameWidth = frame.getWidth();
+		this.frameHeight = frame.getHeight();
 		
 		gridWidth = (frameWidth - (2.0 * FRAME_BORDER_WIDTH)) / GRID_COL_NUMBER_IN_SCREEN;
 		gridHeight = (frameHeight - (2.0 * FRAME_BORDER_HEIGHT)) / GRID_ROW_NUMBER_IN_SCREEN;
@@ -105,80 +112,11 @@ public class GameFrame{
 	private void displayAllButtons(Graphics g) {
 		g.setColor(defaultColor);
 		
-		// draw main game frame
-		mainGame.drawRect(g);
-		
-		// stuff displayed at the bottom of the screen
-		
-		characterIcon.drawRect(g);
-		
-		characterName.drawRect(g);
-		characterName.drawString(g);
-		
-		
-		characterHP.drawRect(g);
-		characterHP.drawString(g);
-		
-		characterMP.drawRect(g);
-		characterMP.drawString(g);
-		
-		characterStrength.drawRect(g);
-		characterStrength.drawString(g);
-
-		characterAgility.drawRect(g);
-		characterAgility.drawString(g);
-
-		characterIntelligence.drawRect(g);
-		characterIntelligence.drawString(g);
-		
-		characterAttack.drawRect(g);
-		characterAttack.drawString(g);
-		
-		characterDefense.drawRect(g);
-		characterDefense.drawString(g);
-		
-		characterLevel.drawRect(g);
-		characterLevel.drawString(g);
-		
-		characterExperience.drawRect(g);
-		characterExperience.drawString(g);
-		
-		// display item list
-		for (int i=0; i<MAX_ITEM_NUMBER; i++) {
-			items[i].drawRect(g);
+		//display allGameButtons
+		for (int i=0; i<allGameButtons.size(); i++) {
+			allGameButtons.get(i).drawRect(g);
+			allGameButtons.get(i).drawString(g);
 		}
-		
-		// display skill list
-		for (int i=0; i<MAX_SKILL_NUMBER; i++) {
-			skills[i].drawRect(g);
-		}
-		
-		
-		// stuff displayed at the right hand side of the screen
-		
-		versionID.drawRect(g);
-		versionID.drawString(g);
-		
-		turnCounter.drawRect(g);
-
-		KDA[0].drawRect(g);
-		KDA[1].drawRect(g);
-		KDA[2].drawRect(g);
-		
-		money.drawRect(g);
-		actionPoints.drawRect(g);
-		
-		// display Action List 
-		for(int i=0; i<MAX_ACTION_NUMBER; i++){
-			actionList[i].drawRect(g);
-		}
-		
-		// display move mainGame buttons
-		for(int i=0; i<DIRECTION_NUMBER; i++){
-			directions[i].drawRect(g);
-		}
-		
-		
 	}
 
 	
@@ -187,30 +125,42 @@ public class GameFrame{
 		int startingYPos = FRAME_BORDER_HEIGHT + (int) (gridHeight * (FRAME_ROW_NUMBER_OCCUPIED + 1));
 		int startingXPos = FRAME_BORDER_WIDTH + (int) (gridWidth * (FRAME_COL_NUMBER_OCCUPIED + 1));	
 		
-		// main game frame
-		mainGame = new GameButton("main game", null, FRAME_BORDER_WIDTH, FRAME_BORDER_HEIGHT, (int) (FRAME_COL_NUMBER_OCCUPIED * gridWidth), (int) (FRAME_ROW_NUMBER_OCCUPIED * gridHeight));
-		
 		// image of the character selected
 		characterIcon = new GameButton("characterIcon", null, FRAME_BORDER_WIDTH, startingYPos, (int) (2 * gridWidth), (int) (2 * gridHeight));
+		allGameButtons.add(characterIcon);
 		
 		// Name, HP , MP
 		characterName = new GameButton("Name: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos, (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		characterHP = new GameButton("HP: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		characterMP = new GameButton("MP: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos + (int) (4.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		
+		allGameButtons.add(characterName);
+		allGameButtons.add(characterHP);
+		allGameButtons.add(characterMP);
+		
+		
 		// Strength, Agility, Intelligence
 		characterStrength = new GameButton("Strength: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos, (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		characterAgility = new GameButton("Agility: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		characterIntelligence = new GameButton("Intelligence: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5) * gridWidth + (2*0.5) * gridWidth), startingYPos + (int) (4.0 * gridHeight / 3), (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 
+		allGameButtons.add(characterStrength);
+		allGameButtons.add(characterAgility);
+		allGameButtons.add(characterIntelligence);
+		
 		// Attack, Defense
 		characterAttack = new GameButton("Attack: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
 		characterDefense = new GameButton("Defense: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 2), (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
-
+		
+		allGameButtons.add(characterAttack);
+		allGameButtons.add(characterDefense);
+		
 		// Level, Experience
 		characterLevel = new GameButton("Level: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		characterExperience = new GameButton("Experience: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (2.5 * gridWidth), (int) (4.0 * gridHeight / 3));
 
+		allGameButtons.add(characterLevel);
+		allGameButtons.add(characterExperience);
 		
 		// Item List (numbers are marked from top to bottom first, then left to right)
 		items = new GameButton[MAX_ITEM_NUMBER];
@@ -222,6 +172,14 @@ public class GameFrame{
 		items[4] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
 		items[5] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
 			
+		allGameButtons.add(items[0]);
+		allGameButtons.add(items[1]);
+		allGameButtons.add(items[2]);
+		allGameButtons.add(items[3]);
+		allGameButtons.add(items[4]);
+		allGameButtons.add(items[5]);
+		
+		
 		// Skill List (numbers are marked from top to bottom first, then left to right)
 		skills = new GameButton[MAX_SKILL_NUMBER];
 		
@@ -233,25 +191,41 @@ public class GameFrame{
 		skills[5] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 2 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
 		skills[6] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
 		skills[7] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
-					
+				
+		allGameButtons.add(skills[0]);
+		allGameButtons.add(skills[1]);
+		allGameButtons.add(skills[2]);
+		allGameButtons.add(skills[3]);
+		allGameButtons.add(skills[4]);
+		allGameButtons.add(skills[5]);
+		allGameButtons.add(skills[6]);
+		allGameButtons.add(skills[7]);
 
 
 		// Version Info
 		versionID = new GameButton("C-DOTA 1.0", null, startingXPos, FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
+		allGameButtons.add(versionID);
 		
 		// turn count
 		turnCounter = new GameButton("turnCounter", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
+		allGameButtons.add(turnCounter);
 		
 		// KDA
-		KDA = new GameButton[3];
-		KDA[0] = new GameButton("Kill", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
-		KDA[1] = new GameButton("Death", null, startingXPos + (int) (4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
-		KDA[2] = new GameButton("Assist", null, startingXPos + (int) (2 * 4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		Kill = new GameButton("Kill", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		Death = new GameButton("Death", null, startingXPos + (int) (4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		Assist = new GameButton("Assist", null, startingXPos + (int) (2 * 4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
 
+		allGameButtons.add(Kill);
+		allGameButtons.add(Death);
+		allGameButtons.add(Assist);
+		
 		// Money & Action Points
 		money = new GameButton("Money: ", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
 		actionPoints = new GameButton("Action Points: ", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
 
+		allGameButtons.add(money);
+		allGameButtons.add(actionPoints);
+		
 		// Action List 
 		// (draw from left to right first, then top to bottom)
 		actionList = new GameButton[MAX_ACTION_NUMBER];
@@ -274,24 +248,75 @@ public class GameFrame{
 		actionList[15] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 			
 
+		allGameButtons.add(actionList[0]);
+		allGameButtons.add(actionList[1]);
+		allGameButtons.add(actionList[2]);
+		allGameButtons.add(actionList[3]);
+		allGameButtons.add(actionList[4]);
+		allGameButtons.add(actionList[5]);
+		allGameButtons.add(actionList[6]);
+		allGameButtons.add(actionList[7]);
+		allGameButtons.add(actionList[8]);
+		allGameButtons.add(actionList[9]);
+		allGameButtons.add(actionList[10]);
+		allGameButtons.add(actionList[11]);
+		allGameButtons.add(actionList[12]);
+		allGameButtons.add(actionList[13]);
+		allGameButtons.add(actionList[14]);
+		allGameButtons.add(actionList[15]);
+		
 		// move mainGame buttons
 		directions = new GameButton[DIRECTION_NUMBER];
 		
 		// Up button
 		directions[0] = new GameButton("up", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (4 * gridHeight), (int) gridWidth, (int) gridHeight);	
+		directions[0].setActionNumber(1);
 		
 		// Left button
 		directions[1] = new GameButton("left", null, startingXPos + (int) (0.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
-			
+		directions[1].setActionNumber(3);
+		
 		// Game Icon
 		directions[2] = new GameButton("game icon", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);	
 		
 		// Right button
 		directions[3] = new GameButton("right", null, startingXPos + (int) (2.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
+		directions[3].setActionNumber(4);
 		
 		// Down button
 		directions[4] = new GameButton("down", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (2 * gridHeight), (int) gridWidth, (int) gridHeight);
+		directions[4].setActionNumber(2);
 		
+		allGameButtons.add(directions[0]);
+		allGameButtons.add(directions[1]);
+		allGameButtons.add(directions[2]);
+		allGameButtons.add(directions[3]);
+		allGameButtons.add(directions[4]);
+		
+		// zoom in button and zoom out button
+		zoomIn = new GameButton("zoomIn", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (10.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		zoomOut = new GameButton("zoomOut", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (10.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		
+		zoomIn.setActionNumber(5);
+		zoomOut.setActionNumber(6);
+		
+		allGameButtons.add(zoomIn);
+		allGameButtons.add(zoomOut);
+		
+	}
+
+	
+	public static void invokeEvent(int handXPos, int handYPos){
+		
+		// check through allGameButtons for the correct button that has been pressed
+		for (int i=0; i<allGameButtons.size(); i++) {
+			if (allGameButtons.get(i).checkEvent(handXPos, handYPos)) {
+				allGameButtons.get(i).resetBoolean();
+				allGameButtons.get(i).actionPerformed(allGameButtons.get(i).getActionNumber());
+				break;
+			}
+		}
+
 	}
 
 }
