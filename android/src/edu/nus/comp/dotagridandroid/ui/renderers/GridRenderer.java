@@ -157,8 +157,8 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void setRenderReady() {
 		textRender.setRenderReady();
-		textRender.setText("~");
-		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, 0),FlatScalingMatrix4x4(0.1f,0.1f,1)), null, null);
+		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
+		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
 	}
 	// draw functions
 	private void drawGrid() {
@@ -237,11 +237,11 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public void draw() {
-//		drawMap();
-//		drawGrid();
-//		drawRay();
+		drawMap();
+		drawGrid();
+		drawRay();
 //		if (textRender != null) {
-			textRender.draw();
+		textRender.draw();
 //		}
 	}
 	// coordinate calculations

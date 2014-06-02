@@ -81,16 +81,15 @@ public class TextRenderer implements Renderer {
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
 		glEnableVertexAttribArray(vTexture);
-		glVertexAttribPointer(vTexture, 4, GL_FLOAT, false, 0, vTexOffset);
+		glVertexAttribPointer(vTexture, 2, GL_FLOAT, false, 0, vTexOffset);
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
 		byte lines = 1;
 		for (String str : text) {
 			for (int i = 0; i < str.length(); i++) {
-//				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(
-//						FlatMatrix4x4Multiplication(model,FlatTranslationMatrix4x4(i, -lines, 0)),
-//						FlatScalingMatrix4x4(font.getCharacterSizeRatio(),1,1)), 0);
-				glUniformMatrix4fv(mModel, 1, false, IdentityMatrix4x4(), 0);
+				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(
+						FlatMatrix4x4Multiplication(model,FlatTranslationMatrix4x4(i, -lines, 0)),
+						FlatScalingMatrix4x4(font.getCharacterSizeRatio(),1,1)), 0);
 				glUniform2fv(charMapOffset, 1, font.getCharacterOffset(str.charAt(i)), 0);
 				glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 			}
