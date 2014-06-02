@@ -36,9 +36,9 @@ public class GridRenderer implements Renderer {
 			view = IdentityMatrix4x4(),
 			projection = IdentityMatrix4x4(),
 			mvpCache;
-	// debug
-	private boolean hasRay = false;
+	private float[] selectGridMat;
 	// gesture states
+	private boolean hasRay = false;
 	private boolean processingTranslation = false, processingPerspective = false;
 	private boolean mvpDirty = true;
 	// translation
@@ -110,6 +110,8 @@ public class GridRenderer implements Renderer {
 		mapProgram = new GenericProgram (
 				new String(CommonShaders.VS_IDENTITY_TEXTURED),
 				new String(CommonShaders.FS_IDENTITY_TEXTURED_TONED));
+		// coord configurations
+		selectGridMat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1f/columns, 1f/rows, 1), FlatTranslationMatrix4x4(1,1,0));
 		// calculate model
 		calculateModel();
 		// board IS at the origin so not need translation
@@ -117,14 +119,18 @@ public class GridRenderer implements Renderer {
 		calculateView();
 	}
 	// draw functions
-	private void drawGrid(float[] mat) {
+	private void drawGrid() {
 		int vOffset = vBufMan.getVertexBufferOffset("GridPointBuffer"),
 			iOffset = vBufMan.getIndexBufferOffset("GridPointMeshIndex");
 		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
-			mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
+			mModel = glGetUniformLocation(gridProgram.getProgramId(), "model"),
+			mView = glGetUniformLocation(gridProgram.getProgramId(), "view"),
+			mProjection = glGetUniformLocation(gridProgram.getProgramId(), "projection"),
 			vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor");
 		glUseProgram(gridProgram.getProgramId());
-		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
+		glUniformMatrix4fv(mModel, 1, false, model, 0);
+		glUniformMatrix4fv(mView, 1, false, view, 0);
+		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
 		glUniform4f(vColor, 1, 0, 0, 1);
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
@@ -133,18 +139,22 @@ public class GridRenderer implements Renderer {
 		glDrawElements(GL_LINES, 2 * (columns + rows + 2), GL_UNSIGNED_SHORT, iOffset);
 		glDisableVertexAttribArray(vPosition);
 	}
-	private void drawMap(float[] mat) {
-		mat = FlatMatrix4x4Multiplication(mat, FlatTranslationMatrix4x4(0,0,-BOARD_Z_COORD));
+	private void drawMap() {
+		float[] mat = FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0,0,-BOARD_Z_COORD));
 		int vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTexture"),
 			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
 		int vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition"),
-			mMVP = glGetUniformLocation(mapProgram.getProgramId(), "mMVP"),
+			mModel = glGetUniformLocation(gridProgram.getProgramId(), "model"),
+			mView = glGetUniformLocation(gridProgram.getProgramId(), "view"),
+			mProjection = glGetUniformLocation(gridProgram.getProgramId(), "projection"),
 			textureColorTone = glGetUniformLocation(mapProgram.getProgramId(), "textureColorTone"),
 			textureLocation = glGetUniformLocation(mapProgram.getProgramId(), "texture"),
 			textureCoord = glGetAttribLocation(mapProgram.getProgramId(), "textureCoord");
 		glUseProgram(mapProgram.getProgramId());
-		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
+		glUniformMatrix4fv(mModel, 1, false, mat, 0);
+		glUniformMatrix4fv(mView, 1, false, view, 0);
+		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
 		glUniform4f(textureColorTone, .5f, 0, 0, 0);
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
@@ -159,19 +169,22 @@ public class GridRenderer implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
 	}
-	private void drawRay(float[] mat) {
+	private void drawRay() {
 		if (!hasRay)
 			return;
-		mat = FlatMatrix4x4Multiplication(mat, FlatTranslationMatrix4x4(2f/columns * orgGridIndex[0]-1, 2f/rows * orgGridIndex[1]-1, 0));
-		mat = FlatMatrix4x4Multiplication(mat, FlatScalingMatrix4x4(1f/columns, 1f/rows, 1));
-		mat = FlatMatrix4x4Multiplication(mat, FlatTranslationMatrix4x4(1,1,0));
+		float[] mat = FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(2f/columns * orgGridIndex[0]-1, 2f/rows * orgGridIndex[1]-1, 0));
+		mat = FlatMatrix4x4Multiplication(mat, selectGridMat);
 		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
-				mMVP = glGetUniformLocation(gridProgram.getProgramId(), "mMVP"),
+				mModel = glGetUniformLocation(gridProgram.getProgramId(), "model"),
+				mView = glGetUniformLocation(gridProgram.getProgramId(), "view"),
+				mProjection = glGetUniformLocation(gridProgram.getProgramId(), "projection"),
 				vColor = glGetUniformLocation(gridProgram.getProgramId(), "vColor"),
 				vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 				iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
 		glUseProgram(gridProgram.getProgramId());
-		glUniformMatrix4fv(mMVP, 1, false, mat, 0);
+		glUniformMatrix4fv(mModel, 1, false, mat, 0);
+		glUniformMatrix4fv(mView, 1, false, view, 0);
+		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
 		glUniform4f(vColor, 1, 0, 0, 0.2f);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
 		glEnableVertexAttribArray(vPosition);
@@ -189,9 +202,9 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void draw() {
 		composeMVP();
-		drawMap(mvpCache);
-		drawGrid(mvpCache);
-		drawRay(mvpCache);
+		drawMap();
+		drawGrid();
+		drawRay();
 	}
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}

@@ -8,6 +8,8 @@ public class Texture2D implements Closeable {
 	private int width, height;
 	private int textureHandler;
 	public Texture2D(Bitmap image) {
+		this.width = image.getWidth();
+		this.height = image.getHeight();
 		int[] t = new int[1];
 		glGenTextures(1, t, 0);
 		textureHandler = t[0];
