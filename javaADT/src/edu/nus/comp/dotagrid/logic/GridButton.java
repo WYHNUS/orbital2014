@@ -30,7 +30,9 @@ public class GridButton {
 		
 		if (imageNumber == 99){
 			// create a hero for player to control
-			character = new Hero("fur", 150, 10, 10, 1, 10, 2, 20, 10);
+			character = new Hero("fur", "intelligence", 150, 10, 10, 3, 1.7, 3.52, 20, 100,
+								19, 18, 21, 1.8, 1.9, 2.9, 295);
+			
 			character.setCharacterImage("Heros", "fur");
 			
 			actionNumber = 99; // set actionNumber

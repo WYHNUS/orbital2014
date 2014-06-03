@@ -18,7 +18,7 @@ public class Character {
 	private int maxHP, maxMP;
 	private int currentHP, currentMP;
 	
-	private int startingPhysicalAttack, totalPhysicalAttack;
+	private double startingPhysicalAttack, totalPhysicalAttack;
 	private int startingPhysicalAttackArea, totalPhysicalAttackArea;
 	private double startingPhysicalAttackSpeed, totalPhysicalAttackSpeed;
 	
@@ -29,15 +29,18 @@ public class Character {
 	private int currentActionPoint;
 
 	
-	public Character(String name, int startingHP, int startingMP, int startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, double startingPhysicalDefense, double startingMagicResistance, int actionPoint){
+	public Character(String name, int startingHP, int startingMP, 
+					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
+					double startingPhysicalDefense, double startingMagicResistance, int actionPoint){
+		
 		this.setName(name);
 		
 		this.setStartingHP(startingHP);
 		this.setStartingMP(startingMP);
 		this.setmaxHP(this.getStartingHP());
 		this.setmaxMP(this.getStartingMP());
-		this.setCurrentHP(this.getStartingHP());
-		this.setCurrentMP(this.getStartingMP());
+		this.setCurrentHP(this.getmaxHP());
+		this.setCurrentMP(this.getmaxMP());
 		
 		this.setStartingPhysicalAttack(startingPhysicalAttack);
 		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
@@ -166,12 +169,12 @@ public class Character {
 	
 	// accessor and mutator for physical attack -/speed/area
 	
-	public int getStartingPhysicalAttack() {
+	public double getStartingPhysicalAttack() {
 		return startingPhysicalAttack;
 	}
 
 
-	public void setStartingPhysicalAttack(int physicalAttack) {
+	public void setStartingPhysicalAttack(double physicalAttack) {
 		// minimum physical attack is 0
 		if (physicalAttack <= 0) {
 			this.startingPhysicalAttack = 0;
@@ -180,12 +183,12 @@ public class Character {
 		}
 	}
 	
-	public int getTotalPhysicalAttack() {
+	public double getTotalPhysicalAttack() {
 		return totalPhysicalAttack;
 	}
 
 
-	public void setTotalPhysicalAttack(int totalPhysicalAttack) {
+	public void setTotalPhysicalAttack(double totalPhysicalAttack) {
 		// minimum physical attack is 0
 		if (totalPhysicalAttack <= 0) {
 			this.totalPhysicalAttack = 0;
