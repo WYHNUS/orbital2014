@@ -13,8 +13,8 @@ public class ControlEvent {
 	}
 	public static final int TYPE_CLEAR = 0;
 	public static final int TYPE_DOWN = 0x01;
-	public static final int TYPE_CLICK = 0x02;
-	public static final int TYPE_DRAG = 0x04;
+	public static final int TYPE_DRAG = 0x02;
+	public static final int TYPE_CLICK = 0x04;	// TODO what is this?
 	// event definitions
 	public static final double TAP_DRIFT_LIMIT = 0.05;
 	public static final long TAP_LONG_TIME_LIMIT = 800;

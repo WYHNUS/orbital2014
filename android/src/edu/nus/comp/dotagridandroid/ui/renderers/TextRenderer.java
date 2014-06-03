@@ -11,7 +11,7 @@ import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 public class TextRenderer implements Renderer {
 	// parent resources
 	private GenericProgram textProgram;
-	private MainRenderer responder;
+	private MainRenderer.GraphicsResponder responder;
 	private VertexBufferManager vBufMan;
 	// render params
 	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
@@ -26,6 +26,7 @@ public class TextRenderer implements Renderer {
 				CommonShaders.FS_IDENTITY_TEXTURED_TONED);
 	}
 	
+	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {
 		if (model != null)
 			this.model = model;
@@ -42,9 +43,10 @@ public class TextRenderer implements Renderer {
 	}
 	
 	public void setText (String text) {
-		if (text != null && text.length() > 0)
+		if (text != null && text.length() > 0) {
 			this.text = Collections.singletonList(text);
-		responder.updateGraphics();
+			responder.updateGraphics();
+		}
 	}
 	public void setTexts (String[] text) {
 		this.text = Arrays.asList(text);
@@ -118,7 +120,7 @@ public class TextRenderer implements Renderer {
 	}
 
 	@Override
-	public void setGraphicsResponder(MainRenderer mainRenderer) {
+	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {
 		this.responder = mainRenderer;
 	}
 
@@ -130,4 +132,7 @@ public class TextRenderer implements Renderer {
 	public void setVertexBufferManager(VertexBufferManager manager) {
 		vBufMan = manager;
 	}
+	
+	@Override
+	public boolean getReadyState() {return true;}
 }

@@ -55,11 +55,11 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		image.recycle();
 		texture2d.put("DefaultTextFontMap", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.textmap)));
 		image.recycle();
-		r = new GridRenderer(gridHeight, gridWidth);
+		r = new MainSceneRenderer();
 		r.setVertexBufferManager(vBufMan);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));
 		r.setGameLogicManager(manager);
-		r.setGraphicsResponder(this);
+		r.setGraphicsResponder(new GraphicsResponder());
 		r.setAspectRatio(ratio);
 		r.setRenderReady();
 	}
@@ -97,8 +97,11 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		for (Texture2D t : texture2d.values())
 			t.close();
 	}
-
-	public void updateGraphics() {
-		view.requestRender();
+	
+	public class GraphicsResponder {
+		public void updateGraphics() {
+			view.requestRender();
+		}
 	}
+
 }

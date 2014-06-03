@@ -16,7 +16,7 @@ public class GridRenderer implements Renderer {
 	private Map<String, Texture2D> textures;
 	private int rows, columns;
 	private GameLogicManager manager;
-	private MainRenderer responder;
+	private MainRenderer.GraphicsResponder responder;
 	// configurations
 	// aspect ratio - width : height
 	private float ratio;
@@ -78,7 +78,7 @@ public class GridRenderer implements Renderer {
 		textRender = new TextRenderer();
 	}
 	@Override
-	public void setGraphicsResponder(MainRenderer mainRenderer) {
+	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {
 		responder = mainRenderer;
 		textRender.setGraphicsResponder(responder);
 	}
@@ -160,6 +160,8 @@ public class GridRenderer implements Renderer {
 		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
 		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
 	}
+	@Override
+	public boolean getReadyState() {return true;}
 	// draw functions
 	private void drawGrid() {
 		int vOffset = vBufMan.getVertexBufferOffset("GridPointBuffer"),
@@ -288,8 +290,9 @@ public class GridRenderer implements Renderer {
 	@Override
 	public boolean passEvent(ControlEvent e) {
 		// Remember: normalise
-		if (e.type == ControlEvent.TYPE_CLICK) {
+		if (e.type == ControlEvent.TYPE_DOWN) {
 			// unknown just yet
+			return true;
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
 			// tap with movements
 			if (e.data.eventTime - e.data.startTime > ControlEvent.DRAG_TIME_LIMIT ||
@@ -303,6 +306,7 @@ public class GridRenderer implements Renderer {
 					onProcessingAttackAngle(e);
 				responder.updateGraphics();
 			}
+			return true;
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
 			if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT / ratio && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT * ratio) {
 				// tap
@@ -345,8 +349,9 @@ public class GridRenderer implements Renderer {
 			onProcessingPerspectiveDone(e);
 			onProcessingAttackAngleDone(e);
 			responder.updateGraphics();
+			return e.data.pointerCount > 1;
 		}
-		return true;
+		return false;
 	}
 	private void onDoubleTap(ControlEvent e) {
 		// reset camera
