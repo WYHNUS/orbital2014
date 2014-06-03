@@ -479,8 +479,8 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void close() {
 		// delete buffers
-		textRender.close();
 		mapProgram.close();
 		gridProgram.close();
+		textRender.close();
 	}
 }
