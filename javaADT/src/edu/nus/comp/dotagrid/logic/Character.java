@@ -1,8 +1,14 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.awt.Image;
+
+import javax.swing.ImageIcon;
+
 public class Character {
 	
 	// character compose of : LineCreeps, hero, tower and other buildings
+	
+	private Image characterImage;
 	
 	private int hp, mp;
 	private int physicalAttack, physicalAttackArea;
@@ -23,6 +29,16 @@ public class Character {
 		this.setActionPoint(actionPoint);
 	}
 
+	
+	public Image getCharacterImage() {
+		return characterImage;
+	}
+
+
+	public void setCharacterImage(String characterType, String characterName) {
+		this.characterImage = new ImageIcon("res/" + characterType + "/" + characterName + ".jpg").getImage();
+	}
+	
 
 	public int getHp() {
 		return hp;
@@ -102,5 +118,7 @@ public class Character {
 	public void setMagicResistance(double magicResistance) {
 		this.magicResistance = magicResistance;
 	}
+
+
 	
 }

@@ -31,6 +31,7 @@ public class GridButton {
 		if (imageNumber == 99){
 			// create a hero for player to control
 			testHero = new Hero(150, 10, 10, 1, 10, 2, 20, 10);
+			testHero.setCharacterImage("Heros", "fur");
 			
 			actionNumber = 99; // set actionNumber
 			
@@ -43,12 +44,32 @@ public class GridButton {
 		// test
 		System.out.println(actionNumber + " Action Performed!");	
 
+		
 		// highlight the selected position
 		if (GridFrame.getSelectedXPos() != -1 && GridFrame.getSelectedYPos() != -1) {
 			GridFrame.highlightedMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()] = 1;
 		}
+		
+		
+		// display the selected position's character icon on the characterIcon
+		if (this.isOccupied == true) {
+			// display character icon
+			GameFrame.characterIcon.setImage(testHero.getCharacterImage());
+			GameFrame.characterIcon.setIsReadyToDrawImage(true);
+		} else {
+			// display world map icon
+			GameFrame.characterIcon.setImage(GridFrame.terrain[GridFrame.map[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()]]);
+			GameFrame.characterIcon.setIsReadyToDrawImage(true);
+		}
 	}
 	
 	
+	public boolean getIsOccupied(){
+		return isOccupied;
+	}
+	
+	public Character getCharacter(){
+		return testHero;
+	}
 
 }

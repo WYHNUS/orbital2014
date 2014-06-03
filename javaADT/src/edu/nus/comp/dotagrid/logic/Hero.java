@@ -7,9 +7,6 @@ import javax.swing.ImageIcon;
 
 public class Hero extends Character{
 	
-	private String textureFile = "";
-	private Image texture;
-	
 	private String name;
 	
 	private int hp, mp;
@@ -30,20 +27,9 @@ public class Hero extends Character{
 	private ArrayList<Item> items;
 	
 	
-	public Hero(int hp, int mp, int physicalAttack, int physicalAttackArea,
-			double physicalAttackSpeed, double physicalDefense,
-			double magicResistance, int actionPoint) {
-		super(hp, mp, physicalAttack, physicalAttackArea, physicalAttackSpeed,
-				physicalDefense, magicResistance, actionPoint);
+	public Hero(int hp, int mp, int physicalAttack, int physicalAttackArea, double physicalAttackSpeed, double physicalDefense, double magicResistance, int actionPoint) {
+		super(hp, mp, physicalAttack, physicalAttackArea, physicalAttackSpeed, physicalDefense, magicResistance, actionPoint);
 		// TODO Auto-generated constructor stub
-	}
-	
-	public Hero getTextureFile(String str) {
-		this.textureFile = str;
-		
-		this.texture = new ImageIcon("res/tower/" + this.textureFile + ".gif").getImage();
-		
-		return null;
 	}
 
 }

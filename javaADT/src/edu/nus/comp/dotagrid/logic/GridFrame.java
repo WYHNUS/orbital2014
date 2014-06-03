@@ -41,9 +41,9 @@ public class GridFrame {
 	private static int selectedYPos = -1;
 	
 	// store terrain Images
-	public Image[] terrain = new Image[100];
+	public static Image[] terrain = new Image[100];
 	
-	public int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
+	public static int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
 	public static int[][] highlightedMap = new int[ROW_NUMBER][COLUMN_NUMBER];
 	
 	public static GridButton[][] gridButtonMap = new GridButton[ROW_NUMBER][COLUMN_NUMBER];
@@ -77,6 +77,8 @@ public class GridFrame {
 		displayGridOnScreen(g);
 		
 		initializeGridButtonsOnScreen();
+		
+		displayGridButtonsOnScreen(g);
 	}
 
 	private void initializeGridButtonsOnScreen() {
@@ -101,6 +103,23 @@ public class GridFrame {
 				g.drawRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
 						(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
 						(int) gridHeight);
+
+			}
+		}
+		
+	}
+	
+	private void displayGridButtonsOnScreen(Graphics g) {
+		
+		for (int x=0; x<gridColNumberInScreen; x++) {
+			for (int y=0; y<gridRowNumberInScreen; y++) { 
+				
+				if (gridButtonMap[x + currentGridXPos][y + currentGridYPos].getIsOccupied() == true) {
+					g.drawImage(gridButtonMap[x + currentGridXPos][y + currentGridYPos].getCharacter().getCharacterImage(),
+							(int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+							(int) gridHeight, null);
+				}
 
 			}
 		}
@@ -145,8 +164,9 @@ public class GridFrame {
 		gridHeight = GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen;
 		
 		displayGridOnScreen(g);
+		displayGridButtonsOnScreen(g);
 		
-		displayHighlightGrid(g);
+		displayHighlightGrid(g);		
 	}
 	
 	
@@ -163,6 +183,9 @@ public class GridFrame {
 					highlightedMap[x][y] = -1;
 				}
 			}	
+			
+			// reset previously selected character icon image in game frame
+			GameFrame.characterIcon.setIsReadyToDrawImage(false);
 			
 			// set the coordinates for the selected position
 			selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);
