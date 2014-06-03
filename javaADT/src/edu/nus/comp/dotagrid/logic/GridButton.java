@@ -11,7 +11,7 @@ public class GridButton {
 	// action number marks the character of the grid button and its corresponding acitons
 	private int actionNumber;
 	
-	private Character testHero = null; 
+	private Character character = null; 
 	
 	public GridButton(int imageNumber){
 		/* imageNumber :
@@ -30,8 +30,8 @@ public class GridButton {
 		
 		if (imageNumber == 99){
 			// create a hero for player to control
-			testHero = new Hero(150, 10, 10, 1, 10, 2, 20, 10);
-			testHero.setCharacterImage("Heros", "fur");
+			character = new Hero("fur", 150, 10, 10, 1, 10, 2, 20, 10);
+			character.setCharacterImage("Heros", "fur");
 			
 			actionNumber = 99; // set actionNumber
 			
@@ -54,7 +54,7 @@ public class GridButton {
 		// display the selected position's character icon on the characterIcon
 		if (this.isOccupied == true) {
 			// display character icon
-			GameFrame.characterIcon.setImage(testHero.getCharacterImage());
+			GameFrame.characterIcon.setImage(character.getCharacterImage());
 			GameFrame.characterIcon.setIsReadyToDrawImage(true);
 		} else {
 			// display world map icon
@@ -69,7 +69,7 @@ public class GridButton {
 	}
 	
 	public Character getCharacter(){
-		return testHero;
+		return character;
 	}
 
 }

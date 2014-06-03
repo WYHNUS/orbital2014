@@ -1,23 +1,13 @@
 package edu.nus.comp.dotagrid.logic;
-import java.awt.Image;
+
 import java.util.*;
 
-import javax.swing.ImageIcon;
 
 
 public class Hero extends Character{
 	
-	private String name;
-	
-	private int hp, mp;
-	private int physicalAttack, physicalAttackArea;
-	private double physicalAttackSpeed;
-	
-	private int strength, agility, intelligence;
+	private int startingStrength, agility, intelligence;
 	private double strengthGrowth, agilityGrowth, intelligenceGrowth;
-	
-	private int actionPoint;
-	private double physicalDefense, magicResistance;
 	
 	private int money;
 	private int level;
@@ -27,9 +17,13 @@ public class Hero extends Character{
 	private ArrayList<Item> items;
 	
 	
-	public Hero(int hp, int mp, int physicalAttack, int physicalAttackArea, double physicalAttackSpeed, double physicalDefense, double magicResistance, int actionPoint) {
-		super(hp, mp, physicalAttack, physicalAttackArea, physicalAttackSpeed, physicalDefense, magicResistance, actionPoint);
-		// TODO Auto-generated constructor stub
+	public Hero(String heroName, int startingHP, int startingMP, int startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, double startingPhysicalDefense, double startingMagicResistance, int actionPoint,
+			int strength, int agility, int intelligence, double strengthGrowth, double agilityGrowth, double intelligenceGrowth,
+			int level, int experience) {
+		super(heroName, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, startingPhysicalDefense, startingMagicResistance, actionPoint);
+		
+		// initialize attributes specific to heros
+		
 	}
 
 }

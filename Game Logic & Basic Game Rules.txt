@@ -80,7 +80,7 @@ movementSpeed = initialMovementSpeed + movementSpeedGainFromItem + movementSpeed
 
 3. In each round of the game, if player's hero is alive, player will have some ActionPoint(AP) to perform actions
 h
-AP = startingAP + APGainFromItem + APGainFromSkill 
+AP = startingAP (fixed value)
 
 
 Each action will consume a certain amount of AP depending on the hero's attributes
