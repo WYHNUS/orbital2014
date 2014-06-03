@@ -1,24 +1,18 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.awt.AlphaComposite;
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
 public class GridFrame {
 	
-	
 	WorldMap worldMap;
 	WorldMapFile worldMapFile;
-	
-	
-	public int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
-	
-	public GridButton[][] gridMap = new GridButton[ROW_NUMBER][COLUMN_NUMBER];
-	
-	// store terrain Images
-	public Image[] terrain = new Image[100];
-	
+
 	
 	public static final int ROW_NUMBER = 200;
 	public static final int COLUMN_NUMBER = 200;
@@ -33,19 +27,40 @@ public class GridFrame {
 	private static int currentGridXPos = 0;
 	private static int currentGridYPos = ROW_NUMBER - gridRowNumberInScreen - 1;
 	
-	private double gridWidth = 1.0;
-	private double gridHeight = 1.0;
+	public static double gameFrameGridWidth = 1.0;
+	public static double gameFrameGridHeight = 1.0;
+	
+	public static double gameFrameWidth = 1.0;
+	public static double gameFrameHeight = 1.0;
+	
+	private static double gridWidth = 1.0;
+	private static double gridHeight = 1.0;
+	
+	// grid position that is to be highlighted
+	private static int selectedXPos = -1;
+	private static int selectedYPos = -1;
+	
+	// store terrain Images
+	public Image[] terrain = new Image[100];
+	
+	public int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
+	public static int[][] highlightedMap = new int[ROW_NUMBER][COLUMN_NUMBER];
+	
+	public static GridButton[][] gridButtonMap = new GridButton[ROW_NUMBER][COLUMN_NUMBER];
 	
 	
 	
 	// constructor
 	public GridFrame(Graphics g, Screen screen) {
 		
-		double gameFrameGridWidth = (screen.frame.getWidth() - 2.0 * GameFrame.FRAME_BORDER_WIDTH) / GameFrame.GRID_COL_NUMBER_IN_SCREEN;
-		double gameFrameGridHeight = (screen.frame.getHeight() - 2.0 * GameFrame.FRAME_BORDER_HEIGHT) / GameFrame.GRID_ROW_NUMBER_IN_SCREEN;	
+		gameFrameGridWidth = (screen.frame.getWidth() - 2.0 * GameFrame.FRAME_BORDER_WIDTH) / GameFrame.GRID_COL_NUMBER_IN_SCREEN;
+		gameFrameGridHeight = (screen.frame.getHeight() - 2.0 * GameFrame.FRAME_BORDER_HEIGHT) / GameFrame.GRID_ROW_NUMBER_IN_SCREEN;	
 		
-		gridWidth = GameFrame.FRAME_COL_NUMBER_OCCUPIED * gameFrameGridWidth / gridColNumberInScreen;
-		gridHeight = GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen;
+		gameFrameWidth = GameFrame.FRAME_COL_NUMBER_OCCUPIED * gameFrameGridWidth;
+		gameFrameHeight = GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight;
+		
+		gridWidth = gameFrameWidth / gridColNumberInScreen;
+		gridHeight = gameFrameHeight / gridRowNumberInScreen;
 		
 		worldMapFile = new WorldMapFile();
 		
@@ -62,14 +77,13 @@ public class GridFrame {
 		displayGridOnScreen(g);
 		
 		initializeGridButtonsOnScreen();
-			
 	}
 
 	private void initializeGridButtonsOnScreen() {
 		// initialize grid buttons that can be displayed on screen
-		for (int x=0; x<gridColNumberInScreen; x++) {
-			for (int y=0; y<gridRowNumberInScreen; y++) { 
-				gridMap[x][y] = new GridButton();
+		for (int x=0; x<ROW_NUMBER; x++) {
+			for (int y=0; y<COLUMN_NUMBER; y++) { 
+				gridButtonMap[x][y] = new GridButton(map[x][y]);
 			}
 		}	
 	}
@@ -94,13 +108,101 @@ public class GridFrame {
 	}
 	
 	
+	// display all highlighted grid on screen if there is any
+	private void displayHighlightGrid(Graphics g) {
+		
+		// prepare to draw transparent grids
+		Graphics2D g2d = (Graphics2D) g;
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f); 
+		g2d.setComposite(ac);
+		g2d.setColor(Color.RED);
+		
+		for (int x=0; x<gridColNumberInScreen; x++) {
+			for (int y=0; y<gridRowNumberInScreen; y++) { 
+				
+				// condition to highlight a button
+				if (highlightedMap[x + currentGridXPos][y + currentGridYPos] == 1){
+					
+					g2d.fillRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+							(int) gridHeight);
+					
+				}
+
+			}
+		}
+		
+		// disable g2d
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));  
+		g2d.dispose();
+	}
+	
+	
+	
+	// method to update grid frame
+	public void updateGridFrame(Graphics g){
+		gridWidth = GameFrame.FRAME_COL_NUMBER_OCCUPIED * gameFrameGridWidth / gridColNumberInScreen;
+		gridHeight = GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen;
+		
+		displayGridOnScreen(g);
+		
+		displayHighlightGrid(g);
+	}
+	
+	
+	// method to check and invoke grid frame event
+	public static void invokeEvent(int handXPos, int handYPos){
+		
+		// check if the selected position is within grid frame
+		if (handXPos > GameFrame.FRAME_BORDER_WIDTH && handXPos < (GameFrame.FRAME_BORDER_WIDTH + gameFrameWidth)
+				&& handYPos > GameFrame.FRAME_BORDER_HEIGHT && handYPos < (GameFrame.FRAME_BORDER_HEIGHT + gameFrameHeight)) {
+			
+			// clear all previously highlighted grids and prepare for new round of highlighting XD
+			for (int x=0; x<ROW_NUMBER; x++) {
+				for (int y=0; y<COLUMN_NUMBER; y++) { 
+					highlightedMap[x][y] = -1;
+				}
+			}	
+			
+			// set the coordinates for the selected position
+			selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);
+			selectedYPos = currentGridYPos + (int) ((handYPos - GameFrame.FRAME_BORDER_HEIGHT) / gridHeight);
+			
+			// test
+			System.out.println("selectedXPos = " + selectedXPos);
+			System.out.println("selectedYPos = " + selectedYPos);
+			
+			gridButtonMap[selectedXPos][selectedYPos].actionPerformed();
+
+		}
+		
+	}
+	
+	// method to get and change the selected highlighted position
+	public static int getSelectedXPos(){
+		return selectedXPos;
+	}
+	
+	public static void setSelectedXPos(int changedSelectedXPos){
+		selectedXPos = changedSelectedXPos;
+	}
+	
+	public static int getSelectedYPos(){
+		return selectedYPos;
+	}
+	
+	public static void setSelectedYPos(int changedSelectedYPos){
+		selectedYPos = changedSelectedYPos;
+	}
+	
 	
 	
 	
 	/* 
-	 * Other methods to change the display size of the game grid frame
+	 * Methods to change the display size of the game grid frame
 	 * 
 	 */
+	
 	
 	public static int getGridRowNumberInScreen(){
 		return gridRowNumberInScreen;

@@ -17,6 +17,9 @@ public class Screen extends JPanel implements Runnable {
 	public int scene;
 
 	private boolean running = false;
+	private boolean isGridFrameInitialized = false;
+	
+	private GridFrame newGameGridFrame;
 
 
 	// constructor
@@ -51,7 +54,12 @@ public class Screen extends JPanel implements Runnable {
 			new GameFrame(g, frame);
 			
 			// game grid 
-			new GridFrame(g, this);
+			if (isGridFrameInitialized == false) {
+				newGameGridFrame = new GridFrame(g, this);
+				isGridFrameInitialized = true;
+			} else {
+				newGameGridFrame.updateGridFrame(g);
+			}
 
 		} else {
 			g.setColor(Color.WHITE);
