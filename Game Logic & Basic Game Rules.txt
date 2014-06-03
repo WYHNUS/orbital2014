@@ -58,6 +58,8 @@ physicalAttack = startingPhysicalAttack + (main attribute of the selected hero: 
 
 Other Attributes hero prossess:
 
+physicalAttackArea = initialPhysicalAttackArea 
+
 magicResistance = initialMagicResistance + magicResistanceGainFromItem + magicResistanceGainFromSkill
 
 movementSpeed = initialMovementSpeed + movementSpeedGainFromItem + movementSpeedGainFromSkill

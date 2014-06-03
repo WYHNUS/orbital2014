@@ -14,7 +14,7 @@ public class MouseHandler implements MouseListener{
 		handYPos = e.getYOnScreen();
 		
 		GameFrame.invokeEvent(handXPos, handYPos);
-		
+		GridFrame.invokeEvent(handXPos, handYPos);
 	}
 
 

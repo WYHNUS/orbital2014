@@ -17,6 +17,10 @@ public class Screen extends JPanel implements Runnable {
 	public int scene;
 
 	private boolean running = false;
+	private boolean isFrameInitialized = false;
+	
+	private GridFrame newGameGridFrame;
+	private GameFrame newGameFrame;
 
 
 	// constructor
@@ -40,18 +44,26 @@ public class Screen extends JPanel implements Runnable {
 			// load game
 			g.setColor(Color.BLUE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
-			
-			g.setColor(Color.BLACK);		
+	
 
 		} else if (scene == 1) {
-			// start game!	
+			// start game!				
+			g.setColor(Color.BLACK);	
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 			
-			// draw game frame
-			new GameFrame(g, frame);
+
+			if (isFrameInitialized == false) {				
+				// draw game frame
+				newGameFrame = new GameFrame(g, frame);
+				
+				// draw game grid 
+				newGameGridFrame = new GridFrame(g, this);
 			
-			// game grid 
-			new GridFrame(g, this);
+				isFrameInitialized = true;
+			} else {
+				newGameFrame.updateGameFrame(g);
+				newGameGridFrame.updateGridFrame(g);
+			}
 
 		} else {
 			g.setColor(Color.WHITE);

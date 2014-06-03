@@ -33,7 +33,7 @@ public class GameFrame{
 	private static ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
 	
 	// image of the character selected
-	GameButton characterIcon;
+	public static GameButton characterIcon;
 	
 	// Name, HP , MP
 	GameButton characterName;
@@ -107,6 +107,14 @@ public class GameFrame{
 		displayAllButtons(g);
 		
 	}
+	
+	
+	public void updateGameFrame(Graphics g){
+		// draw game frame
+		displayAllButtons(g);
+		
+		drawAllReadyImage(g);
+	}
 
 	
 	private void displayAllButtons(Graphics g) {
@@ -116,6 +124,17 @@ public class GameFrame{
 		for (int i=0; i<allGameButtons.size(); i++) {
 			allGameButtons.get(i).drawRect(g);
 			allGameButtons.get(i).drawString(g);
+		}
+	}
+	
+	
+	private void drawAllReadyImage(Graphics g) {
+		//display all ready images
+		for (int i=0; i<allGameButtons.size(); i++) {
+			// check if image is ready to draw
+			if (allGameButtons.get(i).getIsReadyToDrawImage() == true){
+				allGameButtons.get(i).drawImage(g);
+			}
 		}
 	}
 

@@ -1,26 +1,35 @@
 package edu.nus.comp.dotagrid.logic;
+import java.awt.Image;
 import java.util.*;
 
-public class Hero implements Drawable, Character {
-	public int hp, mp;
-	public int attack, attackArea, attackSpeed;
-	public int strength, agility, intelligence;
-	public int strengthGrowth, agilityGrowth, intelligenceGrowth;
-	public int speed, actionPoint;
-	public int defense, magicResist;
-	public int money;
-	public int level;
-	public String name;
-	public ArrayList<Skill> skills;
-	public ArrayList<Item> items;
+import javax.swing.ImageIcon;
+
+
+public class Hero extends Character{
 	
-	@Override
-	public void flipClock () {
-		;
-	}
+	private String name;
 	
-	@Override
-	public void draw(DrawDelegate delegate) {
-		// TODO Auto-generated method stub
+	private int hp, mp;
+	private int physicalAttack, physicalAttackArea;
+	private double physicalAttackSpeed;
+	
+	private int strength, agility, intelligence;
+	private double strengthGrowth, agilityGrowth, intelligenceGrowth;
+	
+	private int actionPoint;
+	private double physicalDefense, magicResistance;
+	
+	private int money;
+	private int level;
+	private int experience;
+
+	private ArrayList<Skill> skills;
+	private ArrayList<Item> items;
+	
+	
+	public Hero(int hp, int mp, int physicalAttack, int physicalAttackArea, double physicalAttackSpeed, double physicalDefense, double magicResistance, int actionPoint) {
+		super(hp, mp, physicalAttack, physicalAttackArea, physicalAttackSpeed, physicalDefense, magicResistance, actionPoint);
+		// TODO Auto-generated constructor stub
 	}
+
 }

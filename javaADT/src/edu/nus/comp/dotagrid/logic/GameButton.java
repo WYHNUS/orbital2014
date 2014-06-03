@@ -10,6 +10,7 @@ public class GameButton{
 	private Image image;
 	
 	private boolean isClicked;
+	private boolean isReadyToDrawImage;
 	
 	private int actionNumber;
 	
@@ -29,6 +30,7 @@ public class GameButton{
 		this.height = height;
 		
 		isClicked = false;
+		isReadyToDrawImage = false;
 	}
 	
 	
@@ -55,6 +57,14 @@ public class GameButton{
 	
 	public void setColor(Graphics g, Color color) {
 		g.setColor(color);
+	}
+	
+	public boolean getIsReadyToDrawImage(){
+		return isReadyToDrawImage;
+	}
+	
+	public void setIsReadyToDrawImage(boolean state){
+		this.isReadyToDrawImage = state;
 	}
 	
 	
