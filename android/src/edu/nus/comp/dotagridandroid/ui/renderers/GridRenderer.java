@@ -175,7 +175,7 @@ public class GridRenderer implements Renderer {
 		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
 		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
 		mapTexture = textures.get("GridMapBackground");
-		normalGen = new NormalGenerator(columns, rows, new float[(rows * NormalGenerator.RESOLUTION + 1) * (columns * NormalGenerator.RESOLUTION + 1) * 4], mapTexture.getWidth(), mapTexture.getWidth());
+		normalGen = new NormalGenerator(columns, rows, new float[(rows * NormalGenerator.RESOLUTION + 1) * (columns * NormalGenerator.RESOLUTION + 1) * 4], mapTexture.getWidth(), mapTexture.getHeight());
 		normalGen.setGraphicsResponder(responder);
 		normalGen.setRenderReady();
 	}
@@ -271,7 +271,7 @@ public class GridRenderer implements Renderer {
 		drawGrid();
 		drawRay();
 //		if (textRender != null) {
-		textRender.draw();
+//		textRender.draw();
 //		}
 	}
 	// coordinate calculations
