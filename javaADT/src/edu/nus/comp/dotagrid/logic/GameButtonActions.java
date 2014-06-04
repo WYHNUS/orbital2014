@@ -26,6 +26,8 @@ public class GameButtonActions {
 		 * 
 		 * actionNumber 7 : invoke ready to movement event
 		 * 
+		 * actionNumber 8 : end this round, start next round, reset all AP
+		 * 
 		 */
 
 		switch (actionNumber) {
@@ -60,9 +62,27 @@ public class GameButtonActions {
 			case 7:
 				readyToMove();
 				break;
+				
+			case 8 :
+				endRound();
+				break;
 		}
 	}
 	
+
+	private void endRound() {
+		GameFrame.round++;
+		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.round);
+		
+		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
+			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
+				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
+					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentActionPoint(GridFrame.gridButtonMap[x][y].getCharacter().getActionPoint());
+				}
+			}
+		}	
+	}
+
 
 	private void readyToMove() {
 		// get ready for player's hero to move

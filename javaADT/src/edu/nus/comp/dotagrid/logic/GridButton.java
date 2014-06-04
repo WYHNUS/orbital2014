@@ -28,7 +28,7 @@ public class GridButton {
 		
 
 		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 99) {
-			setMovable(true);
+			this.setMovable(true);
 		}
 		
 		if (imageNumber == 99){
@@ -52,9 +52,24 @@ public class GridButton {
 		}
 		
 		if (GameButtonActions.readyToAct == true) {
-			// perform move action
-			this.resetGridButton(GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()]); 
-			GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()] = new GridButton(1);
+			// get the AP required for such movement
+			int usedAP = calculateUsedAP(GridFrame.getPreviouslySelectedXPos(), GridFrame.getPreviouslySelectedYPos(), 
+					GridFrame.getSelectedXPos(),GridFrame.getSelectedYPos());
+			
+			// can only move on non-occupied and movable grid
+			if (this.getIsMovable() == true && this.getIsOccupied() == false) {
+				// can only move if character has enough AP
+				if (GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().getCurrentActionPoint() - usedAP >= 0){
+					
+					// perform move action
+					this.resetGridButton(GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()]); 
+					GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()] = new GridButton(1);
+					
+					// reduce hero's AP 
+					character.setCurrentActionPoint(character.getCurrentActionPoint() - usedAP);
+					
+				}			
+			}
 			
 			// move action ended
 			GameButtonActions.readyToAct = false;
@@ -73,6 +88,15 @@ public class GridButton {
 		}
 	}
 	
+	
+	
+	private int calculateUsedAP(int previouslySelectedXPos, int previouslySelectedYPos, int selectedXPos, int selectedYPos) {
+		// calculate AP used by moving from (previouslySelectedXPos, previouslySelectedYPos) to (selectedXPos, selectedYPos)
+		int numberOfGridsMoved = Math.abs(previouslySelectedXPos - selectedXPos) + Math.abs(previouslySelectedYPos - selectedYPos);
+		
+		return (int)(numberOfGridsMoved * GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().APUsedInMovingOneGrid());
+	}
+
 	
 	private void displayMovableGrids() {
 		// highlight movable grids
@@ -116,12 +140,14 @@ public class GridButton {
 		 * 11 - 16 : items[0] - item[5]
 		 * 17 - 24 : skill[0] - skill[7]
 		 
-		 * 25: Kill
-		 * 26: Death
-		 * 27: Assist
+		 * 25 :Turn
 		 
-		 * 28: money
-		 * 29: actionPoints
+		 * 26: Kill
+		 * 27: Death
+		 * 28: Assist
+		 
+		 * 29: money
+		 * 30: actionPoints
 		 
 		 */
 		
@@ -136,7 +162,7 @@ public class GridButton {
 		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + character.getTotalPhysicalAttack());
 		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", character.getTotalPhysicalDefense()));
 		
-		GameFrame.allCharacterInfoGameButtons.get(29).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getActionPoint());
+		GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getActionPoint());
 		
 		// properties that only hero possess
 		if (this.isHero == true) {
@@ -168,12 +194,12 @@ public class GridButton {
 			*/
 			
 			// KDA
-			GameFrame.allCharacterInfoGameButtons.get(25).setString("Kill : " +((Hero)character).getKill());
-			GameFrame.allCharacterInfoGameButtons.get(26).setString("Death : " + ((Hero)character).getDeath());
-			GameFrame.allCharacterInfoGameButtons.get(27).setString("Assist : " + ((Hero)character).getAssist());
+			GameFrame.allCharacterInfoGameButtons.get(26).setString("Kill : " +((Hero)character).getKill());
+			GameFrame.allCharacterInfoGameButtons.get(27).setString("Death : " + ((Hero)character).getDeath());
+			GameFrame.allCharacterInfoGameButtons.get(28).setString("Assist : " + ((Hero)character).getAssist());
 			
 			// money
-			GameFrame.allCharacterInfoGameButtons.get(28).setString("Money : " +((Hero)character).getMoney());
+			GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " +((Hero)character).getMoney());
 		}
 
 	}

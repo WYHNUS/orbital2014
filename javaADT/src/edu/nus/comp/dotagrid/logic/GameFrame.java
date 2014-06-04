@@ -8,6 +8,8 @@ import java.util.ArrayList;
 
 public class GameFrame{
 	
+	public static int round = 0;
+	
 	public int frameWidth;
 	public int frameHeight;
 	
@@ -259,8 +261,9 @@ public class GameFrame{
 		allGameButtons.add(versionID);
 		
 		// turn count
-		turnCounter = new GameButton("turnCounter", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
+		turnCounter = new GameButton("Turn : ", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
 		allGameButtons.add(turnCounter);
+		allCharacterInfoGameButtons.add(turnCounter);
 		
 		// KDA
 		Kill = new GameButton("Kill", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
@@ -336,8 +339,9 @@ public class GameFrame{
 		directions[1] = new GameButton("left", null, startingXPos + (int) (0.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);
 		directions[1].setActionNumber(3);
 		
-		// Game Icon
-		directions[2] = new GameButton("game icon", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);	
+		// End Round Button
+		directions[2] = new GameButton("END", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);	
+		directions[2].setActionNumber(8);
 		
 		// Right button
 		directions[3] = new GameButton("right", null, startingXPos + (int) (2.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);

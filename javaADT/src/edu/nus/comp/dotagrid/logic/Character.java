@@ -368,7 +368,11 @@ public class Character {
 	}
 	
 	public int getNumberOfMovableGrid(){
-		return (int) (currentActionPoint / (MIN_MOVEMENT_CONSUME_AP + (1 - 1.0 * totalMovementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP));
+		return (int) (currentActionPoint / APUsedInMovingOneGrid());
+	}
+	
+	public double APUsedInMovingOneGrid(){
+		return MIN_MOVEMENT_CONSUME_AP + (1 - 1.0 * totalMovementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP;
 	}
 
 	

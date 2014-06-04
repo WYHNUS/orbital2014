@@ -23,6 +23,9 @@ Design a few heroes feature for player to control throughout the game. (both in 
 Feature 3.5:
 Hero modeling in renders
 
+Feature 3.6:
+Implement round feature.
+
 Feature 4:
 Allow hero to move around in the game map. (both in PC and in Android)
 
