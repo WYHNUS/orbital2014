@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
 public class GameButtonActions {
+	public static boolean readyToAct = false;
 	
 	private int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
 	private int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
@@ -22,6 +23,8 @@ public class GameButtonActions {
 		 * actionNumber 5 : zoom in game grid screen by reducing size of a factor of 2
 		 * 
 		 * actionNumber 6 : zoom out game grid screen by increasing size of a factor of 2
+		 * 
+		 * actionNumber 7 : invoke ready to movement event
 		 * 
 		 */
 
@@ -53,9 +56,19 @@ public class GameButtonActions {
 			case 6:
 				zoomOutGameGrid();
 				break;
+				
+			case 7:
+				readyToMove();
+				break;
 		}
 	}
 	
+
+	private void readyToMove() {
+		// get ready for player's hero to move
+		readyToAct = true;
+	}
+
 
 	private void zoomOutGameGrid() {
 		// zoom out game grid screen

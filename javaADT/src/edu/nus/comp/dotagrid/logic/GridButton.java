@@ -11,8 +11,8 @@ public class GridButton {
 	// mark if the character is a hero
 	private boolean isHero = false;
 	
-	// action number marks the character of the grid button and its corresponding acitons
-	private int actionNumber;
+	// mark if the character is player's hero
+	private boolean isPlayer = false;
 	
 	private Character character = null; 
 	
@@ -28,7 +28,7 @@ public class GridButton {
 		
 
 		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 99) {
-			isMovable = true;
+			setMovable(true);
 		}
 		
 		if (imageNumber == 99){
@@ -38,22 +38,26 @@ public class GridButton {
 			
 			character.setCharacterImage("Heros", "fur");
 			
-			actionNumber = 99; // set actionNumber
-			
 			isOccupied = true;
 			isHero = true;
+			setPlayer(true);
 		}
 		
 	}
 	
 	public void actionPerformed(){
-		// test
-		System.out.println(actionNumber + " Action Performed!");	
-
-		
 		// highlight the selected position
 		if (GridFrame.getSelectedXPos() != -1 && GridFrame.getSelectedYPos() != -1) {
 			GridFrame.highlightedMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()] = 1;
+		}
+		
+		if (GameButtonActions.readyToAct == true) {
+			// perform move action
+			this.resetGridButton(GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()]); 
+			GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()] = new GridButton(1);
+			
+			// move action ended
+			GameButtonActions.readyToAct = false;
 		}
 		
 		
@@ -61,6 +65,7 @@ public class GridButton {
 		if (this.isOccupied == true) {
 			// change allCharacterInfoGameButtons in game frame to the selected character's info
 			displayCharacterInfoOnGameFrame(this.character);
+			displayMovableGrids();
 		} else {
 			// display world map icon
 			GameFrame.allCharacterInfoGameButtons.get(0).setImage(GridFrame.terrain[GridFrame.map[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()]]);
@@ -69,8 +74,27 @@ public class GridButton {
 	}
 	
 	
-	private void displayCharacterInfoOnGameFrame(Character character) {
+	private void displayMovableGrids() {
+		// highlight movable grids
 		
+		for(int x=GridFrame.getSelectedXPos()-character.getNumberOfMovableGrid(); x<GridFrame.getSelectedXPos()+character.getNumberOfMovableGrid()+1; x++){
+			for(int y=GridFrame.getSelectedYPos()-character.getNumberOfMovableGrid(); y<GridFrame.getSelectedYPos()+character.getNumberOfMovableGrid()+1; y++){
+				// x and y need to be within the grid frame 
+				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
+					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
+						// x + y need to be within the number of movable grid
+						if (Math.abs(GridFrame.getSelectedXPos() - x) + Math.abs(GridFrame.getSelectedYPos() - y) <= character.getNumberOfMovableGrid()) {
+							GridFrame.highlightedMap[x][y] = 1;
+						}
+					}
+				}
+			}
+		}
+		
+	}
+
+	
+	private void displayCharacterInfoOnGameFrame(Character character) {		
 		/*
 		 
 		 * 0: characterIcon
@@ -152,16 +176,55 @@ public class GridButton {
 			GameFrame.allCharacterInfoGameButtons.get(28).setString("Money : " +((Hero)character).getMoney());
 		}
 
-
-		
 	}
-
-	public boolean getIsOccupied(){
-		return isOccupied;
+	
+	
+	private void resetGridButton(GridButton resultGridButton){
+		this.setMovable(resultGridButton.getIsMovable());
+		this.setIsOccupied(resultGridButton.getIsOccupied());
+		this.setPlayer(resultGridButton.getIsPlayer());
+		this.setHero(resultGridButton.getIsHero());
+		this.setCharacter(resultGridButton.getCharacter());
+	}
+	
+	public void setCharacter(Character character){
+		this.character = character;
 	}
 	
 	public Character getCharacter(){
 		return character;
+	}
+
+	public void setIsOccupied(boolean isOccupied){
+		this.isOccupied = isOccupied;
+	}
+	
+	public boolean getIsOccupied(){
+		return isOccupied;
+	}
+
+	public boolean getIsPlayer() {
+		return isPlayer;
+	}
+
+	public void setPlayer(boolean isPlayer) {
+		this.isPlayer = isPlayer;
+	}
+	
+	public boolean getIsHero() {
+		return isHero;
+	}
+
+	public void setHero(boolean isHero) {
+		this.isHero = isHero;
+	}
+
+	public boolean getIsMovable() {
+		return isMovable;
+	}
+
+	public void setMovable(boolean isMovable) {
+		this.isMovable = isMovable;
 	}
 
 }

@@ -40,6 +40,9 @@ public class GridFrame {
 	private static int selectedXPos = -1;
 	private static int selectedYPos = -1;
 	
+	private static int previouslySelectedXPos = -1;
+	private static int previouslySelectedYPos = -1;
+	
 	// store terrain Images
 	public static Image[] terrain = new Image[100];
 	
@@ -183,17 +186,16 @@ public class GridFrame {
 					highlightedMap[x][y] = -1;
 				}
 			}	
-			
+					
 			// reset previously selected character icon image in game frame
 			GameFrame.allCharacterInfoGameButtons.get(0).setIsReadyToDrawImage(false);
 			
+			
 			// set the coordinates for the selected position
+			previouslySelectedXPos = selectedXPos;
+			previouslySelectedYPos = selectedYPos;			
 			selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);
 			selectedYPos = currentGridYPos + (int) ((handYPos - GameFrame.FRAME_BORDER_HEIGHT) / gridHeight);
-			
-			// test
-			System.out.println("selectedXPos = " + selectedXPos);
-			System.out.println("selectedYPos = " + selectedYPos);
 			
 			gridButtonMap[selectedXPos][selectedYPos].actionPerformed();
 
@@ -218,6 +220,21 @@ public class GridFrame {
 		selectedYPos = changedSelectedYPos;
 	}
 	
+	public static int getPreviouslySelectedXPos(){
+		return previouslySelectedXPos;
+	}
+	
+	public static void setPreviouslySelectedXPos(int changedSelectedXPos){
+		previouslySelectedXPos = changedSelectedXPos;
+	}
+	
+	public static int getPreviouslySelectedYPos(){
+		return previouslySelectedYPos;
+	}
+	
+	public static void setPreviouslySelectedYPos(int changedSelectedYPos){
+		previouslySelectedYPos = changedSelectedYPos;
+	}
 	
 	
 	

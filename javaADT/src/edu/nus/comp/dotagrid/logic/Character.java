@@ -16,7 +16,9 @@ public class Character {
 	
 	private int startingHP, startingMP;
 	private int maxHP, maxMP;
-	private int currentHP, currentMP;
+	private int currentHP, currentMP;	
+	
+	private int startingMovementSpeed, totalMovementSpeed;
 	
 	private double startingPhysicalAttack, totalPhysicalAttack;
 	private int startingPhysicalAttackArea, totalPhysicalAttackArea;
@@ -28,10 +30,14 @@ public class Character {
 	private int actionPoint;
 	private int currentActionPoint;
 
+	public static final int MAX_MOVEMENT_SPEED = 522;
+	public static final int MIN_MOVEMENT_CONSUME_AP = 2;
+	public static final int MOVEMENT_CONSUME_AP = 20;
+	
 	
 	public Character(String name, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
-					double startingPhysicalDefense, double startingMagicResistance, int actionPoint){
+					double startingPhysicalDefense, double startingMagicResistance, int startingMovementSpeed, int actionPoint){
 		
 		this.setName(name);
 		
@@ -56,6 +62,9 @@ public class Character {
 		
 		this.setStartingMagicResistance(startingMagicResistance);
 		this.setTotalMagicResistance(this.getStartingMagicResistance());
+		
+		this.setStartingMovementSpeed(startingMovementSpeed);
+		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
 		
 		this.setActionPoint(actionPoint);
 		this.setCurrentActionPoint(this.getActionPoint());
@@ -326,6 +335,41 @@ public class Character {
 		this.totalMagicResistance = totalMagicResistance;
 	}
 
+
+	
+	// accessor and mutator for movement speed
+	
+	public int getStartingMovementSpeed() {
+		return startingMovementSpeed;
+	}
+
+
+	public void setStartingMovementSpeed(int startingMovementSpeed) {
+		// cannot be higher than maximum movement speed
+		if (startingMovementSpeed >= MAX_MOVEMENT_SPEED){
+			this.startingMovementSpeed = MAX_MOVEMENT_SPEED;
+		} else {
+			this.startingMovementSpeed = startingMovementSpeed;
+		}
+	}
+
+	public int getTotalMovementSpeed() {
+		return totalMovementSpeed;
+	}
+
+
+	public void setTotalMovementSpeed(int totalMovementSpeed) {
+		// cannot be higher than maximum movement speed
+		if (totalMovementSpeed >= MAX_MOVEMENT_SPEED){
+			this.totalMovementSpeed = MAX_MOVEMENT_SPEED;
+		} else {
+			this.totalMovementSpeed = totalMovementSpeed;
+		}
+	}
+	
+	public int getNumberOfMovableGrid(){
+		return (int) (currentActionPoint / (MIN_MOVEMENT_CONSUME_AP + (1 - 1.0 * totalMovementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP));
+	}
 
 	
 	// accessor and mutator for other properties

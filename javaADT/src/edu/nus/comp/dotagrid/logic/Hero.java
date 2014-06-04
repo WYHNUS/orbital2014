@@ -14,9 +14,7 @@ public class Hero extends Character{
 	private double totalStrength, totalAgility, totalIntelligence;
 	
 	private double HPGainPerRound, MPGainPerRound;
-	
-	private int movementSpeed;
-	
+
 	private int money;
 	private int level;
 	private int experience;
@@ -27,17 +25,16 @@ public class Hero extends Character{
 	private int kill, death, assist;
 	
 	// define a list of constants for calculation
-	public final int STRENGTH_ADD_HP_RATIO = 19;
-	public final int INTELLIGENCE_ADD_MP_RATIO = 13;
+	public static final int STRENGTH_ADD_HP_RATIO = 19;
+	public static final int INTELLIGENCE_ADD_MP_RATIO = 13;
 	
-	public final double STRENGTH_ADD_HP_PER_ROUND = 3.0;
-	public final double INTELLIGENCE_ADD_MP_PER_ROUND = 4.0;
-	public final double AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 1 / 7.0;
+	public static final double STRENGTH_ADD_HP_PER_ROUND = 3.0;
+	public static final double INTELLIGENCE_ADD_MP_PER_ROUND = 4.0;
+	public static final double AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 1 / 7.0;
 	
-	public final double AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO = 1.0;
-	public final double MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO = 1.0;
+	public static final double AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO = 1.0;
+	public static final double MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO = 1.0;
 
-	public final int MAX_MOVEMENT_SPEED = 522;
 	
 	
 	// constructor
@@ -48,7 +45,7 @@ public class Hero extends Character{
 			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) {
 		
 		super(heroName, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
-				startingPhysicalDefense, startingMagicResistance, actionPoint);
+				startingPhysicalDefense, startingMagicResistance, movementSpeed, actionPoint);
 		
 		// initialize attributes specific to heros
 		this.setMainAttribute(mainAttribute);
@@ -285,25 +282,6 @@ public class Hero extends Character{
 	public void setMPGainPerRound(double MPGainPerRound) {
 		this.MPGainPerRound = MPGainPerRound;
 	}
-
-
-	
-	// accessor and mutator for movement speed
-	
-	public int getMovementSpeed() {
-		return movementSpeed;
-	}
-
-
-	public void setMovementSpeed(int movementSpeed) {
-		// cannot be higher than maximum movement speed
-		if (movementSpeed >= MAX_MOVEMENT_SPEED){
-			this.movementSpeed = MAX_MOVEMENT_SPEED;
-		} else {
-			this.movementSpeed = movementSpeed;
-		}
-	}
-
 
 
 	// accessor and mutator for level and experience
