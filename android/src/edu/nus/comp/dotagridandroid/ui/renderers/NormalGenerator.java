@@ -134,7 +134,7 @@ public class NormalGenerator implements Renderer {
 		// prepare normal texture
 		glBindTexture(GL_TEXTURE_2D, textureHandler);
 		int[] buf = new int[width * height];
-		Arrays.fill(buf, 0xff0000ff);
+//		Arrays.fill(buf, 0xff0000ff);
 		texBuf = BufferUtils.createIntBuffer(width * height).put(buf);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texBuf.position(0));
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -142,14 +142,14 @@ public class NormalGenerator implements Renderer {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);
-//		glBindRenderbuffer(GL_RENDERBUFFER, renderBuf);
-//		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
-		glViewport(0, 0, width, height);	// match texture size
+		glBindRenderbuffer(GL_RENDERBUFFER, renderBuf);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT16, width, height);
 		glBindFramebuffer(GL_FRAMEBUFFER, frameBuf);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureHandler, 0);
-//		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuf);
-//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(1, 1, 1, 1);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuf);
+		glViewport(0, 0, width, height);	// match texture size
+		glClearColor(0, 0, 0, 1);
+		glClear(GL_COLOR_BUFFER_BIT);
 		// end
 		// row by row
 		glUseProgram(normalProgram.getProgramId());
