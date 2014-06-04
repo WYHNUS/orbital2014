@@ -7,12 +7,27 @@ public class CommonShaders {
 		+ "void main() {"
 			+ "gl_Position = vPosition * model * view * projection;"
 		+ "}";
+	public static final String VS_IDENTITY_VARYING_COLOR
+		= "attribute vec4 vPosition, vColor;"
+		+ "uniform mat4 model, view, projection;"
+		+ "varying vec4 autoColor;"
+		+ "void main () {"
+			+ "gl_Position = vPosition * model * view * projection;"
+			+ "autoColor = vColor;"
+		+ "}";
 	public static final String FS_IDENTITY
 		= "precision mediump float;"
 		+ "uniform vec4 vColor;"
 		+ "void main () {"
 			+ "gl_FragColor = vColor;"
 		+ "}";
+	public static final String FS_IDENTITY_VARYING_COLOR
+		= "precision mediump float;"
+		+ "varying vec4 autoColor;"
+		+ "void main () {"
+			+ "gl_FragColor = autoColor;"
+		+ "}";
+	
 	// textured
 	public static final String VS_IDENTITY_TEXTURED
 		= "attribute vec4 vPosition;"
@@ -32,7 +47,17 @@ public class CommonShaders {
 		+ "void main () {"
 			+ "gl_Position = vPosition * model * view * projection;"
 			+ "autoTextureCoord = (textureCoord + textureCoordOffset) * textureScale;"
-//			+ "autoTextureCoord = textureCoord * textureScale + vec2(0.1,0);"
+		+ "}";
+	public static final String VS_IDENTITY_TEXTURED_TRANSFORMED
+		= "attribute vec4 vPosition;"
+		+ "attribute vec2 textureCoord;"
+		+ "uniform mat3 textureMat;"
+		+ "uniform mat4 model, view, projection;"
+		+ "varying vec2 autoTextureCoord;"
+		+ "void main () {"
+			+ "gl_Position = vPosition * model * view * projection;"
+			+ "vec3 transformedTextureCoord = vec3(textureCoord, 1.0) * textureMat;"
+			+ "autoTextureCoord = transformedTextureCoord.xy / transformedTextureCoord.z;"
 		+ "}";
 	public static final String FS_IDENTITY_TEXTURED
 		= "precision mediump float;"
@@ -50,5 +75,5 @@ public class CommonShaders {
 			+ "vec4 color = texture2D (texture, autoTextureCoord);"
 			+ "gl_FragColor = color * textureColorTone + color;"
 		+ "}";
-	
+	// shadow and light maps
 }

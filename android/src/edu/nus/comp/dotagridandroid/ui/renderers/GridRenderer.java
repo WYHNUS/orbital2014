@@ -2,6 +2,7 @@ package edu.nus.comp.dotagridandroid.ui.renderers;
 
 //import java.nio.*;
 import java.util.Map;
+
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
@@ -17,6 +18,7 @@ public class GridRenderer implements Renderer {
 	private int rows, columns;
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
+	private Texture2D mapTexture;
 	// configurations
 	// aspect ratio - width : height
 	private float ratio;
@@ -37,6 +39,7 @@ public class GridRenderer implements Renderer {
 			projection = IdentityMatrix4x4();
 	private float[] selectGridMat;
 	private TextRenderer textRender;
+	private NormalGenerator normalGen;
 	// gesture states
 	private boolean hasRay = false;
 	private boolean processingTranslation = false, processingPerspective = false;
@@ -57,7 +60,9 @@ public class GridRenderer implements Renderer {
 	// ray tracing
 	private float[] orgGridPoint;
 	private int [] orgGridIndex;
-	public GridRenderer (int rows, int columns) {
+	// multithreading
+	private Thread computeTask;
+	public GridRenderer (int columns, int rows) {
 		this.rows = rows;
 		this.columns = columns;
 		gridProgram = new GenericProgram(
@@ -87,6 +92,33 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
 		vBufMan = manager;
+		textRender.setVertexBufferManager(vBufMan);
+	};
+	@Override
+	public void setFrameBufferHandler(int framebuffer) {}
+	@Override
+	public void setTexture2D(Map<String, Texture2D> textures) {
+		this.textures = textures;
+		textRender.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+	}
+	@Override
+	public void setAspectRatio(float ratio) {
+		// projection parameters - constant for this aspect ratio
+		this.ratio = ratio;
+		mvpDirty = true;
+		final float lens_radius = cameraParams[9] * (float) Math.tan(cameraParams[11] / 2);
+		if (ratio > 1)
+			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
+		else
+			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius * ratio, lens_radius * ratio, lens_radius, -lens_radius);
+		textRender.setAspectRatio(ratio);
+	}
+	@Override
+	public void setGameLogicManager(GameLogicManager manager) {
+		this.manager = manager;
+	}
+	private void prepareGrid() {
+
 		float[] v = new float[4 * 2 * (rows + columns)];
 		int c = 0;
 		for (int i = 0; i <= columns; i++) {
@@ -129,39 +161,34 @@ public class GridRenderer implements Renderer {
 			idx[c++] = 2 * columns + i + rows - 1;
 		}
 		vBufMan.setIndexBuffer("GridPointMeshIndex", idx);
-		textRender.setVertexBufferManager(vBufMan);
-	};
-	@Override
-	public void setFrameBufferHandler(int framebuffer) {}
-	@Override
-	public void setTexture2D(Map<String, Texture2D> textures) {
-		this.textures = textures;
-		textRender.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
-	}
-	@Override
-	public void setAspectRatio(float ratio) {
-		// projection parameters - constant for this aspect ratio
-		this.ratio = ratio;
-		mvpDirty = true;
-		final float lens_radius = cameraParams[9] * (float) Math.tan(cameraParams[11] / 2);
-		if (ratio > 1)
-			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
-		else
-			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius * ratio, lens_radius * ratio, lens_radius, -lens_radius);
-		textRender.setAspectRatio(ratio);
-	}
-	@Override
-	public void setGameLogicManager(GameLogicManager manager) {
-		this.manager = manager;
 	}
 	@Override
 	public void setRenderReady() {
+		computeTask = new Thread() {
+			@Override
+			public void run() {
+				prepareGrid();
+			}
+		};
+		computeTask.start();
 		textRender.setRenderReady();
 		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
 		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
+		mapTexture = textures.get("GridMapBackground");
+		normalGen = new NormalGenerator(columns, rows, new float[(rows * NormalGenerator.RESOLUTION + 1) * (columns * NormalGenerator.RESOLUTION + 1) * 4], mapTexture.getWidth(), mapTexture.getWidth());
+		normalGen.setGraphicsResponder(responder);
+		normalGen.setRenderReady();
 	}
 	@Override
-	public boolean getReadyState() {return true;}
+	public boolean getReadyState() {
+		try {
+			computeTask.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return true;
+	}
 	// draw functions
 	private void drawGrid() {
 		int vOffset = vBufMan.getVertexBufferOffset("GridPointBuffer"),
@@ -203,7 +230,8 @@ public class GridRenderer implements Renderer {
 		glEnableVertexAttribArray(vPosition);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures.get("GridMapBackground").getTexture());
+		glBindTexture(GL_TEXTURE_2D, normalGen.getNormalTexture());
+//		glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
 		glUniform1i(textureLocation, 0);
 		glEnableVertexAttribArray(textureCoord);
 		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);

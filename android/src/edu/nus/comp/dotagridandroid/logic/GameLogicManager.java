@@ -14,6 +14,7 @@ public class GameLogicManager implements Closeable {
 		GameState current = new GameState();
 		current.setGridHeight(9);
 		current.setGridWidth(16);
+		current.setTerrain(new float[16 * 9]);
 		gameStates.put("Current", current);	// dummy
 	}
 

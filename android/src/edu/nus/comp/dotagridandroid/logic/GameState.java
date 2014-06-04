@@ -2,6 +2,7 @@ package edu.nus.comp.dotagridandroid.logic;
 
 public class GameState {
 	private int gridWidth, gridHeight;
+	private float[] terrain;
 
 	public int getGridWidth() {
 		return gridWidth;
@@ -18,5 +19,12 @@ public class GameState {
 	public void setGridHeight(int gridHeight) {
 		this.gridHeight = gridHeight;
 	}
-	
+
+	public float[] getTerrain() {
+		return terrain;
+	}
+
+	public void setTerrain(float[] terrain) {
+		this.terrain = terrain;
+	}
 }

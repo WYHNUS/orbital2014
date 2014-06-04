@@ -20,7 +20,12 @@ public class Texture2D implements Closeable {
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	public Texture2D(int framebuffer) {
-		// TODO: render to texture
+		int[] t = new int[1];
+		glGenTextures(1, t, 0);
+		textureHandler = t[0];
+		glBindTexture(GL_TEXTURE_2D, textureHandler);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	}
 	public int getWidth() {return width;}
 	public int getHeight() {return height;}

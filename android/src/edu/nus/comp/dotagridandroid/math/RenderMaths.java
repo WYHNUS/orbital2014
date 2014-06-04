@@ -142,7 +142,7 @@ public class RenderMaths {
 		return a[0] * a[3] - a[1] * a[2];
 	}
 	public static float[] Vector3CrossProduct(float[] a, float[] b) {
-		if (a.length != 4 || b.length != 4)
+		if (a.length != 3 || b.length != 3)
 			throw new RuntimeException ("Wrong vector size");
 		return new float[] {
 				a[1] * b[2] - a[2] * b[1],

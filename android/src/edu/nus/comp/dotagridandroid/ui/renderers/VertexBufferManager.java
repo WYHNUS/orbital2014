@@ -14,8 +14,8 @@ public class VertexBufferManager implements Closeable {
 	private Map<String, Integer> vOffset = new HashMap<>(), iOffset = new HashMap<>();
 	private Map<String, float[]> vBuf = new HashMap<>();
 	private Map<String, short[]> iBuf = new HashMap<>();
-	private boolean dirtyVertex = false, dirtyIndex = false;
-	private int capacity = 0, indexes = 0;
+	private Boolean dirtyVertex = false, dirtyIndex = false;
+	private Integer capacity = 0, indexes = 0;
 	final static int FLOAT_BYTES = Float.SIZE / 8, SHORT_BYTES = Short.SIZE / 8;
 	public VertexBufferManager () {
 		glGenBuffers(2, bufs, 0);
@@ -23,7 +23,7 @@ public class VertexBufferManager implements Closeable {
 		iBufHandler = bufs[1];
 	}
 	
-	public void setVertexBuffer (String name, float[] v) {
+	public synchronized void setVertexBuffer (String name, float[] v) {
 		if (name == null || vBuf.get(name) == v || Arrays.equals(vBuf.get(name), v))
 			return;
 		dirtyVertex = true;
@@ -39,7 +39,7 @@ public class VertexBufferManager implements Closeable {
 				capacity = capacity - org.length + v.length;
 		}
 	}
-	public void setIndexBuffer (String name, int[] idx) {
+	public synchronized void setIndexBuffer (String name, int[] idx) {
 		if (name == null)
 			return;
 		else if (idx == null) {
@@ -63,17 +63,17 @@ public class VertexBufferManager implements Closeable {
 	}
 	public int getVertexBuffer () {return vBufHandler;}
 	public int getIndexBuffer () {return iBufHandler;}
-	public int getVertexBufferOffset (String name) {
+	public synchronized int getVertexBufferOffset (String name) {
 		if (dirtyVertex)
 			updateVertex();
 		return vOffset.get(name) * FLOAT_BYTES;
 	}
-	public int getIndexBufferOffset (String name) {
+	public synchronized int getIndexBufferOffset (String name) {
 		if (dirtyIndex)
 			updateIndex();
 		return iOffset.get(name) * SHORT_BYTES;
 	}
-	public void updateVertex() {
+	public synchronized void updateVertex() {
 		FloatBuffer fBuf = BufferUtils.createFloatBuffer(capacity);
 		int c = 0;
 		for (Map.Entry<String, float[]> v : vBuf.entrySet()) {
@@ -88,7 +88,7 @@ public class VertexBufferManager implements Closeable {
 		glBufferData(GL_ARRAY_BUFFER, capacity * FLOAT_BYTES, fBuf.position(0), GL_STATIC_DRAW);
 		dirtyVertex = false;
 	}
-	public void updateIndex() {
+	public synchronized void updateIndex() {
 		ShortBuffer intBuf = BufferUtils.createShortBuffer(indexes);
 		int c = 0;
 		for (Map.Entry<String, short[]> v : iBuf.entrySet()) {
