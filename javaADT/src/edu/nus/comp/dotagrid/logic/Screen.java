@@ -1,6 +1,8 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.awt.*;
+
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Screen extends JPanel implements Runnable {

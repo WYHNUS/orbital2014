@@ -185,7 +185,7 @@ public class GridFrame {
 			}	
 			
 			// reset previously selected character icon image in game frame
-			GameFrame.characterIcon.setIsReadyToDrawImage(false);
+			GameFrame.allCharacterInfoGameButtons.get(0).setIsReadyToDrawImage(false);
 			
 			// set the coordinates for the selected position
 			selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);

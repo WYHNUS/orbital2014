@@ -32,8 +32,11 @@ public class GameFrame{
 	// an ArrayList of GameButton which store all the GameButtons on the GameFrame
 	private static ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
 	
+	// an ArrayList of GameButton which store all the GameButtons that displays character's information
+	public static ArrayList<GameButton> allCharacterInfoGameButtons = new ArrayList<GameButton>();
+	
 	// image of the character selected
-	public static GameButton characterIcon;
+	GameButton characterIcon;
 	
 	// Name, HP , MP
 	GameButton characterName;
@@ -147,6 +150,7 @@ public class GameFrame{
 		// image of the character selected
 		characterIcon = new GameButton("characterIcon", null, FRAME_BORDER_WIDTH, startingYPos, (int) (2 * gridWidth), (int) (2 * gridHeight));
 		allGameButtons.add(characterIcon);
+		allCharacterInfoGameButtons.add(characterIcon);
 		
 		// Name, HP , MP
 		characterName = new GameButton("Name: ", null, FRAME_BORDER_WIDTH + (int) (2 * gridWidth + 0.5 * gridWidth), startingYPos, (int) (3.5 * gridWidth), (int) (2.0 * gridHeight / 3));
@@ -156,6 +160,10 @@ public class GameFrame{
 		allGameButtons.add(characterName);
 		allGameButtons.add(characterHP);
 		allGameButtons.add(characterMP);
+		
+		allCharacterInfoGameButtons.add(characterName);
+		allCharacterInfoGameButtons.add(characterHP);
+		allCharacterInfoGameButtons.add(characterMP);
 		
 		
 		// Strength, Agility, Intelligence
@@ -167,6 +175,10 @@ public class GameFrame{
 		allGameButtons.add(characterAgility);
 		allGameButtons.add(characterIntelligence);
 		
+		allCharacterInfoGameButtons.add(characterStrength);
+		allCharacterInfoGameButtons.add(characterAgility);
+		allCharacterInfoGameButtons.add(characterIntelligence);
+		
 		// Attack, Defense
 		characterAttack = new GameButton("Attack: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
 		characterDefense = new GameButton("Defense: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5) * gridWidth + (3*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 2), (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 2));
@@ -174,12 +186,18 @@ public class GameFrame{
 		allGameButtons.add(characterAttack);
 		allGameButtons.add(characterDefense);
 		
+		allCharacterInfoGameButtons.add(characterAttack);
+		allCharacterInfoGameButtons.add(characterDefense);
+		
 		// Level, Experience
 		characterLevel = new GameButton("Level: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos, (int) (2.5 * gridWidth), (int) (2.0 * gridHeight / 3));
 		characterExperience = new GameButton("Experience: ", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5) * gridWidth + (4*0.5) * gridWidth), startingYPos + (int) (2.0 * gridHeight / 3), (int) (2.5 * gridWidth), (int) (4.0 * gridHeight / 3));
 
 		allGameButtons.add(characterLevel);
 		allGameButtons.add(characterExperience);
+		
+		allCharacterInfoGameButtons.add(characterLevel);
+		allCharacterInfoGameButtons.add(characterExperience);
 		
 		// Item List (numbers are marked from top to bottom first, then left to right)
 		items = new GameButton[MAX_ITEM_NUMBER];
@@ -198,6 +216,12 @@ public class GameFrame{
 		allGameButtons.add(items[4]);
 		allGameButtons.add(items[5]);
 		
+		allCharacterInfoGameButtons.add(items[0]);
+		allCharacterInfoGameButtons.add(items[1]);
+		allCharacterInfoGameButtons.add(items[2]);
+		allCharacterInfoGameButtons.add(items[3]);
+		allCharacterInfoGameButtons.add(items[4]);
+		allCharacterInfoGameButtons.add(items[5]);
 		
 		// Skill List (numbers are marked from top to bottom first, then left to right)
 		skills = new GameButton[MAX_SKILL_NUMBER];
@@ -219,6 +243,15 @@ public class GameFrame{
 		allGameButtons.add(skills[5]);
 		allGameButtons.add(skills[6]);
 		allGameButtons.add(skills[7]);
+		
+		allCharacterInfoGameButtons.add(skills[0]);
+		allCharacterInfoGameButtons.add(skills[1]);
+		allCharacterInfoGameButtons.add(skills[2]);
+		allCharacterInfoGameButtons.add(skills[3]);
+		allCharacterInfoGameButtons.add(skills[4]);
+		allCharacterInfoGameButtons.add(skills[5]);
+		allCharacterInfoGameButtons.add(skills[6]);
+		allCharacterInfoGameButtons.add(skills[7]);
 
 
 		// Version Info
@@ -238,12 +271,19 @@ public class GameFrame{
 		allGameButtons.add(Death);
 		allGameButtons.add(Assist);
 		
+		allCharacterInfoGameButtons.add(Kill);
+		allCharacterInfoGameButtons.add(Death);
+		allCharacterInfoGameButtons.add(Assist);
+		
 		// Money & Action Points
 		money = new GameButton("Money: ", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
 		actionPoints = new GameButton("Action Points: ", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
 
 		allGameButtons.add(money);
 		allGameButtons.add(actionPoints);
+		
+		allCharacterInfoGameButtons.add(money);
+		allCharacterInfoGameButtons.add(actionPoints);
 		
 		// Action List 
 		// (draw from left to right first, then top to bottom)

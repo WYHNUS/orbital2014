@@ -24,6 +24,8 @@ public class Hero extends Character{
 	private ArrayList<Skill> skills;
 	private ArrayList<Item> items;
 	
+	private int kill, death, assist;
+	
 	// define a list of constants for calculation
 	public final int STRENGTH_ADD_HP_RATIO = 19;
 	public final int INTELLIGENCE_ADD_MP_RATIO = 13;
@@ -225,7 +227,7 @@ public class Hero extends Character{
 	public void setTotalStrength(double totalStrength) {
 		// minimum value is startingStrength
 		if (totalStrength <= startingStrength){
-			totalStrength = startingStrength;
+			this.totalStrength = startingStrength;
 		} else {
 			this.totalStrength = totalStrength;
 		}
@@ -240,7 +242,7 @@ public class Hero extends Character{
 	public void setTotalAgility(double totalAgility) {
 		// minimum value is startingAgility
 		if (totalAgility <= startingAgility){
-			totalAgility = startingAgility;
+			this.totalAgility = startingAgility;
 		} else {
 			this.totalAgility = totalAgility;
 		}
@@ -255,7 +257,7 @@ public class Hero extends Character{
 	public void setTotalIntelligence(double totalIntelligence) {
 		// minimum value is startingIntelligence
 		if (totalIntelligence <= startingIntelligence){
-			totalIntelligence = startingIntelligence;
+			this.totalIntelligence = startingIntelligence;
 		} else {
 			this.totalIntelligence = totalIntelligence;
 		}
@@ -320,6 +322,62 @@ public class Hero extends Character{
 
 	public void setLevel(int level) {
 		this.level = level;
+	}
+
+
+
+
+	public int getKill() {
+		return kill;
+	}
+
+
+
+
+	public void setKill(int kill) {
+		this.kill = kill;
+	}
+
+
+
+
+	public int getDeath() {
+		return death;
+	}
+
+
+
+
+	public void setDeath(int death) {
+		this.death = death;
+	}
+
+
+
+
+	public int getAssist() {
+		return assist;
+	}
+
+
+
+
+	public void setAssist(int assist) {
+		this.assist = assist;
+	}
+
+
+
+
+	public int getMoney() {
+		return money;
+	}
+
+
+
+
+	public void setMoney(int money) {
+		this.money = money;
 	}
 
 
