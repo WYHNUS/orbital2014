@@ -20,7 +20,7 @@ public class ItemShop implements ActionListener{
 		
 		itemDtabase = new ItemDatabase();
 		
-		for (int i=0; i<ItemDatabase.totalItemNumber; i++) {
+		for (int i=0; i<ItemDatabase.TOTAL_ITEM_NUMBER; i++) {
 			
 			JButton button = new JButton(itemDtabase.itemDatabase[i].getItemName(), itemDtabase.itemDatabase[i].getItemImage());
 
@@ -43,7 +43,27 @@ public class ItemShop implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		int itemNumber = Integer.parseInt(e.getActionCommand());
 		
-		System.out.println("ItemName : " + itemDtabase.itemDatabase[itemNumber].getItemName());
+		// condition for buying a item : player's item list still has vacancy
+		if (Screen.user.player.getHero().items.length <= ItemDatabase.TOTAL_ITEM_NUMBER){
+			
+			// condition for buying a item : player's hero has enough money
+			if (Screen.user.player.getMoney() - itemDtabase.itemDatabase[itemNumber].getCost() >= 0){
+				
+				// add an item to player and deduce the required amount of money
+				Screen.user.player.getHero().addItem(itemDtabase.itemDatabase[itemNumber]);
+				Screen.user.player.setMoney(Screen.user.player.getMoney() - itemDtabase.itemDatabase[itemNumber].getCost()); 
+				
+				// reset money display for player
+				GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
+				
+				System.out.println("Player has bought an item : " + itemDtabase.itemDatabase[itemNumber].getItemName());
+				
+			} else {
+				System.out.println("not enough money!");
+			}
+		} else {
+			System.out.println("item list is full!");
+		}
 	}
 	
 }

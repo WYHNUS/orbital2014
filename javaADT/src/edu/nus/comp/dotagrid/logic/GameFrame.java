@@ -115,6 +115,9 @@ public class GameFrame{
 	
 	
 	public void updateGameFrame(Graphics g){
+		// reset money for player
+		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
+		
 		// draw game frame
 		displayAllButtons(g);
 		
@@ -261,14 +264,14 @@ public class GameFrame{
 		allGameButtons.add(versionID);
 		
 		// turn count
-		turnCounter = new GameButton("Turn : ", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
+		turnCounter = new GameButton("Turn : 0", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
 		allGameButtons.add(turnCounter);
 		allCharacterInfoGameButtons.add(turnCounter);
 		
 		// KDA
-		Kill = new GameButton("Kill", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
-		Death = new GameButton("Death", null, startingXPos + (int) (4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
-		Assist = new GameButton("Assist", null, startingXPos + (int) (2 * 4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		Kill = new GameButton("Kill : 0", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		Death = new GameButton("Death : 0", null, startingXPos + (int) (4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
+		Assist = new GameButton("Assist : 0", null, startingXPos + (int) (2 * 4.0 / 3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (gridHeight + 0.5 * gridHeight), (int) (4.0 / 3 * gridWidth), (int) (0.5 * gridHeight));
 
 		allGameButtons.add(Kill);
 		allGameButtons.add(Death);
@@ -280,7 +283,7 @@ public class GameFrame{
 		
 		// Money & Action Points
 		money = new GameButton("Money: ", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
-		actionPoints = new GameButton("Action Points: ", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
+		actionPoints = new GameButton("AP : 100 / 100", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (2.5 * gridHeight), (int) (2 * gridWidth), (int) gridHeight);
 
 		allGameButtons.add(money);
 		allGameButtons.add(actionPoints);

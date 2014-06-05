@@ -2,8 +2,9 @@ package edu.nus.comp.dotagrid.logic;
 
 public class User {
 	private Screen screen;
+	public int startingMoney = 853;
 	
-	Player player;
+	public Player player;
 	
 	public User(Screen screen) {
 		this.screen = screen;
@@ -11,7 +12,7 @@ public class User {
 	}
 	
 	public void createPlayer(Hero hero){
-		this.player = new Player(hero);
+		this.player = new Player(startingMoney, hero);
 	}
 
 }

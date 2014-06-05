@@ -87,6 +87,7 @@ public class GameButtonActions {
 			case 12 : 
 				showItemShop();
 				break;
+								
 		}
 	}
 	

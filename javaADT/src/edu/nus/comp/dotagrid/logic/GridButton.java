@@ -178,15 +178,16 @@ public class GridButton {
 			GameFrame.allCharacterInfoGameButtons.get(9).setString("Level : " + ((Hero)character).getLevel());
 			GameFrame.allCharacterInfoGameButtons.get(10).setString("Exp : " + ((Hero)character).getExperience());
 			
-			/*
-			// item list
-			GameFrame.allCharacterInfoGameButtons.get(11).
-			GameFrame.allCharacterInfoGameButtons.get(12).
-			GameFrame.allCharacterInfoGameButtons.get(13).
-			GameFrame.allCharacterInfoGameButtons.get(14).
-			GameFrame.allCharacterInfoGameButtons.get(15).
-			GameFrame.allCharacterInfoGameButtons.get(16).
 			
+			// item list
+			GameFrame.allCharacterInfoGameButtons.get(11).setIsReadyToDrawImage(true);
+			GameFrame.allCharacterInfoGameButtons.get(12).setIsReadyToDrawImage(true);
+			GameFrame.allCharacterInfoGameButtons.get(13).setIsReadyToDrawImage(true);
+			GameFrame.allCharacterInfoGameButtons.get(14).setIsReadyToDrawImage(true);
+			GameFrame.allCharacterInfoGameButtons.get(15).setIsReadyToDrawImage(true);
+			GameFrame.allCharacterInfoGameButtons.get(16).setIsReadyToDrawImage(true);
+			
+			/*
 			// skill list
 			GameFrame.allCharacterInfoGameButtons.get(17).
 			GameFrame.allCharacterInfoGameButtons.get(18).
@@ -204,7 +205,7 @@ public class GridButton {
 			GameFrame.allCharacterInfoGameButtons.get(28).setString("Assist : " + ((Hero)character).getAssist());
 			
 			// money
-			GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " +((Hero)character).getMoney());
+			GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
 		}
 
 	}

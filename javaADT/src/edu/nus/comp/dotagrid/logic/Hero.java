@@ -13,7 +13,6 @@ public class Hero extends Character{
 	
 	private double HPGainPerRound, MPGainPerRound;
 
-	private int money;
 	private int level;
 	private int experience;
 
@@ -83,14 +82,6 @@ public class Hero extends Character{
 		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack() + this.getTotalMainAttrubute() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO);
 		
 		this.items = new Item[GameFrame.MAX_ITEM_NUMBER];
-		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++){
-			this.items[i] = new Item();
-		}
-		
-		this.skills = new Skill[GameFrame.MAX_SKILL_NUMBER];
-		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
-			this.skills[i] = new Skill();
-		}
 	}
 	
 
@@ -136,13 +127,17 @@ public class Hero extends Character{
 		
 		this.items = new Item[GameFrame.MAX_ITEM_NUMBER];
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++){
-			this.items[i] = new Item(hero.items[i]);
+			if (hero.items[i] != null){
+				this.items[i] = new Item(hero.items[i]);
+			}
 		}
 		
 		/*
 		this.skills = new Skill[GameFrame.MAX_SKILL_NUMBER];
 		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
-			this.skills[i] = new Skill(hero.skills[i]);
+			if (hero.skills[i] != null){
+				this.skills[i] = new Skill(hero.skills[i]);
+			}
 		}
 		*/
 	}
@@ -368,60 +363,42 @@ public class Hero extends Character{
 
 
 
-
+	// KDA
+	
 	public int getKill() {
 		return kill;
 	}
-
-
-
 
 	public void setKill(int kill) {
 		this.kill = kill;
 	}
 
-
-
-
 	public int getDeath() {
 		return death;
 	}
-
-
-
 
 	public void setDeath(int death) {
 		this.death = death;
 	}
 
-
-
-
 	public int getAssist() {
 		return assist;
 	}
-
-
-
 
 	public void setAssist(int assist) {
 		this.assist = assist;
 	}
 
-
-
-
-	public int getMoney() {
-		return money;
+	
+	// add in an item
+	public void addItem(Item item){
+		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++){
+			if(this.items[i] == null){
+				this.items[i] = new Item(item);
+				GameFrame.allCharacterInfoGameButtons.get(11 + i).setImage(item.getItemImage().getImage());
+				break;
+			}
+		}
 	}
-
-
-
-
-	public void setMoney(int money) {
-		this.money = money;
-	}
-
-
 
 }

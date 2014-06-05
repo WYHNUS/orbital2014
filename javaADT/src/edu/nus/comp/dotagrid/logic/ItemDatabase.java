@@ -1,9 +1,9 @@
 package edu.nus.comp.dotagrid.logic;
 
 public class ItemDatabase {
-	public static int totalItemNumber = 8;
+	public static final int TOTAL_ITEM_NUMBER = 8;
 	
-	public Item[] itemDatabase = new Item[totalItemNumber];
+	public Item[] itemDatabase = new Item[TOTAL_ITEM_NUMBER];
 	
 	public ItemDatabase(){
 		/*
