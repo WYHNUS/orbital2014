@@ -22,7 +22,8 @@ public class ItemShop implements ActionListener{
 		
 		for (int i=0; i<ItemDatabase.TOTAL_ITEM_NUMBER; i++) {
 			
-			JButton button = new JButton(itemDtabase.itemDatabase[i].getItemName(), itemDtabase.itemDatabase[i].getItemImage());
+			JButton button = new JButton(itemDtabase.itemDatabase[i].getItemName() + ", cost : " + itemDtabase.itemDatabase[i].getCost(), 
+											itemDtabase.itemDatabase[i].getItemImage());
 
 			button.addActionListener(this);
 			button.setActionCommand("" + i);

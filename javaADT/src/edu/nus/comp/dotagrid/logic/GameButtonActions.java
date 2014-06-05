@@ -87,10 +87,20 @@ public class GameButtonActions {
 			case 12 : 
 				showItemShop();
 				break;
+				
+			case 13 :
+				sellItem();
+				break;
 								
 		}
 	}
 	
+
+	private void sellItem() {
+		// TODO Auto-generated method stub
+		
+	}
+
 
 	private void showItemShop() {
 		// create a new frame to show item shop list

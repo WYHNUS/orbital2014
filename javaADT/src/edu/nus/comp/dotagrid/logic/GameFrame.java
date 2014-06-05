@@ -314,6 +314,7 @@ public class GameFrame{
 			
 		actionList[0].setActionNumber(8);
 		actionList[4].setActionNumber(12);
+		actionList[5].setActionNumber(13);
 
 		allGameButtons.add(actionList[0]);
 		allGameButtons.add(actionList[1]);

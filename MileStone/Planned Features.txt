@@ -36,7 +36,31 @@ Feature 5:
 Design a few items for player to purchase. (both in PC and in Android)
 
 Feature 6:
-Allow hero to attack, use skill, buy item and other actions. (both in PC and in Android)
+Allow hero to perform various actions. (both in PC and in Android)
+
+Feature 6.1:
+Action : buy item
+
+Feature 6.2:
+Action : sell item
+
+Feature 6.3:
+Design skills and level.
+
+Feature 6.4:
+Action : choose and upgrade hero's skill
+
+Feature 6.5:
+Action : use item
+
+Feature 6.6:
+Action : use skill
+
+Feature 6.7:
+Action : attack
+
+Feature 6.99:
+Design a proper world map. 
 
 Feature 7:
 Design towers. (both in PC and in Android)
