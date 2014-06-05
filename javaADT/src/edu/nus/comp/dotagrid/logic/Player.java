@@ -1,12 +1,17 @@
 package edu.nus.comp.dotagrid.logic;
 
 public class Player {
+	private Hero hero;
 	
-	int health;
-	int money;
-	
-	public Player(User user){
-		this.money = user.startingMoney;
-		this.health = user.startingHealth;
+	public Player(Hero hero){
+		this.hero = new Hero(hero);
+	}
+
+	public Hero getHero() {
+		return hero;
+	}
+
+	public void setHero(Hero hero) {
+		this.hero = hero;
 	}
 }

@@ -10,7 +10,7 @@ public class Screen extends JPanel implements Runnable {
 	Thread thread = new Thread(this);
 
 	Frame frame;
-	User user;
+	public static User user;
 	
 
 	private int fps = 0;
@@ -85,9 +85,7 @@ public class Screen extends JPanel implements Runnable {
 		running = true;
 	}
 
-	public void startGame(User user) {
-		user.createPlayer();
-
+	public void startGame() {
 		this.scene = 1; // enter game!
 	}
 
@@ -128,7 +126,7 @@ public class Screen extends JPanel implements Runnable {
 		}
 
 		public void keySPACE() {
-			startGame(user);
+			startGame();
 		}
 	} // end inner class KeyTyped
 

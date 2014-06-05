@@ -1,6 +1,8 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -91,25 +93,7 @@ public class GameButtonActions {
 
 	private void showItemShop() {
 		// create a new frame to show item shop list
-		JFrame frame = new JFrame("SHOP");
-		
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridLayout(4, 4));
-		
-		ItemDatabase itemDtabase = new ItemDatabase();
-		
-		for (int i=0; i<ItemDatabase.totalItemNumber; i++) {
-			JButton button = new JButton(itemDtabase.itemDatabase[i].getItemName(), itemDtabase.itemDatabase[i].getItemImage());
-			panel.add(button);
-		}
-		
-		
-		
-		frame.add(panel);
-		frame.pack();
-		frame.setSize(600, 400);
-		frame.setLocationRelativeTo(null);
-		frame.setVisible(true);		
+		new ItemShop();
 	}
 
 

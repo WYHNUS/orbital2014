@@ -28,17 +28,20 @@ public class GridButton {
 		 * 
 		 * 99 : player's hero spawn point
 		 * 
-		 * */
+		 */
 		
 
 		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 99) {
 			this.setMovable(true);
 		}
 		
-		if (imageNumber == 99){
+		if (imageNumber == 99){	
 			// randomly select a hero from hero database for player to control
 			Random random = new Random();
 			character = new HeroDatabase().heroDatabase[random.nextInt(HeroDatabase.totalHeroNumber)];
+			
+			// create player!
+			Screen.user.createPlayer((Hero) character);
 			
 			isOccupied = true;
 			isHero = true;

@@ -83,9 +83,72 @@ public class Hero extends Character{
 		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack() + this.getTotalMainAttrubute() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO);
 		
 		this.items = new Item[GameFrame.MAX_ITEM_NUMBER];
+		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++){
+			this.items[i] = new Item();
+		}
+		
 		this.skills = new Skill[GameFrame.MAX_SKILL_NUMBER];
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
+			this.skills[i] = new Skill();
+		}
 	}
 	
+
+	public Hero(Hero hero) {
+		super(hero.getName(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
+				hero.getStartingPhysicalAttackSpeed(), hero.getStartingPhysicalDefense(), hero.getStartingMagicResistance(), 
+				hero.getStartingMovementSpeed(), hero.getActionPoint());
+		
+		this.setMainAttribute(hero.getMainAttribute());
+		
+		this.setStartingStrength(hero.getStartingStrength());
+		this.setStartingAgility(hero.getStartingAgility());
+		this.setStartingIntelligence(hero.getStartingIntelligence());
+
+		this.setStrengthGrowth(hero.getStrengthGrowth());
+		this.setAgilityGrowth(hero.getAgilityGrowth());
+		this.setIntelligenceGrowth(hero.getIntelligenceGrowth());	
+		
+		this.setStartingHP(hero.getStartingHP());
+		this.setStartingMP(hero.getStartingMP());
+		
+		this.setLevel(hero.getLevel());
+		this.setExperience(hero.getExperience());
+		
+		this.setTotalStrength(hero.getTotalStrength());
+		this.setTotalAgility(hero.getTotalAgility());
+		this.setTotalIntelligence(hero.getTotalIntelligence());
+		
+		this.setTotalMainAttrubute();
+		
+		this.setmaxHP(hero.getmaxHP());
+		this.setmaxMP(hero.getmaxMP());
+		this.setCurrentHP(hero.getCurrentHP());
+		this.setCurrentMP(hero.getCurrentMP());
+		
+		this.setHPGainPerRound(hero.getHPGainPerRound());
+		this.setMPGainPerRound(hero.getMPGainPerRound());
+		
+		this.setTotalPhysicalDefense(hero.getTotalPhysicalDefense());		
+		this.setTotalPhysicalAttackSpeed(hero.getTotalPhysicalAttackSpeed());
+		
+		this.setTotalPhysicalAttack(hero.getTotalPhysicalAttack());
+		
+		this.items = new Item[GameFrame.MAX_ITEM_NUMBER];
+		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++){
+			this.items[i] = new Item(hero.items[i]);
+		}
+		
+		/*
+		this.skills = new Skill[GameFrame.MAX_SKILL_NUMBER];
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
+			this.skills[i] = new Skill(hero.skills[i]);
+		}
+		*/
+	}
+
+
+
 	
 	
 	

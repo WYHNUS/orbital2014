@@ -14,7 +14,7 @@ public class Item {
 	private int requiredMPPerUse, requiredHPPerUse;
 	
 	private boolean isReusable;
-	private int usableTime;
+	private int usableTime = 1; // default 1
 	
 	private double addStrength, addAgility, addIntelligence;
 	
@@ -29,7 +29,13 @@ public class Item {
 	private int addMovementSpeed;
 	
 	
-	// constructor
+	// constructor	
+
+	public Item() {
+		// default java constructor
+	}
+
+
 	public Item(String itemName, int cost, int requiredMPPerUse, int requiredHPPerUse, boolean isReusable,
 				double addStrength, double addAgility, double addIntelligence, int addHP, int addMP, 
 				double addHPGainPerRound, double addMPGainPerRound, double addPhysicalDefence, double addMagicResistance,
@@ -67,6 +73,41 @@ public class Item {
 			
 	}
 	
+	
+	public Item(Item item) {
+		this.setItemName(item.getItemName());
+		this.setItemImage();
+		this.setCost(item.getCost());
+		this.setSellPrice(item.getSellPrice());
+		
+		this.setRequiredMPPerUse(item.getRequiredMPPerUse());
+		this.setRequiredHPPerUse(item.getRequiredHPPerUse());
+		
+		this.setReusable(item.isReusable());
+		this.setUsableTime(item.getUsableTime());
+		
+		this.setAddStrength(item.getAddStrength());
+		this.setAddAgility(item.getAddAgility());
+		this.setAddIntelligence(item.getAddIntelligence());
+		
+		this.setAddHP(item.getAddHP());
+		this.setAddMP(item.getAddMP());
+		
+		this.setAddHPGainPerRound(item.getAddHPGainPerRound());
+		this.setAddMPGainPerRound(item.getAddMPGainPerRound());
+		
+		this.setAddPhysicalDefence(item.getAddPhysicalDefence());
+		this.setAddMagicResistance(item.getAddMagicResistance());
+		
+		this.setAddPhysicalAttack(item.getAddPhysicalAttack());
+		this.setAddPhysicalAttackSpeed(item.getAddPhysicalAttackSpeed());
+		this.setAddPhysicalAttackArea(item.getAddPhysicalAttackArea());
+		
+		this.setAddMovementSpeed(item.getAddMovementSpeed());
+	}
+	
+	
+
 	public ImageIcon getItemImage() {
 		return itemImage;
 	}
