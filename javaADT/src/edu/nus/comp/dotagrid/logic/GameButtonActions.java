@@ -74,6 +74,7 @@ public class GameButtonActions {
 		GameFrame.round++;
 		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.round);
 		
+		// reset AP for all existing characters
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
@@ -81,6 +82,10 @@ public class GameButtonActions {
 				}
 			}
 		}	
+
+		// reselect the grid
+		GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+		System.out.println("End Round!");
 	}
 
 

@@ -37,6 +37,9 @@ public class GridFrame {
 	private static double gridHeight = 1.0;
 	
 	// grid position that is to be highlighted
+	private static int selectedXCoodinatePos = -1;
+	private static int selectedYCoodinatePos = -1;
+	
 	private static int selectedXPos = -1;
 	private static int selectedYPos = -1;
 	
@@ -175,21 +178,15 @@ public class GridFrame {
 	
 	// method to check and invoke grid frame event
 	public static void invokeEvent(int handXPos, int handYPos){
+		setSelectedXCoodinatePos(handXPos);
+		setSelectedYCoodinatePos(handYPos);
 		
 		// check if the selected position is within grid frame
 		if (handXPos > GameFrame.FRAME_BORDER_WIDTH && handXPos < (GameFrame.FRAME_BORDER_WIDTH + gameFrameWidth)
 				&& handYPos > GameFrame.FRAME_BORDER_HEIGHT && handYPos < (GameFrame.FRAME_BORDER_HEIGHT + gameFrameHeight)) {
 			
-			// clear all previously highlighted grids and prepare for new round of highlighting XD
-			for (int x=0; x<ROW_NUMBER; x++) {
-				for (int y=0; y<COLUMN_NUMBER; y++) { 
-					highlightedMap[x][y] = -1;
-				}
-			}	
-					
-			// reset previously selected character icon image in game frame
-			GameFrame.allCharacterInfoGameButtons.get(0).setIsReadyToDrawImage(false);
-			
+			// reset all character info!
+			resetAllCharacterInfo();			
 			
 			// set the coordinates for the selected position
 			previouslySelectedXPos = selectedXPos;
@@ -198,11 +195,26 @@ public class GridFrame {
 			selectedYPos = currentGridYPos + (int) ((handYPos - GameFrame.FRAME_BORDER_HEIGHT) / gridHeight);
 			
 			gridButtonMap[selectedXPos][selectedYPos].actionPerformed();
-
 		}
 		
 	}
 	
+	
+	private static void resetAllCharacterInfo() {
+		// clear all previously highlighted grids and prepare for new round of highlighting XD
+		for (int x=0; x<ROW_NUMBER; x++) {
+			for (int y=0; y<COLUMN_NUMBER; y++) { 
+				highlightedMap[x][y] = -1;
+			}
+		}	
+				
+		// reset all character images and displayed strings, number 25 is the last skill's index
+		for (int i=0; i<25; i++) {
+			GameFrame.allCharacterInfoGameButtons.get(i).setIsReadyToDrawImage(false);
+			GameFrame.allCharacterInfoGameButtons.get(i).setString("");
+		}
+	}
+
 	// method to get and change the selected highlighted position
 	public static int getSelectedXPos(){
 		return selectedXPos;
@@ -304,6 +316,22 @@ public class GridFrame {
 		} else {
 			currentGridYPos = changedGridYPos;
 		}
+	}
+
+	public static int getSelectedXCoodinatePos() {
+		return selectedXCoodinatePos;
+	}
+
+	public static void setSelectedXCoodinatePos(int selectedXCoodinatePos) {
+		GridFrame.selectedXCoodinatePos = selectedXCoodinatePos;
+	}
+
+	public static int getSelectedYCoodinatePos() {
+		return selectedYCoodinatePos;
+	}
+
+	public static void setSelectedYCoodinatePos(int selectedYCoodinatePos) {
+		GridFrame.selectedYCoodinatePos = selectedYCoodinatePos;
 	}
 	
 	
