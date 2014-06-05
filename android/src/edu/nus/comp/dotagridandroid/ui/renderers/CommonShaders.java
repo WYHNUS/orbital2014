@@ -25,7 +25,7 @@ public class CommonShaders {
 		= "precision mediump float;"
 		+ "varying vec4 autoColor;"
 		+ "void main () {"
-			+ "gl_FragColor = vec4(1,0,0,1);"//autoColor;"
+			+ "gl_FragColor = autoColor;"
 		+ "}";
 	
 	// textured
@@ -76,4 +76,16 @@ public class CommonShaders {
 			+ "gl_FragColor = color * textureColorTone + color;"
 		+ "}";
 	// shadow and light maps
+	public static final String FS_IDENTITY_SPECIAL_LIGHTING
+		= "precision mediump float;"
+		+ "uniform sampler2D texture, normal;"
+		+ "struct lightsrc {"
+			+ "vec3 source;"
+			+ "vec4 color;"
+		+ "};"
+		+ "uniform lightsrc lights[128];"
+		+ "uniform vec3 camera;"
+		+ "void main () {"
+			+ ""
+		+ "}";
 }

@@ -172,11 +172,107 @@ public class GridRenderer implements Renderer {
 			idx[c++] = 2 * columns + i + rows - 1;
 		}
 		gridLinesIndex = idx;
-		final int RESOLUTION = NormalGenerator.RESOLUTION, arrWidth = columns * RESOLUTION;
+		final int RESOLUTION = NormalGenerator.RESOLUTION, arrWidth = columns * RESOLUTION + 1;
 		// Terrain Intrapolation - Bilinear
-		for (int i = 0; i < rows; i++)
-			for (int j = 0; j < columns; j++)
-				;
+		for (int i = 0; i < rows - 1; i++) {
+			final int offset = i * arrWidth * RESOLUTION;
+			for (int j = 0; j < columns - 1; j++) {
+				int cellOffset = offset + j * RESOLUTION + RESOLUTION / 2 * arrWidth + RESOLUTION / 2;
+				for (int s = 0; s <= RESOLUTION; s++)
+					for (int t = 0; t <= RESOLUTION; t++) {
+						gridTerrain[4 * (cellOffset + arrWidth * s + t)] = (j + t / (float) RESOLUTION + .5f) / columns * 2 - 1;
+						gridTerrain[4 * (cellOffset + arrWidth * s + t) + 1] = (i + s / (float) RESOLUTION + .5f) / rows * 2 - 1;
+						gridTerrain[4 * (cellOffset + arrWidth * s + t) + 2]
+								= (terrain[i * columns + j] * (1 - t / (float) RESOLUTION) * (1 - s / (float) RESOLUTION)
+								+ terrain[i * columns + j + 1] * t / (float) RESOLUTION * (1 - s / (float) RESOLUTION)
+								+ terrain[(i + 1) * columns + j] * (1 - t / (float) RESOLUTION) * s / (float) RESOLUTION
+								+ terrain[(i + 1) * columns + j + 1] * t / (float) RESOLUTION * s / (float) RESOLUTION) * BOARD_Z_COORD;
+						gridTerrain[4 * (cellOffset + arrWidth * s + t) + 3] = 1;
+					}
+			}
+		}
+		// Edges
+		for (int s = 0; s <= RESOLUTION / 2; s++)
+			for (int t = 0; t <= RESOLUTION / 2; t++) {
+				int offset = arrWidth * s + t;
+				// bottom left
+				gridTerrain[4 * offset] = t / (float) RESOLUTION / columns * 2 - 1;
+				gridTerrain[4 * offset + 1] = s / (float) RESOLUTION / rows * 2 - 1;
+				gridTerrain[4 * offset + 2] = terrain[0] * BOARD_Z_COORD;
+				gridTerrain[4 * offset + 3] = 1;
+				// bottom right
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2)]
+						= (columns - 1 + t / (float) RESOLUTION + .5f) / columns * 2 - 1;
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 1]
+						= s / (float) RESOLUTION / rows * 2 - 1;
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 2]
+						= terrain[columns - 1] * BOARD_Z_COORD;
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 3]
+						= 1;
+				//top left
+				offset += (rows - 1) * arrWidth * RESOLUTION + RESOLUTION / 2 * arrWidth;
+				gridTerrain[4 * offset] = t / (float) RESOLUTION / columns * 2 - 1;
+				gridTerrain[4 * offset + 1] = (rows - 1 + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
+				gridTerrain[4 * offset + 2] = terrain[(rows - 1) * columns] * BOARD_Z_COORD;
+				gridTerrain[4 * offset + 3] = 1;
+				// top right
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2)]
+						= (columns - 1 + t / (float) RESOLUTION + .5f) / columns * 2 - 1;
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 1]
+						= (rows - 1 + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 2]
+						= terrain[rows * columns - 1] * BOARD_Z_COORD;
+				gridTerrain[4 * (offset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 3]
+						= 1;
+			}
+		for (int i = 0; i < rows - 1; i++) {
+			final int offset = (i * RESOLUTION + RESOLUTION / 2) * arrWidth;
+			for (int s = 0; s <= RESOLUTION; s++)
+				for (int t = 0; t <= RESOLUTION / 2; t++) {
+					final int cellOffset = offset + s * arrWidth + t;
+					// left side
+					gridTerrain[4 * cellOffset] = t / (float) RESOLUTION / columns * 2 - 1;
+					gridTerrain[4 * cellOffset + 1] = (i + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
+					gridTerrain[4 * cellOffset + 2]
+							= (terrain[i * columns] * (1 - s / (float) RESOLUTION)
+							+ terrain[(i + 1) * columns] * s / RESOLUTION) * BOARD_Z_COORD;
+					gridTerrain[4 * cellOffset + 3] = 1;
+					// right side
+					gridTerrain[4 * (cellOffset + (columns - 1) * RESOLUTION + RESOLUTION / 2)]
+							= (columns - 1 + .5f + t / (float) RESOLUTION) / columns * 2 - 1;
+					gridTerrain[4 * (cellOffset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 1]
+							= (i + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
+					gridTerrain[4 * (cellOffset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 2]
+							= (terrain[i * columns + columns - 1] * (1 - s / (float) RESOLUTION)
+							+ terrain[(i + 1) * columns + columns - 1] * s / RESOLUTION) * BOARD_Z_COORD;
+					gridTerrain[4 * (cellOffset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 3]
+							= 1;
+				}
+		}
+		for (int i = 0; i < columns - 1; i++) {
+			final int offset = i * RESOLUTION + RESOLUTION / 2;
+			for (int s = 0; s <= RESOLUTION / 2; s++)
+				for (int t = 0; t <= RESOLUTION; t++) {
+					final int cellOffset = offset + s * arrWidth + t;
+					// bottom side
+					gridTerrain[4 * cellOffset] = (i + .5f + t / (float) RESOLUTION) / columns * 2 - 1;
+					gridTerrain[4 * cellOffset + 1] = s / (float) RESOLUTION / rows * 2 - 1;
+					gridTerrain[4 * cellOffset + 2]
+							= (terrain[i] * (1 - t / (float) RESOLUTION)
+							+ terrain[i + 1] * t / RESOLUTION) * BOARD_Z_COORD;
+					gridTerrain[4 * cellOffset + 3] = 1;
+					// top side
+					gridTerrain[4 * (cellOffset + (rows - 1) * RESOLUTION * arrWidth + RESOLUTION * arrWidth / 2)]
+							= (i + .5f + t / (float) RESOLUTION) / columns * 2 - 1;
+					gridTerrain[4 * (cellOffset + (rows - 1) * RESOLUTION * arrWidth + RESOLUTION * arrWidth / 2) + 1]
+							= (rows - 1 + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
+					gridTerrain[4 * (cellOffset + (rows - 1) * RESOLUTION * arrWidth + RESOLUTION * arrWidth / 2) + 2]
+							= (terrain[(rows - 1) * columns + i] * (1 - t / (float) RESOLUTION)
+							+ terrain[(rows - 1) * columns + i + 1] * t / RESOLUTION) * BOARD_Z_COORD;
+					gridTerrain[4 * (cellOffset + (rows - 1) * RESOLUTION * arrWidth + RESOLUTION * arrWidth / 2) + 3]
+							= 1;
+				}
+		}
 	}
 	@Override
 	public void setRenderReady() {

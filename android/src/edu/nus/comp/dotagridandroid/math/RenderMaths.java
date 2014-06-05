@@ -154,10 +154,10 @@ public class RenderMaths {
 		if (a.length != 3)
 			throw new RuntimeException("Wrong vector size");
 		final float len = (float) Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
-		if (Math.abs(len) < ERROR)
-			return new float[] {0,0,0};
-		else
+		if (Math.abs(len) > ERROR)
 			return new float[] {a[0]/len,a[1]/len,a[2]/len};
+		else
+			return new float[] {0,0,0};
 	}
 	public static float[] Vector3Addition(float[] a, float[] b, float ka, float kb) {
 		if (a.length != 3 || b.length != 3)

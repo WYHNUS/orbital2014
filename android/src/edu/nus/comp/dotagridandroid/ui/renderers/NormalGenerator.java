@@ -80,49 +80,56 @@ public class NormalGenerator implements Renderer {
 	public void setMVP(float[] model, float[] view, float[] projection) {}
 
 	public void computeTexture() {
-		pos = BufferUtils.createFloatBuffer(rows * columns * RESOLUTION * RESOLUTION * 24);
+		pos = BufferUtils.createFloatBuffer(rows * RESOLUTION * columns * RESOLUTION * 24);
 		normal = BufferUtils.createFloatBuffer(rows * columns * RESOLUTION * RESOLUTION * 24);
 		int offset;
-		final int arrWidth = columns * RESOLUTION;
+		final int arrWidth = columns * RESOLUTION + 1;
 		for (int i = 0; i < rows; i++) {
-			offset = i * columns * RESOLUTION * RESOLUTION;
+			offset = i * arrWidth * RESOLUTION;
 			for (int j = 0; j < columns; j++) {
 				for (int s = 0; s < RESOLUTION; s++)
 					for (int t = 0; t < RESOLUTION; t++) {
-						pos.put(terrain, 4 * (offset + s * arrWidth + t), 4)
-						.put(terrain, 4 * (offset + (s + 1) * arrWidth + t), 4)
-						.put(terrain, 4 * (offset + s * arrWidth + t + 1), 4)
-						.put(terrain, 4 * (offset + s * arrWidth + t + 1), 4)
-						.put(terrain, 4 * (offset + (s + 1) * arrWidth + t), 4)
-						.put(terrain, 4 * (offset + (s + 1) * arrWidth + t + 1), 4);
+						final int
+							bottomLeft = offset + s * arrWidth + t,
+							bottomRight = bottomLeft + 1,
+							topLeft = offset + (s + 1) * arrWidth + t,
+							topRight = topLeft + 1;
+						pos.put(terrain, 4 * bottomLeft, 4)
+						.put(terrain, 4 * bottomRight, 4)
+						.put(terrain, 4 * topLeft, 4)
+						.put(terrain, 4 * topLeft, 4)
+						.put(terrain, 4 * topRight, 4)
+						.put(terrain, 4 * bottomRight, 4);
 						// lower
 						float[] n = NormalisedVector3(Vector3CrossProduct (
 								new float[]{
-										terrain[4 * (offset + s * arrWidth + t + 1)] - terrain[4 * (offset + s * arrWidth + t)],
-										terrain[4 * (offset + s * arrWidth + t + 1) + 1] - terrain[4 * (offset + s * arrWidth + t) + 1],
-										terrain[4 * (offset + s * arrWidth + t + 1) + 2] - terrain[4 * (offset + s * arrWidth + t) + 2]
+										terrain[4 * bottomRight] - terrain[4 * bottomLeft],
+										terrain[4 * bottomRight + 1] - terrain[4 * bottomLeft + 1],
+										terrain[4 * bottomRight + 2] - terrain[4 * bottomLeft + 2]
 										},
 								new float[]{
-										terrain[4 * (offset + (s + 1) * arrWidth + t)] - terrain[4 * (offset + s * arrWidth + t)],
-										terrain[4 * (offset + (s + 1) * arrWidth + t) + 1] - terrain[4 * (offset + s * arrWidth + t) + 1],
-										terrain[4 * (offset + (s + 1) * arrWidth + t) + 2] - terrain[4 * (offset + s * arrWidth + t) + 2]
+										terrain[4 * topLeft] - terrain[4 * bottomLeft],
+										terrain[4 * topLeft + 1] - terrain[4 * bottomLeft + 1],
+										terrain[4 * topLeft + 2] - terrain[4 * bottomLeft + 2]
 										}
 								));
-						normal.put(n).put(0).put(n).put(0).put(n).put(0);
+						n = new float[] {(n[0] + 1)/2, (n[1] + 1)/2, (n[2] + 1)/2};
+						normal.put(n).put(1).put(n).put(1).put(n).put(1);
 						// upper
 						n = NormalisedVector3(Vector3CrossProduct (
 								new float[]{
-										terrain[4 * (offset + (s + 1) * arrWidth + t)] - terrain[4 * (offset + (s + 1) * arrWidth + t + 1)],
-										terrain[4 * (offset + (s + 1) * arrWidth + t) + 1] - terrain[4 * (offset + (s + 1) * arrWidth + t + 1) + 1],
-										terrain[4 * (offset + (s + 1) * arrWidth + t) + 2] - terrain[4 * (offset + (s + 1) * arrWidth + t + 1) + 2]
+										terrain[4 * topLeft] - terrain[4 * topRight],
+										terrain[4 * topLeft + 1] - terrain[4 * topRight + 1],
+										terrain[4 * topLeft + 2] - terrain[4 * topRight + 2]
 										},
 								new float[]{
-										terrain[4 * (offset + s * arrWidth + t + 1)] - terrain[4 * (offset + (s + 1) * arrWidth + t + 1)],
-										terrain[4 * (offset + s * arrWidth + t + 1) + 1] - terrain[4 * (offset + (s + 1) * arrWidth + t + 1) + 1],
-										terrain[4 * (offset + s * arrWidth + t + 1) + 2] - terrain[4 * (offset + (s + 1) * arrWidth + t + 1) + 2]
+										terrain[4 * bottomRight] - terrain[4 * topRight],
+										terrain[4 * bottomRight + 1] - terrain[4 * topRight + 1],
+										terrain[4 * bottomRight + 2] - terrain[4 * topRight + 2]
 										}
 								));
-						normal.put(n).put(0).put(n).put(0).put(n).put(0);
+						n = new float[] {(n[0] + 1)/2, (n[1] + 1)/2, (n[2] + 1)/2};
+						normal.put(n).put(1).put(n).put(1).put(n).put(1);
 					}
 				offset += RESOLUTION;
 			}
@@ -144,7 +151,7 @@ public class NormalGenerator implements Renderer {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureHandler, 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuf);
 		glViewport(0, 0, width, height);	// match texture size
-		glClearColor(1, 1, 1, 1);
+		glClearColor(0, 0, 1, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// end
 		// row by row
@@ -165,7 +172,7 @@ public class NormalGenerator implements Renderer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		glVertexAttribPointer(vColor, 4, GL_FLOAT, false, 0, BufferUtils.createFloatBuffer(24).position(0));
+		glVertexAttribPointer(vColor, 4, GL_FLOAT, false, 0, normal.position(0));
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, pos.position(0));
 		glEnableVertexAttribArray(vPosition);
 		glEnableVertexAttribArray(vColor);
