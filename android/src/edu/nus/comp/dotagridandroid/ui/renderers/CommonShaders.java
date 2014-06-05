@@ -25,7 +25,7 @@ public class CommonShaders {
 		= "precision mediump float;"
 		+ "varying vec4 autoColor;"
 		+ "void main () {"
-			+ "gl_FragColor = vec4(1,1,1,1);"//autoColor;"
+			+ "gl_FragColor = vec4(1,0,0,1);"//autoColor;"
 		+ "}";
 	
 	// textured

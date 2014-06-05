@@ -23,7 +23,6 @@ public class NormalGenerator implements Renderer {
 	private GenericProgram normalProgram;
 	private int frameBuf, renderBuf, textureHandler;
 	private FloatBuffer pos, normal;
-	private Buffer texBuf;
 	
 	private final float[] identity = IdentityMatrix4x4();
 	private boolean renderReady = false;
@@ -34,7 +33,7 @@ public class NormalGenerator implements Renderer {
 		this.terrain = terrain;
 		this.width = width;
 		this.height = height;
-		normalProgram = new GenericProgram(CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY);
+		normalProgram = new GenericProgram(CommonShaders.VS_IDENTITY_VARYING_COLOR, CommonShaders.FS_IDENTITY_VARYING_COLOR);
 		// framebuffer object
 		int[] buf = new int[1];
 		glGenFramebuffers(1, buf, 0);
@@ -46,7 +45,7 @@ public class NormalGenerator implements Renderer {
 		computeTask = new Thread() {
 			@Override
 			public void run() {
-//				computeTexture();
+				computeTexture();
 			}
 		};
 		computeTask.start();
@@ -133,10 +132,7 @@ public class NormalGenerator implements Renderer {
 	public void setRenderReady() {
 		// prepare normal texture
 		glBindTexture(GL_TEXTURE_2D, textureHandler);
-		int[] buf = new int[width * height];
-//		Arrays.fill(buf, 0xff0000ff);
-		texBuf = BufferUtils.createIntBuffer(width * height).put(buf);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, texBuf.position(0));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -148,8 +144,8 @@ public class NormalGenerator implements Renderer {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureHandler, 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuf);
 		glViewport(0, 0, width, height);	// match texture size
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(1, 1, 1, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// end
 		// row by row
 		glUseProgram(normalProgram.getProgramId());
@@ -157,8 +153,7 @@ public class NormalGenerator implements Renderer {
 		// the array is too large and it is used once
 		final int
 			vPosition = glGetAttribLocation(normalProgram.getProgramId(), "vPosition"),
-//			vColor = glGetAttribLocation(normalProgram.getProgramId(), "vColor"),
-			vColor = glGetUniformLocation(normalProgram.getProgramId(), "vColor"),
+			vColor = glGetAttribLocation(normalProgram.getProgramId(), "vColor"),
 			mModel = glGetUniformLocation(normalProgram.getProgramId(), "model"),
 			mView = glGetUniformLocation(normalProgram.getProgramId(), "view"),
 			mProjection = glGetUniformLocation(normalProgram.getProgramId(), "projection");
@@ -170,12 +165,13 @@ public class NormalGenerator implements Renderer {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, pos.position(0));
-//		glVertexAttribPointer(vColor, 4, GL_FLOAT, false, 0, normal.position(0));
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, BufferUtils.createFloatBuffer(12).put(new float[]{-1,-1,0,1,0,1,0,1,1,-1,0,1}).position(0));
-		glUniform4f(vColor, 1, 1, 1, 1);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
-//		glDrawArrays(GL_TRIANGLES, 0, rows * columns * RESOLUTION * RESOLUTION * 6);
+		glVertexAttribPointer(vColor, 4, GL_FLOAT, false, 0, BufferUtils.createFloatBuffer(24).position(0));
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, pos.position(0));
+		glEnableVertexAttribArray(vPosition);
+		glEnableVertexAttribArray(vColor);
+		glDrawArrays(GL_TRIANGLES, 0, rows * columns * RESOLUTION * RESOLUTION * 6);
+		glDisableVertexAttribArray(vPosition);
+		glDisableVertexAttribArray(vColor);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		pos = normal = null;
 		renderReady = true;

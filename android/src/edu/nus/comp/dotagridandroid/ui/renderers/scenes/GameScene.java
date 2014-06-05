@@ -48,7 +48,7 @@ public class GameScene implements SceneRenderer {
 	@Override
 	public void setRenderReady() {
 		state = (GameState) manager.getGameState("Current");
-		grid = new GridRenderer(state.getGridWidth(), state.getGridHeight());
+		grid = new GridRenderer(state.getGridWidth(), state.getGridHeight(), state.getTerrain());
 		status = new StatusRenderer(state);
 		status.setAspectRatio(ratio);
 		status.setGameLogicManager(manager);

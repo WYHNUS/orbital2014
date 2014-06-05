@@ -37,7 +37,9 @@ public class GridRenderer implements Renderer {
 			model = IdentityMatrix4x4(),
 			view = IdentityMatrix4x4(),
 			projection = IdentityMatrix4x4();
-	private float[] selectGridMat;
+	private float[] selectGridMat, gridLines, terrain;
+	private final float[] gridTerrain;
+	private int[] gridLinesIndex;
 	private TextRenderer textRender;
 	private NormalGenerator normalGen;
 	// gesture states
@@ -62,7 +64,9 @@ public class GridRenderer implements Renderer {
 	private int [] orgGridIndex;
 	// multithreading
 	private Thread computeTask;
-	public GridRenderer (int columns, int rows) {
+	public GridRenderer (int columns, int rows, float[] terrain) {
+		gridTerrain = new float[(rows * NormalGenerator.RESOLUTION + 1) * (columns * NormalGenerator.RESOLUTION + 1) * 4];
+		this.terrain = terrain;
 		this.rows = rows;
 		this.columns = columns;
 		gridProgram = new GenericProgram(
@@ -81,6 +85,13 @@ public class GridRenderer implements Renderer {
 		calculateView();
 		// text test
 		textRender = new TextRenderer();
+		computeTask = new Thread() {
+			@Override
+			public void run() {
+				prepareGrid();
+			}
+		};
+		computeTask.start();
 	}
 	@Override
 	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {
@@ -145,7 +156,7 @@ public class GridRenderer implements Renderer {
 			v[c++] = 0;
 			v[c++] = 1;
 		}
-		vBufMan.setVertexBuffer("GridPointBuffer", v);
+		gridLines = v;
 		c = 0;
 		int[] idx = new int[2 * (rows + columns + 2)];
 		for (int i = 0; i <= columns; i++) {
@@ -160,22 +171,24 @@ public class GridRenderer implements Renderer {
 			idx[c++] = 2 * columns + i;
 			idx[c++] = 2 * columns + i + rows - 1;
 		}
-		vBufMan.setIndexBuffer("GridPointMeshIndex", idx);
+		gridLinesIndex = idx;
+		final int RESOLUTION = NormalGenerator.RESOLUTION, arrWidth = columns * RESOLUTION;
+		// Terrain Intrapolation
+		for (int i = 0; i < rows; i++)
+			for (int j = 0; j < columns; j++)
+				;
 	}
 	@Override
 	public void setRenderReady() {
-		computeTask = new Thread() {
-			@Override
-			public void run() {
-				prepareGrid();
-			}
-		};
-		computeTask.start();
+		try {computeTask.join();} catch (InterruptedException e) {e.printStackTrace();}
+		vBufMan.setVertexBuffer("GridPointBuffer", gridLines);
+		vBufMan.setIndexBuffer("GridPointMeshIndex", gridLinesIndex);
+		gridLines = null; gridLinesIndex = null;
 		textRender.setRenderReady();
 		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
 		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
 		mapTexture = textures.get("GridMapBackground");
-		normalGen = new NormalGenerator(columns, rows, new float[(rows * NormalGenerator.RESOLUTION + 1) * (columns * NormalGenerator.RESOLUTION + 1) * 4], mapTexture.getWidth(), mapTexture.getHeight());
+		normalGen = new NormalGenerator(columns, rows, gridTerrain, mapTexture.getWidth(), mapTexture.getHeight());
 		normalGen.setGraphicsResponder(responder);
 		normalGen.setRenderReady();
 	}

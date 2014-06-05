@@ -12,9 +12,15 @@ public class GameLogicManager implements Closeable {
 	public GameLogicManager() {
 		gameSetting.put("DISPLAY_ANTI_ALIAS_SAMPLINGS", 4);
 		GameState current = new GameState();
-		current.setGridHeight(9);
-		current.setGridWidth(16);
-		current.setTerrain(new float[16 * 9]);
+		current.setGridHeight(5);
+		current.setGridWidth(5);
+		current.setTerrain(new float[]{
+			0, 0, 0, 0, 0,
+			1, 1, 1, 1, 1,
+			2, 2, 2, 2, 2,
+			3, 3, 3, 3, 3,
+			4, 4, 4, 4, 4,
+		});
 		gameStates.put("Current", current);	// dummy
 	}
 
