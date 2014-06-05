@@ -1,12 +1,13 @@
 package edu.nus.comp.dotagrid.logic;
 
-public class HeroList {
+
+public class HeroDatabase {
 	
 	public static int totalHeroNumber = 1;
 	
-	public static Hero[] heroList = new Hero[totalHeroNumber];
+	public Hero[] heroDatabase = new Hero[totalHeroNumber];
 	
-	public HeroList(){
+	public HeroDatabase(){
 		
 		/* 
 		 * String heroName, 
@@ -31,7 +32,8 @@ public class HeroList {
 		
 		Hero fur = new Hero("fur", "intelligence", 150, 10, 10, 3, 1.7, 3.52, 20, 100,
 							19, 18, 21, 1.8, 1.9, 2.9, 295);	
-		heroList[0] = fur;
+		fur.setCharacterImage("heroes", "fur");
+		heroDatabase[0] = fur;
 		
 	}
 

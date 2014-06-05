@@ -37,7 +37,8 @@ public class Character {
 	
 	public Character(String name, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
-					double startingPhysicalDefense, double startingMagicResistance, int startingMovementSpeed, int actionPoint){
+					double startingPhysicalDefense, double startingMagicResistance, int startingMovementSpeed, int actionPoint)
+	{
 		
 		this.setName(name);
 		

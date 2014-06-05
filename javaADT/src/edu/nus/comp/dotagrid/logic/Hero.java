@@ -1,7 +1,5 @@
 package edu.nus.comp.dotagrid.logic;
 
-import java.util.*;
-
 
 
 public class Hero extends Character{
@@ -19,8 +17,8 @@ public class Hero extends Character{
 	private int level;
 	private int experience;
 
-	private ArrayList<Skill> skills;
-	private ArrayList<Item> items;
+	public Skill[] skills;
+	public Item[] items;
 	
 	private int kill, death, assist;
 	
@@ -42,7 +40,8 @@ public class Hero extends Character{
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 			double startingPhysicalDefense, double startingMagicResistance, int actionPoint,
 			int startingStrength, int startingAgility, int startingIntelligence, 
-			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) {
+			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) 
+	{
 		
 		super(heroName, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefense, startingMagicResistance, movementSpeed, actionPoint);
@@ -83,6 +82,8 @@ public class Hero extends Character{
 		
 		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack() + this.getTotalMainAttrubute() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO);
 		
+		this.items = new Item[GameFrame.MAX_ITEM_NUMBER];
+		this.skills = new Skill[GameFrame.MAX_SKILL_NUMBER];
 	}
 	
 	
@@ -357,8 +358,6 @@ public class Hero extends Character{
 	public void setMoney(int money) {
 		this.money = money;
 	}
-
-
 
 
 
