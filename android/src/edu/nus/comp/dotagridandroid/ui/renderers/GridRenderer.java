@@ -173,7 +173,7 @@ public class GridRenderer implements Renderer {
 		}
 		gridLinesIndex = idx;
 		final int RESOLUTION = NormalGenerator.RESOLUTION, arrWidth = columns * RESOLUTION;
-		// Terrain Intrapolation
+		// Terrain Intrapolation - Bilinear
 		for (int i = 0; i < rows; i++)
 			for (int j = 0; j < columns; j++)
 				;
