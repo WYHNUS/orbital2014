@@ -60,11 +60,11 @@ public class GameFrame{
 	
 	// item list
 	GameButton[] items;
-	public final int MAX_ITEM_NUMBER = 6;
+	public static final int MAX_ITEM_NUMBER = 6;
 	
 	// skill list
 	GameButton[] skills;
-	public final int MAX_SKILL_NUMBER = 8;
+	public static final int MAX_SKILL_NUMBER = 8;
 	
 	// version info
 	GameButton versionID;
@@ -296,7 +296,7 @@ public class GameFrame{
 		actionList[1] = new GameButton("action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 		actionList[2] = new GameButton("action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 		actionList[3] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight), (int) gridWidth, (int) gridHeight);
-		actionList[4] = new GameButton("action", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
+		actionList[4] = new GameButton("shop", null, startingXPos, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 		actionList[5] = new GameButton("action", null, startingXPos + (int) gridWidth, FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 		actionList[6] = new GameButton("action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 		actionList[7] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 1.0 * gridHeight), (int) gridWidth, (int) gridHeight);
@@ -309,7 +309,8 @@ public class GameFrame{
 		actionList[14] = new GameButton("action", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 		actionList[15] = new GameButton("action", null, startingXPos + (int) (3 * gridWidth), FRAME_BORDER_HEIGHT + (int) (4.0 * gridHeight + 3.0 * gridHeight), (int) gridWidth, (int) gridHeight);
 			
-		actionList[0].setActionNumber(7);
+		actionList[0].setActionNumber(8);
+		actionList[4].setActionNumber(12);
 
 		allGameButtons.add(actionList[0]);
 		allGameButtons.add(actionList[1]);
@@ -341,7 +342,7 @@ public class GameFrame{
 		
 		// End Round Button
 		directions[2] = new GameButton("END", null, startingXPos + (int) (1.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);	
-		directions[2].setActionNumber(8);
+		directions[2].setActionNumber(7);
 		
 		// Right button
 		directions[3] = new GameButton("right", null, startingXPos + (int) (2.5 * gridWidth), startingYPos - (int) (3 * gridHeight), (int) gridWidth, (int) gridHeight);

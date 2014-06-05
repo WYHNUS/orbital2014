@@ -71,7 +71,7 @@ public class MainMenu {
 	
 	protected void confirmExit() {
 		final JFrame frame = new JFrame("Exit");
-		final JLabel label = new JLabel("Are You Sure To Exit ?");
+		final JLabel label = new JLabel("Are You Sure To Exit ?", JLabel.CENTER);
 		JButton yesButton = new JButton("YES");
 		JButton noButton = new JButton("NO");
 		
@@ -102,6 +102,7 @@ public class MainMenu {
 		
 		frame.pack();
 		frame.setSize(200, 400);
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 	
@@ -121,6 +122,7 @@ public class MainMenu {
 		
 		frame.pack();
 		frame.setSize(500, 700);
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 }

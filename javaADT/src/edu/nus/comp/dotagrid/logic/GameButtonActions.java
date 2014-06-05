@@ -1,5 +1,11 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.awt.GridLayout;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 public class GameButtonActions {
 	public static boolean readyToAct = false;
 	
@@ -59,21 +65,59 @@ public class GameButtonActions {
 				zoomOutGameGrid();
 				break;
 				
-			case 7:
+			case 7 :
+				endRound();
+				break;
+				
+			case 8:
 				readyToMove();
 				break;
 				
-			case 8 :
-				endRound();
+			case 9 :
+				break;
+				
+			case 10 :
+				break;
+			
+			case 11 : 
+				break;
+			
+			case 12 : 
+				showItemShop();
 				break;
 		}
 	}
 	
 
+	private void showItemShop() {
+		// create a new frame to show item shop list
+		JFrame frame = new JFrame("SHOP");
+		
+		JPanel panel = new JPanel();
+		panel.setLayout(new GridLayout(4, 4));
+		
+		ItemDatabase itemDtabase = new ItemDatabase();
+		
+		for (int i=0; i<ItemDatabase.totalItemNumber; i++) {
+			JButton button = new JButton(itemDtabase.itemDatabase[i].getItemName(), itemDtabase.itemDatabase[i].getItemImage());
+			panel.add(button);
+		}
+		
+		
+		
+		frame.add(panel);
+		frame.pack();
+		frame.setSize(600, 400);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);		
+	}
+
+
 	private void endRound() {
 		GameFrame.round++;
 		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.round);
 		
+		// reset AP for all existing characters
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
@@ -81,6 +125,10 @@ public class GameButtonActions {
 				}
 			}
 		}	
+
+		// reselect the grid
+		GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+		System.out.println("End Round!");
 	}
 
 
