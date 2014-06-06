@@ -176,6 +176,7 @@ public class NormalGenerator implements Renderer {
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, pos.position(0));
 		glEnableVertexAttribArray(vPosition);
 		glEnableVertexAttribArray(vColor);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glDrawArrays(GL_TRIANGLES, 0, rows * columns * RESOLUTION * RESOLUTION * 6);
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(vColor);

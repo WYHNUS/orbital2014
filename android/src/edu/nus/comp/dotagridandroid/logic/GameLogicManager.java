@@ -25,6 +25,7 @@ public class GameLogicManager implements Closeable {
 				0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 				1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
 		});
+//		current.setTerrain(new float[9 * 16]);
 		gameStates.put("Current", current);	// dummy
 	}
 

@@ -1,7 +1,8 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 //import java.nio.*;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.*;
 
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
@@ -62,6 +63,11 @@ public class GridRenderer implements Renderer {
 	// ray tracing
 	private float[] orgGridPoint;
 	private int [] orgGridIndex;
+	// light sources
+	public final int MAX_LIGHT_SOURCES = CommonShaders.MAX_LIGHT_SOURCE;
+	private final float[] lightObserver = {0,0,BOARD_Z_COORD};
+	// light config - 0: source.x, 1: source.y, 2: source.z, 3: color.r, 4: color.g, 5: color.b, 6: color.a, 7: specular, 8: attenuation
+	private final Map<String, float[]> lightSrc = new ConcurrentHashMap<>();
 	// multithreading
 	private Thread computeTask;
 	public GridRenderer (int columns, int rows, float[] terrain) {
@@ -74,8 +80,8 @@ public class GridRenderer implements Renderer {
 				new String(CommonShaders.FS_IDENTITY));
 		// configure map
 		mapProgram = new GenericProgram (
-				new String(CommonShaders.VS_IDENTITY_TEXTURED),
-				new String(CommonShaders.FS_IDENTITY_TEXTURED_TONED));
+				new String(CommonShaders.VS_IDENTITY_SPECIAL_LIGHTING),
+				new String(CommonShaders.FS_IDENTITY_SPECIAL_LIGHTING));
 		// coord configurations
 		selectGridMat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1f/columns, 1f/rows, 1), FlatTranslationMatrix4x4(1,1,0));
 		// calculate model
@@ -273,6 +279,7 @@ public class GridRenderer implements Renderer {
 							= 1;
 				}
 		}
+		lightSrc.put("1", new float[]{0,.1f,BOARD_Z_COORD,1,1,1,5,20});
 	}
 	@Override
 	public void setRenderReady() {
@@ -290,12 +297,7 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public boolean getReadyState() {
-		try {
-			computeTask.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		try {computeTask.join();} catch (InterruptedException e) {e.printStackTrace();}
 		return true;
 	}
 	// draw functions
@@ -320,35 +322,73 @@ public class GridRenderer implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 	}
 	private void drawMap() {
-		float[] mat = FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0,0,-BOARD_Z_COORD));
-		int vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
-			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTexture"),
+		final float[] mat = FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0,0,-BOARD_Z_COORD));
+		final int vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
+			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
+			vNOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTexture"),
 			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
-		int vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition"),
-			mModel = glGetUniformLocation(gridProgram.getProgramId(), "model"),
-			mView = glGetUniformLocation(gridProgram.getProgramId(), "view"),
-			mProjection = glGetUniformLocation(gridProgram.getProgramId(), "projection"),
-			textureColorTone = glGetUniformLocation(mapProgram.getProgramId(), "textureColorTone"),
+		final int vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition"),
+			mModel = glGetUniformLocation(mapProgram.getProgramId(), "model"),
+			mView = glGetUniformLocation(mapProgram.getProgramId(), "view"),
+			mProjection = glGetUniformLocation(mapProgram.getProgramId(), "projection"),
+			cameraPosition = glGetUniformLocation(mapProgram.getProgramId(), "camera"),
 			textureLocation = glGetUniformLocation(mapProgram.getProgramId(), "texture"),
-			textureCoord = glGetAttribLocation(mapProgram.getProgramId(), "textureCoord");
+			normalLocation = glGetUniformLocation(mapProgram.getProgramId(), "normal"),
+			textureCoord = glGetAttribLocation(mapProgram.getProgramId(), "textureCoord"),
+			normalCoord = glGetAttribLocation(mapProgram.getProgramId(), "normalCoord");
 		glUseProgram(mapProgram.getProgramId());
 		glUniformMatrix4fv(mModel, 1, false, mat, 0);
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
-		glUniform4f(textureColorTone, .5f, 0, 0, 0);
-		glEnableVertexAttribArray(vPosition);
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glUniform3f(cameraPosition, lightObserver[0], lightObserver[1], lightObserver[2]);
+		// texture and normal
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, normalGen.getNormalTexture());
-//		glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
-		glUniform1i(textureLocation, 0);
+		glUniform1i(normalLocation, 0);
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
+		glUniform1i(textureLocation, 1);
+		// light configurations
+		int c = 0;
+		for (Map.Entry<String, float[]> entry : lightSrc.entrySet()) {
+			final float[] config = entry.getValue();
+			final int
+				source = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + c + "].source"),
+				color = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + c + "].color"),
+				specular = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + c + "].specular"),
+				attenuation = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + c + "].attenuation");
+			glUniform3f(source, config[0], config[1], config[2]);
+			glUniform3f(color, config[3], config[4], config[5]);
+			glUniform1f(specular, config[6]);
+			glUniform1f(attenuation, config[7]);
+			c++;
+			if (c == MAX_LIGHT_SOURCES)
+				break;
+		}
+		for (int i = c; i < MAX_LIGHT_SOURCES; i++) {
+			final int
+				source = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + i + "].source"),
+				color = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + i + "].color"),
+				specular = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + i + "].specular"),
+				attenuation = glGetUniformLocation(mapProgram.getProgramId(), "lights[" + i + "].attenuation");
+			glUniform3f(source, 0, 0, -1024f);
+			glUniform3f(color, 0, 0, 0);
+			glUniform1f(specular, 1);
+			glUniform1f(attenuation, 1024f);
+		}
+		// vertex attributes
+		glEnableVertexAttribArray(vPosition);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
 		glEnableVertexAttribArray(textureCoord);
 		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
+		glEnableVertexAttribArray(normalCoord);
+		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, 0, vNOffset);
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
+		glDisableVertexAttribArray(normalCoord);
 	}
 	private void drawRay() {
 		if (!hasRay)
