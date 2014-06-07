@@ -11,7 +11,7 @@ import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class NormalGenerator implements Renderer {
-	public static final int RESOLUTION = 16;
+	public static final int RESOLUTION = 12;
 	private final int rows, columns, width, height;
 	private final float[] terrain;
 	private VertexBufferManager vBufMan;
@@ -79,7 +79,7 @@ public class NormalGenerator implements Renderer {
 	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {}
 
-	public void computeTexture() {
+	private void computeTexture() {
 		pos = BufferUtils.createFloatBuffer(rows * RESOLUTION * columns * RESOLUTION * 24);
 		normal = BufferUtils.createFloatBuffer(rows * columns * RESOLUTION * RESOLUTION * 24);
 		int offset;
@@ -180,10 +180,8 @@ public class NormalGenerator implements Renderer {
 		glDrawArrays(GL_TRIANGLES, 0, rows * columns * RESOLUTION * RESOLUTION * 6);
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(vColor);
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		pos = normal = null;
 		renderReady = true;
-		responder.updateGraphics();
 	}
 	
 	public int getNormalTexture() {

@@ -31,11 +31,11 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-	     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	     glClearColor(.4f, .6f, .9f, 1);
-//	     glClearColor(0,0,0,0);
-	     // TODO: set MVP
-	     r.draw();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glViewport(0, 0, width, height);
+		glClearColor(.4f, .6f, .9f, 1);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		r.draw();
 	}
 
 	@Override
@@ -100,9 +100,6 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	
 	public class GraphicsResponder {
 		public void updateGraphics() {
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			glViewport(0, 0, width, height);
 			view.requestRender();
 		}
 	}

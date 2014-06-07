@@ -70,7 +70,7 @@ public class TextRenderer implements Renderer {
 		int
 			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex"),
-			vTexOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTexture");
+			vTexOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted");
 		glUseProgram(textProgram.getProgramId());
 		final float[] scale = {1/(float) TextFont.CHARACTER_MAP_LENGTH,1};
 		glUniform2fv(textureScale, 1, scale, 0);

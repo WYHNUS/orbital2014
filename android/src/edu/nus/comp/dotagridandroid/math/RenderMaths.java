@@ -29,12 +29,12 @@ public class RenderMaths {
 				a[12]*b[3] + a[13]*b[7] + a[14]*b[11] + a[15]*b[15],
 		};
 	}
-	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] b, float[] ...fs) {
+	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] ...fs) {
 		final int len = fs.length;
 		float[] result = fs[len - 1];
 		for (int i = len - 2; i >= 0; i--)
 			result = FlatMatrix4x4Multiplication(fs[i], result);
-		return FlatMatrix4x4Multiplication(a, FlatMatrix4x4Multiplication(b, result));
+		return FlatMatrix4x4Multiplication(a, result);
 	}
 	public static float[] FlatMatrix4x4ScalarMultiplication (float a, float[] b) {
 		if (b.length != 16)
@@ -163,5 +163,11 @@ public class RenderMaths {
 		if (a.length != 3 || b.length != 3)
 			throw new RuntimeException("Wrong vector size");
 		return new float[]{a[0]*ka + b[0]*kb,a[1]*ka + b[1]*kb,a[2]*ka+b[2]*kb};
+	}
+	public static float Vector4CubicInterpolation (float[] f, float x) {
+		if (f.length != 4)
+			throw new RuntimeException("Wrong vector size");
+		// 0: f(0), 1: f(1), 2: f'(0), 3: f'(1)
+		return f[0] + x * (f[2] + x * (-3 * f[0] + 3 * f[1] - 2 * f[2] - f[3] + x * (2 * f[0] - 2 * f[1] + f[2] + f[3])));
 	}
 }
