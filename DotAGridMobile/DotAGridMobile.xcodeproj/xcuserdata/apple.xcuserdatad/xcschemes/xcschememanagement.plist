@@ -4,7 +4,7 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
-		<key>orbital.xcscheme</key>
+		<key>DotAGridMobile.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>0</integer>
@@ -12,12 +12,12 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>8E5C1C6219177A250086F63A</key>
+		<key>1898C3C119437CB0008AE9AC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>8E5C1C8E19177A260086F63A</key>
+		<key>1898C3D119437CB0008AE9AC</key>
 		<dict>
 			<key>primary</key>
 			<true/>
