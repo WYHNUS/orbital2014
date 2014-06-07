@@ -510,7 +510,6 @@ public class GridRenderer implements Renderer {
 		glUseProgram(shadowProgram.getProgramId());
 		final int
 			vPosition = glGetAttribLocation(shadowProgram.getProgramId(), "vPosition"),
-//			vColor = glGetUniformLocation(shadowProgram.getProgramId(), "vColor"),
 			mModel = glGetUniformLocation(shadowProgram.getProgramId(), "model"),
 			mView = glGetUniformLocation(shadowProgram.getProgramId(), "view"),
 			mProjection = glGetUniformLocation(shadowProgram.getProgramId(), "projection");
@@ -772,6 +771,10 @@ public class GridRenderer implements Renderer {
 		final float[] lightPoint = FlatMatrix4x4Vector4Multiplication(model, orgGridPoint);
 		final float[] lightConfig = lightSrc.get("1");
 		lightConfig[0] = lightPoint[0]; lightConfig[1] = lightPoint[1];
+		if (hasRay)
+			lightConfig[2] = 2 * BOARD_Z_COORD + terrain[orgGridIndex[0] + orgGridIndex[1] * columns] * BOARD_Z_COORD;
+		else
+			lightConfig[2] = 2 * BOARD_Z_COORD;
 		configureShadow("1");
 		responder.updateGraphics();
 	}

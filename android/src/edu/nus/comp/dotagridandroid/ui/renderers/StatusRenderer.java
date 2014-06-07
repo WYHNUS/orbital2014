@@ -76,13 +76,13 @@ public class StatusRenderer implements Renderer {
 			mProjection = glGetUniformLocation(frameProgram.getProgramId(), "projection");
 		int vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare");
 		glUseProgram(frameProgram.getProgramId());
-		glEnableVertexAttribArray(vPosition);
+		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glEnableVertexAttribArray(vPosition);
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, identity, 0);
 		glUniformMatrix4fv(mProjection, 1, false, identity, 0);
 		glUniform4f(vColor, 0, 0, 0, 1);
-		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glDrawArrays(GL_LINE_LOOP, 0, 4);
 		glDisableVertexAttribArray(vPosition);
 	}

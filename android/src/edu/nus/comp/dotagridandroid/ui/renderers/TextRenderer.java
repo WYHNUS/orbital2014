@@ -80,12 +80,12 @@ public class TextRenderer implements Renderer {
 		glBindTexture(GL_TEXTURE_2D, font.getTexture());
 		glUniform1i(texture, 0);
 		glUniform4fv(textureColourTone, 1, textColour, 0);
-		glEnableVertexAttribArray(vPosition);
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
-		glEnableVertexAttribArray(vTexture);
-		glVertexAttribPointer(vTexture, 2, GL_FLOAT, false, 0, vTexOffset);
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glVertexAttribPointer(vTexture, 2, GL_FLOAT, false, 0, vTexOffset);
+		glEnableVertexAttribArray(vPosition);
+		glEnableVertexAttribArray(vTexture);
 		byte lines = 1;
 		for (String str : text) {
 			for (int i = 0; i < str.length(); i++) {
