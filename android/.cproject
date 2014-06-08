@@ -27,6 +27,9 @@
 								</outputEntries>
 							</builder>
 							<tool id="com.android.gcc.compiler.1753653398" name="Android GCC Compiler" superClass="com.android.gcc.compiler">
+								<option id="com.android.gcc.option.includePath.1070083456" superClass="com.android.gcc.option.includePath" valueType="includePath">
+									<listOptionValue builtIn="false" value="/home/dingxiangfei/android-ndk-r9d/sources/cxx-stl/stlport/stlport"/>
+								</option>
 								<inputType id="com.android.gcc.inputType.1985096607" superClass="com.android.gcc.inputType"/>
 							</tool>
 						</toolChain>
@@ -49,4 +52,5 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.android.AndroidPerProjectProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
+	<storageModule moduleId="refreshScope"/>
 </cproject>
