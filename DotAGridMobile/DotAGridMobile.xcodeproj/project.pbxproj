@@ -7,11 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		187D7648194434F10085D1D3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187D7647194434F10085D1D3 /* Character.swift */; };
+		187D764A1944351D0085D1D3 /* Drawable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187D76491944351D0085D1D3 /* Drawable.swift */; };
+		187D764C19443D2F0085D1D3 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 187D764B19443D2F0085D1D3 /* Player.swift */; };
 		1898C3C819437CB0008AE9AC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3C719437CB0008AE9AC /* AppDelegate.swift */; };
 		1898C3CB19437CB0008AE9AC /* DotAGridMobile.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3C919437CB0008AE9AC /* DotAGridMobile.xcdatamodeld */; };
 		1898C3CD19437CB0008AE9AC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1898C3CC19437CB0008AE9AC /* Images.xcassets */; };
 		1898C3D919437CB0008AE9AC /* DotAGridMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3D819437CB0008AE9AC /* DotAGridMobileTests.swift */; };
 		1898C3E319437CED008AE9AC /* MainGLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E219437CED008AE9AC /* MainGLView.swift */; };
+		1898C3E619437FD2008AE9AC /* Hero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E519437FD2008AE9AC /* Hero.swift */; };
+		1898C3E91943815F008AE9AC /* RenderMaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E81943815F008AE9AC /* RenderMaths.swift */; };
+		18B37ADA19441CE600A0A303 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B37AD919441CE600A0A303 /* Item.swift */; };
+		18EFD5C91944285700DC23B6 /* ExtensionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EFD5C81944285700DC23B6 /* ExtensionEngine.swift */; };
+		18EFD5CB19442FA100DC23B6 /* ExtensionInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EFD5CA19442FA100DC23B6 /* ExtensionInterface.swift */; };
+		18EFD5CD19442FF900DC23B6 /* GameLogicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EFD5CC19442FF900DC23B6 /* GameLogicManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,6 +34,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		187D7647194434F10085D1D3 /* Character.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
+		187D76491944351D0085D1D3 /* Drawable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Drawable.swift; sourceTree = "<group>"; };
+		187D764B19443D2F0085D1D3 /* Player.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
 		1898C3C219437CB0008AE9AC /* DotAGridMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DotAGridMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1898C3C619437CB0008AE9AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1898C3C719437CB0008AE9AC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -34,6 +46,12 @@
 		1898C3D719437CB0008AE9AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1898C3D819437CB0008AE9AC /* DotAGridMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotAGridMobileTests.swift; sourceTree = "<group>"; };
 		1898C3E219437CED008AE9AC /* MainGLView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainGLView.swift; sourceTree = "<group>"; };
+		1898C3E519437FD2008AE9AC /* Hero.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hero.swift; sourceTree = "<group>"; };
+		1898C3E81943815F008AE9AC /* RenderMaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderMaths.swift; sourceTree = "<group>"; };
+		18B37AD919441CE600A0A303 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		18EFD5C81944285700DC23B6 /* ExtensionEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionEngine.swift; sourceTree = "<group>"; };
+		18EFD5CA19442FA100DC23B6 /* ExtensionInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionInterface.swift; sourceTree = "<group>"; };
+		18EFD5CC19442FF900DC23B6 /* GameLogicManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameLogicManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +72,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		187D7646194434C90085D1D3 /* Renderers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Renderers;
+			sourceTree = "<group>";
+		};
 		1898C3B919437CB0008AE9AC = {
 			isa = PBXGroup;
 			children = (
@@ -75,6 +100,10 @@
 		1898C3C419437CB0008AE9AC /* DotAGridMobile */ = {
 			isa = PBXGroup;
 			children = (
+				187D7646194434C90085D1D3 /* Renderers */,
+				18EFD5C71944284500DC23B6 /* Extension */,
+				1898C3E71943811E008AE9AC /* Math */,
+				1898C3E419437FB7008AE9AC /* Logic */,
 				1898C3C719437CB0008AE9AC /* AppDelegate.swift */,
 				1898C3CC19437CB0008AE9AC /* Images.xcassets */,
 				1898C3C919437CB0008AE9AC /* DotAGridMobile.xcdatamodeld */,
@@ -107,6 +136,36 @@
 				1898C3D719437CB0008AE9AC /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1898C3E419437FB7008AE9AC /* Logic */ = {
+			isa = PBXGroup;
+			children = (
+				1898C3E519437FD2008AE9AC /* Hero.swift */,
+				18B37AD919441CE600A0A303 /* Item.swift */,
+				18EFD5CC19442FF900DC23B6 /* GameLogicManager.swift */,
+				187D7647194434F10085D1D3 /* Character.swift */,
+				187D76491944351D0085D1D3 /* Drawable.swift */,
+				187D764B19443D2F0085D1D3 /* Player.swift */,
+			);
+			name = Logic;
+			sourceTree = "<group>";
+		};
+		1898C3E71943811E008AE9AC /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				1898C3E81943815F008AE9AC /* RenderMaths.swift */,
+			);
+			name = Math;
+			sourceTree = "<group>";
+		};
+		18EFD5C71944284500DC23B6 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				18EFD5C81944285700DC23B6 /* ExtensionEngine.swift */,
+				18EFD5CA19442FA100DC23B6 /* ExtensionInterface.swift */,
+			);
+			name = Extension;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -206,8 +265,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1898C3E91943815F008AE9AC /* RenderMaths.swift in Sources */,
+				18EFD5CB19442FA100DC23B6 /* ExtensionInterface.swift in Sources */,
 				1898C3C819437CB0008AE9AC /* AppDelegate.swift in Sources */,
+				1898C3E619437FD2008AE9AC /* Hero.swift in Sources */,
+				187D764C19443D2F0085D1D3 /* Player.swift in Sources */,
+				187D764A1944351D0085D1D3 /* Drawable.swift in Sources */,
+				18EFD5CD19442FF900DC23B6 /* GameLogicManager.swift in Sources */,
 				1898C3E319437CED008AE9AC /* MainGLView.swift in Sources */,
+				18B37ADA19441CE600A0A303 /* Item.swift in Sources */,
+				187D7648194434F10085D1D3 /* Character.swift in Sources */,
+				18EFD5C91944285700DC23B6 /* ExtensionEngine.swift in Sources */,
 				1898C3CB19437CB0008AE9AC /* DotAGridMobile.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -387,6 +455,7 @@
 				1898C3DE19437CB0008AE9AC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1898C3DF19437CB0008AE9AC /* Build configuration list for PBXNativeTarget "DotAGridMobileTests" */ = {
 			isa = XCConfigurationList;
@@ -395,6 +464,7 @@
 				1898C3E119437CB0008AE9AC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

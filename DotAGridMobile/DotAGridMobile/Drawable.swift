@@ -1,5 +1,5 @@
 //
-//  MainGLView.swift
+//  Drawable.swift
 //  DotAGridMobile
 //
 //  Created by apple on 8/6/14.
@@ -7,10 +7,7 @@
 //
 
 import Foundation
-import Hero
 
-class MainGLView {
-    init () {
-        
-    }
+class Drawable {
+    var imageName:String
 }
