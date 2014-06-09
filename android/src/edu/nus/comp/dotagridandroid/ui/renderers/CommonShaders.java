@@ -91,7 +91,7 @@ public class CommonShaders {
 			+ "autoTextureCoord = textureCoord;"
 			+ "autoNormalCoord = normalCoord;"
 			+ "vec4 lightPos = pos * lightTransform;"
-			+ "autoShadowCoord = vec2((lightPos.x / lightPos.w + 1.0) / 2.0, (lightPos.y / lightPos.w + 1.0) / 2.0);"
+			+ "autoShadowCoord = vec2(lightPos.x / lightPos.w + 1.0, lightPos.y / lightPos.w + 1.0) / 2.0;"
 			+ "actualDepth = lightPos.z / lightPos.w;"
 		+ "}";
 	public static final String FS_IDENTITY_SPECIAL_LIGHTING
@@ -115,15 +115,13 @@ public class CommonShaders {
 			+ "vec3 normalObserver = normalize (observer);"
 			+ "vec3 inbound = normalize (position - light.source);"
 			+ "vec3 outbound = inbound - 2.0 * dot (inbound, normalVec) * normalVec;"
-			+ "float atn = max(0.0, dot(normalVec, -inbound)) / (1.0 + light.attenuation * pow (observerDistance, 3.0));"
+			+ "float atn = max(0.0, dot(normalVec, -inbound)) / (1.0 + light.attenuation * pow (observerDistance, 2.0));"
 			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular));"
 			+ "vec3 finalColor = lightColor * materialColor.rgb;"
 			// shadow map
-			+ "float depth = (dot ("
-				+ "texture2D (shadow, autoShadowCoord), "
-				+ "vec4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0,1.0))"
-				+ ") * 2.0 - 1.0;"
-			+ "float shadowFactor = exp(shadowDecay * min(actualDepth - depth, 0.0));"
+			+ "vec3 shadowValue = texture2D (shadow, autoShadowCoord).xyz;"
+			+ "float depth = (shadowValue.x + shadowValue.y + shadowValue.z / 256.0) * 2.0 - 1.0;"
+			+ "float shadowFactor = exp(shadowDecay * min(depth - actualDepth, 0.0));"
 			+ "gl_FragColor = vec4(light.layerCount * shadowFactor * finalColor, light.layerFactor);"
 		+ "}";
 	public static final String VS_IDENTITY_SPECIAL_SHADOW
@@ -138,9 +136,8 @@ public class CommonShaders {
 		= "precision mediump float;"
 		+ "varying vec4 pos;"
 		+ "void main () {"
-			+ "float z = (pos.z / pos.w + 1.0) / 2.0;"
-			+ "vec4 depth = fract (z * vec4(256.0 * 256.0 * 256.0, 256.0 * 256.0, 256.0, 1.0));"
-			+ "depth -= depth.xxyz * vec4(0, 1.0/256.0, 1.0/256.0, 1.0/256.0);"
-			+ "gl_FragColor = depth;"
+			+ "float z = max(0.0, (pos.z / pos.w + 1.0) / 2.0);"	// assume 0 <= z <= 1, clip negative
+			+ "vec4 c = vec4(min(1.0, floor(z)), fract(floor(z * 256.0) / 256.0), fract(z * 256.0), 1.0);"
+			+ "gl_FragColor = c;"
 		+ "}";
 }

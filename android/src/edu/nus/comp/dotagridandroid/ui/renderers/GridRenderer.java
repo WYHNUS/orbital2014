@@ -14,10 +14,11 @@ public class GridRenderer implements Renderer {
 	public static final float BOARD_Z_COORD = 0.1f;
 	public static final float BASE_ZOOM_FACTOR = 0.5f;
 	public static final int SHADOW_MAP_TEXTURE_DIMENSION = 2048;
+	private static final float LIGHT_MAX_RADIUS = 5;
 	
 	private VertexBufferManager vBufMan;
 	private Map<String, Texture2D> textures;
-	private int rows, columns;
+	private final int rows, columns;
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
 	private Texture2D mapTexture;
@@ -67,12 +68,13 @@ public class GridRenderer implements Renderer {
 	// light sources
 	public final int MAX_LIGHT_SOURCES = CommonShaders.MAX_LIGHT_SOURCE;
 	private final float[] lightObserver = {0,0,BOARD_Z_COORD};
-	// light config - 0: source.x, 1: source.y, 2: source.z, 3: color.r, 4: color.g, 5: color.b, 6: color.a, 7: specular, 8: attenuation
+	// light config - 0: source.x, 1: source.y, 2: source.z, 3: color.r, 4: color.g, 5: color.b, 6: specular, 7: attenuation
 	private final Map<String, float[]> lightSrc = new ConcurrentHashMap<>(), lightViews = new ConcurrentHashMap<>();
+	private final Map<String, Boolean> lightDirty = new ConcurrentHashMap<>();
 	// light - shadowMaps
 	private int frameBuf, renderBuf;
 	private final Map<String, Integer> shadowMaps = new ConcurrentHashMap<>();
-	private final float[] lightProjection = FlatPerspectiveMatrix4x4(BOARD_Z_COORD * .5f, 1, -1, 1, 1, -1);
+	private final float[] lightProjection;
 	// multithreading
 	private Thread computeTask;
 	public GridRenderer (int columns, int rows, float[] terrain) {
@@ -103,6 +105,12 @@ public class GridRenderer implements Renderer {
 		// calculate view
 		calculateView();
 		// shadow mapping - resource generator
+		final float lightRadius;
+		if (rows > columns)
+			lightRadius = BASE_ZOOM_FACTOR * LIGHT_MAX_RADIUS * 2 / columns;
+		else
+			lightRadius = BASE_ZOOM_FACTOR * LIGHT_MAX_RADIUS * 2 / rows;
+		lightProjection = FlatPerspectiveMatrix4x4(BOARD_Z_COORD * .5f, 2, -lightRadius, lightRadius, lightRadius, -lightRadius);
 		int[] buf = new int[1];
 		glGenFramebuffers(1, buf, 0);
 		frameBuf = buf[0];
@@ -207,10 +215,6 @@ public class GridRenderer implements Renderer {
 						mapTerrain[4 * (cellOffset + arrWidth * s + t)] = (j + t / (float) RESOLUTION + .5f) / columns * 2 - 1;
 						mapTerrain[4 * (cellOffset + arrWidth * s + t) + 1] = (i + s / (float) RESOLUTION + .5f) / rows * 2 - 1;
 						mapTerrain[4 * (cellOffset + arrWidth * s + t) + 2]
-//								= (terrain[i * columns + j] * (1 - t / (float) RESOLUTION) * (1 - s / (float) RESOLUTION)
-//								+ terrain[i * columns + j + 1] * t / (float) RESOLUTION * (1 - s / (float) RESOLUTION)
-//								+ terrain[(i + 1) * columns + j] * (1 - t / (float) RESOLUTION) * s / (float) RESOLUTION
-//								+ terrain[(i + 1) * columns + j + 1] * t / (float) RESOLUTION * s / (float) RESOLUTION - 1) * BOARD_Z_COORD;
 								= (bicubic(terrain[i * columns + j], terrain[i * columns + j + 1],
 										terrain[(i + 1) * columns + j], terrain[(i + 1) * columns + j + 1],
 										t / (float) RESOLUTION, s / (float) RESOLUTION) - 1) * BOARD_Z_COORD;
@@ -261,8 +265,6 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * cellOffset] = t / (float) RESOLUTION / columns * 2 - 1;
 					mapTerrain[4 * cellOffset + 1] = (i + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
 					mapTerrain[4 * cellOffset + 2]
-//							= (terrain[i * columns] * (1 - s / (float) RESOLUTION)
-//							+ terrain[(i + 1) * columns] * s / RESOLUTION - 1) * BOARD_Z_COORD;
 							= (bicubic(terrain[i * columns], terrain[i * columns],
 									terrain[(i + 1) * columns], terrain[(i + 1) * columns],
 									0, s / (float) RESOLUTION) - 1) * BOARD_Z_COORD;
@@ -273,8 +275,6 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * (cellOffset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 1]
 							= (i + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
 					mapTerrain[4 * (cellOffset + (columns - 1) * RESOLUTION + RESOLUTION / 2) + 2]
-//							= (terrain[i * columns + columns - 1] * (1 - s / (float) RESOLUTION)
-//							+ terrain[(i + 1) * columns + columns - 1] * s / RESOLUTION - 1) * BOARD_Z_COORD;
 							= (bicubic (terrain[(i + 1) * columns - 1], terrain[(i + 1) * columns - 1],
 									terrain[(i + 2) * columns - 1], terrain[(i + 2) * columns - 1],
 									0, s / (float) RESOLUTION) - 1) * BOARD_Z_COORD;
@@ -291,8 +291,6 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * cellOffset] = (i + .5f + t / (float) RESOLUTION) / columns * 2 - 1;
 					mapTerrain[4 * cellOffset + 1] = s / (float) RESOLUTION / rows * 2 - 1;
 					mapTerrain[4 * cellOffset + 2]
-//							= (terrain[i] * (1 - t / (float) RESOLUTION)
-//							+ terrain[i + 1] * t / RESOLUTION - 1) * BOARD_Z_COORD;
 							= (bicubic (terrain[i], terrain[i + 1], terrain[i], terrain[i + 1], t / (float) RESOLUTION, 0) - 1) * BOARD_Z_COORD;
 					mapTerrain[4 * cellOffset + 3] = 1;
 					// top side
@@ -301,8 +299,6 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * (cellOffset + (rows - 1) * RESOLUTION * arrWidth + RESOLUTION * arrWidth / 2) + 1]
 							= (rows - 1 + .5f + s / (float) RESOLUTION) / rows * 2 - 1;
 					mapTerrain[4 * (cellOffset + (rows - 1) * RESOLUTION * arrWidth + RESOLUTION * arrWidth / 2) + 2]
-//							= (terrain[(rows - 1) * columns + i] * (1 - t / (float) RESOLUTION)
-//							+ terrain[(rows - 1) * columns + i + 1] * t / RESOLUTION - 1) * BOARD_Z_COORD;
 							= (bicubic (terrain[(rows - 1) * columns + i], terrain[(rows - 1) * columns + i + 1],
 									terrain[(rows - 1) * columns + i], terrain[(rows - 1) * columns + i + 1],
 									t / (float) RESOLUTION, 0) - 1) * BOARD_Z_COORD;
@@ -338,7 +334,9 @@ public class GridRenderer implements Renderer {
 					mapIndex[c++] = (i + 1) * arrWidth + j;
 				}
 		}
-		lightSrc.put("1", new float[]{0.1f,0.1f,2 * BOARD_Z_COORD,1,1,1,5,20});
+		// TODO Remove
+		lightSrc.put("1", new float[]{0.1f,0.1f,2 * BOARD_Z_COORD,1,1,1,5,5});
+		lightDirty.put("1", true);
 	}
 	@Override
 	public void setRenderReady() {
@@ -362,6 +360,9 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public boolean getReadyState() {
+		for (String light : lightDirty.keySet())
+			if (lightDirty.get(light))
+				configureShadow(light);
 		return true;
 	}
 	// draw functions
@@ -388,7 +389,6 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	private void drawMap() {
-//		final float[] mat = FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0,0,-BOARD_Z_COORD));
 		final int vOffset = vBufMan.getVertexBufferOffset("MapPointBuffer"),
 				vTOffset = vBufMan.getVertexBufferOffset("MapTextureCoord"),
 				vNOffset = vBufMan.getVertexBufferOffset("MapNormalCoord"),
@@ -420,7 +420,7 @@ public class GridRenderer implements Renderer {
 		glUniform1i(normalLocation, 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
-		glUniform1i(textureLocation, 1);
+		glUniform1i(textureLocation, 1);	// changed
 		glUniform1i(shadowLocation, 2);
 		glUniform1f(layerCount, lightSrc.size());
 		// vertex attributes
@@ -505,7 +505,7 @@ public class GridRenderer implements Renderer {
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowMaps.get(name), 0);
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuf);
 		glViewport(0, 0, SHADOW_MAP_TEXTURE_DIMENSION, SHADOW_MAP_TEXTURE_DIMENSION);
-		glClearColor(0, 0, 0, 0);
+		glClearColor(0, 0, 0, 1);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glUseProgram(shadowProgram.getProgramId());
 		final int
@@ -567,7 +567,7 @@ public class GridRenderer implements Renderer {
 				FlatRotationMatrix4x4((float) Math.acos(cameraParams[7]), -cameraParams[8], 0, cameraParams[6])
 				,view);
 	}
-	// event intepretors
+	// event interpreters
 	@Override
 	public boolean passEvent(ControlEvent e) {
 		// Remember: normalise
@@ -775,11 +775,11 @@ public class GridRenderer implements Renderer {
 			lightConfig[2] = 2 * BOARD_Z_COORD + terrain[orgGridIndex[0] + orgGridIndex[1] * columns] * BOARD_Z_COORD;
 		else
 			lightConfig[2] = 2 * BOARD_Z_COORD;
+		lightDirty.put("1", true);
 		// TODO: ExtensionEngine
 		edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI.testJS();
 		System.out.println("EE called");
-		// TODO: Fix shadows
-		configureShadow("1");
+//		configureShadow("1");
 		responder.updateGraphics();
 	}
 	@Override

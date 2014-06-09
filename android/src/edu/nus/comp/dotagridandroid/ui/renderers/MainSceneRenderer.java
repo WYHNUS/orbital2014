@@ -17,6 +17,7 @@ public class MainSceneRenderer implements Renderer {
 	private SceneRenderer scene;
 
 	public MainSceneRenderer () {
+		// TODO: Change to scene flows
 		scene = new GameScene ();
 	}
 
@@ -64,13 +65,13 @@ public class MainSceneRenderer implements Renderer {
 	}
 
 	@Override
-	public boolean getReadyState() {return true;}
+	public boolean getReadyState() {
+		return scene.getReadyState();
+	}
 
 	@Override
 	public void draw() {
-		// TODO Auto-generated method stub
-		if (scene.getReadyState())
-			scene.draw();
+		scene.draw();
 	}
 
 	@Override

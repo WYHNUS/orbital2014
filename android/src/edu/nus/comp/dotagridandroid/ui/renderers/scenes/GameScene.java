@@ -72,14 +72,14 @@ public class GameScene implements SceneRenderer {
 	}
 	
 	@Override
-	public boolean getReadyState() {return true;}
+	public boolean getReadyState() {
+		return grid.getReadyState() && status.getReadyState();
+	}
 
 	@Override
 	public void draw() {
-		if (grid.getReadyState())
-			grid.draw();
-		if (status.getReadyState())
-			status.draw();
+		grid.draw();
+		status.draw();
 	}
 
 	@Override

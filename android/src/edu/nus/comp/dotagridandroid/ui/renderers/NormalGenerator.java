@@ -11,7 +11,7 @@ import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class NormalGenerator implements Renderer {
-	public static final int RESOLUTION = 12;
+	public static final int RESOLUTION = 10;
 	private final int rows, columns, width, height;
 	private final float[] terrain;
 	private VertexBufferManager vBufMan;

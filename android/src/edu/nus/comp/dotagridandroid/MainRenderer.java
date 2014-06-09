@@ -20,7 +20,6 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	private CommonShapes cs;
 	private Renderer r;
 	private int width, height;
-	final static int gridWidth = 16, gridHeight = 9;
 	private Map<String, Texture2D> texture2d = new HashMap<>();
 	private GameLogicManager manager;
 	public MainRenderer (Context context, MainSurfaceView view) {
@@ -31,11 +30,13 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glViewport(0, 0, width, height);
-		glClearColor(.4f, .6f, .9f, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		r.draw();
+		if (r.getReadyState()) {
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glViewport(0, 0, width, height);
+			glClearColor(.4f, .6f, .9f, 1);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			r.draw();
+		}
 	}
 
 	@Override
