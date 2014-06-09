@@ -1,28 +1,68 @@
-#include <stdio.h>
 #include <string>
 #include <map>
 #include <jni.h>
 #include <v8.h>
-
+#include <android/log.h>
+void testEngine();
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_test(JNIEnv *env, jobject obj) {
-
+Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testJS(JNIEnv *env, jobject obj) {
+	testEngine();
 }
 
 }
 
 class ExtensionEngine {
-	std::map<std::string, int> textureMap;
+	v8::Isolate *iso;
+	std::string src;
 public:
 	ExtensionEngine();
-	void loadScript (std::string&);
+	void loadScript (const std::string&);
+	void execute();
 };
 
 ExtensionEngine::ExtensionEngine() {
-	v8::Isolate * iso = v8::Isolate::GetCurrent();
-	textureMap["aka"] = 4;
+	v8::V8::Initialize();
+	iso = v8::Isolate::New();
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "ISO: %p\n", iso);
+}
+
+void ExtensionEngine::loadScript(const std::string& src) {
+	this->src = std::string(src);
+}
+
+void ExtensionEngine::execute() {
+	// create isolate scope - important
+	v8::Isolate::Scope iso_scope(iso);
+	// create locker - important
+	v8::Locker locker (iso);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Locker: ISO: %p\n", iso);
+	// create handlescope - important
 	v8::HandleScope scope (iso);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Scope");
 	v8::Handle<v8::Context> context = v8::Context::New(iso);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Context: ISO: %p\n", iso);
+	v8::Context::Scope context_scope(context);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Context Scope");
+	v8::Handle<v8::String> source = v8::String::NewFromUtf8(iso, src.c_str());
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Source");
+	v8::Handle<v8::Script> script = v8::Script::Compile(source);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Compile");
+	v8::TryCatch tryCatch;
+	v8::Handle<v8::Value> result = script->Run();
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Run");
+	if (result.IsEmpty()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Error: No return value");
+	} else if (!result->IsUndefined()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Debug: convert to string handler");
+		v8::String::Utf8Value str (result);
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Result: %s", *str);
+	}
+}
+
+void testEngine() {
+	ExtensionEngine engine;
+	engine.loadScript(std::string("1 + 1;"));
+	engine.execute();
 }

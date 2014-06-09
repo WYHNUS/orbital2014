@@ -775,6 +775,10 @@ public class GridRenderer implements Renderer {
 			lightConfig[2] = 2 * BOARD_Z_COORD + terrain[orgGridIndex[0] + orgGridIndex[1] * columns] * BOARD_Z_COORD;
 		else
 			lightConfig[2] = 2 * BOARD_Z_COORD;
+		// TODO: ExtensionEngine
+		edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI.testJS();
+		System.out.println("EE called");
+		// TODO: Fix shadows
 		configureShadow("1");
 		responder.updateGraphics();
 	}
