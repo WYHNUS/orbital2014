@@ -109,7 +109,7 @@ public class CommonShaders {
 		+ "const float shadowDecay = 2.0;"	// shadow decay factor
 		+ "void main () {"
 			+ "vec4 materialColor = texture2D (texture, autoTextureCoord);"
-			+ "vec3 normalVec = normalize (texture2D (normal, autoNormalCoord).rgb * 2.0 - vec3(1.0,1.0,1.0));"
+			+ "vec3 normalVec = normalize (texture2D (normal, autoNormalCoord).rgb * 2.0 - 1.0);"
 			+ "vec3 observer = camera - position;"
 			+ "float observerDistance = length(observer);"
 			+ "vec3 normalObserver = normalize (observer);"
