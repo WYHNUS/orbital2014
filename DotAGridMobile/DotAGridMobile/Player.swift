@@ -10,7 +10,7 @@ import Foundation
 
 class Player {
     init (money:Int, hero:Hero) {
-        self.hero = Hero(hero)
+        self.hero = Hero(hero: hero)
         self.money = money
     }
     var hero:Hero
@@ -18,13 +18,13 @@ class Player {
     set {
         if newValue < 0 {
             NSLog("Player is bankrupt")
-            money = 0
+            self.money = 0
         } else {
-            money = newValue
+            self.money = newValue
         }
     }
     get {
-        return money
+        return self.money
     }
     }
 }

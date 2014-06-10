@@ -9,5 +9,20 @@
 import Foundation
 
 class GameLogicManager {
-
+    var extEngine:ExtensionEngine?
+    var extensionSource:String
+    var useExtensionEngine:Bool {
+    set {
+        if newValue != oldValue {
+            if newValue {
+                extEngine = ExtensionEngine(extensionSource, self)
+            } else {
+                extEngine = nil
+            }
+        }
+    }
+    get {
+        return useExtensionEngine
+    }
+    }
 }

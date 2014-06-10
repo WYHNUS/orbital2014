@@ -14,9 +14,14 @@
 		1898C3CB19437CB0008AE9AC /* DotAGridMobile.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3C919437CB0008AE9AC /* DotAGridMobile.xcdatamodeld */; };
 		1898C3CD19437CB0008AE9AC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1898C3CC19437CB0008AE9AC /* Images.xcassets */; };
 		1898C3D919437CB0008AE9AC /* DotAGridMobileTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3D819437CB0008AE9AC /* DotAGridMobileTests.swift */; };
-		1898C3E319437CED008AE9AC /* MainGLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E219437CED008AE9AC /* MainGLView.swift */; };
+		1898C3E319437CED008AE9AC /* MainGLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E219437CED008AE9AC /* MainGLViewController.swift */; };
 		1898C3E619437FD2008AE9AC /* Hero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E519437FD2008AE9AC /* Hero.swift */; };
 		1898C3E91943815F008AE9AC /* RenderMaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E81943815F008AE9AC /* RenderMaths.swift */; };
+		18A8A71E1944423200253A76 /* MainRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A8A71D1944423200253A76 /* MainRenderer.swift */; };
+		18A8A75F19445AA300253A76 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18A8A75E19445AA300253A76 /* GLKit.framework */; };
+		18A8A76119445AB500253A76 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18A8A76019445AB500253A76 /* QuartzCore.framework */; };
+		18A8A76319445ABE00253A76 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18A8A76219445ABE00253A76 /* OpenGLES.framework */; };
+		18A8A79919445F9A00253A76 /* MainGLView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A8A79819445F9A00253A76 /* MainGLView.swift */; };
 		18B37ADA19441CE600A0A303 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18B37AD919441CE600A0A303 /* Item.swift */; };
 		18EFD5C91944285700DC23B6 /* ExtensionEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EFD5C81944285700DC23B6 /* ExtensionEngine.swift */; };
 		18EFD5CB19442FA100DC23B6 /* ExtensionInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18EFD5CA19442FA100DC23B6 /* ExtensionInterface.swift */; };
@@ -45,9 +50,14 @@
 		1898C3D219437CB0008AE9AC /* DotAGridMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DotAGridMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1898C3D719437CB0008AE9AC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1898C3D819437CB0008AE9AC /* DotAGridMobileTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DotAGridMobileTests.swift; sourceTree = "<group>"; };
-		1898C3E219437CED008AE9AC /* MainGLView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainGLView.swift; sourceTree = "<group>"; };
+		1898C3E219437CED008AE9AC /* MainGLViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainGLViewController.swift; sourceTree = "<group>"; };
 		1898C3E519437FD2008AE9AC /* Hero.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hero.swift; sourceTree = "<group>"; };
 		1898C3E81943815F008AE9AC /* RenderMaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderMaths.swift; sourceTree = "<group>"; };
+		18A8A71D1944423200253A76 /* MainRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainRenderer.swift; sourceTree = "<group>"; };
+		18A8A75E19445AA300253A76 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		18A8A76019445AB500253A76 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		18A8A76219445ABE00253A76 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		18A8A79819445F9A00253A76 /* MainGLView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainGLView.swift; sourceTree = "<group>"; };
 		18B37AD919441CE600A0A303 /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		18EFD5C81944285700DC23B6 /* ExtensionEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionEngine.swift; sourceTree = "<group>"; };
 		18EFD5CA19442FA100DC23B6 /* ExtensionInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionInterface.swift; sourceTree = "<group>"; };
@@ -59,6 +69,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18A8A76319445ABE00253A76 /* OpenGLES.framework in Frameworks */,
+				18A8A76119445AB500253A76 /* QuartzCore.framework in Frameworks */,
+				18A8A75F19445AA300253A76 /* GLKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +88,7 @@
 		187D7646194434C90085D1D3 /* Renderers */ = {
 			isa = PBXGroup;
 			children = (
+				18A8A71D1944423200253A76 /* MainRenderer.swift */,
 			);
 			name = Renderers;
 			sourceTree = "<group>";
@@ -82,6 +96,9 @@
 		1898C3B919437CB0008AE9AC = {
 			isa = PBXGroup;
 			children = (
+				18A8A76219445ABE00253A76 /* OpenGLES.framework */,
+				18A8A76019445AB500253A76 /* QuartzCore.framework */,
+				18A8A75E19445AA300253A76 /* GLKit.framework */,
 				1898C3C419437CB0008AE9AC /* DotAGridMobile */,
 				1898C3D519437CB0008AE9AC /* DotAGridMobileTests */,
 				1898C3C319437CB0008AE9AC /* Products */,
@@ -108,7 +125,8 @@
 				1898C3CC19437CB0008AE9AC /* Images.xcassets */,
 				1898C3C919437CB0008AE9AC /* DotAGridMobile.xcdatamodeld */,
 				1898C3C519437CB0008AE9AC /* Supporting Files */,
-				1898C3E219437CED008AE9AC /* MainGLView.swift */,
+				1898C3E219437CED008AE9AC /* MainGLViewController.swift */,
+				18A8A79819445F9A00253A76 /* MainGLView.swift */,
 			);
 			path = DotAGridMobile;
 			sourceTree = "<group>";
@@ -265,14 +283,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18A8A79919445F9A00253A76 /* MainGLView.swift in Sources */,
 				1898C3E91943815F008AE9AC /* RenderMaths.swift in Sources */,
 				18EFD5CB19442FA100DC23B6 /* ExtensionInterface.swift in Sources */,
 				1898C3C819437CB0008AE9AC /* AppDelegate.swift in Sources */,
 				1898C3E619437FD2008AE9AC /* Hero.swift in Sources */,
 				187D764C19443D2F0085D1D3 /* Player.swift in Sources */,
 				187D764A1944351D0085D1D3 /* Drawable.swift in Sources */,
+				18A8A71E1944423200253A76 /* MainRenderer.swift in Sources */,
 				18EFD5CD19442FF900DC23B6 /* GameLogicManager.swift in Sources */,
-				1898C3E319437CED008AE9AC /* MainGLView.swift in Sources */,
+				1898C3E319437CED008AE9AC /* MainGLViewController.swift in Sources */,
 				18B37ADA19441CE600A0A303 /* Item.swift in Sources */,
 				187D7648194434F10085D1D3 /* Character.swift in Sources */,
 				18EFD5C91944285700DC23B6 /* ExtensionEngine.swift in Sources */,
@@ -386,6 +406,7 @@
 				INFOPLIST_FILE = DotAGridMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -397,6 +418,7 @@
 				INFOPLIST_FILE = DotAGridMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

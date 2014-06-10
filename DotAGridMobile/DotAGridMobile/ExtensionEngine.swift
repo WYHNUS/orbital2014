@@ -15,7 +15,7 @@ class ExtensionEngine {
     let engineHandler:JSValue, configHandler:JSValue
     let interface:ExtensionInterface
     init (source:String, logicMan:GameLogicManager) {
-        interface = ExtensionInterface();
+        interface = ExtensionInterface(logicMan);
         context["changeProperty"] = {
             (name:String, value:Int) -> Int in
             return 0

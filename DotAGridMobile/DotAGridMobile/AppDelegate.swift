@@ -8,17 +8,30 @@
 
 import UIKit
 import CoreData
+import OpenGLES
+import GLKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
                             
     var window: UIWindow?
-
-
+    var mainViewController:MainGLViewController
+    init(){}
+    
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: NSDictionary?) -> Bool {
         self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
         // Override point for customization after application launch.
+        var context = EAGLContext(API: EAGLRenderingAPI.OpenGLES2)
+        context.multiThreaded = true
+        EAGLContext.setCurrentContext(context)
+        var maxTextureSize:GLint
+        glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &maxTextureSize)
+        mainViewController = MainGLViewController(context: context)
+        self.window!.rootViewController = mainViewController
         self.window!.backgroundColor = UIColor.whiteColor()
+        var view = MainGLView(frame: UIScreen.mainScreen().bounds, context: context)
+        view.delegate = view
+        self.window!.addSubview(view)
         self.window!.makeKeyAndVisible()
         return true
     }

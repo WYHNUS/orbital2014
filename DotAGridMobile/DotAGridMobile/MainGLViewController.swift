@@ -10,11 +10,9 @@ import Foundation
 import GLKit
 import OpenGLES
 
-class MainGLView: GLKView, GLKViewDelegate {
-    override func drawRect(rect: CGRect) {
-        
+class MainGLViewController:UIViewController {
+    init(context:EAGLContext) {
     }
-    func glkView(view: GLKView!, drawInRect rect: CGRect) {
-        
+    override func viewDidLoad () {
     }
 }
