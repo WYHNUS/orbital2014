@@ -10,19 +10,18 @@ import Foundation
 import JavaScriptCore
 
 class ExtensionEngine {
-    let vm:JSVirtualMachine = JSVirtualMachine()
-    let context:JSContext = JSContext(vm)
-    let engineHandler:JSValue, configHandler:JSValue
-    let interface:ExtensionInterface
+    let vm:JSVirtualMachine
+    let context:JSContext
+    var engineHandler:JSValue?, configHandler:JSValue?
+    var interface:ExtensionInterface?
     init (source:String, logicMan:GameLogicManager) {
-        interface = ExtensionInterface(logicMan);
-        context["changeProperty"] = {
-            (name:String, value:Int) -> Int in
-            return 0
-        }
-        context.executeScript(source)
-        engineHandler = context["engine"]
-        configHandler = context["config"]
+        vm = JSVirtualMachine()
+        context = JSContext(virtualMachine: self.vm)
+        interface = ExtensionInterface(logicMan: logicMan, delegateFor: self);
+        context.setValue(interface as AnyObject, forKey: "INTERFACE")
+        context.evaluateScript(source)
+        engineHandler = context.objectForKeyedSubscript("ENGINE")
+        configHandler = context.objectForKeyedSubscript("CONFIG")
     }
     deinit {
         

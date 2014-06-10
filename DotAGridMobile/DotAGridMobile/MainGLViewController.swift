@@ -10,9 +10,20 @@ import Foundation
 import GLKit
 import OpenGLES
 
-class MainGLViewController:UIViewController {
-    init(context:EAGLContext) {
-    }
-    override func viewDidLoad () {
-    }
-}
+//class MainGLViewController:GLKViewController, Closeable {
+//    var eglContext:EAGLContext?
+//    var maxTextureSize:GLint = 0
+//    override func viewDidLoad () {
+//        super.viewDidLoad()
+//        var context = EAGLContext(API: .OpenGLES2)
+//        context.multiThreaded = true
+//        EAGLContext.setCurrentContext(context)
+//        glGetIntegerv(GLenum(GL_MAX_TEXTURE_SIZE), &maxTextureSize)
+//        glEnable(GLenum(GL_DEPTH_TEST))
+//    }
+//    override func didReceiveMemoryWarning() {
+//        close()
+//    }
+//    func close() {
+//    }
+//}

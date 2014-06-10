@@ -10,19 +10,19 @@ import Foundation
 
 class GameLogicManager {
     var extEngine:ExtensionEngine?
-    var extensionSource:String
+    var extensionSource:String = ""
     var useExtensionEngine:Bool {
     set {
-        if newValue != oldValue {
+        if newValue != self.useExtensionEngine {
             if newValue {
-                extEngine = ExtensionEngine(extensionSource, self)
+                extEngine = ExtensionEngine(source: self.extensionSource, logicMan: self)
             } else {
                 extEngine = nil
             }
         }
     }
     get {
-        return useExtensionEngine
+        return self.useExtensionEngine
     }
     }
 }

@@ -17,6 +17,14 @@
 		1898C3E319437CED008AE9AC /* MainGLViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E219437CED008AE9AC /* MainGLViewController.swift */; };
 		1898C3E619437FD2008AE9AC /* Hero.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E519437FD2008AE9AC /* Hero.swift */; };
 		1898C3E91943815F008AE9AC /* RenderMaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1898C3E81943815F008AE9AC /* RenderMaths.swift */; };
+		189B80CA194786B900F791C9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 189B80C9194786B900F791C9 /* Main.storyboard */; };
+		189B80CC1947888800F791C9 /* Closeable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 189B80CB1947888800F791C9 /* Closeable.swift */; };
+		189B80CF19478E4A00F791C9 /* MainGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 189B80CE19478E4A00F791C9 /* MainGLViewController.m */; };
+		189B80D51947940A00F791C9 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 189B80D31947940A00F791C9 /* AVFoundation.framework */; };
+		189B80D61947940A00F791C9 /* AVKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 189B80D41947940A00F791C9 /* AVKit.framework */; };
+		189B80DA1947943400F791C9 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 189B80D71947943400F791C9 /* AudioToolbox.framework */; };
+		189B80DB1947943400F791C9 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 189B80D81947943400F791C9 /* CoreData.framework */; };
+		189B80DC1947943400F791C9 /* JavaScriptCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 189B80D91947943400F791C9 /* JavaScriptCore.framework */; };
 		18A8A71E1944423200253A76 /* MainRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18A8A71D1944423200253A76 /* MainRenderer.swift */; };
 		18A8A75F19445AA300253A76 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18A8A75E19445AA300253A76 /* GLKit.framework */; };
 		18A8A76119445AB500253A76 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18A8A76019445AB500253A76 /* QuartzCore.framework */; };
@@ -53,6 +61,17 @@
 		1898C3E219437CED008AE9AC /* MainGLViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainGLViewController.swift; sourceTree = "<group>"; };
 		1898C3E519437FD2008AE9AC /* Hero.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hero.swift; sourceTree = "<group>"; };
 		1898C3E81943815F008AE9AC /* RenderMaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderMaths.swift; sourceTree = "<group>"; };
+		189B80C9194786B900F791C9 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		189B80CB1947888800F791C9 /* Closeable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Closeable.swift; sourceTree = "<group>"; };
+		189B80CD19478E4900F791C9 /* DotAGridMobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DotAGridMobile-Bridging-Header.h"; sourceTree = "<group>"; };
+		189B80CE19478E4A00F791C9 /* MainGLViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainGLViewController.m; sourceTree = "<group>"; };
+		189B80D019478F0400F791C9 /* MainGLViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainGLViewController.h; sourceTree = "<group>"; };
+		189B80D119478FC300F791C9 /* OpenAL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenAL.framework; path = System/Library/Frameworks/OpenAL.framework; sourceTree = SDKROOT; };
+		189B80D31947940A00F791C9 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		189B80D41947940A00F791C9 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		189B80D71947943400F791C9 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		189B80D81947943400F791C9 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		189B80D91947943400F791C9 /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		18A8A71D1944423200253A76 /* MainRenderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MainRenderer.swift; sourceTree = "<group>"; };
 		18A8A75E19445AA300253A76 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		18A8A76019445AB500253A76 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
@@ -69,6 +88,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				189B80DA1947943400F791C9 /* AudioToolbox.framework in Frameworks */,
+				189B80DB1947943400F791C9 /* CoreData.framework in Frameworks */,
+				189B80DC1947943400F791C9 /* JavaScriptCore.framework in Frameworks */,
+				189B80D51947940A00F791C9 /* AVFoundation.framework in Frameworks */,
+				189B80D61947940A00F791C9 /* AVKit.framework in Frameworks */,
 				18A8A76319445ABE00253A76 /* OpenGLES.framework in Frameworks */,
 				18A8A76119445AB500253A76 /* QuartzCore.framework in Frameworks */,
 				18A8A75F19445AA300253A76 /* GLKit.framework in Frameworks */,
@@ -89,6 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				18A8A71D1944423200253A76 /* MainRenderer.swift */,
+				189B80CB1947888800F791C9 /* Closeable.swift */,
 			);
 			name = Renderers;
 			sourceTree = "<group>";
@@ -96,6 +121,12 @@
 		1898C3B919437CB0008AE9AC = {
 			isa = PBXGroup;
 			children = (
+				189B80D71947943400F791C9 /* AudioToolbox.framework */,
+				189B80D81947943400F791C9 /* CoreData.framework */,
+				189B80D91947943400F791C9 /* JavaScriptCore.framework */,
+				189B80D31947940A00F791C9 /* AVFoundation.framework */,
+				189B80D41947940A00F791C9 /* AVKit.framework */,
+				189B80D119478FC300F791C9 /* OpenAL.framework */,
 				18A8A76219445ABE00253A76 /* OpenGLES.framework */,
 				18A8A76019445AB500253A76 /* QuartzCore.framework */,
 				18A8A75E19445AA300253A76 /* GLKit.framework */,
@@ -127,6 +158,10 @@
 				1898C3C519437CB0008AE9AC /* Supporting Files */,
 				1898C3E219437CED008AE9AC /* MainGLViewController.swift */,
 				18A8A79819445F9A00253A76 /* MainGLView.swift */,
+				189B80C9194786B900F791C9 /* Main.storyboard */,
+				189B80CE19478E4A00F791C9 /* MainGLViewController.m */,
+				189B80D019478F0400F791C9 /* MainGLViewController.h */,
+				189B80CD19478E4900F791C9 /* DotAGridMobile-Bridging-Header.h */,
 			);
 			path = DotAGridMobile;
 			sourceTree = "<group>";
@@ -266,6 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1898C3CD19437CB0008AE9AC /* Images.xcassets in Resources */,
+				189B80CA194786B900F791C9 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,10 +322,12 @@
 				18A8A79919445F9A00253A76 /* MainGLView.swift in Sources */,
 				1898C3E91943815F008AE9AC /* RenderMaths.swift in Sources */,
 				18EFD5CB19442FA100DC23B6 /* ExtensionInterface.swift in Sources */,
+				189B80CC1947888800F791C9 /* Closeable.swift in Sources */,
 				1898C3C819437CB0008AE9AC /* AppDelegate.swift in Sources */,
 				1898C3E619437FD2008AE9AC /* Hero.swift in Sources */,
 				187D764C19443D2F0085D1D3 /* Player.swift in Sources */,
 				187D764A1944351D0085D1D3 /* Drawable.swift in Sources */,
+				189B80CF19478E4A00F791C9 /* MainGLViewController.m in Sources */,
 				18A8A71E1944423200253A76 /* MainRenderer.swift in Sources */,
 				18EFD5CD19442FF900DC23B6 /* GameLogicManager.swift in Sources */,
 				1898C3E319437CED008AE9AC /* MainGLViewController.swift in Sources */,
@@ -403,9 +441,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = DotAGridMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DotAGridMobile/DotAGridMobile-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -415,9 +456,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CLANG_ENABLE_MODULES = YES;
 				INFOPLIST_FILE = DotAGridMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "DotAGridMobile/DotAGridMobile-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

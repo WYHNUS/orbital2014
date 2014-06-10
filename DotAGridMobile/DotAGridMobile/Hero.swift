@@ -11,7 +11,7 @@ import Foundation
 // ported from edu.nus.comp.dotagrid.logic.Hero
 class Hero:Character {
     init (hero:Hero){
-        super.init(hero)
+        super.init(character: hero)
         mainAttribute = hero.mainAttribute
         startingStrength = hero.startingStrength
         startingIntelligence = hero.startingIntelligence
@@ -41,13 +41,13 @@ class Hero:Character {
             case "agility":
             fallthrough
             case "intelligence":
-            mainAttribute = newValue.lowercaseString
+            self.mainAttribute = newValue.lowercaseString
         default:
             NSLog("Invalid attribute");
         }
     }
     get {
-        return mainAttribute
+        return self.mainAttribute
     }
     }
     // TODO: why setter?!
@@ -55,15 +55,17 @@ class Hero:Character {
     set {
         switch mainAttribute {
             case "strength":
-                totalMainAttribute = totalStrength
+                self.totalMainAttribute = totalStrength
             case "agility":
-                totalMainAttribute = totalAgility
+                self.totalMainAttribute = totalAgility
             case "intelligence":
-                totalMainAttribute = totalIntelligence
+                self.totalMainAttribute = totalIntelligence
+        default:
+            NSLog("unsupported attribute");
         }
     }
     get {
-        return totalMainAttribute
+        return self.totalMainAttribute
     }
     }
     
@@ -72,11 +74,11 @@ class Hero:Character {
         if newValue <= 0 {
             NSLog("startingStrength must be positive")
         } else {
-            startingStrength = newValue
+            self.startingStrength = newValue
         }
     }
     get {
-        return startingStrength
+        return self.startingStrength
     }
     }
     
@@ -85,11 +87,11 @@ class Hero:Character {
         if newValue <= 0 {
             NSLog("startingAgility must be positive")
         } else {
-            startingAgility = newValue
+            self.startingAgility = newValue
         }
     }
     get {
-        return startingAgility
+        return self.startingAgility
     }
     }
     
@@ -98,11 +100,11 @@ class Hero:Character {
         if newValue <= 0 {
             NSLog("startingIntelligence must be positive")
         } else {
-            startingIntelligence = newValue
+            self.startingIntelligence = newValue
         }
     }
     get {
-        return startingIntelligence
+        return self.startingIntelligence
     }
     }
     
@@ -111,11 +113,11 @@ class Hero:Character {
         if newValue <= 0 {
             NSLog("strengthGrowth must be positive")
         } else {
-            strengthGrowth = newValue
+            self.strengthGrowth = newValue
         }
     }
     get {
-        return strengthGrowth
+        return self.strengthGrowth
     }
     }
     var agilityGrowth:Double {
@@ -123,11 +125,11 @@ class Hero:Character {
         if newValue <= 0 {
             NSLog("agilityGrowth must be positive")
         } else {
-            agilityGrowth = newValue
+            self.agilityGrowth = newValue
         }
     }
     get {
-        return agilityGrowth
+        return self.agilityGrowth
     }
     }
     var intelligenceGrowth:Double {
@@ -135,57 +137,57 @@ class Hero:Character {
         if newValue <= 0 {
             NSLog("intelligenceGrowth must be positive")
         } else {
-            intelligenceGrowth = newValue
+            self.intelligenceGrowth = newValue
         }
     }
     get {
-        return intelligenceGrowth
+        return self.intelligenceGrowth
     }
     }
     var totalStrength:Double {
     set {
-        if newValue <= startingStrength {
-            totalStrength = startingStrength
+        if newValue <= Double(self.startingStrength) {
+            self.totalStrength = Double(self.startingStrength)
         } else {
-            totalStrength = newValue
+            self.totalStrength = newValue
         }
     }
     get {
-        return totalStrength
+        return self.totalStrength
     }
     }
     var totalAgility:Double {
     set {
-        if newValue <= startingAgility {
-            totalAgility = startingAgility
+        if newValue <= Double(self.startingAgility) {
+            self.totalAgility = Double(self.startingAgility)
         } else {
-            totalAgility = newValue
+            self.totalAgility = newValue
         }
     }
     get {
-        return totalAgility
+        return self.totalAgility
     }
     }
     var totalIntelligence:Double {
     set {
-        if newValue <= startingIntelligence {
-            totalIntelligence = startingIntelligence
+        if newValue <= Double(self.startingIntelligence) {
+            self.totalIntelligence = Double(self.startingIntelligence)
         } else {
-            totalIntelligence = newValue
+            self.totalIntelligence = newValue
         }
     }
     get {
-        return totalIntelligence
+        return self.totalIntelligence
     }
     }
     
-    var HPGainPerRound:Double, MPGainPerRound:Double
+    var HPGainPerRound:Double = 0, MPGainPerRound:Double = 0
     
-    var experience:Int, level:Int, kill:Int, death:Int, assist:Int
+    var experience:Int = 0, level:Int = 0, kill:Int = 0, death:Int = 0, assist:Int = 0
     
-    var itemList:Item[]
+    var itemList:Item[] = []
     func addItem(item:Item) -> Item{
-        itemList.append(Item(item))
+        itemList.append(Item(item: item))
         return item
     }
 }

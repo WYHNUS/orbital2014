@@ -9,5 +9,10 @@
 import Foundation
 
 class Drawable {
-    var imageName:String
+    var imageName:String?
+    init() {
+    }
+    init(imageName:String) {
+        self.imageName = imageName
+    }
 }

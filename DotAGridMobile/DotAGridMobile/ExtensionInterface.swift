@@ -7,10 +7,13 @@
 //
 
 import Foundation
+import JavaScriptCore
 
-class ExtensionInterface {
+class ExtensionInterface:JSExport {
     let logicMan:GameLogicManager
-    init (logicMan: GameLogicManager) {
+    let parent:ExtensionEngine
+    init (logicMan: GameLogicManager, delegateFor: ExtensionEngine) {
         self.logicMan = logicMan
+        self.parent = delegateFor
     }
 }

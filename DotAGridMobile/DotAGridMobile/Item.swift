@@ -32,25 +32,25 @@ class Item {
         addPhysicalAttackArea = item.addPhysicalAttackArea
         addMovementSpeed = item.addMovementSpeed
     }
-    var imageName:String
-    var name:String
-    var cost:Int
-    var sellPrice:Int = cost / 2.0;
-    var requiredMPPerUse:Int
-    var requiredHPPerUse:Int
-    var reusable:Bool
-    var usableTime:Int = 1
-    var addStrength:Double
-    var addAgility:Double
-    var addIntelligence:Double
-    var addHP:Int
-    var addMP:Int
-    var addHPGainPerRound:Double
-    var addMPGainPerRound:Double
-    var addPhysicalDefence:Double
-    var addMagicResistance:Double
-    var addPhysicalAttack:Double
-    var addPhysicalAttackSpeed:Double
-    var addPhysicalAttackArea:Int
-    var addMovementSpeed:Int
+    var imageName:String?
+    var name:String?
+    var cost:Int?
+    var sellPrice:Int?
+    var requiredMPPerUse:Int?
+    var requiredHPPerUse:Int?
+    var reusable:Bool?
+    var usableTime:Int?
+    var addStrength:Double?
+    var addAgility:Double?
+    var addIntelligence:Double?
+    var addHP:Int?
+    var addMP:Int?
+    var addHPGainPerRound:Double?
+    var addMPGainPerRound:Double?
+    var addPhysicalDefence:Double?
+    var addMagicResistance:Double?
+    var addPhysicalAttack:Double?
+    var addPhysicalAttackSpeed:Double?
+    var addPhysicalAttackArea:Int?
+    var addMovementSpeed:Int?
 }
