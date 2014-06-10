@@ -1,6 +1,6 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
-//import java.nio.*;
+import java.nio.*;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -35,7 +35,7 @@ public class GridRenderer implements Renderer {
 	// map rotation - in radians
 	private float mapRotation = 0;
 	// possessing resources
-	private GenericProgram gridProgram, mapProgram, shadowProgram;
+	private GenericProgram gridProgram, mapProgram, shadowProgram, shadowObjProgram;
 	private float[]
 			model = IdentityMatrix4x4(),
 			view = IdentityMatrix4x4(),
@@ -75,6 +75,13 @@ public class GridRenderer implements Renderer {
 	private int frameBuf, renderBuf;
 	private final Map<String, Integer> shadowMaps = new ConcurrentHashMap<>();
 	private final float[] lightProjection;
+	// drawables
+	private final Map<String, FloatBuffer>
+		drawableVertex = new HashMap<>(),
+		drawableTextureCoord = new HashMap<>(),
+		drawableNormal = new HashMap<>();
+	private final Map<String, String> drawableTexture = new HashMap<>();
+	private final Map<String, float[]> drawableModel = new HashMap<>();
 	// multithreading
 	private Thread computeTask;
 	public GridRenderer (int columns, int rows, float[] terrain) {
@@ -88,6 +95,7 @@ public class GridRenderer implements Renderer {
 		// configure map
 		mapProgram = new GenericProgram (CommonShaders.VS_IDENTITY_SPECIAL_LIGHTING, CommonShaders.FS_IDENTITY_SPECIAL_LIGHTING);
 		shadowProgram = new GenericProgram (CommonShaders.VS_IDENTITY_SPECIAL_SHADOW, CommonShaders.FS_IDENTITY_SPECIAL_SHADOW);
+		shadowObjProgram = new GenericProgram (CommonShaders.VS_IDENTITY_SPECIAL_LIGHTING_UNIFORMNORMAL, CommonShaders.FS_IDENTITY_SPECIAL_LIGHTING_UNIFORMNORMAL);
 		// coord configurations
 		selectGridMat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1f/columns, 1f/rows, 1), FlatTranslationMatrix4x4(1,1,0));
 		// text test
@@ -153,6 +161,36 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {
 		this.manager = manager;
+		// TODO load drawable in the scene, below is a demo
+		drawableVertex.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+				-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
+				1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
+				1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
+				-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
+				-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
+				-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
+		}));
+		drawableTextureCoord.put("Cube", BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
+				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+		}));
+		drawableNormal.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+				0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
+				1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
+				0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
+				-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
+				0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
+				0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
+		}));
+		drawableTexture.put("Cube", "GridMapBackground");
+		drawableModel.put("Cube", FlatMatrix4x4Multiplication(
+				FlatTranslationMatrix4x4(0, 0, 0),
+				FlatScalingMatrix4x4(2f / columns / 4, 2f / rows / 4, BOARD_Z_COORD / 2),
+				FlatTranslationMatrix4x4(0, 0, -1)));
 	}
 	private float bicubic(float f00, float f10, float f01, float f11, float x, float y) {
 		return Vector4CubicInterpolation(new float[]{
@@ -393,7 +431,7 @@ public class GridRenderer implements Renderer {
 				vTOffset = vBufMan.getVertexBufferOffset("MapTextureCoord"),
 				vNOffset = vBufMan.getVertexBufferOffset("MapNormalCoord"),
 				iOffset = vBufMan.getIndexBufferOffset("MapPointMeshIndex");
-		final int vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition"),
+		int vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition"),
 			mModel = glGetUniformLocation(mapProgram.getProgramId(), "model"),
 			mView = glGetUniformLocation(mapProgram.getProgramId(), "view"),
 			mProjection = glGetUniformLocation(mapProgram.getProgramId(), "projection"),
@@ -420,7 +458,7 @@ public class GridRenderer implements Renderer {
 		glUniform1i(normalLocation, 0);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
-		glUniform1i(textureLocation, 1);	// changed
+		glUniform1i(textureLocation, 1);
 		glUniform1i(shadowLocation, 2);
 		glUniform1f(layerCount, lightSrc.size());
 		// vertex attributes
@@ -450,6 +488,60 @@ public class GridRenderer implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
 		glDisableVertexAttribArray(normalCoord);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		// drawables
+		glUseProgram(shadowObjProgram.getProgramId());
+		vPosition = glGetAttribLocation(shadowObjProgram.getProgramId(), "vPosition");
+		mModel = glGetUniformLocation(shadowObjProgram.getProgramId(), "model");
+		mView = glGetUniformLocation(shadowObjProgram.getProgramId(), "view");
+		mProjection = glGetUniformLocation(shadowObjProgram.getProgramId(), "projection");
+		cameraPosition = glGetUniformLocation(shadowObjProgram.getProgramId(), "camera");
+		textureLocation = glGetUniformLocation(shadowObjProgram.getProgramId(), "texture");
+		final int vNormal = glGetAttribLocation(shadowObjProgram.getProgramId(), "normal");
+		shadowLocation = glGetUniformLocation(shadowObjProgram.getProgramId(), "shadow");
+		textureCoord = glGetAttribLocation(shadowObjProgram.getProgramId(), "textureCoord");
+		source = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.source");
+		color = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.color");
+		specular = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.specular");
+		attenuation = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.attenuation");
+		mLight = glGetUniformLocation(shadowObjProgram.getProgramId(), "lightTransform");
+		layerCount = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.layerCount");
+		layerFactor = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.layerFactor");
+		glUniformMatrix4fv(mView, 1, false, view, 0);
+		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
+		glUniform1f(layerCount, lightSrc.size());
+		for (String key : drawableVertex.keySet()) {
+			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
+			final FloatBuffer fBuf = drawableVertex.get(key);
+			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
+			glVertexAttribPointer(vNormal, 4, GL_FLOAT, false, 0, drawableNormal.get(key).position(0));
+			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, drawableTextureCoord.get(key).position(0));
+			glEnableVertexAttribArray(vPosition);
+			glEnableVertexAttribArray(vNormal);
+			glEnableVertexAttribArray(textureCoord);
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textures.get(drawableTexture.get(key)).getTexture());
+			glUniform1i(textureLocation, 0);
+			glUniform1i(shadowLocation, 1);
+			c = 1;
+			for (Map.Entry<String, float[]> entry : lightSrc.entrySet()) {
+				glActiveTexture(GL_TEXTURE1);
+				glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
+				final float[] config = entry.getValue();
+				glUniformMatrix4fv(mLight, 1, false, FlatMatrix4x4Multiplication(lightProjection, lightViews.get(entry.getKey())), 0);
+				glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
+				glUniform3f(source, config[0], config[1], config[2]);
+				glUniform3f(color, config[3], config[4], config[5]);
+				glUniform1f(specular, config[6]);
+				glUniform1f(attenuation, config[7]);
+				glUniform1f(layerFactor, 1f/c);
+				glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
+			}
+			glDisableVertexAttribArray(vPosition);
+			glDisableVertexAttribArray(vNormal);
+			glDisableVertexAttribArray(textureCoord);
+		}
 	}
 	private void drawRay() {
 		if (!hasRay)
@@ -527,6 +619,15 @@ public class GridRenderer implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		// drawables
+		for (String key : drawableVertex.keySet()) {
+			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
+			final FloatBuffer fBuf = drawableVertex.get(key);
+			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
+			glEnableVertexAttribArray(vPosition);
+			glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
+			glDisableVertexAttribArray(vPosition);
+		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	// coordinate calculations
@@ -788,6 +889,7 @@ public class GridRenderer implements Renderer {
 		mapProgram.close();
 		gridProgram.close();
 		shadowProgram.close();
+		shadowObjProgram.close();
 		textRender.close();
 		glDeleteRenderbuffers(1, new int[]{renderBuf}, 0);
 		glDeleteFramebuffers(1, new int[]{frameBuf}, 0);

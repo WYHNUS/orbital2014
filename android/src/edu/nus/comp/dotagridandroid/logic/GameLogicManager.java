@@ -15,10 +15,10 @@ public class GameLogicManager implements Closeable {
 		final int width = 20, height = 20;
 		current.setGridHeight(height);
 		current.setGridWidth(width);
-		final float[] terrain = new float[width * height];
-		Random r = new Random();
-		for (int i = 0; i < width * height; i++)
-			terrain[i] = r.nextFloat();
+//		final float[] terrain = new float[width * height];
+//		Random r = new Random();
+//		for (int i = 0; i < width * height; i++)
+//			terrain[i] = r.nextFloat();
 //		current.setTerrain(new float[]{
 //				0, 0, 0, 0, 0, 0, 0, 0,
 //				0, 0, 0, 0, 0, 0, 0, 0,
@@ -29,8 +29,8 @@ public class GameLogicManager implements Closeable {
 //				0, 0, 0, 0, 0, 0, 0, 0,
 //				0, 0, 0, 0, 0, 0, 0, 0
 //		});
-//		current.setTerrain(new float[20 * 20]);
-		current.setTerrain(terrain);
+		current.setTerrain(new float[width * height]);
+//		current.setTerrain(terrain);
 		gameStates.put("Current", current);	// dummy
 	}
 
