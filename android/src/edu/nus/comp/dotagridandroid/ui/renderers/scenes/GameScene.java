@@ -47,6 +47,7 @@ public class GameScene implements SceneRenderer {
 
 	@Override
 	public void setRenderReady() {
+		final boolean landscape = ratio > 1;
 		state = (GameState) manager.getGameState("Current");
 		grid = new GridRenderer(state.getGridWidth(), state.getGridHeight(), state.getTerrain());
 		status = new StatusRenderer(state);
@@ -55,7 +56,12 @@ public class GameScene implements SceneRenderer {
 		status.setGraphicsResponder(responder);
 		status.setTexture2D(textures);
 		status.setVertexBufferManager(vBufMan);
-		if (ratio > 1)
+		grid.setAspectRatio(ratio);
+		grid.setGameLogicManager(manager);
+		grid.setGraphicsResponder(responder);
+		grid.setTexture2D(textures);
+		grid.setVertexBufferManager(vBufMan);
+		if (landscape)
 			status.setMVP(
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(1-.1f*ratio,0,-1),FlatScalingMatrix4x4(.1f*ratio,1,1)),
 					null, null);	// landscape mode - right side 20%
@@ -63,11 +69,6 @@ public class GameScene implements SceneRenderer {
 			status.setMVP(
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, .1f/ratio-1, -1), FlatScalingMatrix4x4(1,.1f/ratio,1)),
 					null, null);	// portrait model - bottom side 20%
-		grid.setAspectRatio(ratio);
-		grid.setGameLogicManager(manager);
-		grid.setGraphicsResponder(responder);
-		grid.setTexture2D(textures);
-		grid.setVertexBufferManager(vBufMan);
 		status.setRenderReady(); grid.setRenderReady();
 	}
 	

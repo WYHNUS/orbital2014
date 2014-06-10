@@ -23,12 +23,11 @@ public class StatusRenderer implements Renderer {
 	
 	public StatusRenderer (GameState state) {
 		this.state = state;
-		frameProgram = new GenericProgram(CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY);
+		frameProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
 	}
 
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
-		// TODO Auto-generated method stub
 		this.vBufMan = manager;
 	}
 
@@ -62,29 +61,38 @@ public class StatusRenderer implements Renderer {
 
 	@Override
 	public void draw() {
-		// TODO Auto-generated method stub
 		drawFrame();
 		// other controls - not yet
 	}
 
 	private void drawFrame() {
-		int
+		final int
 			vPosition = glGetAttribLocation(frameProgram.getProgramId(), "vPosition"),
-			vColor = glGetUniformLocation(frameProgram.getProgramId(), "vColor"),
 			mModel = glGetUniformLocation(frameProgram.getProgramId(), "model"),
 			mView = glGetUniformLocation(frameProgram.getProgramId(), "view"),
-			mProjection = glGetUniformLocation(frameProgram.getProgramId(), "projection");
-		int vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare");
+			mProjection = glGetUniformLocation(frameProgram.getProgramId(), "projection"),
+			texture = glGetUniformLocation(frameProgram.getProgramId(), "texture"),
+			textureCoord = glGetAttribLocation(frameProgram.getProgramId(), "textureCoord");
+		final int
+			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
+			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
+			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
 		glUseProgram(frameProgram.getProgramId());
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
 		glEnableVertexAttribArray(vPosition);
+		glEnableVertexAttribArray(textureCoord);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures.get("StatusControlBackground").getTexture());
+		glUniform1i(texture, 0);
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, identity, 0);
 		glUniformMatrix4fv(mProjection, 1, false, identity, 0);
-		glUniform4f(vColor, 0, 0, 0, 1);
-		glDrawArrays(GL_LINE_LOOP, 0, 4);
+		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 		glDisableVertexAttribArray(vPosition);
+		glDisableVertexAttribArray(textureCoord);
 	}
 
 	@Override

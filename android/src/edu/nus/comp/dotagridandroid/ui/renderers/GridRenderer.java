@@ -11,7 +11,7 @@ import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class GridRenderer implements Renderer {
-	public static final float BOARD_Z_COORD = 0.1f;
+	public static final float BOARD_Z_COORD = 0.2f;
 	public static final float BASE_ZOOM_FACTOR = 0.5f;
 	public static final int SHADOW_MAP_TEXTURE_DIMENSION = 2048;
 	private static final float LIGHT_MAX_RADIUS = 5;
@@ -41,7 +41,7 @@ public class GridRenderer implements Renderer {
 			view = IdentityMatrix4x4(),
 			projection = IdentityMatrix4x4();
 	private float[] selectGridMat, gridLines, terrain;
-	private final float[] mapTerrain, mapNormalCoord, mapTextureCoord;
+	private float[] mapTerrain, mapNormalCoord, mapTextureCoord;
 	private int[] gridLinesIndex, mapIndex;
 	private TextRenderer textRender;
 	private NormalGenerator normalGen;
@@ -189,8 +189,8 @@ public class GridRenderer implements Renderer {
 		drawableTexture.put("Cube", "GridMapBackground");
 		drawableModel.put("Cube", FlatMatrix4x4Multiplication(
 				FlatTranslationMatrix4x4(0, 0, 0),
-				FlatScalingMatrix4x4(2f / columns / 4, 2f / rows / 4, BOARD_Z_COORD / 2),
-				FlatTranslationMatrix4x4(0, 0, -1)));
+				FlatScalingMatrix4x4(2f / columns / 4, 2f / rows / 4, BOARD_Z_COORD / 4),
+				FlatTranslationMatrix4x4(0, 0, -2)));
 	}
 	private float bicubic(float f00, float f10, float f01, float f11, float x, float y) {
 		return Vector4CubicInterpolation(new float[]{
@@ -373,7 +373,7 @@ public class GridRenderer implements Renderer {
 				}
 		}
 		// TODO Remove
-		lightSrc.put("1", new float[]{0.1f,0.1f,2 * BOARD_Z_COORD,1,1,1,5,5});
+		lightSrc.put("1", new float[]{0.1f,0.1f,2 * BOARD_Z_COORD,1,1,1,2,2});
 		lightDirty.put("1", true);
 	}
 	@Override
@@ -391,8 +391,8 @@ public class GridRenderer implements Renderer {
 		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
 		mapTexture = textures.get("GridMapBackground");
 		normalGen = new NormalGenerator(columns, rows, mapTerrain, mapTexture.getWidth(), mapTexture.getHeight());
-		normalGen.setGraphicsResponder(responder);
 		normalGen.setRenderReady();
+		mapTerrain = mapNormalCoord = mapTextureCoord = null; mapIndex = null;
 		for (String key : lightSrc.keySet())
 			configureShadow(key);
 	}
@@ -814,10 +814,10 @@ public class GridRenderer implements Renderer {
 		final float lenFirst = (float) Math.hypot(perspectiveStartCoord[2] - perspectiveStartCoord[0], perspectiveStartCoord[3] - perspectiveStartCoord[1]);
 		final float zoomDelta = lenFirst - lenLast;
 		// TODO: Camera Parameter Calibration
-		if (zoomDelta + cameraParams[2] < 0.2f)
-			perspectiveCameraZoom = 0.2f - cameraParams[2];
-		else if (zoomDelta + cameraParams[2] > 4f)
-			perspectiveCameraZoom = 4f - cameraParams[2];
+		if (zoomDelta + cameraParams[2] < BOARD_Z_COORD + cameraParams[9])
+			perspectiveCameraZoom = BOARD_Z_COORD + cameraParams[9] - cameraParams[2];
+		else if (zoomDelta + cameraParams[2] > 20 * (BOARD_Z_COORD + cameraParams[9]))
+			perspectiveCameraZoom = 20 * (BOARD_Z_COORD + cameraParams[9]) - cameraParams[2];
 		else
 			perspectiveCameraZoom = zoomDelta;
 		// look-at displacement

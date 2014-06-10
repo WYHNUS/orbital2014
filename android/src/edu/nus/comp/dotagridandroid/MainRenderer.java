@@ -6,6 +6,7 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.*;
 import android.opengl.*;
 import static android.opengl.GLES20.*;
@@ -41,11 +42,13 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
+		close();
+		r = new MainSceneRenderer();
+		System.gc();
 		this.width = width;
 		this.height = height;
 		glViewport(0, 0, width, height);
 		float ratio = (float) width / height;
-		close();
 		vBufMan = new VertexBufferManager();
 		cs = new CommonShapes(vBufMan);
 		// TODO: different resolution of maps
@@ -54,9 +57,13 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		Bitmap image;
 		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
 		image.recycle();
+		System.gc();
 		texture2d.put("DefaultTextFontMap", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.textmap)));
 		image.recycle();
-		r = new MainSceneRenderer();
+		System.gc();
+		texture2d.put("StatusControlBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dota2bg)));
+		image.recycle();
+		System.gc();
 		r.setVertexBufferManager(vBufMan);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));
 		r.setGameLogicManager(manager);

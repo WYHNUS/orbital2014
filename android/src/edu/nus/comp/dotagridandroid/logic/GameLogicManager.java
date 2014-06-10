@@ -42,9 +42,18 @@ public class GameLogicManager implements Closeable {
 		return gameStates.get(key);
 	}
 	
+	public void setGameState(String key) {
+		// TODO look up saved game state
+		
+	}
+	
 	@Override
 	public void close() {
 		// app will close, save states
 	}
 
+	public static class GameStateUpdateDelegate {
+		public void updateState() {
+		}
+	}
 }

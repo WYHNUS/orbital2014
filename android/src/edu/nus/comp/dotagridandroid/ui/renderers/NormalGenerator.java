@@ -13,11 +13,7 @@ import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 public class NormalGenerator implements Renderer {
 	public static final int RESOLUTION = 10;
 	private final int rows, columns, width, height;
-	private final float[] terrain;
-	private VertexBufferManager vBufMan;
-	private Map<String, Texture2D> textures;
-	private float ratio;
-	private GraphicsResponder responder;
+	private float[] terrain;
 	
 	// resource
 	private GenericProgram normalProgram;
@@ -52,29 +48,22 @@ public class NormalGenerator implements Renderer {
 	}
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
-		this.vBufMan = manager;
 	}
 
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}
 
 	@Override
-	public void setTexture2D(Map<String, Texture2D> textures) {
-		this.textures = textures;
-	}
+	public void setTexture2D(Map<String, Texture2D> textures) {}
 
 	@Override
-	public void setAspectRatio(float ratio) {
-		this.ratio = ratio;
-	}
+	public void setAspectRatio(float ratio) {}
 
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {}
 
 	@Override
-	public void setGraphicsResponder(GraphicsResponder mainRenderer) {
-		this.responder = mainRenderer;
-	}
+	public void setGraphicsResponder(GraphicsResponder mainRenderer) {}
 
 	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {}
@@ -181,6 +170,7 @@ public class NormalGenerator implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(vColor);
 		pos = normal = null;
+		terrain = null;
 		renderReady = true;
 	}
 	
