@@ -3,11 +3,13 @@ package edu.nus.comp.dotagridandroid.logic;
 import java.util.*;
 import java.util.concurrent.*;
 
+import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import edu.nus.comp.dotagridandroid.ui.renderers.Closeable;
 
 public class GameLogicManager implements Closeable {
 	private Map<String, Object> gameSetting = new ConcurrentHashMap<>();
 	private Map<String, GameState>gameStates = new ConcurrentHashMap<>();
+	private GameState currentState;
 
 	public GameLogicManager() {
 		gameSetting.put("DISPLAY_ANTI_ALIAS_SAMPLINGS", 4);
@@ -42,9 +44,14 @@ public class GameLogicManager implements Closeable {
 		return gameStates.get(key);
 	}
 	
-	public void setGameState(String key) {
-		// TODO look up saved game state
-		
+	public void setCurrentGameState(String key) {
+		if (currentState != null && currentState.isInitialised())
+			currentState.close();
+		currentState = gameStates.containsKey(key) ? gameStates.get(key) : null;
+	}
+	
+	public GameState getCurrentGameState() {
+		return currentState;
 	}
 	
 	@Override
@@ -55,5 +62,8 @@ public class GameLogicManager implements Closeable {
 	public static class GameStateUpdateDelegate {
 		public void updateState() {
 		}
+	}
+
+	public void processEvent(ControlEvent newevt) {
 	}
 }

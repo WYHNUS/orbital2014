@@ -1,19 +1,26 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.util.*;
+
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer.GraphicsResponder;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
+import edu.nus.comp.dotagridandroid.ui.event.EventData;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class ButtonRenderer implements Renderer {
-
-	private float[] model, view, projection;
+	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
 	private GenericProgram buttonProgram;
 	private boolean pressed = false;
 	private Renderer eventResponder;
 	private GraphicsResponder responder;
+	
+	private String eventName;
+	private VertexBufferManager vBufMan;
+	private Map<String, Texture2D> textures;
+	private String textureName = "DefaultButton";
+	private GameLogicManager manager;
 	public ButtonRenderer () {
 		model = view = projection = IdentityMatrix4x4();
 		buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
@@ -21,6 +28,7 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
+		vBufMan = manager;
 	}
 
 	@Override
@@ -29,6 +37,7 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public void setTexture2D(Map<String, Texture2D> textures) {
+		this.textures = textures;
 	}
 
 	@Override
@@ -37,6 +46,7 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {
+		this.manager = manager;
 	}
 
 	@Override
@@ -44,8 +54,14 @@ public class ButtonRenderer implements Renderer {
 		responder = mainRenderer;
 	}
 	
-	public void setPressResponder(Renderer r) {
-		eventResponder = r;
+	public void setPressRespondName(String eventName) {
+		if (eventName != null)
+			this.eventName = null;
+	}
+	
+	public void setButtonTexture(String name) {
+		if (textures.containsKey(name))
+			textureName = name;
 	}
 
 	@Override
@@ -84,7 +100,10 @@ public class ButtonRenderer implements Renderer {
 			return pressed;
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
 			if (hit && e.data.pointerCount == 1) {
-				
+				ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_CLICK | ControlEvent.TYPE_INTERPRETED, new EventData(e.data));
+				newevt.extendedType = eventName;
+				newevt.emitter = this;
+				manager.processEvent(newevt);
 			}
 			return false;
 		}
