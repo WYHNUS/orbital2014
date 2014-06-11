@@ -7,7 +7,12 @@
 //
 
 import Foundation
-class GameLogicManager {
+
+@objc
+class GameLogicManager:NSObject {
+    init() {
+        
+    }
     var extEngine:ExtensionEngine?
     var extensionSource:String = ""
     var useExtensionEngine:Bool {

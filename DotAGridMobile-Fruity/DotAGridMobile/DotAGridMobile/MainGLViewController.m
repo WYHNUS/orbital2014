@@ -6,18 +6,26 @@
 //  Copyright (c) 2014 NUS. All rights reserved.
 //
 
-#import "GameViewController.h"
+#import "MainGLViewController.h"
+#import "AppDelegate.h"
 #import <OpenGLES/ES2/glext.h>
 
 @interface MainGLViewController () {
+    GameLogicManager *logicMan;
 }
 @property (strong, nonatomic) EAGLContext *context;
-
+@property (strong, nonatomic) AppDelegate *app;
+@property (strong, nonatomic) GameLogicManager *logicMan;
 - (void)setupGL;
 - (void)tearDownGL;
 @end
 
 @implementation MainGLViewController
+@synthesize logicMan = logicMan;
+//-(void)viewWillAppear:(BOOL)animated {
+//    [super viewWillAppear:animated];
+//    [self setPaused:YES];
+//}
 
 - (void)viewDidLoad
 {
@@ -35,6 +43,8 @@
     view.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     
     [self setupGL];
+    self.app = (AppDelegate*) [[UIApplication sharedApplication] delegate];
+    logicMan = self.app.logicMan;
 }
 
 - (void)dealloc
@@ -69,6 +79,8 @@
     [EAGLContext setCurrentContext:self.context];
     
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 - (void)tearDownGL
@@ -86,6 +98,7 @@
 {
     glClearColor(0.65f, 0.65f, 0.65f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Draw loop
 }
 
 @end

@@ -8,16 +8,19 @@
 
 #import "AppDelegate.h"
 
-@interface AppDelegate ()
-            
+@interface AppDelegate () {
+    GameLogicManager * logicMan;
+}
 
 @end
 
 @implementation AppDelegate
             
+@synthesize logicMan = logicMan;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    logicMan = [[GameLogicManager alloc] init];
     return YES;
 }
 

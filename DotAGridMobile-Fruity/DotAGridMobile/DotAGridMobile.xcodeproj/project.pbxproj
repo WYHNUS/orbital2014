@@ -7,11 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		18A9E116194830A0008F5C8D /* ControlEvent.m in Sources */ = {isa = PBXBuildFile; fileRef = 18A9E115194830A0008F5C8D /* ControlEvent.m */; };
 		18C658D91947F7DF009FED8D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C658D81947F7DF009FED8D /* main.m */; };
 		18C658DC1947F7DF009FED8D /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C658DB1947F7DF009FED8D /* AppDelegate.m */; };
 		18C658DE1947F7DF009FED8D /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 18C658DD1947F7DF009FED8D /* Shader.fsh */; };
 		18C658E01947F7DF009FED8D /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 18C658DF1947F7DF009FED8D /* Shader.vsh */; };
-		18C658E31947F7DF009FED8D /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C658E21947F7DF009FED8D /* GameViewController.m */; };
+		18C658E31947F7DF009FED8D /* MainGLViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C658E21947F7DF009FED8D /* MainGLViewController.m */; };
 		18C658E61947F7DF009FED8D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 18C658E41947F7DF009FED8D /* Main.storyboard */; };
 		18C658E81947F7DF009FED8D /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18C658E71947F7DF009FED8D /* Images.xcassets */; };
 		18C658F41947F7DF009FED8D /* DotAGridMobileTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 18C658F31947F7DF009FED8D /* DotAGridMobileTests.m */; };
@@ -22,6 +23,14 @@
 		18C659091947F921009FED8D /* ExtensionInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C659081947F921009FED8D /* ExtensionInterface.swift */; };
 		18C6590B1947F931009FED8D /* GameLogicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C6590A1947F931009FED8D /* GameLogicManager.swift */; };
 		18C6590D1947F966009FED8D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C6590C1947F966009FED8D /* Item.swift */; };
+		18F175E71948048D006AFAAF /* GridRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F175E61948048D006AFAAF /* GridRenderer.m */; };
+		18F175EB19480A6C006AFAAF /* GenericProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F175EA19480A6C006AFAAF /* GenericProgram.m */; };
+		18F175EE19480AFD006AFAAF /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F175EC19480AFD006AFAAF /* GLKit.framework */; };
+		18F175EF19480AFD006AFAAF /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F175ED19480AFD006AFAAF /* OpenGLES.framework */; };
+		18F175F119480B05006AFAAF /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F175F019480B05006AFAAF /* QuartzCore.framework */; };
+		18F175F519481E4C006AFAAF /* MainGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F175F419481E4C006AFAAF /* MainGLView.m */; };
+		18F1762A194827B3006AFAAF /* GameState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F17629194827B3006AFAAF /* GameState.swift */; };
+		18F1762E19482854006AFAAF /* AppSupport.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F1762D19482854006AFAAF /* AppSupport.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,6 +44,9 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		18A9E11419483078008F5C8D /* ControlEvent.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlEvent.h; sourceTree = "<group>"; };
+		18A9E115194830A0008F5C8D /* ControlEvent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ControlEvent.m; sourceTree = "<group>"; };
+		18A9E117194831D6008F5C8D /* CommonShapes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonShapes.h; sourceTree = "<group>"; };
 		18C658D31947F7DF009FED8D /* DotAGridMobile.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DotAGridMobile.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18C658D71947F7DF009FED8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		18C658D81947F7DF009FED8D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -42,14 +54,13 @@
 		18C658DB1947F7DF009FED8D /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		18C658DD1947F7DF009FED8D /* Shader.fsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.fsh; path = Shaders/Shader.fsh; sourceTree = "<group>"; };
 		18C658DF1947F7DF009FED8D /* Shader.vsh */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; name = Shader.vsh; path = Shaders/Shader.vsh; sourceTree = "<group>"; };
-		18C658E11947F7DF009FED8D /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
-		18C658E21947F7DF009FED8D /* GameViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
+		18C658E11947F7DF009FED8D /* MainGLViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainGLViewController.h; sourceTree = "<group>"; };
+		18C658E21947F7DF009FED8D /* MainGLViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainGLViewController.m; sourceTree = "<group>"; };
 		18C658E51947F7DF009FED8D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		18C658E71947F7DF009FED8D /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		18C658ED1947F7DF009FED8D /* DotAGridMobileTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DotAGridMobileTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		18C658F21947F7DF009FED8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		18C658F31947F7DF009FED8D /* DotAGridMobileTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DotAGridMobileTests.m; sourceTree = "<group>"; };
-		18C658FE1947F837009FED8D /* DotAGridMobile-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DotAGridMobile-Bridging-Header.h"; sourceTree = "<group>"; };
 		18C658FF1947F837009FED8D /* Character.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
 		18C659011947F8B7009FED8D /* Hero.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Hero.swift; sourceTree = "<group>"; };
 		18C659031947F8C4009FED8D /* Drawable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Drawable.swift; sourceTree = "<group>"; };
@@ -57,6 +68,22 @@
 		18C659081947F921009FED8D /* ExtensionInterface.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExtensionInterface.swift; sourceTree = "<group>"; };
 		18C6590A1947F931009FED8D /* GameLogicManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameLogicManager.swift; sourceTree = "<group>"; };
 		18C6590C1947F966009FED8D /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		18C6590F1947FCCE009FED8D /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
+		18F175E419480366006AFAAF /* CommonShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonShaders.h; sourceTree = "<group>"; };
+		18F175E61948048D006AFAAF /* GridRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridRenderer.m; sourceTree = "<group>"; };
+		18F175E8194804AE006AFAAF /* GridRenderer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = GridRenderer.h; sourceTree = "<group>"; };
+		18F175E91948097A006AFAAF /* GenericProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenericProgram.h; sourceTree = "<group>"; };
+		18F175EA19480A6C006AFAAF /* GenericProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenericProgram.m; sourceTree = "<group>"; };
+		18F175EC19480AFD006AFAAF /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
+		18F175ED19480AFD006AFAAF /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
+		18F175F019480B05006AFAAF /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		18F175F2194815D0006AFAAF /* Closeable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Closeable.h; sourceTree = "<group>"; };
+		18F175F319481DF4006AFAAF /* MainGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainGLView.h; sourceTree = "<group>"; };
+		18F175F419481E4C006AFAAF /* MainGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainGLView.m; sourceTree = "<group>"; };
+		18F17629194827B3006AFAAF /* GameState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameState.swift; sourceTree = "<group>"; };
+		18F1762B1948282E006AFAAF /* AppSupport.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppSupport.h; sourceTree = "<group>"; };
+		18F1762C19482844006AFAAF /* SwiftObjCBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwiftObjCBridge.h; sourceTree = "<group>"; };
+		18F1762D19482854006AFAAF /* AppSupport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppSupport.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -64,6 +91,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				18F175F119480B05006AFAAF /* QuartzCore.framework in Frameworks */,
+				18F175EE19480AFD006AFAAF /* GLKit.framework in Frameworks */,
+				18F175EF19480AFD006AFAAF /* OpenGLES.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,9 +107,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		18A9E11319483069008F5C8D /* Event */ = {
+			isa = PBXGroup;
+			children = (
+				18A9E11419483078008F5C8D /* ControlEvent.h */,
+				18A9E115194830A0008F5C8D /* ControlEvent.m */,
+			);
+			name = Event;
+			sourceTree = "<group>";
+		};
 		18C658CA1947F7DF009FED8D = {
 			isa = PBXGroup;
 			children = (
+				18F175F019480B05006AFAAF /* QuartzCore.framework */,
+				18F175EC19480AFD006AFAAF /* GLKit.framework */,
+				18F175ED19480AFD006AFAAF /* OpenGLES.framework */,
 				18C658D51947F7DF009FED8D /* DotAGridMobile */,
 				18C658F01947F7DF009FED8D /* DotAGridMobileTests */,
 				18C658D41947F7DF009FED8D /* Products */,
@@ -98,18 +140,27 @@
 		18C658D51947F7DF009FED8D /* DotAGridMobile */ = {
 			isa = PBXGroup;
 			children = (
+				18A9E11319483069008F5C8D /* Event */,
+				18F175E519480467006AFAAF /* Sound */,
+				18C6590E1947FCB3009FED8D /* Renderer */,
 				18C659051947F8E2009FED8D /* Extension */,
-				18C658FE1947F837009FED8D /* DotAGridMobile-Bridging-Header.h */,
 				18C658FD1947F81B009FED8D /* Logic */,
 				18C658DA1947F7DF009FED8D /* AppDelegate.h */,
 				18C658DB1947F7DF009FED8D /* AppDelegate.m */,
 				18C658DD1947F7DF009FED8D /* Shader.fsh */,
 				18C658DF1947F7DF009FED8D /* Shader.vsh */,
-				18C658E11947F7DF009FED8D /* GameViewController.h */,
-				18C658E21947F7DF009FED8D /* GameViewController.m */,
+				18F175F319481DF4006AFAAF /* MainGLView.h */,
+				18F175F419481E4C006AFAAF /* MainGLView.m */,
+				18C658E11947F7DF009FED8D /* MainGLViewController.h */,
+				18C658E21947F7DF009FED8D /* MainGLViewController.m */,
 				18C658E41947F7DF009FED8D /* Main.storyboard */,
 				18C658E71947F7DF009FED8D /* Images.xcassets */,
 				18C658D61947F7DF009FED8D /* Supporting Files */,
+				18F175F2194815D0006AFAAF /* Closeable.h */,
+				18F1762B1948282E006AFAAF /* AppSupport.h */,
+				18F1762D19482854006AFAAF /* AppSupport.m */,
+				18F1762C19482844006AFAAF /* SwiftObjCBridge.h */,
+				18A9E117194831D6008F5C8D /* CommonShapes.h */,
 			);
 			path = DotAGridMobile;
 			sourceTree = "<group>";
@@ -148,6 +199,7 @@
 				18C659031947F8C4009FED8D /* Drawable.swift */,
 				18C6590A1947F931009FED8D /* GameLogicManager.swift */,
 				18C6590C1947F966009FED8D /* Item.swift */,
+				18F17629194827B3006AFAAF /* GameState.swift */,
 			);
 			name = Logic;
 			sourceTree = "<group>";
@@ -159,6 +211,26 @@
 				18C659081947F921009FED8D /* ExtensionInterface.swift */,
 			);
 			name = Extension;
+			sourceTree = "<group>";
+		};
+		18C6590E1947FCB3009FED8D /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				18F175E419480366006AFAAF /* CommonShaders.h */,
+				18C6590F1947FCCE009FED8D /* Renderer.h */,
+				18F175E8194804AE006AFAAF /* GridRenderer.h */,
+				18F175E61948048D006AFAAF /* GridRenderer.m */,
+				18F175E91948097A006AFAAF /* GenericProgram.h */,
+				18F175EA19480A6C006AFAAF /* GenericProgram.m */,
+			);
+			name = Renderer;
+			sourceTree = "<group>";
+		};
+		18F175E519480467006AFAAF /* Sound */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Sound;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -264,12 +336,18 @@
 			files = (
 				18C6590D1947F966009FED8D /* Item.swift in Sources */,
 				18C659021947F8B7009FED8D /* Hero.swift in Sources */,
+				18F1762E19482854006AFAAF /* AppSupport.m in Sources */,
+				18F175F519481E4C006AFAAF /* MainGLView.m in Sources */,
 				18C659091947F921009FED8D /* ExtensionInterface.swift in Sources */,
 				18C658DC1947F7DF009FED8D /* AppDelegate.m in Sources */,
-				18C658E31947F7DF009FED8D /* GameViewController.m in Sources */,
+				18F175EB19480A6C006AFAAF /* GenericProgram.m in Sources */,
+				18C658E31947F7DF009FED8D /* MainGLViewController.m in Sources */,
+				18F1762A194827B3006AFAAF /* GameState.swift in Sources */,
 				18C6590B1947F931009FED8D /* GameLogicManager.swift in Sources */,
 				18C659041947F8C4009FED8D /* Drawable.swift in Sources */,
 				18C658D91947F7DF009FED8D /* main.m in Sources */,
+				18A9E116194830A0008F5C8D /* ControlEvent.m in Sources */,
+				18F175E71948048D006AFAAF /* GridRenderer.m in Sources */,
 				18C659071947F8EC009FED8D /* ExtensionEngine.swift in Sources */,
 				18C659001947F837009FED8D /* Character.swift in Sources */,
 			);
@@ -389,10 +467,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
 				INFOPLIST_FILE = DotAGridMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_MODULE_NAME = DotAGridMobileLogic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "DotAGridMobile/DotAGridMobile-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = DotAGridMobile/SwiftObjCBridge.h;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -403,10 +483,12 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_MODULES = YES;
+				DEFINES_MODULE = YES;
 				INFOPLIST_FILE = DotAGridMobile/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_MODULE_NAME = DotAGridMobileLogic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "DotAGridMobile/DotAGridMobile-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = DotAGridMobile/SwiftObjCBridge.h;
 			};
 			name = Release;
 		};
@@ -465,6 +547,7 @@
 				18C658F91947F7DF009FED8D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		18C658FA1947F7DF009FED8D /* Build configuration list for PBXNativeTarget "DotAGridMobileTests" */ = {
 			isa = XCConfigurationList;
@@ -473,6 +556,7 @@
 				18C658FC1947F7DF009FED8D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

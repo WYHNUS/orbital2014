@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <GLKit/GLKit.h>
-
+#import <DotAGridMobileLogic-Swift.h>
 @interface MainGLViewController : GLKViewController
 
 @end

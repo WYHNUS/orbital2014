@@ -10,6 +10,9 @@ import Foundation
 
 import JavaScriptCore
 
+let SCRIPT:String = ""
++ ""
++ "";
 class ExtensionEngine {
     let vm:JSVirtualMachine
     let context:JSContext

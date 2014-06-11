@@ -7,11 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <DotAGridMobileLogic-Swift.h>
+
+@class GameLogicManager;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
+@property (strong, nonatomic) GameLogicManager * logicMan;
 
 @end
 
