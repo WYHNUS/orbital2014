@@ -57,7 +57,6 @@ public class GameState implements Closeable {
 		this.terrain = terrain;
 	}
 	
-	
 	// interface interactions
 	public void setCurrentSceneRenderer (SceneRenderer renderer) {
 		currentSceneRenderer = renderer;
