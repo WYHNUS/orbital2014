@@ -71,5 +71,10 @@ public class Main extends Activity {
 		super.onStop();
 	}
 	
+	@Override
+	public void onBackPressed() {
+		// TODO save game and quit
+	}
+	
 	public GameLogicManager getGameLogicManager() {return logicManager;}
 }

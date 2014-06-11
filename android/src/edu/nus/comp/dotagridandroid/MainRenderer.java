@@ -6,7 +6,6 @@ import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.*;
 import android.opengl.*;
 import static android.opengl.GLES20.*;

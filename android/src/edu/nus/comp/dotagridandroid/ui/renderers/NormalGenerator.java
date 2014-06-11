@@ -1,7 +1,6 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.nio.*;
-import java.util.Arrays;
 import java.util.Map;
 
 import static android.opengl.GLES20.*;
