@@ -12,6 +12,7 @@ public interface Renderer extends Closeable {
 	void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer);
 	void setMVP(float[] model, float[] view, float[] projection);
 	void setRenderReady();
+	void notifyUpdate(Map<String, Object> updates);
 	boolean getReadyState();
 	void draw();
 	boolean passEvent(ControlEvent e);

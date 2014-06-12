@@ -1,7 +1,6 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
-import java.util.Map;
-
+import java.util.*;
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
@@ -60,7 +59,7 @@ public class MainSceneRenderer implements Renderer {
 	@Override
 	public void setRenderReady() {
 		// init
-		// TODO use game scene for now
+		// TODO use game scene
 		scene.setRenderReady();
 	}
 
@@ -79,6 +78,9 @@ public class MainSceneRenderer implements Renderer {
 		scene.passEvent(e);
 		return false;	// top of event chain - no bubbling up already
 	}
+	
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {}	// should be passed to SceneRenderers, not here
 
 	@Override
 	public void close() {

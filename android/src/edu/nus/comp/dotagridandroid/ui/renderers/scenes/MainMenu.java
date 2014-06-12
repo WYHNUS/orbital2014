@@ -1,75 +1,92 @@
-package edu.nus.comp.dotagridandroid.ui.renderers;
+package edu.nus.comp.dotagridandroid.ui.renderers.scenes;
 
 import java.util.Map;
 
 import edu.nus.comp.dotagridandroid.MainRenderer.GraphicsResponder;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
+import edu.nus.comp.dotagridandroid.ui.renderers.Renderer;
+import edu.nus.comp.dotagridandroid.ui.renderers.Texture2D;
+import edu.nus.comp.dotagridandroid.ui.renderers.VertexBufferManager;
 
-public class ObjectRenderer implements Renderer {
-
-	private VertexBufferManager vBufMan;
-	private float[] model, view, projection;
+public class MainMenu implements Renderer {
 
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
-		this.vBufMan = manager;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setTexture2D(Map<String, Texture2D> textures) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setAspectRatio(float ratio) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setGraphicsResponder(GraphicsResponder mainRenderer) {
-		// dont use
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {
-		if (model != null)
-			this.model = model;
-		if (view != null)
-			this.view = view;
-		if (projection != null)
-			this.projection = projection;
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void setRenderReady() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {
+		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public boolean getReadyState() {
-		return true;
-	}
-
-	@Override
-	public void draw() {
-	}
-
-	@Override
-	public boolean passEvent(ControlEvent e) {
-		// dont capture any event
+		// TODO Auto-generated method stub
 		return false;
 	}
 
 	@Override
-	public void notifyUpdate(Map<String, Object> updates) {}
+	public void draw() {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public boolean passEvent(ControlEvent e) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 	@Override
 	public void close() {
+		// TODO Auto-generated method stub
+
 	}
 
 }

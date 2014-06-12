@@ -135,4 +135,7 @@ public class TextRenderer implements Renderer {
 	
 	@Override
 	public boolean getReadyState() {return true;}
+	
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {}	// nothing
 }

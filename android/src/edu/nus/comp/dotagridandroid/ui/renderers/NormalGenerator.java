@@ -1,8 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.nio.*;
-import java.util.Map;
-
+import java.util.*;
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer.GraphicsResponder;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
@@ -189,9 +188,11 @@ public class NormalGenerator implements Renderer {
 
 	@Override
 	public boolean passEvent(ControlEvent e) {
-		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {}	// nothing
 
 	@Override
 	public void close() {

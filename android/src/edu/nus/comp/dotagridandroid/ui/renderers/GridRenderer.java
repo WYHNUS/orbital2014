@@ -41,6 +41,7 @@ public class GridRenderer implements Renderer {
 			view = IdentityMatrix4x4(),
 			projection = IdentityMatrix4x4();
 	private float[] selectGridMat, gridLines, terrain;
+	// temporary map characteristics - do not use after init
 	private float[] mapTerrain, mapNormalCoord, mapTextureCoord;
 	private int[] gridLinesIndex, mapIndex;
 	private TextRenderer textRender;
@@ -395,6 +396,15 @@ public class GridRenderer implements Renderer {
 		mapTerrain = mapNormalCoord = mapTextureCoord = null; mapIndex = null;
 		for (String key : lightSrc.keySet())
 			configureShadow(key);
+	}
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {
+		if (updates.containsKey("CharacterPosition")) {
+			boolean dirty = false;
+			
+			if (dirty)
+				responder.updateGraphics();
+		}
 	}
 	@Override
 	public boolean getReadyState() {

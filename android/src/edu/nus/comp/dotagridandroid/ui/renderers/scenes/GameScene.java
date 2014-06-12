@@ -37,7 +37,9 @@ public class GameScene implements SceneRenderer {
 	}
 
 	@Override
-	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
+	public void setGameLogicManager(GameLogicManager manager) {
+		this.manager = manager;
+	}
 
 	@Override
 	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {this.responder = mainRenderer;}
@@ -47,6 +49,9 @@ public class GameScene implements SceneRenderer {
 
 	@Override
 	public void setRenderReady() {
+		manager.setCurrentGameState("Current");
+		manager.getCurrentGameState().initialise();
+		manager.getCurrentGameState().setCurrentSceneRenderer(this);
 		final boolean landscape = ratio > 1;
 		state = (GameState) manager.getGameState("Current");
 		grid = new GridRenderer(state.getGridWidth(), state.getGridHeight(), state.getTerrain());
@@ -70,6 +75,12 @@ public class GameScene implements SceneRenderer {
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, .1f/ratio-1, -1), FlatScalingMatrix4x4(1,.1f/ratio,1)),
 					null, null);	// portrait model - bottom side 20%
 		status.setRenderReady(); grid.setRenderReady();
+	}
+	
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {
+		grid.notifyUpdate(updates);
+		status.notifyUpdate(updates);
 	}
 	
 	@Override

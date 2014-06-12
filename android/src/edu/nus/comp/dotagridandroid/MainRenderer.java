@@ -52,7 +52,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		cs = new CommonShapes(vBufMan);
 		// TODO: different resolution of maps
 		// TODO: change resource name
-		// TODO: allow decoding from network, stream, files etc
+		// TODO: allow decoding from network, stream, files etc (to be done in GameState)
 		Bitmap image;
 		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
 		image.recycle();
@@ -60,8 +60,8 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		texture2d.put("DefaultTextFontMap", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.textmap)));
 		image.recycle();
 		System.gc();
-		texture2d.put("StatusControlBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dota2bg)));
-		image.recycle();
+		texture2d.put("StatusControlBackground", texture2d.get("GridMapBackground"));//new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dota2bg)));
+//		image.recycle();
 		System.gc();
 		texture2d.put("DefaultButton", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.button)));
 		image.recycle();

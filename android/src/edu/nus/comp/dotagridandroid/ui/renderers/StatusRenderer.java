@@ -1,7 +1,6 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
-import java.util.Map;
-
+import java.util.*;
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.*;
@@ -18,34 +17,55 @@ public class StatusRenderer implements Renderer {
 	private boolean pointerInside = false;
 	private final float[] identity = IdentityMatrix4x4();
 	private MainRenderer.GraphicsResponder responder;
+	private Map<String, Renderer> controls = new HashMap<>();
 	// resources
 	private GenericProgram frameProgram;
+	private Renderer eventCapturer;
 	
 	public StatusRenderer (GameState state) {
 		this.state = state;
 		frameProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
+		Renderer r = new ButtonRenderer();
+		controls.put("Button", r);
 	}
 
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
 		this.vBufMan = manager;
+		for (Map.Entry<String, Renderer> entry : controls.entrySet())
+			entry.getValue().setVertexBufferManager(manager);;
 	}
 
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}
 
 	@Override
-	public void setTexture2D(Map<String, Texture2D> textures) {this.textures = textures;}
+	public void setTexture2D(Map<String, Texture2D> textures) {
+		this.textures = textures;
+		for (Map.Entry<String, Renderer> entry : controls.entrySet())
+			entry.getValue().setTexture2D(textures);
+	}
 
 	@Override
-	public void setAspectRatio(float ratio) {this.ratio = ratio;}
+	public void setAspectRatio(float ratio) {
+		this.ratio = ratio;
+		for (Map.Entry<String, Renderer> entry : controls.entrySet())
+			entry.getValue().setAspectRatio(ratio);
+	}
 
 	@Override
-	public void setGameLogicManager(GameLogicManager manager) {this.manager = manager;}
+	public void setGameLogicManager(GameLogicManager manager) {
+		this.manager = manager;
+		state = manager.getCurrentGameState();
+		for (Map.Entry<String, Renderer> entry : controls.entrySet())
+			entry.getValue().setGameLogicManager(manager);
+	}
 
 	@Override
 	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {
 		responder = mainRenderer;
+		for (Map.Entry<String, Renderer> entry : controls.entrySet())
+			entry.getValue().setGraphicsResponder(mainRenderer);
 	}
 
 	@Override
@@ -53,6 +73,11 @@ public class StatusRenderer implements Renderer {
 
 	@Override
 	public void setRenderReady() {
+		// control layout
+		ButtonRenderer button = (ButtonRenderer) controls.get("Button");
+		button.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)), null, null);
+		button.setPressRespondName("TestButton");
+		button.setRenderReady();
 		responder.updateGraphics();
 	}
 	
@@ -61,8 +86,10 @@ public class StatusRenderer implements Renderer {
 
 	@Override
 	public void draw() {
+		// other controls
+		for (Map.Entry<String, Renderer> entry : controls.entrySet())
+			entry.getValue().draw();
 		drawFrame();
-		// other controls - not yet
 	}
 
 	private void drawFrame() {
@@ -107,22 +134,43 @@ public class StatusRenderer implements Renderer {
 					&& pointerPositionOnControls[1] <= 1 && pointerPositionOnControls[1] >= -1) {
 				pointerInside = true;
 				// tell the controls
-				System.out.println();
+				if (eventCapturer == null || !eventCapturer.passEvent(e))
+					for (Map.Entry<String, Renderer> entry : controls.entrySet()) {
+						eventCapturer = entry.getValue();
+						if (eventCapturer.passEvent(e))
+							return true;	// captured by this eventCapturer
+					}
+				eventCapturer = null;	// captured by myself
 				return true;
 			}
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
+			if (eventCapturer != null && !eventCapturer.passEvent(e))
+				for (Map.Entry<String, Renderer> entry : controls.entrySet()) {
+					eventCapturer = entry.getValue();
+					if (eventCapturer.passEvent(e))
+						return true;	// captured by this eventCapturer
+				}
+			eventCapturer = null;	// captured by myself
 			return true;
 		} else if (e.type == ControlEvent.TYPE_CLEAR){
+			if (eventCapturer != null)
+				eventCapturer.passEvent(e);
+			eventCapturer = null;	// captured by myself
 			pointerInside = false;
 			return false;
 		}
 		return false;	// no capture for now
 	}
+	
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {
+		if (updates.containsKey("SelectedGrid")) {
+		}
+	}
 
 	@Override
 	public void close() {
-		// TODO Auto-generated method stub
-
+		frameProgram.close();
 	}
 
 }

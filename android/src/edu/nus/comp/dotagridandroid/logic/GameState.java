@@ -1,25 +1,29 @@
 package edu.nus.comp.dotagridandroid.logic;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.Closeable;
+import edu.nus.comp.dotagridandroid.ui.event.*;
 
 public class GameState implements Closeable {
 	private int gridWidth, gridHeight;
 	private float[] terrain;
 	private boolean initialised;
-	private final Thread initialisationProcess;
+	private Thread initialisationProcess;
 	private SceneRenderer currentSceneRenderer;
+	// game rule object
+	private GameMaster gameMaster;
 	public GameState() {
-		initialisationProcess = new Thread() {
-			@Override
-			public void run() {
-				initialised = true;
-			}
-		};
 	}
 	
 	public void initialise() {
 		if (initialised)
 			return;
+		initialisationProcess = new Thread() {
+			@Override
+			public void run() {
+				gameMaster = new GameMaster();
+				initialised = true;
+			}
+		};
 		initialisationProcess.start();
 	}
 	
@@ -30,6 +34,8 @@ public class GameState implements Closeable {
 	
 	@Override
 	public void close() {
+		// release resources
+		gameMaster = null;
 		initialised = false;
 	}
 
@@ -57,12 +63,32 @@ public class GameState implements Closeable {
 		this.terrain = terrain;
 	}
 	
+	// characters
+	public void getMainCharacter() {
+	}
+	
+	public void getCharacters() {
+	}
+	
+	public void getCharacterPosition() {
+	}
+	
 	// interface interactions
 	public void setCurrentSceneRenderer (SceneRenderer renderer) {
 		currentSceneRenderer = renderer;
 	}
-	public void attachUpdateDelegate (String notifyEvent) {
+	public void notifyAction (ControlEvent e) {
 		if (currentSceneRenderer != null)
 			;
+	}
+
+	public void processEvent(ControlEvent e) {
+		// TODO apply rules
+		switch (e.extendedType) {
+		case "TestButton":
+			System.out.println("Test Button Pressed");
+		case "":
+		}
+		/// Use Hard code game rules
 	}
 }

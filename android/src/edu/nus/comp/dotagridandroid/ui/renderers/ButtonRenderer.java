@@ -21,6 +21,7 @@ public class ButtonRenderer implements Renderer {
 	private Map<String, Texture2D> textures;
 	private String textureName = "DefaultButton";
 	private GameLogicManager manager;
+	private Map<String, Object> extendedData;
 	public ButtonRenderer () {
 		model = view = projection = IdentityMatrix4x4();
 		buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
@@ -56,7 +57,11 @@ public class ButtonRenderer implements Renderer {
 	
 	public void setPressRespondName(String eventName) {
 		if (eventName != null)
-			this.eventName = null;
+			this.eventName = eventName;
+	}
+	
+	public void setPressRespondData(Map<String, Object> data) {
+		extendedData = data; 
 	}
 	
 	public void setButtonTexture(String name) {
@@ -77,6 +82,9 @@ public class ButtonRenderer implements Renderer {
 	@Override
 	public void setRenderReady() {
 	}
+	
+	@Override
+	public void notifyUpdate(Map<String, Object> updates) {}
 
 	@Override
 	public boolean getReadyState() {
@@ -85,13 +93,42 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public void draw() {
+		final int
+			vPosition = glGetAttribLocation(buttonProgram.getProgramId(), "vPosition"),
+			mModel = glGetUniformLocation(buttonProgram.getProgramId(), "model"),
+			mView = glGetUniformLocation(buttonProgram.getProgramId(), "view"),
+			mProjection = glGetUniformLocation(buttonProgram.getProgramId(), "projection"),
+			textureLocation = glGetUniformLocation(buttonProgram.getProgramId(), "texture"),
+			textureCoord = glGetAttribLocation(buttonProgram.getProgramId(), "textureCoord");
+		final int
+			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
+			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
+			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
+		glUseProgram(buttonProgram.getProgramId());
+		glUniformMatrix4fv(mModel, 1, false, model, 0);
+		glUniformMatrix4fv(mView, 1, false, view, 0);
+		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures.get(textureName).getTexture());
+		glUniform1i(textureLocation, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
+		glEnableVertexAttribArray(vPosition);
+		glEnableVertexAttribArray(textureCoord);
+		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+		glDisableVertexAttribArray(vPosition);
+		glDisableVertexAttribArray(textureCoord);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 
 	@Override
 	public boolean passEvent(ControlEvent e) {
 		final boolean hit;
 		final float[] mvp = FlatMatrix4x4Multiplication(projection, view, model);
-		final float[] pos = FlatMatrix4x4Multiplication(FlatInverseMatrix4x4(mvp), new float[]{e.data.x[0], e.data.y[0], -1, 1});
+		final float[] pos = FlatMatrix4x4Vector4Multiplication(FlatInverseMatrix4x4(mvp), new float[]{e.data.x[0], e.data.y[0], -1, 1});
 		hit = pos[0] >= -1 && pos[0] <= 1 && pos[1] >= -1 && pos[1] <= 1; 
 		if (e.type == ControlEvent.TYPE_DOWN) {
 			pressed = true;
@@ -103,6 +140,7 @@ public class ButtonRenderer implements Renderer {
 				ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_CLICK | ControlEvent.TYPE_INTERPRETED, new EventData(e.data));
 				newevt.extendedType = eventName;
 				newevt.emitter = this;
+				newevt.data.extendedData = extendedData;
 				manager.processEvent(newevt);
 			}
 			return false;
@@ -113,6 +151,7 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public void close() {
+		buttonProgram.close();
 	}
 
 }

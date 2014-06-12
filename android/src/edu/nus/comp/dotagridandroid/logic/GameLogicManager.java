@@ -64,6 +64,13 @@ public class GameLogicManager implements Closeable {
 		}
 	}
 
-	public void processEvent(ControlEvent newevt) {
+	public void processEvent(ControlEvent e) {
+		if ((e.type & ControlEvent.TYPE_INTERPRETED) == 0)
+			return;
+		if (e.extendedType.equals("APPLICATION")) {
+			// application data
+		}
+		if (currentState != null)
+			currentState.processEvent(e);
 	}
 }
