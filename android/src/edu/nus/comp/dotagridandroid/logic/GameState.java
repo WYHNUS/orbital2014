@@ -1,7 +1,10 @@
 package edu.nus.comp.dotagridandroid.logic;
+import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.concurrent.*;
+
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
+import edu.nus.comp.dotagridandroid.ui.renderers.BufferUtils;
 import edu.nus.comp.dotagridandroid.ui.renderers.Closeable;
 import edu.nus.comp.dotagridandroid.ui.event.*;
 
@@ -13,8 +16,11 @@ public class GameState implements Closeable {
 	private SceneRenderer currentSceneRenderer;
 	private Map<String, Character> chars;
 	private Map<String, Object> objs;
+	private Map<String, int[]> objPositions;
+	private Map<String, FloatBuffer[]> objModels;
 	// game rule object
 	private GameMaster gameMaster;
+	private String playerCharacter;
 	public GameState() {
 	}
 	
@@ -26,11 +32,74 @@ public class GameState implements Closeable {
 			public void run() {
 				initialising = true;
 				gameMaster = new GameMaster();
+				chars = new ConcurrentHashMap<>();
+				objs = new ConcurrentHashMap<>();
+				objPositions = new ConcurrentHashMap<>();
+				objModels = new ConcurrentHashMap<>();
+				// TODO load characters
+				chars.put("MyHero", new Hero("MyHero", "strength",
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100));
+				objPositions.put("MyHero", new int[]{0, 0});
+				// TODO load character models
+				chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
+				objModels.put("MyHeroModel", new FloatBuffer[]{
+						// 0: vertex
+						BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+								-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
+								1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
+								1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
+								-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
+								-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
+								-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
+						}),
+						// 1: texture
+						BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
+								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+						}),
+						// 2: normal - vec4 - important!
+						BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+								0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
+								1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
+								0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
+								-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
+								0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
+								0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
+						})
+				});
 				initialised = true;
 				initialising = false;
 			}
 		};
 		initialisationProcess.start();
+	}
+	
+	@Override
+	public void close() {
+		// release resources
+		gameMaster = null;
+		chars = null;
+		objs = null;
+		objPositions = null;
+		initialised = false;
 	}
 	
 	public boolean isInitialised() {
@@ -46,13 +115,6 @@ public class GameState implements Closeable {
 	public void stopTimer() {
 		if (!initialised)
 			return;
-	}
-	
-	@Override
-	public void close() {
-		// release resources
-		gameMaster = null;
-		initialised = false;
 	}
 
 	public int getGridWidth() {
@@ -72,7 +134,7 @@ public class GameState implements Closeable {
 	}
 
 	public float[] getTerrain() {
-		return terrain;
+		return isInitialised() ? terrain : null;
 	}
 
 	public void setTerrain(float[] terrain) {
@@ -80,13 +142,24 @@ public class GameState implements Closeable {
 	}
 	
 	// characters
-	public void getMainCharacter() {
+	public void setPlayerCharacter(String name) {
+		if (chars.containsKey(name))
+			playerCharacter = name;
+	}
+	public String getPlayerCharacter() {
+		return playerCharacter;
 	}
 	
-	public void getCharacters() {
+	public Map<String, Character> getCharacters() {
+		return Collections.unmodifiableMap(chars);
 	}
 	
-	public void getCharacterPosition() {
+	public Map<String, int[]> getCharacterPositions() {
+		return Collections.unmodifiableMap(objPositions);
+	}
+	
+	public FloatBuffer[] getCharacterModel(String name) {
+		return objModels.get(name).clone();
 	}
 	
 	// interface interactions

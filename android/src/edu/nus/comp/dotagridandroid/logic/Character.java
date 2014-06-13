@@ -4,7 +4,7 @@ package edu.nus.comp.dotagridandroid.logic;
 public class Character {
 	
 	// character compose of : LineCreeps, hero, tower and other buildings
-	// change to texture name
+	
 	private String characterImage;
 	
 	private String name;
@@ -17,11 +17,11 @@ public class Character {
 	
 	private int startingMovementSpeed, totalMovementSpeed;
 	
-	private double startingPhysicalAttack, totalPhysicalAttack;
+	private double startingPhysicalAttack, basicPhysicalAttack, totalPhysicalAttack;
 	private int startingPhysicalAttackArea, totalPhysicalAttackArea;
 	private double startingPhysicalAttackSpeed, totalPhysicalAttackSpeed;
 	
-	private double startingPhysicalDefense, totalPhysicalDefense;
+	private double startingPhysicalDefence, basicPhysicalDefence, totalPhysicalDefence;
 	private double startingMagicResistance, totalMagicResistance;
 	
 	private int actionPoint;
@@ -34,7 +34,7 @@ public class Character {
 	
 	public Character(String name, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
-					double startingPhysicalDefense, double startingMagicResistance, int startingMovementSpeed, int actionPoint)
+					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int actionPoint)
 	{
 		
 		this.setName(name);
@@ -47,6 +47,7 @@ public class Character {
 		this.setCurrentMP(this.getmaxMP());
 		
 		this.setStartingPhysicalAttack(startingPhysicalAttack);
+		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
 		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
 		
 		this.setStartingPhysicalAttackArea(startingPhysicalAttackArea);
@@ -55,8 +56,9 @@ public class Character {
 		this.setStartingPhysicalAttackSpeed(startingPhysicalAttackSpeed);
 		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed());
 		
-		this.setStartingPhysicalDefense(startingPhysicalDefense);
-		this.setTotalPhysicalDefense(this.getStartingPhysicalDefense());
+		this.setStartingPhysicalDefence(startingPhysicalDefence);
+		this.setBasicPhysicalDefence(this.getStartingPhysicalDefence());
+		this.setTotalPhysicalDefence(this.getStartingPhysicalDefence());
 		
 		this.setStartingMagicResistance(startingMagicResistance);
 		this.setTotalMagicResistance(this.getStartingMagicResistance());
@@ -76,8 +78,8 @@ public class Character {
 	}
 
 
-	public void setCharacterImage(String characterName) {
-		this.characterImage = characterName;
+	public void setCharacterImage(String modelName) {
+		this.characterImage = modelName;
 	}
 	
 	
@@ -189,7 +191,16 @@ public class Character {
 			this.startingPhysicalAttack = physicalAttack;
 		}
 	}
-	
+
+	public double getBasicPhysicalAttack() {
+		return basicPhysicalAttack;
+	}
+
+
+	public void setBasicPhysicalAttack(double basicPhysicalAttack) {
+		this.basicPhysicalAttack = basicPhysicalAttack;
+	}
+
 	public double getTotalPhysicalAttack() {
 		return totalPhysicalAttack;
 	}
@@ -286,27 +297,37 @@ public class Character {
 
 
 	
-	// accessor and mutator for Physical Defense
+	// accessor and mutator for Physical Defence
 	
-	public double getStartingPhysicalDefense() {
-		return startingPhysicalDefense;
+	public double getStartingPhysicalDefence() {
+		return startingPhysicalDefence;
 	}
 
 
-	public void setStartingPhysicalDefense(double startingPhysicalDefense) {
-		// there is no upper or lower boundary for physical defense
-		this.startingPhysicalDefense = startingPhysicalDefense;
-	}
-	
-	
-	public double getTotalPhysicalDefense() {
-		return totalPhysicalDefense;
+	public void setStartingPhysicalDefence(double startingPhysicalDefence) {
+		// there is no upper or lower boundary for physical Defence
+		this.startingPhysicalDefence = startingPhysicalDefence;
 	}
 
 
-	public void setTotalPhysicalDefense(double totalPhysicalDefense) {
-		// there is no upper or lower boundary for physical defense
-		this.totalPhysicalDefense = totalPhysicalDefense;
+	public double getBasicPhysicalDefence() {
+		return basicPhysicalDefence;
+	}
+
+
+	public void setBasicPhysicalDefence(double basicPhysicalDefence) {
+		this.basicPhysicalDefence = basicPhysicalDefence;
+	}
+	
+	
+	public double getTotalPhysicalDefence() {
+		return totalPhysicalDefence;
+	}
+
+
+	public void setTotalPhysicalDefence(double totalPhysicalDefence) {
+		// there is no upper or lower boundary for physical Defence
+		this.totalPhysicalDefence = totalPhysicalDefence;
 	}
 
 

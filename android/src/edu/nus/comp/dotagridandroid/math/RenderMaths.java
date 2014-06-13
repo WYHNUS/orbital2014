@@ -164,10 +164,23 @@ public class RenderMaths {
 			throw new RuntimeException("Wrong vector size");
 		return new float[]{a[0]*ka + b[0]*kb,a[1]*ka + b[1]*kb,a[2]*ka+b[2]*kb};
 	}
+	public static float[] Vector4Addition(float[] a, float[] b, float ka, float kb) {
+		if (a.length != 4 || b.length != 4)
+			throw new RuntimeException("Wrong vector size");
+		return new float[]{a[0]*ka + b[0]*kb,a[1]*ka + b[1]*kb,a[2]*ka+b[2]*kb,a[3]*ka+b[3]*kb};
+	}
 	public static float Vector4CubicInterpolation (float[] f, float x) {
 		if (f.length != 4)
 			throw new RuntimeException("Wrong vector size");
 		// 0: f(0), 1: f(1), 2: f'(0), 3: f'(1)
 		return f[0] + x * (f[2] + x * (-3 * f[0] + 3 * f[1] - 2 * f[2] - f[3] + x * (2 * f[0] - 2 * f[1] + f[2] + f[3])));
+	}
+	public static float[] Vector4PerspectiveDivision(float[] a) {
+		if (a.length != 4)
+			throw new RuntimeException("Wrong vector size");
+		if (Math.abs(a[3]) < ERROR)
+			return new float[] {a[0], a[1], a[2]};
+		else
+			return new float[] {a[0] / a[3], a[1] / a[3], a[2] / a[3]};
 	}
 }

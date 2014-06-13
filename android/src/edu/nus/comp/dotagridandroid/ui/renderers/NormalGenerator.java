@@ -11,7 +11,7 @@ import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 public class NormalGenerator implements Renderer {
 	public static final int RESOLUTION = 8;
 	private final int rows, columns, width, height;
-	private float[] terrain;
+	private float[] terrain, model;
 	
 	// resource
 	private GenericProgram normalProgram;
@@ -21,10 +21,11 @@ public class NormalGenerator implements Renderer {
 	private final float[] identity = IdentityMatrix4x4();
 	private boolean renderReady = false;
 	private Thread computeTask;
-	public NormalGenerator (int columns, int rows, float[] terrain, int width, int height) {
+	public NormalGenerator (int columns, int rows, float[] terrain, float[] model, int width, int height) {
 		this.rows = rows;
 		this.columns = columns;
 		this.terrain = terrain;
+		this.model = model;
 		this.width = width;
 		this.height = height;
 		normalProgram = new GenericProgram(CommonShaders.VS_IDENTITY_VARYING_COLOR, CommonShaders.FS_IDENTITY_VARYING_COLOR);
@@ -88,33 +89,63 @@ public class NormalGenerator implements Renderer {
 						.put(terrain, 4 * topRight, 4)
 						.put(terrain, 4 * bottomRight, 4);
 						// lower
-						float[] n = NormalisedVector3(Vector3CrossProduct (
-								new float[]{
-										terrain[4 * bottomRight] - terrain[4 * bottomLeft],
-										terrain[4 * bottomRight + 1] - terrain[4 * bottomLeft + 1],
-										terrain[4 * bottomRight + 2] - terrain[4 * bottomLeft + 2]
-										},
-								new float[]{
-										terrain[4 * topLeft] - terrain[4 * bottomLeft],
-										terrain[4 * topLeft + 1] - terrain[4 * bottomLeft + 1],
-										terrain[4 * topLeft + 2] - terrain[4 * bottomLeft + 2]
-										}
-								));
+						float[] v1 = Vector4PerspectiveDivision(Vector4Addition(
+							FlatMatrix4x4Vector4Multiplication(model,new float[] {
+									terrain[4 * bottomRight] / terrain[4 * bottomRight + 3],
+									terrain[4 * bottomRight + 1] / terrain[4 * bottomRight + 3],
+									terrain[4 * bottomRight + 2] / terrain[4 * bottomRight + 3],
+									1
+							}),
+							FlatMatrix4x4Vector4Multiplication(model,new float[]{
+									terrain[4 * bottomLeft] / terrain[4 * bottomLeft + 3],
+									terrain[4 * bottomLeft + 1] / terrain[4 * bottomLeft + 3],
+									terrain[4 * bottomLeft + 2] / terrain[4 * bottomLeft + 3],
+									1
+							}),1,-1));
+						float[] v2 = Vector4PerspectiveDivision(Vector4Addition(
+								FlatMatrix4x4Vector4Multiplication(model,new float[] {
+										terrain[4 * topLeft] / terrain[4 * topLeft + 3],
+										terrain[4 * topLeft + 1] / terrain[4 * topLeft + 3],
+										terrain[4 * topLeft + 2] / terrain[4 * topLeft + 3],
+										1
+								}),
+								FlatMatrix4x4Vector4Multiplication(model,new float[]{
+										terrain[4 * bottomLeft] / terrain[4 * bottomLeft + 3],
+										terrain[4 * bottomLeft + 1] / terrain[4 * bottomLeft + 3],
+										terrain[4 * bottomLeft + 2] / terrain[4 * bottomLeft + 3],
+										1
+								}),1,-1));
+						float[] n = NormalisedVector3(Vector3CrossProduct(v1, v2));
 						n = new float[] {(n[0] + 1)/2, (n[1] + 1)/2, (n[2] + 1)/2};
 						normal.put(n).put(1).put(n).put(1).put(n).put(1);
 						// upper
-						n = NormalisedVector3(Vector3CrossProduct (
-								new float[]{
-										terrain[4 * topLeft] - terrain[4 * topRight],
-										terrain[4 * topLeft + 1] - terrain[4 * topRight + 1],
-										terrain[4 * topLeft + 2] - terrain[4 * topRight + 2]
-										},
-								new float[]{
-										terrain[4 * bottomRight] - terrain[4 * topRight],
-										terrain[4 * bottomRight + 1] - terrain[4 * topRight + 1],
-										terrain[4 * bottomRight + 2] - terrain[4 * topRight + 2]
-										}
-								));
+						v1 = Vector4PerspectiveDivision(Vector4Addition(
+								FlatMatrix4x4Vector4Multiplication(model,new float[] {
+										terrain[4 * topLeft] / terrain[4 * topLeft + 3],
+										terrain[4 * topLeft + 1] / terrain[4 * topLeft + 3],
+										terrain[4 * topLeft + 2] / terrain[4 * topLeft + 3],
+										1
+								}),
+								FlatMatrix4x4Vector4Multiplication(model,new float[]{
+										terrain[4 * topRight] / terrain[4 * topRight + 3],
+										terrain[4 * topRight + 1] / terrain[4 * topRight + 3],
+										terrain[4 * topRight + 2] / terrain[4 * topRight + 3],
+										1
+								}),1,-1));
+						v2 = Vector4PerspectiveDivision(Vector4Addition(
+								FlatMatrix4x4Vector4Multiplication(model,new float[] {
+										terrain[4 * bottomRight] / terrain[4 * bottomRight + 3],
+										terrain[4 * bottomRight + 1] / terrain[4 * bottomRight + 3],
+										terrain[4 * bottomRight + 2] / terrain[4 * bottomRight + 3],
+										1
+								}),
+								FlatMatrix4x4Vector4Multiplication(model,new float[]{
+										terrain[4 * topRight] / terrain[4 * topRight + 3],
+										terrain[4 * topRight + 1] / terrain[4 * topRight + 3],
+										terrain[4 * topRight + 2] / terrain[4 * topRight + 3],
+										1
+								}),1,-1));
+						n = NormalisedVector3(Vector3CrossProduct (v1, v2));
 						n = new float[] {(n[0] + 1)/2, (n[1] + 1)/2, (n[2] + 1)/2};
 						normal.put(n).put(1).put(n).put(1).put(n).put(1);
 					}
@@ -168,7 +199,7 @@ public class NormalGenerator implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(vColor);
 		pos = normal = null;
-		terrain = null;
+		terrain = model = null;
 		renderReady = true;
 	}
 	
