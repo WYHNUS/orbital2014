@@ -2,15 +2,16 @@ package edu.nus.comp.dotagridandroid.logic;
 import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.concurrent.*;
-
+import android.content.Context;
+import android.graphics.*;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
-import edu.nus.comp.dotagridandroid.ui.renderers.BufferUtils;
-import edu.nus.comp.dotagridandroid.ui.renderers.Closeable;
+import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import edu.nus.comp.dotagridandroid.ui.event.*;
 
 public class GameState implements Closeable {
 	private int gridWidth, gridHeight;
 	private float[] terrain;
+	private Context context;
 	private boolean initialised = false, initialising = false;
 	private Thread initialisationProcess;
 	private SceneRenderer currentSceneRenderer;
@@ -18,12 +19,15 @@ public class GameState implements Closeable {
 	private Map<String, Object> objs;
 	private Map<String, int[]> objPositions;
 	private Map<String, FloatBuffer[]> objModels;
+	private Map<String, Texture2D> objTextures;
 	// game rule object
 	private GameMaster gameMaster;
 	private String playerCharacter;
 	public GameState() {
 	}
-	
+	public void setContext(Context context) {
+		this.context = context;
+	}
 	public void initialise() {
 		if (initialised || initialising)
 			return;
@@ -36,6 +40,7 @@ public class GameState implements Closeable {
 				objs = new ConcurrentHashMap<>();
 				objPositions = new ConcurrentHashMap<>();
 				objModels = new ConcurrentHashMap<>();
+				objTextures = new ConcurrentHashMap<>();
 				// TODO load characters
 				chars.put("MyHero", new Hero("MyHero", "strength",
 						100,
@@ -85,6 +90,12 @@ public class GameState implements Closeable {
 								0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
 						})
 				});
+				System.gc();
+				Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
+				Texture2D tex = new Texture2D (tempBitmap);
+				tempBitmap.recycle();
+				objTextures.put("MyHeroModel", tex);
+				objTextures.put("GridMapBackground", tex);
 				initialised = true;
 				initialising = false;
 			}
@@ -160,6 +171,10 @@ public class GameState implements Closeable {
 	
 	public FloatBuffer[] getCharacterModel(String name) {
 		return objModels.get(name).clone();
+	}
+	
+	public Texture2D getModelTexture(String name) {
+		return objTextures.get(name);
 	}
 	
 	// interface interactions

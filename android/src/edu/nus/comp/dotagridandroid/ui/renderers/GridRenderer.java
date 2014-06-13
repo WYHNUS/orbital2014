@@ -168,35 +168,36 @@ public class GridRenderer implements Renderer {
 	public void setGameLogicManager(GameLogicManager manager) {
 		this.manager = manager;
 		// TODO DELETE THE BELOW!
-		drawableVertex.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-				-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
-				1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
-				1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
-				-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
-				-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
-				-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
-		}));
-		drawableTextureCoord.put("Cube", BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
-				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-		}));
-		drawableNormal.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-				0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
-				1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
-				0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-				-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
-				0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
-				0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
-		}));
-		drawableTexture.put("Cube", "GridMapBackground");
-		drawableModel.put("Cube", FlatMatrix4x4Multiplication(
-				FlatTranslationMatrix4x4(0, 0, 0),
-				FlatScalingMatrix4x4(2f / columns / 4, 2f / rows / 4, .1f),
-				FlatTranslationMatrix4x4(0, 0, 1)));
+//		drawableVertex.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+//				-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
+//				1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
+//				1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
+//				-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
+//				-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
+//				-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
+//		}));
+//		drawableTextureCoord.put("Cube", BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
+//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+//		}));
+//		drawableNormal.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+//				0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
+//				1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
+//				0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
+//				-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
+//				0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
+//				0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
+//		}));
+//		drawableTexture.put("Cube", "GridMapBackground");
+//		drawableModel.put("Cube", FlatMatrix4x4Multiplication(
+//				FlatTranslationMatrix4x4(0, 0, 0),
+//				FlatScalingMatrix4x4(2f / columns / 4, 2f / rows / 4, .1f),
+//				FlatTranslationMatrix4x4(0, 0, 1)));
+//		drawableVisible.put("Cube", true);
 	}
 	private float bicubic(float f00, float f10, float f01, float f11, float x, float y) {
 		return Vector4CubicInterpolation(new float[]{
@@ -391,7 +392,7 @@ public class GridRenderer implements Renderer {
 				}
 		}
 		// TODO Remove
-		lightSrc.put("1", new float[]{0.1f,0.1f,BOARD_Z_COORD,1,1,1,1,1});
+		lightSrc.put("2", new float[]{0.1f,0.1f,BOARD_Z_COORD,1,1,1,1,1});
 		lightDirty.put("1", true);
 	}
 	private void prepareObjects() {
@@ -412,14 +413,21 @@ public class GridRenderer implements Renderer {
 			drawableTexture.put(name, charModelName);
 			drawableVisible.put(name, true);
 			drawableModel.put(name, FlatMatrix4x4Multiplication(
-					FlatTranslationMatrix4x4(-(.5f + pos[1]) / columns,-(.5f + pos[1]) / rows,0),
-					FlatScalingMatrix4x4(2f / columns, 2f / rows, BOARD_Z_COORD / 4),
-					FlatTranslationMatrix4x4(0,0,-1)));
+					FlatTranslationMatrix4x4(2f / columns * pos[0] - 1,2f / rows * pos[1] - 1,0),
+					FlatScalingMatrix4x4(1f / columns, 1f / rows, .1f),
+					FlatTranslationMatrix4x4(1,1,1)));
 			// configure light
 			final float[] lightPos
 				= FlatMatrix4x4Vector4Multiplication(model,
-						new float[]{-(.5f + pos[1]) / columns,-(.5f + pos[1]) / rows,0,1});
-			lightSrc.put(name, new float[]{});
+						new float[]{
+							(.5f + pos[0]) / columns - 1,
+							(.5f + pos[1]) / rows - 1,
+							1 + terrain[pos[0] + pos[1] * columns],	// 1 should be changed
+							1});
+			lightSrc.put("1", new float[]{
+					lightPos[0], lightPos[1], lightPos[2],
+					1, 1, 1,	// TODO change to hero's color
+					1, 1});
 		}
 		// put all lightSrc dirty
 		for (String name : lightDirty.keySet())
@@ -438,6 +446,7 @@ public class GridRenderer implements Renderer {
 		normalGen = new NormalGenerator(columns, rows, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
 		normalGen.setRenderReady();
 		mapTerrain = mapNormalCoord = mapTextureCoord = null; mapIndex = null;
+		prepareObjects();
 		for (String key : lightSrc.keySet())
 			configureShadow(key);
 	}
@@ -561,6 +570,8 @@ public class GridRenderer implements Renderer {
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
 		glUniform1f(layerCount, lightSrc.size());
 		for (String key : drawableVertex.keySet()) {
+			if (!drawableVisible.get(key))
+				continue;
 			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
 			final FloatBuffer fBuf = drawableVertex.get(key);
 			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
@@ -570,7 +581,8 @@ public class GridRenderer implements Renderer {
 			glEnableVertexAttribArray(vNormal);
 			glEnableVertexAttribArray(textureCoord);
 			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textures.get(drawableTexture.get(key)).getTexture());
+//			glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTexture.get(key)).getTexture());//textures.get(drawableTexture.get(key)).getTexture());
+			glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
 			glUniform1i(textureLocation, 0);
 			glUniform1i(shadowLocation, 1);
 			c = 1;

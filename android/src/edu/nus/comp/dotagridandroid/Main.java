@@ -8,7 +8,7 @@ import android.view.*;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 
 public class Main extends Activity {
-	private GameLogicManager logicManager = new GameLogicManager();
+	private GameLogicManager logicManager = new GameLogicManager(this);
 	public Main() {
 	}
 	@Override

@@ -2,7 +2,7 @@ package edu.nus.comp.dotagridandroid.logic;
 
 import java.util.*;
 import java.util.concurrent.*;
-
+import android.content.Context;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import edu.nus.comp.dotagridandroid.ui.renderers.Closeable;
 
@@ -10,19 +10,21 @@ public class GameLogicManager implements Closeable {
 	private Map<String, Object> gameSetting = new ConcurrentHashMap<>();
 	private Map<String, GameState>gameStates = new ConcurrentHashMap<>();
 	private GameState currentState;
+	private Context context;
 
-	public GameLogicManager() {
+	public GameLogicManager(Context context) {
+		this.context = context;
 		gameSetting.put("DISPLAY_ANTI_ALIAS_SAMPLINGS", 4);
 		GameState current = new GameState();
 		final int width = 20, height = 20;
 		current.setGridHeight(height);
 		current.setGridWidth(width);
-		final float[] terrain = new float[width * height];
-		Random r = new Random();
+//		final float[] terrain = new float[width * height];
+//		Random r = new Random();
 //		for (int i = 0; i < width * height; i++)
 //			terrain[i] = r.nextFloat();
-		for (int i = 0; i < width; i++)
-			terrain[height / 2 * width + i] = r. nextFloat();
+//		for (int i = 0; i < width; i++)
+//			terrain[height / 2 * width + i] = r. nextFloat();
 //		current.setTerrain(new float[]{
 //				0, 0, 0, 0, 0, 0, 0, 0,
 //				0, 0, 0, 0, 0, 0, 0, 0,
@@ -44,8 +46,8 @@ public class GameLogicManager implements Closeable {
 //				1,1,1,
 //				0,0,0
 //		});
-//		current.setTerrain(new float[width * height]);
-		current.setTerrain(terrain);
+		current.setTerrain(new float[width * height]);
+//		current.setTerrain(terrain);
 		gameStates.put("Current", current);	// dummy
 	}
 
@@ -60,7 +62,11 @@ public class GameLogicManager implements Closeable {
 	public void setCurrentGameState(String key) {
 		if (currentState != null && currentState.isInitialised())
 			currentState.close();
-		currentState = gameStates.containsKey(key) ? gameStates.get(key) : null;
+		if (gameStates.containsKey(key)) {
+			currentState = gameStates.get(key);
+			currentState.setContext(context);
+		} else
+			currentState = null;
 	}
 	
 	public GameState getCurrentGameState() {
