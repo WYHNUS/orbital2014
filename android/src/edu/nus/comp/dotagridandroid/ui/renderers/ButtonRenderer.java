@@ -22,6 +22,7 @@ public class ButtonRenderer implements Renderer {
 	private String textureName = "DefaultButton";
 	private GameLogicManager manager;
 	private Map<String, Object> extendedData;
+	private float ratio;
 	public ButtonRenderer () {
 		model = view = projection = IdentityMatrix4x4();
 		buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
@@ -43,6 +44,7 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public void setAspectRatio(float ratio) {
+		this.ratio = ratio;
 	}
 
 	@Override
@@ -134,9 +136,10 @@ public class ButtonRenderer implements Renderer {
 			pressed = true;
 			return hit && e.data.pointerCount == 1;
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
-			return pressed;
+			if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT / ratio && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT * ratio)
+				return pressed;
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
-			if (hit && e.data.pointerCount == 1) {
+			if (hit && e.data.pointerCount == 1 && pressed) {
 				ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_CLICK | ControlEvent.TYPE_INTERPRETED, new EventData(e.data));
 				newevt.extendedType = eventName;
 				newevt.emitter = this;

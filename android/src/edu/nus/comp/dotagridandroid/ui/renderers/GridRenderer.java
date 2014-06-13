@@ -44,6 +44,9 @@ public class GridRenderer implements Renderer {
 	// temporary map characteristics - do not use after init
 	private float[] mapTerrain, mapNormalCoord, mapTextureCoord;
 	private int[] gridLinesIndex, mapIndex;
+	// map buffers
+	private FloatBuffer mapTerrainBuf, mapNormalCoordBuf, mapTextureCoordBuf;
+	// resource - renderers
 	private TextRenderer textRender;
 	private NormalGenerator normalGen;
 	// gesture states
@@ -360,17 +363,28 @@ public class GridRenderer implements Renderer {
 								= 1 - mapNormalCoord[2 * (i * RESOLUTION * arrWidth + s * arrWidth + j * RESOLUTION + t) + 1];
 					}
 		c = 0;
+		mapTerrainBuf = BufferUtils.createFloatBuffer(4 * rows * RESOLUTION * arrWidth * 2);
+		mapNormalCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
+		mapTextureCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
 		mapIndex = new int[rows * RESOLUTION * arrWidth * 2];
 		for (int i = 0; i < rows * RESOLUTION; i++) {
 			if ((i & 0x1) > 0)	// odd
 				for (int j = columns * RESOLUTION; j >= 0; j--) {
-					mapIndex[c++] = i * arrWidth + j;
-					mapIndex[c++] = (i + 1) * arrWidth + j;
+					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
+					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
+					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
+					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
+					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
+					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
 				}
 			else
 				for (int j = 0; j <= columns * RESOLUTION; j++) {
-					mapIndex[c++] = i * arrWidth + j;
-					mapIndex[c++] = (i + 1) * arrWidth + j;
+					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
+					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
+					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
+					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
+					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
+					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
 				}
 		}
 		// TODO Remove
@@ -382,10 +396,6 @@ public class GridRenderer implements Renderer {
 		try {computeTask.join();} catch (InterruptedException e) {e.printStackTrace();}
 		vBufMan.setVertexBuffer("GridPointBuffer", gridLines);
 		vBufMan.setIndexBuffer("GridPointMeshIndex", gridLinesIndex);
-		vBufMan.setVertexBuffer("MapNormalCoord", mapNormalCoord);
-		vBufMan.setVertexBuffer("MapTextureCoord", mapTextureCoord);
-		vBufMan.setVertexBuffer("MapPointBuffer", mapTerrain);
-		vBufMan.setIndexBuffer("MapPointMeshIndex", mapIndex);
 		gridLines = null; gridLinesIndex = null;
 		textRender.setRenderReady();
 		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
@@ -437,10 +447,7 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	private void drawMap() {
-		final int vOffset = vBufMan.getVertexBufferOffset("MapPointBuffer"),
-				vTOffset = vBufMan.getVertexBufferOffset("MapTextureCoord"),
-				vNOffset = vBufMan.getVertexBufferOffset("MapNormalCoord"),
-				iOffset = vBufMan.getIndexBufferOffset("MapPointMeshIndex");
+		// map
 		int vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition"),
 			mModel = glGetUniformLocation(mapProgram.getProgramId(), "model"),
 			mView = glGetUniformLocation(mapProgram.getProgramId(), "view"),
@@ -472,11 +479,11 @@ public class GridRenderer implements Renderer {
 		glUniform1i(shadowLocation, 2);
 		glUniform1f(layerCount, lightSrc.size());
 		// vertex attributes
-		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
-		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
-		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, 0, vNOffset);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
+		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, mapTextureCoordBuf.position(0));
+		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, 0, mapNormalCoordBuf.position(0));
 		glEnableVertexAttribArray(vPosition);
 		glEnableVertexAttribArray(textureCoord);
 		glEnableVertexAttribArray(normalCoord);
@@ -493,13 +500,11 @@ public class GridRenderer implements Renderer {
 			glUniform1f(specular, config[6]);
 			glUniform1f(attenuation, config[7]);
 			glUniform1f(layerFactor, 1f/c);
-			glDrawElements(GL_TRIANGLE_STRIP, rows * NormalGenerator.RESOLUTION * (columns * NormalGenerator.RESOLUTION + 1) * 2, GL_UNSIGNED_SHORT, iOffset);
+			glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * NormalGenerator.RESOLUTION * (columns * NormalGenerator.RESOLUTION + 1) * 2);
 		}
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
 		glDisableVertexAttribArray(normalCoord);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		// drawables
 		glUseProgram(shadowObjProgram.getProgramId());
 		vPosition = glGetAttribLocation(shadowObjProgram.getProgramId(), "vPosition");
@@ -615,17 +620,13 @@ public class GridRenderer implements Renderer {
 			mModel = glGetUniformLocation(shadowProgram.getProgramId(), "model"),
 			mView = glGetUniformLocation(shadowProgram.getProgramId(), "view"),
 			mProjection = glGetUniformLocation(shadowProgram.getProgramId(), "projection");
-		final int
-			vOffset = vBufMan.getVertexBufferOffset("MapPointBuffer"),
-			iOffset = vBufMan.getIndexBufferOffset("MapPointMeshIndex");
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, lightView, 0);
 		glUniformMatrix4fv(mProjection, 1, false, lightProjection, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
 		glEnableVertexAttribArray(vPosition);
-		glDrawElements(GL_TRIANGLE_STRIP, rows * NormalGenerator.RESOLUTION * (columns * NormalGenerator.RESOLUTION + 1) * 2, GL_UNSIGNED_SHORT, iOffset);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * NormalGenerator.RESOLUTION * (columns * NormalGenerator.RESOLUTION + 1) * 2);
 		glDisableVertexAttribArray(vPosition);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);

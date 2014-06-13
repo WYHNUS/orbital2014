@@ -8,7 +8,7 @@ import edu.nus.comp.dotagridandroid.ui.event.*;
 public class GameState implements Closeable {
 	private int gridWidth, gridHeight;
 	private float[] terrain;
-	private boolean initialised;
+	private boolean initialised = false, initialising = false;
 	private Thread initialisationProcess;
 	private SceneRenderer currentSceneRenderer;
 	private Map<String, Character> chars;
@@ -19,13 +19,15 @@ public class GameState implements Closeable {
 	}
 	
 	public void initialise() {
-		if (initialised)
+		if (initialised || initialising)
 			return;
 		initialisationProcess = new Thread() {
 			@Override
 			public void run() {
+				initialising = true;
 				gameMaster = new GameMaster();
 				initialised = true;
+				initialising = false;
 			}
 		};
 		initialisationProcess.start();
