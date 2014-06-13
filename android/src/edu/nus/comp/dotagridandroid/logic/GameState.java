@@ -1,4 +1,6 @@
 package edu.nus.comp.dotagridandroid.logic;
+import java.util.*;
+import java.util.concurrent.*;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.Closeable;
 import edu.nus.comp.dotagridandroid.ui.event.*;
@@ -9,6 +11,8 @@ public class GameState implements Closeable {
 	private boolean initialised;
 	private Thread initialisationProcess;
 	private SceneRenderer currentSceneRenderer;
+	private Map<String, Character> chars;
+	private Map<String, Object> objs;
 	// game rule object
 	private GameMaster gameMaster;
 	public GameState() {
@@ -30,6 +34,16 @@ public class GameState implements Closeable {
 	public boolean isInitialised() {
 		try {initialisationProcess.join();} catch (Exception e) {e.printStackTrace();}
 		return initialised;
+	}
+	
+	public void startTimer() {
+		if (!initialised)
+			return;
+	}
+	
+	public void stopTimer() {
+		if (!initialised)
+			return;
 	}
 	
 	@Override
@@ -85,9 +99,29 @@ public class GameState implements Closeable {
 	public void processEvent(ControlEvent e) {
 		// TODO apply rules
 		switch (e.extendedType) {
-		case "TestButton":
-			System.out.println("Test Button Pressed");
-		case "":
+		// interface
+		case "ChooseGrid":
+			break;
+		case "RequestItemList":
+			break;
+		case "RequestActionList":
+			break;
+		case "InterfaceCancel":
+			notifyAction(e);	// bounce back
+			break;
+		// game action
+		case "GameAction":
+			// send to game master
+			break;
+		case "GamePause":
+			// pause game
+			break;
+		case "GameResume":
+			break;
+		case "GameSave":
+			break;
+		case "GameExit":
+			break;
 		}
 		/// Use Hard code game rules
 	}
