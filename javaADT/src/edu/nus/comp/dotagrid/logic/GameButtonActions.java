@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 
 public class GameButtonActions {
 	public static boolean readyToAct = false;
+	public static boolean readyToMove = false;
+	public static boolean readyToAttack = false;
 	
 	private int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
 	private int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
@@ -32,9 +34,19 @@ public class GameButtonActions {
 		 * 
 		 * actionNumber 6 : zoom out game grid screen by increasing size of a factor of 2
 		 * 
-		 * actionNumber 7 : invoke ready to movement event
+		 * actionNumber 7 : end this round, start next round, reset all AP
 		 * 
-		 * actionNumber 8 : end this round, start next round, reset all AP
+		 * actionNumber 8 : invoke ready to movement event
+		 * 
+		 * actionNumber 9 : invoke ready to attack event
+		 * 
+		 * actionNumber 10 : 
+		 * 
+		 * actionNumber 11 : 
+		 * 
+		 * actionNumber 12 : pop up a item shop menu
+		 * 
+		 * actionNumber 13 : pop up a sell item menu
 		 * 
 		 */
 
@@ -76,6 +88,7 @@ public class GameButtonActions {
 				break;
 				
 			case 9 :
+				readyToAttack();
 				break;
 				
 			case 10 :
@@ -95,6 +108,15 @@ public class GameButtonActions {
 		}
 	}
 	
+
+	private void readyToAttack() {
+		// get ready for player's hero to perform physical attack if player's character is selected
+		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer() == true){
+			readyToAct = true;
+			readyToAttack = true;
+		}
+	}
+
 
 	private void sellItem() {
 		// sell an item from player's bought item list
@@ -129,7 +151,10 @@ public class GameButtonActions {
 
 	private void readyToMove() {
 		// get ready for player's hero to move
-		readyToAct = true;
+		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer() == true){
+			readyToAct = true;
+			readyToMove = true;
+		}
 	}
 
 

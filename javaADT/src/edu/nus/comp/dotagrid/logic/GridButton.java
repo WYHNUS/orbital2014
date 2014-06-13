@@ -18,6 +18,8 @@ public class GridButton {
 	
 	private Character character = null; 
 	
+	
+	// constructor
 	public GridButton(int imageNumber){
 		/* 
 		 * imageNumber :
@@ -25,8 +27,12 @@ public class GridButton {
 		 * 2 : road
 		 * 3 : river
 		 * 4 : tree 
+		 * 5 : fence
 		 * 
-		 * 20 : tower
+		 * 20 : Sentinel Tower 1
+		 * 21 : Sentinel Tower 2
+		 * 22 : Sentinel Tower 3
+		 * 23 : Sentinel Tower 4
 		 * 
 		 * 99 : player's hero spawn point
 		 * 
@@ -39,6 +45,22 @@ public class GridButton {
 		
 		if(imageNumber == 20) {
 			character = new TowerDatabase().towerDatabase[0];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 21) {
+			character = new TowerDatabase().towerDatabase[1];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 22) {
+			character = new TowerDatabase().towerDatabase[2];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 23) {
+			character = new TowerDatabase().towerDatabase[3];
+			isOccupied = true;
 		}
 		
 		if (imageNumber == 99){	
@@ -56,54 +78,96 @@ public class GridButton {
 		
 	}
 	
+	
 	public void actionPerformed(){
 		// highlight the selected position
 		if (GridFrame.getSelectedXPos() != -1 && GridFrame.getSelectedYPos() != -1) {
 			GridFrame.highlightedMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()] = 1;
 		}
 		
-		
-		// execute player's hero's action
+		// execute player's hero's action if previously selected character is controlled by player
 		if (GameButtonActions.readyToAct == true) {
-			// get the AP required for such movement
-			int usedAP = calculateUsedAP(GridFrame.getPreviouslySelectedXPos(), GridFrame.getPreviouslySelectedYPos(), 
-					GridFrame.getSelectedXPos(),GridFrame.getSelectedYPos());
 			
-			// can only move on non-occupied and movable grid
-			if (this.getIsMovable() == true && this.getIsOccupied() == false) {
-				// can only move if character has enough AP
-				if (GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().getCurrentActionPoint() - usedAP >= 0){
-					
-					// perform move action
-					this.resetGridButton(GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()]); 
-					GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()] = new GridButton(1);
-					
-					// reduce hero's AP 
-					character.setCurrentActionPoint(character.getCurrentActionPoint() - usedAP);
-					
+			// check to execute move action
+			if (GameButtonActions.readyToMove == true) {
+				// get the AP required for such movement
+				int usedAP = calculateMovementUsedAP(GridFrame.getPreviouslySelectedXPos(), GridFrame.getPreviouslySelectedYPos(), 
+						GridFrame.getSelectedXPos(),GridFrame.getSelectedYPos());
+				
+				// can only move on non-occupied and movable grid
+				if (this.getIsMovable() == true && this.getIsOccupied() == false) {
+					// can only move if character has enough AP
+					if (GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().getCurrentActionPoint() - usedAP >= 0){
+						
+						// perform move action
+						this.resetGridButton(GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()]); 
+						GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()] = new GridButton(1);
+						
+						// reduce hero's AP 
+						character.setCurrentActionPoint(character.getCurrentActionPoint() - usedAP);
+						
+					}			
 				}			
+				// move action ended
+				GameButtonActions.readyToMove = false;
 			}
 			
-			// move action ended
+			
+			// check to execute attack action
+			if (GameButtonActions.readyToAttack == true) {
+				// get the AP required for one physical attack
+				int usedAP = calculateAttackUsedAP();
+				System.out.println("usedAP = " + usedAP);
+				
+				// can only attack on non-friendly occupied grid
+				if (this.getIsOccupied() == true) {
+					// can only attack if character has enough AP
+					if (GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().getCurrentActionPoint() - usedAP >= 0){
+						
+						// perform attack action
+						this.getCharacter().setCurrentHP(this.getCharacter().getCurrentHP() 
+								- Character.getActualDamage(Screen.user.player.getHero().getTotalPhysicalAttack(), this.getCharacter().getTotalPhysicalDefence()));
+						
+						// reduce hero's AP 
+						GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().setCurrentActionPoint(GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().getCurrentActionPoint() - usedAP);
+					} else {
+						System.out.println("not enough action point for attack!");
+					}
+				}
+				// attack action ended
+				GameButtonActions.readyToAttack = false;
+			}
+			
+			// player's action ended
 			GameButtonActions.readyToAct = false;
 		}
 		
 		
 		// display the selected position's character icon on the characterIcon
 		if (this.isOccupied == true) {
+
+			// highlight attackable grids when attack is invoked 
+			displayMovableGrids();
+			displayAttackableGrids();
 			// change allCharacterInfoGameButtons in game frame to the selected character's info
 			displayCharacterInfoOnGameFrame(this.character);
-			displayMovableGrids();
+			
 		} else {
 			// display world map icon
 			GameFrame.allCharacterInfoGameButtons.get(0).setImage(GridFrame.terrain[GridFrame.map[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()]]);
 			GameFrame.allCharacterInfoGameButtons.get(0).setIsReadyToDrawImage(true);
-		}
+		}	
 	}
 	
 	
 	
-	private int calculateUsedAP(int previouslySelectedXPos, int previouslySelectedYPos, int selectedXPos, int selectedYPos) {
+	private int calculateAttackUsedAP() {
+		// calculate AP used when performing attack action
+		return (int)(GridFrame.gridButtonMap[GridFrame.getPreviouslySelectedXPos()][GridFrame.getPreviouslySelectedYPos()].getCharacter().APUsedWhenAttack());
+	}
+
+
+	private int calculateMovementUsedAP(int previouslySelectedXPos, int previouslySelectedYPos, int selectedXPos, int selectedYPos) {
 		// calculate AP used by moving from (previouslySelectedXPos, previouslySelectedYPos) to (selectedXPos, selectedYPos)
 		int numberOfGridsMoved = Math.abs(previouslySelectedXPos - selectedXPos) + Math.abs(previouslySelectedYPos - selectedYPos);
 		
@@ -127,9 +191,27 @@ public class GridButton {
 				}
 			}
 		}
-		
 	}
 
+	
+	private void displayAttackableGrids() {
+		// highlight attackable grids
+		
+		for(int x=GridFrame.getSelectedXPos()-character.getTotalPhysicalAttackArea(); x<GridFrame.getSelectedXPos()+character.getTotalPhysicalAttackArea()+1; x++){
+			for(int y=GridFrame.getSelectedYPos()-character.getTotalPhysicalAttackArea(); y<GridFrame.getSelectedYPos()+character.getTotalPhysicalAttackArea()+1; y++){
+				// x and y need to be within the grid frame 
+				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
+					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
+						// x + y need to be within the number of attackable grid
+						if (Math.abs(GridFrame.getSelectedXPos() - x) + Math.abs(GridFrame.getSelectedYPos() - y) <= character.getTotalPhysicalAttackArea()) {
+							GridFrame.attackRangeMap[x][y] = 1;
+						}
+					}
+				}
+			}
+		}
+	}
+	
 	
 	private void displayCharacterInfoOnGameFrame(Character character) {		
 		/*

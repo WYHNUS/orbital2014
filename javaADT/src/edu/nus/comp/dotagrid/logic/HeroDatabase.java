@@ -30,7 +30,7 @@ public class HeroDatabase {
 		 * 
 		 * */
 		
-		Hero fur = new Hero("fur", "intelligence", 150, 10, 10, 3, 1.7, 3.52, 20, 100,
+		Hero fur = new Hero("fur", "intelligence", 150, 10, 10, 3, 0.7, 3.52, 20, 100,
 							19, 18, 21, 1.8, 1.9, 2.9, 295);	
 		fur.setCharacterImage("heroes", "fur");
 		heroDatabase[0] = fur;

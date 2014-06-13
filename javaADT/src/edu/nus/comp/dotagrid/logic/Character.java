@@ -31,8 +31,12 @@ public class Character {
 	private int currentActionPoint;
 
 	public static final int MAX_MOVEMENT_SPEED = 522;
-	public static final int MIN_MOVEMENT_CONSUME_AP = 2;
-	public static final int MOVEMENT_CONSUME_AP = 20;
+	public static final double MIN_MOVEMENT_CONSUME_AP = 2.0;
+	public static final double MOVEMENT_CONSUME_AP = 20.0;
+
+	public static final double MAX_PHYSICAL_ATTACK_SPEED = 4.54;
+	public static final double MIN_PHYSICAL_ATTACK_CONSUME_AP = 20.0;
+	public static final double PHYSICAL_ATTACK_CONSUME_AP = 38.0;
 	
 	
 	public Character(String name, int startingHP, int startingMP, 
@@ -95,7 +99,7 @@ public class Character {
 	
 	public void setStartingHP(int startingHP) {
 		// not possible for startingHP to go below 0
-		if (startingHP <= 0) {
+		if (startingHP < 0) {
 			System.out.println("Error: not possible for starting HP to go below 0");
 		} else {
 			this.startingHP = startingHP;
@@ -108,7 +112,7 @@ public class Character {
 	
 	public void setStartingMP(int startingMP) {
 		// not possible for startingMP to go below 0
-		if (startingMP <= 0) {
+		if (startingMP < 0) {
 			System.out.println("Error: not possible for starting MP to go below 0");
 		} else {
 			this.startingMP = startingMP;
@@ -122,7 +126,7 @@ public class Character {
 
 	public void setCurrentHP(int currentHP) {
 		// if currentHP goes below 0, the character is dead
-		if (currentHP <= 0) {
+		if (currentHP < 0) {
 			this.currentHP = 0;
 			this.setAlive(false);
 		} else {
@@ -138,7 +142,7 @@ public class Character {
 
 	public void setCurrentMP(int currentMP) {
 		// minimum currentMP is 0 
-		if (currentMP <= 0) {
+		if (currentMP < 0) {
 			this.currentMP = 0;
 		} else {
 			this.currentMP = currentMP;
@@ -396,6 +400,10 @@ public class Character {
 	public double APUsedInMovingOneGrid(){
 		return MIN_MOVEMENT_CONSUME_AP + (1 - 1.0 * totalMovementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP;
 	}
+	
+	public double APUsedWhenAttack(){
+		return MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - 1.0 * totalPhysicalAttackSpeed / MAX_PHYSICAL_ATTACK_SPEED) * PHYSICAL_ATTACK_CONSUME_AP;
+	}
 
 	
 	// accessor and mutator for other properties
@@ -419,4 +427,7 @@ public class Character {
 		this.isAlive = isAlive;
 	}
 	
+	public static int getActualDamage(double physicalAttack, double physicalDefence){
+		return (int)((1 - physicalDefence * 0.06 / (1 + 0.06 * physicalDefence) ) * physicalAttack);	
+	}
 }

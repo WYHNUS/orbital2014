@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -51,6 +52,7 @@ public class GridFrame {
 	
 	public static int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
 	public static int[][] highlightedMap = new int[ROW_NUMBER][COLUMN_NUMBER];
+	public static int[][] attackRangeMap = new int[ROW_NUMBER][COLUMN_NUMBER];
 	
 	public static GridButton[][] gridButtonMap = new GridButton[ROW_NUMBER][COLUMN_NUMBER];
 	
@@ -138,22 +140,29 @@ public class GridFrame {
 		
 		// prepare to draw transparent grids
 		Graphics2D g2d = (Graphics2D) g;
-		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.5f); 
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f); 
 		g2d.setComposite(ac);
-		g2d.setColor(Color.RED);
 		
 		for (int x=0; x<gridColNumberInScreen; x++) {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
 				
+				// condition to highlight a button within attackable range
+				if (attackRangeMap[x + currentGridXPos][y + currentGridYPos] == 1){
+					g2d.setColor(Color.BLUE);
+					g2d.setStroke(new BasicStroke(10));
+					g2d.drawRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+							(int) gridHeight);			
+				}				
+							
 				// condition to highlight a button
 				if (highlightedMap[x + currentGridXPos][y + currentGridYPos] == 1){
-					
+					g2d.setColor(Color.RED);
 					g2d.fillRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
 							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
-							(int) gridHeight);
-					
+							(int) gridHeight);	
 				}
-
+				
 			}
 		}
 		
@@ -171,7 +180,6 @@ public class GridFrame {
 		
 		displayGridOnScreen(g);
 		displayGridButtonsOnScreen(g);
-		
 		displayHighlightGrid(g);		
 	}
 	
@@ -209,6 +217,7 @@ public class GridFrame {
 		for (int x=0; x<ROW_NUMBER; x++) {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 
 				highlightedMap[x][y] = -1;
+				attackRangeMap[x][y] = -1;
 			}
 		}	
 				

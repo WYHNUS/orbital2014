@@ -50,7 +50,7 @@ public class Hero extends Character{
 	public static final double INTELLIGENCE_ADD_MP_PER_ROUND = 4.0;
 	public static final double AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 1 / 7.0;
 	
-	public static final double AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO = 1.0;
+	public static final double AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO = 0.01;
 	public static final double MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO = 1.0;
 
 	
@@ -221,7 +221,7 @@ public class Hero extends Character{
 			mainAttribute.equalsIgnoreCase("agility") || 
 			mainAttribute.equalsIgnoreCase("intelligence")) {
 			
-			this.mainAttribute = mainAttribute;
+			this.mainAttribute = mainAttribute.toLowerCase();
 		} else {
 			System.out.println("Invalid Main Attribute Type!");
 		}		

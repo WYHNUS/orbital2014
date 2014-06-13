@@ -48,9 +48,17 @@ public class ItemShop implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		int itemNumber = Integer.parseInt(e.getActionCommand());
 		
+		boolean hasVacancy = false;
+		
 		// condition for buying a item : player's item list still has vacancy
-		if (Screen.user.player.getHero().items[GameFrame.MAX_ITEM_NUMBER-1] == null){
-			
+		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
+			if (Screen.user.player.getHero().items[i] == null) {
+				hasVacancy = true;
+				break;
+			}
+		}
+		
+		if (hasVacancy == true){			
 			// condition for buying a item : player's hero has enough money
 			if (Screen.user.player.getMoney() - itemDtabase.itemDatabase[itemNumber].getCost() >= 0){
 				
