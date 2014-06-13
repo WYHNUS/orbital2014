@@ -4,6 +4,7 @@ public class Player {
 	private Hero hero;
 	private int money;
 	
+	// constructor
 	public Player(int money, Hero hero){
 		this.hero = new Hero(hero);
 		this.money = money;

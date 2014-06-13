@@ -97,8 +97,8 @@ public class GameButtonActions {
 	
 
 	private void sellItem() {
-		// TODO Auto-generated method stub
-		
+		// sell an item from player's bought item list
+		new SellItem();
 	}
 
 

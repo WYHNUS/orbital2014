@@ -181,18 +181,22 @@ public class GridFrame {
 		setSelectedXCoodinatePos(handXPos);
 		setSelectedYCoodinatePos(handYPos);
 		
+		boolean isWithinGridFrame = (handXPos > GameFrame.FRAME_BORDER_WIDTH && handXPos < (GameFrame.FRAME_BORDER_WIDTH + gameFrameWidth)
+				&& handYPos > GameFrame.FRAME_BORDER_HEIGHT && handYPos < (GameFrame.FRAME_BORDER_HEIGHT + gameFrameHeight));
+		
 		// check if the selected position is within grid frame
-		if (handXPos > GameFrame.FRAME_BORDER_WIDTH && handXPos < (GameFrame.FRAME_BORDER_WIDTH + gameFrameWidth)
-				&& handYPos > GameFrame.FRAME_BORDER_HEIGHT && handYPos < (GameFrame.FRAME_BORDER_HEIGHT + gameFrameHeight)) {
+		if (isWithinGridFrame || (ItemShop.shouldUpdateItemInFo == true)) {	
 			
 			// reset all character info!
 			resetAllCharacterInfo();			
 			
-			// set the coordinates for the selected position
-			previouslySelectedXPos = selectedXPos;
-			previouslySelectedYPos = selectedYPos;			
-			selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);
-			selectedYPos = currentGridYPos + (int) ((handYPos - GameFrame.FRAME_BORDER_HEIGHT) / gridHeight);
+			if (isWithinGridFrame) {
+				// set the coordinates for the selected position
+				previouslySelectedXPos = selectedXPos;
+				previouslySelectedYPos = selectedYPos;			
+				selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);
+				selectedYPos = currentGridYPos + (int) ((handYPos - GameFrame.FRAME_BORDER_HEIGHT) / gridHeight);
+			}
 			
 			gridButtonMap[selectedXPos][selectedYPos].actionPerformed();
 		}
@@ -200,7 +204,7 @@ public class GridFrame {
 	}
 	
 	
-	private static void resetAllCharacterInfo() {
+	public static void resetAllCharacterInfo() {
 		// clear all previously highlighted grids and prepare for new round of highlighting XD
 		for (int x=0; x<ROW_NUMBER; x++) {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 

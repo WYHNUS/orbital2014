@@ -108,7 +108,7 @@ public class GameButton{
 	
 	
 	public void actionPerformed(int actionNumber) {
-		System.out.println(actionNumber);
+		System.out.println(actionNumber + " game button action is invoked!");
 		new GameButtonActions(actionNumber);
 	}
 	

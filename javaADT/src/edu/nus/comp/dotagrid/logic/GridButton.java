@@ -26,6 +26,8 @@ public class GridButton {
 		 * 3 : river
 		 * 4 : tree 
 		 * 
+		 * 20 : tower
+		 * 
 		 * 99 : player's hero spawn point
 		 * 
 		 */
@@ -33,6 +35,10 @@ public class GridButton {
 
 		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 99) {
 			this.setMovable(true);
+		}
+		
+		if(imageNumber == 20) {
+			character = new TowerDatabase().towerDatabase[0];
 		}
 		
 		if (imageNumber == 99){	
@@ -56,6 +62,8 @@ public class GridButton {
 			GridFrame.highlightedMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()] = 1;
 		}
 		
+		
+		// execute player's hero's action
 		if (GameButtonActions.readyToAct == true) {
 			// get the AP required for such movement
 			int usedAP = calculateUsedAP(GridFrame.getPreviouslySelectedXPos(), GridFrame.getPreviouslySelectedYPos(), 
@@ -137,7 +145,7 @@ public class GridButton {
 		 * 6: characterIntelligence
 		 
 		 * 7: characterAttack
-		 * 8: characterDefense
+		 * 8: characterDefence
 		 
 		 * 9: characterLevel
 		 * 10: characterExperience
@@ -164,53 +172,79 @@ public class GridButton {
 		GameFrame.allCharacterInfoGameButtons.get(2).setString("HP : " + character.getCurrentHP() + " / " + character.getmaxHP());
 		GameFrame.allCharacterInfoGameButtons.get(3).setString("MP : " + character.getCurrentMP() + " / " + character.getmaxMP());
 
-		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + character.getTotalPhysicalAttack());
-		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", character.getTotalPhysicalDefense()));
+		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + character.getStartingPhysicalAttack());
+		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", character.getTotalPhysicalDefence()));
 		
 		GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getActionPoint());
 		
 		// properties that only hero possess
-		if (this.isHero == true) {
-			GameFrame.allCharacterInfoGameButtons.get(4).setString("Strength : " +((Hero)character).getTotalStrength());
-			GameFrame.allCharacterInfoGameButtons.get(5).setString("Agility : " + ((Hero)character).getTotalAgility());
-			GameFrame.allCharacterInfoGameButtons.get(6).setString("Intelligence : " + ((Hero)character).getTotalIntelligence());
-			
-			GameFrame.allCharacterInfoGameButtons.get(9).setString("Level : " + ((Hero)character).getLevel());
-			GameFrame.allCharacterInfoGameButtons.get(10).setString("Exp : " + ((Hero)character).getExperience());
-			
-			
-			// item list
-			GameFrame.allCharacterInfoGameButtons.get(11).setIsReadyToDrawImage(true);
-			GameFrame.allCharacterInfoGameButtons.get(12).setIsReadyToDrawImage(true);
-			GameFrame.allCharacterInfoGameButtons.get(13).setIsReadyToDrawImage(true);
-			GameFrame.allCharacterInfoGameButtons.get(14).setIsReadyToDrawImage(true);
-			GameFrame.allCharacterInfoGameButtons.get(15).setIsReadyToDrawImage(true);
-			GameFrame.allCharacterInfoGameButtons.get(16).setIsReadyToDrawImage(true);
-			
-			/*
-			// skill list
-			GameFrame.allCharacterInfoGameButtons.get(17).
-			GameFrame.allCharacterInfoGameButtons.get(18).
-			GameFrame.allCharacterInfoGameButtons.get(19).
-			GameFrame.allCharacterInfoGameButtons.get(20).
-			GameFrame.allCharacterInfoGameButtons.get(21).
-			GameFrame.allCharacterInfoGameButtons.get(22).
-			GameFrame.allCharacterInfoGameButtons.get(23).
-			GameFrame.allCharacterInfoGameButtons.get(24).
-			*/
-			
-			// KDA
-			GameFrame.allCharacterInfoGameButtons.get(26).setString("Kill : " +((Hero)character).getKill());
-			GameFrame.allCharacterInfoGameButtons.get(27).setString("Death : " + ((Hero)character).getDeath());
-			GameFrame.allCharacterInfoGameButtons.get(28).setString("Assist : " + ((Hero)character).getAssist());
-			
-			// money
-			GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
+		if (this.isHero == true) {		
+			// check if the hero is owned by the player
+			if (this.isPlayer == true) {
+				Hero tempHeroPlayer = new Hero(Screen.user.player.getHero());
+				updateInfo(tempHeroPlayer);
+			} else {
+				Hero tempHeroNonPlayer = new Hero((Hero)character);
+				updateInfo(tempHeroNonPlayer);
+			}
 		}
 
 	}
 	
 	
+	private void updateInfo(Hero hero) {
+
+		// update character's information
+		hero.updateHeroAttributeInfo();
+		
+		GameFrame.allCharacterInfoGameButtons.get(2).setString("HP : " + hero.getCurrentHP() + " / " + hero.getmaxHP());
+		GameFrame.allCharacterInfoGameButtons.get(3).setString("MP : " + hero.getCurrentMP() + " / " + hero.getmaxMP());
+		
+		GameFrame.allCharacterInfoGameButtons.get(4).setString("Strength : " + hero.getStartingStrength()
+				+ " + " + hero.getTotalItemAddStrength());
+		GameFrame.allCharacterInfoGameButtons.get(5).setString("Agility : " + hero.getStartingAgility()
+				+ " + " + hero.getTotalItemAddAgility());
+		GameFrame.allCharacterInfoGameButtons.get(6).setString("Intelligence : " + hero.getStartingIntelligence()
+				+ " + " + hero.getTotalItemAddIntelligence());
+		
+		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + hero.getStartingPhysicalAttack() 
+				+ " + " + hero.getTotalItemAddPhysicalAttack());
+		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", hero.getStartingPhysicalDefence())
+				+ " + " + String.format("%.2f", hero.getTotalItemAddPhysicalDefence()));
+		
+		GameFrame.allCharacterInfoGameButtons.get(9).setString("Level : " + hero.getLevel());
+		GameFrame.allCharacterInfoGameButtons.get(10).setString("Exp : " + hero.getExperience());
+		
+		
+		// item list
+		GameFrame.allCharacterInfoGameButtons.get(11).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(12).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(13).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(14).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(15).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(16).setIsReadyToDrawImage(true);
+		
+		/*
+		// skill list
+		GameFrame.allCharacterInfoGameButtons.get(17).
+		GameFrame.allCharacterInfoGameButtons.get(18).
+		GameFrame.allCharacterInfoGameButtons.get(19).
+		GameFrame.allCharacterInfoGameButtons.get(20).
+		GameFrame.allCharacterInfoGameButtons.get(21).
+		GameFrame.allCharacterInfoGameButtons.get(22).
+		GameFrame.allCharacterInfoGameButtons.get(23).
+		GameFrame.allCharacterInfoGameButtons.get(24).
+		*/
+		
+		// KDA
+		GameFrame.allCharacterInfoGameButtons.get(26).setString("Kill : " + hero.getKill());
+		GameFrame.allCharacterInfoGameButtons.get(27).setString("Death : " + hero.getDeath());
+		GameFrame.allCharacterInfoGameButtons.get(28).setString("Assist : " + hero.getAssist());
+		
+		// money (remark: player should only be able to see his own amount of money)
+		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
+	}
+
 	private void resetGridButton(GridButton resultGridButton){
 		this.setMovable(resultGridButton.getIsMovable());
 		this.setIsOccupied(resultGridButton.getIsOccupied());
