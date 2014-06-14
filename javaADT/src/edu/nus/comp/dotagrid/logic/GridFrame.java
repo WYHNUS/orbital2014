@@ -198,7 +198,7 @@ public class GridFrame {
 			// reset all character info!
 			resetAllCharacterInfo();			
 			
-			if (isWithinGridFrame) {
+			if (ItemShop.itemshopPopup == false && SellItem.sellItemPopup == false) {
 				// set the coordinates for the selected position
 				previouslySelectedXPos = selectedXPos;
 				previouslySelectedYPos = selectedYPos;			

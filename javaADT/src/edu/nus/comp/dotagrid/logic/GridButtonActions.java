@@ -1,6 +1,8 @@
 package edu.nus.comp.dotagrid.logic;
 
+
 public class GridButtonActions {
+	
 	private int toXPos;
 	private int toYPos;
 	private int fromXPos;
@@ -47,9 +49,12 @@ public class GridButtonActions {
 			// if hero is player, change player's position
 			Screen.user.player.setXPos(toXPos);
 			Screen.user.player.setYPos(toYPos);
+
+			// player's action ended
+			GameButtonActions.readyToAct = false;
 			
-			// reselect hero position
-			updateWhenNoActionInvoked();
+			// reselect player's hero position
+			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
 		
 		
@@ -57,13 +62,14 @@ public class GridButtonActions {
 		if (GameButtonActions.readyToAttack == true) {
 			// attack
 			new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);
+
+			// player's action ended
+			GameButtonActions.readyToAct = false;
 			
 			// select position which has been attacked
-			updateWhenNoActionInvoked();
+			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
 		
-		// player's action ended
-		GameButtonActions.readyToAct = false;
 	}
 	
 
@@ -153,15 +159,9 @@ public class GridButtonActions {
 		GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getMaxActionPoint());
 		
 		// properties that only hero possess
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {		
-			// check if the hero is owned by the player
-			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
-				Hero tempHeroPlayer = new Hero(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()));
-				updateInfo(tempHeroPlayer);
-			} else {
-				Hero tempHeroNonPlayer = new Hero((Hero)character);
-				updateInfo(tempHeroNonPlayer);
-			}
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {
+			Hero tempHero = new Hero(((Hero)character));
+			updateInfo(tempHero);
 		}
 
 	}

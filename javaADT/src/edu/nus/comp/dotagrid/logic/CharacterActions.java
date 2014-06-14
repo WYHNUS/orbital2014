@@ -56,13 +56,17 @@ public class CharacterActions {
 				
 				// check if the attacked target is dead
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
-
 					// if the attacker is hero, add bounty money into hero's account
+					System.out.println("before attack = " + ((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney());
+					System.out.println("bounty money = " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
 					if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
 						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
 								((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
 								+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
 					}
+					
+					System.out.println("after attack = " + ((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney());
+					
 					
 					// character is dead, reset the grid which the dead character was at 
 					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
@@ -119,6 +123,9 @@ public class CharacterActions {
 		// calculate AP used by moving from (previouslySelectedXPos, previouslySelectedYPos) to (selectedXPos, selectedYPos)
 		int numberOfGridsMoved = Math.abs(previouslySelectedXPos - selectedXPos) + Math.abs(previouslySelectedYPos - selectedYPos);
 		
+		System.out.println("fromXPos = " + fromXPos);
+		System.out.println("fromYPos = " + fromYPos);
+
 		return (int)(numberOfGridsMoved * GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedInMovingOneGrid());
 	}
 

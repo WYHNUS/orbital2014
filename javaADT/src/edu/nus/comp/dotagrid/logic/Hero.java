@@ -693,6 +693,7 @@ public class Hero extends Character{
 		((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).setMoney(
 				(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney() 
 						+ ((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[itemNumber].getSellPrice())); 
+		
 		// delete the item
 		this.items[itemNumber] = null;
 		GameFrame.allCharacterInfoGameButtons.get(11 + itemNumber).setImage(null);

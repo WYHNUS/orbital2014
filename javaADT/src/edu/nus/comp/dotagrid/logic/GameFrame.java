@@ -115,10 +115,6 @@ public class GameFrame{
 	
 	
 	public void updateGameFrame(Graphics g){
-		// reset money for player
-		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + 
-				((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney());
-		
 		// draw game frame
 		displayAllButtons(g);
 		

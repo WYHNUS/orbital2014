@@ -92,6 +92,8 @@ public class GridButton {
 		
 		// execute player's hero's action if previously selected character is controlled by player
 		if (GameButtonActions.readyToAct == true) {
+
+			System.out.println("invoke test!");
 			gridButtonActions.updateWhenSomeActionsInvoked();
 		} else {
 			gridButtonActions.updateWhenNoActionInvoked();

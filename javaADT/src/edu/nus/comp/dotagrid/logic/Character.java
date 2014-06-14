@@ -47,6 +47,7 @@ public class Character {
 	{
 		
 		this.setName(name);
+		this.setBountyMoney(bountyMoney);
 		
 		this.setStartingHP(startingHP);
 		this.setStartingMP(startingMP);
