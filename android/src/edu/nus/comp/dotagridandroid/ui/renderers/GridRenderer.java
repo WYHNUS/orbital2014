@@ -51,7 +51,7 @@ public class GridRenderer implements Renderer {
 	private TextRenderer textRender;
 	private NormalGenerator normalGen;
 	// gesture states
-	private boolean hasRay = false;
+	private boolean hasSelection = false;
 	private boolean processingTranslation = false, processingPerspective = false;
 	private boolean mvpDirty = true;
 	// translation
@@ -572,8 +572,8 @@ public class GridRenderer implements Renderer {
 		}
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
-	private void drawRay() {
-		if (!hasRay)
+	private void drawSelection() {
+		if (!hasSelection)
 			return;
 		float[] mat = FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(2f/columns * orgGridIndex[0]-1, 2f/rows * orgGridIndex[1]-1, 1));
 		mat = FlatMatrix4x4Multiplication(mat, selectGridMat);
@@ -600,7 +600,7 @@ public class GridRenderer implements Renderer {
 	public void draw() {
 		drawMap();
 		drawGrid();
-		drawRay();
+		drawSelection();
 		textRender.draw();
 	}
 	// shadow generation
@@ -697,7 +697,9 @@ public class GridRenderer implements Renderer {
 	@Override
 	public boolean passEvent(ControlEvent e) {
 		// Remember: normalise
-		if (e.type == ControlEvent.TYPE_DOWN) {
+		if ((e.type & ControlEvent.TYPE_INTERPRETED) > 0) {
+			return false;
+		} else if (e.type == ControlEvent.TYPE_DOWN) {
 			// unknown just yet
 			return true;
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
@@ -770,7 +772,7 @@ public class GridRenderer implements Renderer {
 		mapRotation = 0;
 		calculateModel();
 		calculateView();
-		hasRay = false;
+		hasSelection = false;
 		responder.updateGraphics();
 	}
 	private void onSingleTap(ControlEvent e) {
@@ -892,11 +894,17 @@ public class GridRenderer implements Renderer {
 				(int) Math.floor(Math.scalb(orgGridPoint[0] + 1, -1) * columns),
 				(int) Math.floor(Math.scalb(orgGridPoint[1] + 1, -1) * rows)
 				};
-		hasRay = (orgGridIndex[0] >= 0 && orgGridIndex[0] < columns && orgGridIndex[1] >= 0 && orgGridIndex[1] < rows);
+		hasSelection = (orgGridIndex[0] >= 0 && orgGridIndex[0] < columns && orgGridIndex[1] >= 0 && orgGridIndex[1] < rows);
 		// TODO: ExtensionEngine
-		edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI.testJS();
-		System.out.println("EE called");
-//		configureShadow("1");
+//		edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI.testJS();
+//		System.out.println("EE called");
+		// TODO Move hero
+		if (hasSelection) {
+			ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_INTERPRETED, e.data);
+			newevt.extendedType = "ChooseGrid";
+			newevt.data.extendedData.put("Coordinate", orgGridIndex.clone());
+			manager.processEvent(newevt);
+		}
 		responder.updateGraphics();
 	}
 	@Override

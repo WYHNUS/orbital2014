@@ -1,5 +1,5 @@
 package edu.nus.comp.dotagridandroid.ui.event;
-import java.util.Map;
+import java.util.*;
 public class EventData {
 	public EventData(){}
 	public EventData(int pointerCount) {
@@ -16,12 +16,13 @@ public class EventData {
 		startTime = data.startTime;
 		eventTime = data.eventTime;
 		wasMultiTouch = data.wasMultiTouch;
-		extendedData = data.extendedData;
+		extendedData = new HashMap<>();
+		extendedData.putAll(data.extendedData);
 	}
 	public int pointerCount = 0;
 	public float[] x = null, y = null;
 	public float deltaX = 0, deltaY = 0;
 	public long startTime = 0, eventTime = 0;
 	public boolean wasMultiTouch = false;
-	public Map<String, Object> extendedData = null;
+	public Map<String, Object> extendedData = new HashMap<>();
 }

@@ -9,7 +9,10 @@ public class ControlEvent {
 	public Renderer emitter;
 	public ControlEvent(int type, EventData data) {
 		this.type = type;
-		this.data = data;
+		if (data == null)
+			this.data = new EventData();
+		else
+			this.data = new EventData(data);
 	}
 	public ControlEvent(ControlEvent e) {
 		type = e.type;

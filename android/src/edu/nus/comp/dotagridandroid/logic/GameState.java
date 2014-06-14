@@ -214,6 +214,7 @@ public class GameState implements Closeable {
 		switch (e.extendedType) {
 		// interface
 		case "ChooseGrid":
+			currentSceneRenderer.passEvent(e);
 			break;
 		case "RequestItemList":
 			break;
