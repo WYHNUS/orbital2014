@@ -1,12 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.JOptionPane;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class GameButtonActions {
 	public static boolean readyToAct = false;
@@ -107,15 +102,6 @@ public class GameButtonActions {
 								
 		}
 	}
-	
-
-	private void readyToAttack() {
-		// get ready for player's hero to perform physical attack if player's character is selected
-		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer() == true){
-			readyToAct = true;
-			readyToAttack = true;
-		}
-	}
 
 
 	private void sellItem() {
@@ -146,6 +132,18 @@ public class GameButtonActions {
 		// reselect the grid
 		GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		System.out.println("End Round!");
+	}	
+
+	
+	private void readyToAttack() {
+		// get ready for player's hero to perform physical attack if player's character is selected
+		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer() == true){
+			readyToAct = true;
+			readyToAttack = true;
+		} else {
+			String str = "You need to select your own hero to execute this action!";
+			JOptionPane.showMessageDialog(null, str);
+		}
 	}
 
 
@@ -154,6 +152,9 @@ public class GameButtonActions {
 		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer() == true){
 			readyToAct = true;
 			readyToMove = true;
+		} else {
+			String str = "You need to select your own hero to execute this action!";
+			JOptionPane.showMessageDialog(null, str);
 		}
 	}
 
