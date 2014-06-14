@@ -15,8 +15,10 @@ public class ScrollRenderer implements Renderer {
 	private float ratio;
 	private GraphicsResponder responder;
 	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
-	private float scrollPositionX = 0, scrollPositionY = 0, scrollMaxX, scrollMaxY, processingScrollPositionX, processingScrollPositionY;
+	private float scrollPositionX = 0, scrollPositionY = 0, processingScrollPositionX, processingScrollPositionY;
+	private float scrollMinX = 0, scrollMinY = 0, scrollMaxX = 0, scrollMaxY = 0;
 
+	private List<String> renderingOrder = new ArrayList<>();
 	private Map<String, Renderer> renderers = new HashMap<>();
 	private Map<String, float[]> rendererTransforms = new HashMap<>();
 	private boolean captured;
@@ -62,24 +64,35 @@ public class ScrollRenderer implements Renderer {
 			this.projection = projection;
 	}
 	
-	public void setScroll (Float scrollMaxX, Float scrollMaxY) {
+	public void setScrollLimit (Float scrollMinX, Float scrollMinY, Float scrollMaxX, Float scrollMaxY) {
+		if (scrollMinX != null)
+			this.scrollMinX = scrollMinX;
+		if (scrollMinY != null)
+			this.scrollMinY = scrollMinY;
 		if (scrollMaxX != null)
 			this.scrollMaxX = scrollMaxX;
 		if (scrollMaxY != null)
 			this.scrollMaxY = scrollMaxY;
 	}
 	
-	public void setScrollMax (float scrollMaxX, float scrollMaxY) {
-		this.scrollMaxX = scrollMaxX;
-		this.scrollMaxY = scrollMaxY;
+	public void setScrollPosition(Float scrollPositionX, Float scrollPositionY) {
+		if (scrollPositionX != null)
+			this.scrollPositionX = scrollPositionX;
+		if (scrollPositionY != null)
+			this.scrollPositionY = scrollPositionY;
 	}
 	
 	public void setRenderer(String name, Renderer r, float[] transform) {
-		if (r != null)
+		if (r != null) {
+			if (!renderers.containsKey(name))
+				renderingOrder.add(name);
 			renderers.put(name, r);
-		else if (renderers.containsKey(name))
+		}
+		else if (renderers.containsKey(name)) {
 			renderers.remove(name);
-		if (transform != null)
+			renderingOrder.remove(name);
+		}
+		if (name != null && transform != null)
 			rendererTransforms.put(name, transform);
 	}
 
@@ -110,8 +123,10 @@ public class ScrollRenderer implements Renderer {
 
 	@Override
 	public void draw() {
-		for (Renderer r : renderers.values())
-			r.draw();
+		for (String name : renderingOrder)
+			renderers.get(name).draw();
+//		for (Renderer r : renderers.values())
+//			r.draw();
 	}
 
 	@Override
@@ -127,20 +142,19 @@ public class ScrollRenderer implements Renderer {
 					return true;
 			}
 			return e.data.pointerCount == 1 && position[0] >= -1 && position[0] <= 1 && position[1] >= -1 && position[1] <= 1;
-		}
-		if (e.type == ControlEvent.TYPE_DRAG) {
+		} else if (e.type == ControlEvent.TYPE_DRAG) {
 			if (captured) {
 				processing = true;
 				if (scrollPositionX + displacement[0] > scrollMaxX)
 					processingScrollPositionX = scrollMaxX;
-				else if (scrollPositionX + displacement[0] < 0)
-					processingScrollPositionX = 0;
+				else if (scrollPositionX + displacement[0] < scrollMinX)
+					processingScrollPositionX = scrollMinX;
 				else
 					processingScrollPositionX = scrollPositionX + displacement[0];
 				if (scrollPositionY + displacement[1] > scrollMaxY)
 					processingScrollPositionY = scrollMaxY;
-				else if (scrollPositionY + displacement[1] < 0)
-					processingScrollPositionY = 0;
+				else if (scrollPositionY + displacement[1] < scrollMinY)
+					processingScrollPositionY = scrollMinY;
 				else
 					processingScrollPositionY = scrollPositionY + displacement[1];
 				responder.updateGraphics();
@@ -161,6 +175,9 @@ public class ScrollRenderer implements Renderer {
 			return true;
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
 			if (captured) {
+				scrollPositionX = processingScrollPositionX;
+				scrollPositionY = processingScrollPositionY;
+				processing = false;
 			} else if (eventCapturer == null || !eventCapturer.passEvent(e)) {
 				Renderer prevEventCapturer = eventCapturer;
 				for (Renderer r : renderers.values()) {
@@ -180,6 +197,8 @@ public class ScrollRenderer implements Renderer {
 
 	@Override
 	public void close() {
+		for (Renderer r : renderers.values())
+			r.close();
 	}
 
 }

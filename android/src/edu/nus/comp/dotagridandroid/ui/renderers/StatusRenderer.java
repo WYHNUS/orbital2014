@@ -77,8 +77,17 @@ public class StatusRenderer implements Renderer {
 	@Override
 	public void setRenderReady() {
 		// control layout
+		TextRenderer text = new TextRenderer();
+		text.setAspectRatio(ratio);
+		text.setVertexBufferManager(vBufMan);
+		text.setGraphicsResponder(responder);
+		text.setTexture2D(textures);
+		text.setGameLogicManager(manager);
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setText("Attack");
+		text.setTextColour(new float[]{1,0,0,1});
 		ButtonRenderer button = new ButtonRenderer();
-//		button.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)), null, null);
 		button.setVertexBufferManager(vBufMan);
 		button.setAspectRatio(ratio);
 		button.setGraphicsResponder(responder);
@@ -88,8 +97,9 @@ public class StatusRenderer implements Renderer {
 		button.setRenderReady();
 		ScrollRenderer scroll = (ScrollRenderer) controls.get("Scroll");
 		scroll.setMVP(model, null, null);
-		scroll.setScrollMax(2, 2);
+		scroll.setScrollLimit(-2f, 0f, 2f, 0f);
 		scroll.setRenderer("Button", button, FlatScalingMatrix4x4(.25f, .25f, 1));
+		scroll.setRenderer("Text", text, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.2f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		responder.updateGraphics();
 	}
 	
@@ -187,6 +197,8 @@ public class StatusRenderer implements Renderer {
 	@Override
 	public void close() {
 		frameProgram.close();
+		for (Renderer r : controls.values())
+			r.close();
 	}
 
 }

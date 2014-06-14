@@ -124,7 +124,7 @@ public class GameScene implements SceneRenderer {
 	public void close() {
 		if (grid != null)
 			grid.close();
-		if (grid != null)
+		if (status != null)
 			status.close();
 		if (manager != null)
 			manager.getCurrentGameState().close();

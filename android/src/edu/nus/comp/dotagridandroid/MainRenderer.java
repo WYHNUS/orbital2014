@@ -23,6 +23,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	private int width, height;
 	private Map<String, Texture2D> texture2d = new HashMap<>();
 	private GameLogicManager manager;
+	private boolean closed;
 	public MainRenderer (Context context, MainSurfaceView view) {
 		this.manager = ((Main) context).getGameLogicManager();
 		this.context = context;
@@ -31,7 +32,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
-		if (r.getReadyState()) {
+		if (!closed && r.getReadyState()) {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glViewport(0, 0, width, height);
 //			glClearColor(.4f, .6f, .9f, 1);
@@ -44,7 +45,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-		close();
+//		close();
 		r = new MainSceneRenderer();
 		System.gc();
 		this.width = width;
@@ -75,6 +76,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		r.setGraphicsResponder(new GraphicsResponder());
 		r.setAspectRatio(ratio);
 		r.setRenderReady();
+		closed = false;
 	}
 
 	@Override
@@ -105,6 +107,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void close() {
+		this.closed = true;
 		if (r != null)
 			r.close();
 		if (vBufMan != null)

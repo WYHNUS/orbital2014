@@ -34,7 +34,6 @@ public class TextRenderer implements Renderer {
 			this.view = view;
 		if (projection != null)
 			this.projection = projection;
-		responder.updateGraphics();
 	}
 
 	@Override

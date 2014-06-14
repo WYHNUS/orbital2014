@@ -133,6 +133,8 @@ public class GameState implements Closeable {
 		objs = null;
 		objPositions = null;
 		objModels = null;
+		for (Texture2D tex : objTextures.values())
+			tex.close();
 		objTextures = null;
 		initialised = false;
 	}
@@ -182,11 +184,11 @@ public class GameState implements Closeable {
 	}
 	
 	public Map<String, Character> getCharacters() {
-		return Collections.unmodifiableMap(chars);
+		return isInitialised() ? Collections.unmodifiableMap(chars) : null;
 	}
 	
 	public Map<String, int[]> getCharacterPositions() {
-		return Collections.unmodifiableMap(objPositions);
+		return isInitialised() ? Collections.unmodifiableMap(objPositions) : null;
 	}
 	
 	public void setCharacterPositions(String name, int[] position) {
@@ -195,11 +197,11 @@ public class GameState implements Closeable {
 	}
 	
 	public FloatBuffer[] getCharacterModel(String name) {
-		return objModels.get(name).clone();
+		return isInitialised() ? objModels.get(name).clone() : null;
 	}
 	
 	public Texture2D getModelTexture(String name) {
-		return objTextures.get(name);
+		return isInitialised() ? objTextures.get(name) : null;
 	}
 	
 	// interface interactions
