@@ -21,12 +21,15 @@ public class StatusRenderer implements Renderer {
 	// resources
 	private GenericProgram frameProgram;
 	private Renderer eventCapturer;
+	private final boolean landscape;
 	
-	public StatusRenderer (GameState state) {
+	public StatusRenderer (GameState state, boolean landscape) {
+		this.landscape = landscape;
 		this.state = state;
 		frameProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
-		Renderer r = new ButtonRenderer();
-		controls.put("Button", r);
+//		Renderer r = new ButtonRenderer();
+//		controls.put("Button", r);
+		controls.put("Scroll", new ScrollRenderer());
 	}
 
 	@Override
@@ -74,22 +77,34 @@ public class StatusRenderer implements Renderer {
 	@Override
 	public void setRenderReady() {
 		// control layout
-		ButtonRenderer button = (ButtonRenderer) controls.get("Button");
-		button.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)), null, null);
+		ButtonRenderer button = new ButtonRenderer();
+//		button.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)), null, null);
+		button.setVertexBufferManager(vBufMan);
+		button.setAspectRatio(ratio);
+		button.setGraphicsResponder(responder);
+		button.setTexture2D(textures);
+		button.setGameLogicManager(manager);
 		button.setPressRespondName("TestButton");
 		button.setRenderReady();
+		ScrollRenderer scroll = (ScrollRenderer) controls.get("Scroll");
+		scroll.setMVP(model, null, null);
+		scroll.setScrollMax(2, 2);
+		scroll.setRenderer("Button", button, FlatScalingMatrix4x4(.25f, .25f, 1));
 		responder.updateGraphics();
 	}
 	
 	@Override
-	public boolean getReadyState() {return true;}
+	public boolean getReadyState() {
+		return controls.get("Scroll").getReadyState();
+	}
 
 	@Override
 	public void draw() {
 		// other controls
 		drawFrame();
-		for (Map.Entry<String, Renderer> entry : controls.entrySet())
-			entry.getValue().draw();
+//		for (Map.Entry<String, Renderer> entry : controls.entrySet())
+//			entry.getValue().draw();
+		controls.get("Scroll").draw();
 	}
 
 	private void drawFrame() {
@@ -144,13 +159,14 @@ public class StatusRenderer implements Renderer {
 				return true;
 			}
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
-			if (eventCapturer != null && !eventCapturer.passEvent(e))
+			if (eventCapturer == null || !eventCapturer.passEvent(e)) {
 				for (Map.Entry<String, Renderer> entry : controls.entrySet()) {
 					eventCapturer = entry.getValue();
 					if (eventCapturer.passEvent(e))
 						return true;	// captured by this eventCapturer
 				}
-			eventCapturer = null;	// captured by myself
+				eventCapturer = null;	// captured by myself
+			}
 			return true;
 		} else if (e.type == ControlEvent.TYPE_CLEAR){
 			if (eventCapturer != null)

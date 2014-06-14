@@ -57,7 +57,7 @@ public class GameScene implements SceneRenderer {
 		state = (GameState) manager.getGameState("Current");
 		manager.getCurrentGameState().isInitialised();
 		grid = new GridRenderer(state.getGridWidth(), state.getGridHeight(), state.getTerrain());
-		status = new StatusRenderer(state);
+		status = new StatusRenderer(state, landscape);
 		status.setAspectRatio(ratio);
 		status.setGameLogicManager(manager);
 		status.setGraphicsResponder(responder);

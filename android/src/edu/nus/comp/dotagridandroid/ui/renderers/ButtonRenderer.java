@@ -90,7 +90,7 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public boolean getReadyState() {
-		return false;
+		return true;
 	}
 
 	@Override

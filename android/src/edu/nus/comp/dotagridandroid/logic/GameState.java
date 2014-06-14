@@ -239,6 +239,9 @@ public class GameState implements Closeable {
 			break;
 		case "GameExit":
 			break;
+		case "TestButton":
+			System.out.println("Test Button Pressed");
+			break;
 		}
 		/// Use Hard code game rules
 	}
