@@ -44,6 +44,10 @@ public class GridButtonActions {
 			// move!
 			new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
 			
+			// if hero is player, change player's position
+			Screen.user.player.setXPos(toXPos);
+			Screen.user.player.setYPos(toYPos);
+			
 			// reselect hero position
 			updateWhenNoActionInvoked();
 		}
@@ -213,7 +217,8 @@ public class GridButtonActions {
 		GameFrame.allCharacterInfoGameButtons.get(28).setString("Assist : " + hero.getAssist());
 		
 		// money (remark: player should only be able to see his own amount of money)
-		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
+		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + 
+				((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney());
 	}
 	
 }

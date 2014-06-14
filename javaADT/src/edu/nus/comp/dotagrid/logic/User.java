@@ -2,7 +2,8 @@ package edu.nus.comp.dotagrid.logic;
 
 public class User {
 	private Screen screen;
-	public int startingMoney = 853;
+	public int playerStartingXPos = 8;
+	public int playerStartingYPos = 186;
 	
 	public Player player;
 	
@@ -12,7 +13,7 @@ public class User {
 	}
 	
 	public void createPlayer(Hero hero){
-		this.player = new Player(startingMoney, hero);
+		this.player = new Player(playerStartingXPos, playerStartingYPos, hero);
 	}
 
 }

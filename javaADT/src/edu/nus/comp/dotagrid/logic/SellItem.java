@@ -48,7 +48,8 @@ public class SellItem implements ActionListener {
 		Screen.user.player.getHero().removeItem(itemNumber);
 		
 		// reset money display for player
-		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
+		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + 
+				((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney());
 		
 		// reselect the grid
 		ItemShop.shouldUpdateItemInFo = true;

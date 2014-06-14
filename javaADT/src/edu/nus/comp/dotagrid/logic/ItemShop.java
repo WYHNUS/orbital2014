@@ -60,14 +60,18 @@ public class ItemShop implements ActionListener{
 		
 		if (hasVacancy == true){			
 			// condition for buying a item : player's hero has enough money
-			if (Screen.user.player.getMoney() - itemDtabase.itemDatabase[itemNumber].getCost() >= 0){
+			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney() 
+					- itemDtabase.itemDatabase[itemNumber].getCost() >= 0){
 				
 				// add an item to player and deduce the required amount of money
 				Screen.user.player.getHero().addItem(itemDtabase.itemDatabase[itemNumber]);
-				Screen.user.player.setMoney(Screen.user.player.getMoney() - itemDtabase.itemDatabase[itemNumber].getCost()); 
+				((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).setMoney(
+						(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney() 
+								- itemDtabase.itemDatabase[itemNumber].getCost())); 
 				
 				// reset money display for player
-				GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + Screen.user.player.getMoney());
+				GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + 
+						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney());
 				
 				// reselect the grid
 				shouldUpdateItemInFo = true;

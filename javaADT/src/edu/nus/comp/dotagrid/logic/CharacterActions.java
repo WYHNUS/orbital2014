@@ -50,12 +50,25 @@ public class CharacterActions {
 				GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
 						- Character.getActualDamage(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttack(), GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalDefence()));
 							
-				// reduce hero's AP 
+				// reduce character's AP 
 				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
 						GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);
+				
+				// check if the attacked target is dead
+				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
+					// character is dead, reset the grid which the dead character was at 
+					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
+					
+					// if the attacker is hero, add bounty money into hero's account
+					if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
+						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
+								((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
+								+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
+					}
+				}
 			
 			} else {			
-				JOptionPane.showMessageDialog(null, "not enough action point for attack!");
+				JOptionPane.showMessageDialog(null, "not enough action point to attack!");
 			}
 		}
 		

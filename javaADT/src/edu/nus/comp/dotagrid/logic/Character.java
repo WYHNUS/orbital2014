@@ -12,6 +12,8 @@ public class Character {
 	
 	private String name;
 	
+	private int bountyMoney;
+	
 	private boolean isAlive = false;
 	
 	private int startingHP, startingMP;
@@ -39,7 +41,7 @@ public class Character {
 	public static final double PHYSICAL_ATTACK_CONSUME_AP = 38.0;
 	
 	
-	public Character(String name, int startingHP, int startingMP, 
+	public Character(String name, int bountyMoney, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int actionPoint)
 	{
@@ -429,5 +431,19 @@ public class Character {
 	
 	public static int getActualDamage(double physicalAttack, double physicalDefence){
 		return (int)((1 - physicalDefence * 0.06 / (1 + 0.06 * physicalDefence) ) * physicalAttack);	
+	}
+
+
+	public int getBountyMoney() {
+		return bountyMoney;
+	}
+
+
+	public void setBountyMoney(int bountyMoney) {
+		if (bountyMoney < 0){
+			System.out.println("Error: not possible for starting HP to go below 0");
+		} else {
+			this.bountyMoney = bountyMoney;
+		}
 	}
 }

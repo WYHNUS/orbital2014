@@ -8,7 +8,6 @@ public class Hero extends Character{
 	private double basicMainAttribute;
 	private double totalMainAttribute;
 	
-	
 	// when display in the game frame, the format will be <basic attribute> + " + " + <attributes obtained from items>
 	
 	// starting attribute is given when constructing the hero
@@ -39,8 +38,8 @@ public class Hero extends Character{
 	private int totalItemAddMovementSpeed;
 	
 
-
 	private int kill, death, assist;
+	private int money;
 	
 	// define a list of constants for calculation
 	public static final int STRENGTH_ADD_HP_RATIO = 19;
@@ -56,14 +55,14 @@ public class Hero extends Character{
 	
 	
 	// constructor
-	public Hero(String heroName, String mainAttribute, int startingHP, int startingMP, 
+	public Hero(String heroName, int bountyMoney, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 			double startingPhysicalDefence, double startingMagicResistance, int actionPoint,
 			int startingStrength, int startingAgility, int startingIntelligence, 
 			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) 
 	{
 		
-		super(heroName, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
+		super(heroName, bountyMoney, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint);
 		
 		// initialize attributes specific to heros
@@ -71,6 +70,11 @@ public class Hero extends Character{
 	
 		this.setLevel(0);
 		this.setExperience(0);
+		
+		this.setMoney(startingmoney);
+		this.setKill(0);
+		this.setAssist(0);
+		this.setDeath(0);
 
 		this.setStrengthGrowth(strengthGrowth);
 		this.setAgilityGrowth(agilityGrowth);
@@ -113,7 +117,7 @@ public class Hero extends Character{
 
 
 	public Hero(Hero hero) {
-		super(hero.getName(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
+		super(hero.getName(), hero.getBountyMoney(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
 				hero.getStartingPhysicalAttackSpeed(), hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
 				hero.getStartingMovementSpeed(), hero.getActionPoint());
 		
@@ -121,6 +125,11 @@ public class Hero extends Character{
 		
 		this.setLevel(hero.getLevel());
 		this.setExperience(hero.getExperience());
+		
+		this.setMoney(hero.getMoney());
+		this.setKill(hero.getKill());
+		this.setAssist(hero.getAssist());
+		this.setDeath(hero.getDeath());
 
 		this.setStrengthGrowth(hero.getStrengthGrowth());
 		this.setAgilityGrowth(hero.getAgilityGrowth());
@@ -475,7 +484,7 @@ public class Hero extends Character{
 
 
 
-	// KDA
+	// KDA & Money
 	
 	public int getKill() {
 		return kill;
@@ -501,6 +510,19 @@ public class Hero extends Character{
 		this.assist = assist;
 	}
 
+	
+	public int getMoney() {
+		return money;
+	}
+
+	public void setMoney(int money) {
+		if (money <= 0) {
+			System.out.println("player's money cannot be less than 0!");
+		} else {
+			this.money = money;
+		}
+	}
+	
 	
 	// attributes obtained from items
 	
@@ -668,7 +690,9 @@ public class Hero extends Character{
 	// sell an item
 	public void removeItem(int itemNumber){
 		// add the selling price to player's money
-		Screen.user.player.setMoney(Screen.user.player.getMoney() + Screen.user.player.getHero().items[itemNumber].getSellPrice()); 
+		((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).setMoney(
+				(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney() 
+						+ Screen.user.player.getHero().items[itemNumber].getSellPrice())); 
 		// delete the item
 		this.items[itemNumber] = null;
 		GameFrame.allCharacterInfoGameButtons.get(11 + itemNumber).setImage(null);
