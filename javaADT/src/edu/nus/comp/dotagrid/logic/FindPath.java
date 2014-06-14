@@ -13,6 +13,7 @@ public class FindPath {
 	
 	public Queue<int[]> pathQueue;
 	
+	
 	// constructors
 	public FindPath(){}
 	
@@ -82,42 +83,23 @@ public class FindPath {
 	}
 	
 	
+	
 	// find shortest path between two points
 	public int findShortestPath(int startingXPos, int startingYPos, int XPos, int YPos, int movementPoint){
-		createShortestPath(startingXPos, startingYPos, XPos, YPos, movementPoint);
+		createShortestPath(pathXPos, pathYPos, startingXPos, startingYPos, movementPoint);
+
+		System.out.println("Shortest Path Length = " + path[XPos - startingXPos + movementPoint][YPos - startingYPos + movementPoint]);
 		return path[XPos - startingXPos + movementPoint][YPos - startingYPos + movementPoint];
 	}
 	
+	
 	// create path int-2D-array which store the shortest path to each grid
-	public void createShortestPath(int startingXPos, int startingYPos, int XPos, int YPos, int movementPoint) {
+	private void createShortestPath(int pathXPos, int pathYPos, int startingXPos, int startingYPos, int movementPoint) {
+		
 		// base case :
-		if ((startingXPos == XPos && startingYPos == YPos) || movementPoint <= 0) {
+		if (movementPoint <= 0) {
 			// no need to do anything
 		} else {
-			
-			// test
-			System.out.println("startingXPos = " + startingXPos);
-			System.out.println("startingYPos = " + startingYPos);
-			System.out.println("pathXPos = " + pathXPos);
-			System.out.println("pathYPos = " + pathYPos);
-			
-			System.out.println(GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsMovable() == true);
-			System.out.println(GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsOccupied() == false);
-			System.out.println(path[pathXPos-1][pathYPos] == -1);
-			
-			System.out.println(GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsMovable() == true 
-				&& GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsOccupied() == false
-				&& path[pathXPos-1][pathYPos] == -1);
-			
-			System.out.println(GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsOccupied() == false
-					&& path[pathXPos][pathYPos-1] == -1);
-			System.out.println(GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsOccupied() == false
-					&& path[pathXPos][pathYPos+1] == -1);
-			System.out.println(GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsOccupied() == false
-					&& path[pathXPos+1][pathYPos] == -1);
 			
 			// can move only if the grid is movable and not occupied
 			// and only need to calculate if the position has not been calculated before
@@ -129,9 +111,11 @@ public class FindPath {
 					// set the value for this position
 					setPathValue(pathXPos-1, pathYPos);
 					
-					int[] tempArray = new int[2];
-					tempArray[0] = startingXPos-1;
-					tempArray[1] = startingYPos;
+					int[] tempArray = new int[4];
+					tempArray[0] = pathXPos-1;
+					tempArray[1] = pathYPos;
+					tempArray[2] = startingXPos-1;
+					tempArray[3] = startingYPos;
 					
 					pathQueue.add(tempArray);
 			}
@@ -143,9 +127,11 @@ public class FindPath {
 					// set the value for this position
 					setPathValue(pathXPos, pathYPos-1);
 					
-					int[] tempArray = new int[2];
-					tempArray[0] = startingXPos;
-					tempArray[1] = startingYPos-1;
+					int[] tempArray = new int[4];
+					tempArray[0] = pathXPos;
+					tempArray[1] = pathYPos-1;
+					tempArray[2] = startingXPos;
+					tempArray[3] = startingYPos-1;
 					
 					pathQueue.add(tempArray);
 				
@@ -158,9 +144,11 @@ public class FindPath {
 					// set the value for this position
 					setPathValue(pathXPos, pathYPos+1);
 					
-					int[] tempArray = new int[2];
-					tempArray[0] = startingXPos;
-					tempArray[1] = startingYPos+1;
+					int[] tempArray = new int[4];
+					tempArray[0] = pathXPos;
+					tempArray[1] = pathYPos+1;
+					tempArray[2] = startingXPos;
+					tempArray[3] = startingYPos+1;
 					
 					pathQueue.add(tempArray);
 			} 
@@ -172,16 +160,17 @@ public class FindPath {
 					// set the value for this position
 					setPathValue(pathXPos+1, pathYPos);
 					
-					int[] tempArray = new int[2];
-					tempArray[0] = startingXPos+1;
-					tempArray[1] = startingYPos;
+					int[] tempArray = new int[4];
+					tempArray[0] = pathXPos+1;
+					tempArray[1] = pathYPos;
+					tempArray[2] = startingXPos+1;
+					tempArray[3] = startingYPos;
 					
 					pathQueue.add(tempArray);
 				
 			}
-			System.out.println("pathQueue.isEmpty = " + pathQueue.isEmpty());
 			
-			createShortestPath(pathQueue.peek()[0], pathQueue.poll()[1], XPos, YPos, movementPoint-1);
+			createShortestPath(pathQueue.peek()[0], pathQueue.peek()[1], pathQueue.peek()[2], pathQueue.poll()[3], movementPoint-1);
 			
 		}
 	}
@@ -194,7 +183,8 @@ public class FindPath {
 		// find the smallest value in the surrounding grids
 		for (int i=-1; i<=1; i++) {
 			for (int j=-1; j<=1; j++) {
-				if (path[startingXPos+i][startingYPos+j] != -1 && path[startingXPos+i][startingYPos+j] < smallestValue) {
+				if (path[startingXPos+i][startingYPos+j] != -1 && path[startingXPos+i][startingYPos+j] < smallestValue
+						&& Math.abs(i) != Math.abs(j)) {
 					smallestValue = path[startingXPos+i][startingYPos+j];
 				}
 			} 

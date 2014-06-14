@@ -91,18 +91,19 @@ public class CharacterActions {
 			// get the AP required for such movement
 			int usedAP = calculateMovementUsedAP(fromXPos, fromYPos, toXPos, toYPos);
 			
-			// can only move if character has enough AP
-			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
-							
-				// perform move action
-				resetGridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
-				GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
-							
-				// reduce hero's AP 
-				GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentActionPoint(
-						GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentActionPoint() - usedAP);
-							
-			}			
+				// can only move if character has enough AP
+				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
+								
+					// perform move action
+					resetGridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
+					GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
+								
+					// reduce hero's AP 
+					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentActionPoint(
+							GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentActionPoint() - usedAP);
+								
+				}
+				
 		}			
 		
 		// move action ended
@@ -125,9 +126,11 @@ public class CharacterActions {
 		
 		int numberOfGridsMoved = tempPath.findShortestPath(previouslySelectedXPos, previouslySelectedYPos, selectedXPos, selectedYPos,
 				GridFrame.gridButtonMap[previouslySelectedXPos][previouslySelectedYPos].getCharacter().getNumberOfMovableGrid());
-
-		System.out.println("numberOfGridsMoved = " + numberOfGridsMoved);
-		return (int)(numberOfGridsMoved * GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedInMovingOneGrid());
+		if (numberOfGridsMoved == -1) {
+			return -1;
+		} else{
+			return (int)(numberOfGridsMoved * GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedInMovingOneGrid());
+		}
 	}
 
 
