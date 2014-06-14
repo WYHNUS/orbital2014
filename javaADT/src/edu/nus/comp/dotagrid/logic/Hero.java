@@ -119,7 +119,7 @@ public class Hero extends Character{
 	public Hero(Hero hero) {
 		super(hero.getName(), hero.getBountyMoney(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
 				hero.getStartingPhysicalAttackSpeed(), hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
-				hero.getStartingMovementSpeed(), hero.getActionPoint());
+				hero.getStartingMovementSpeed(), hero.getMaxActionPoint());
 		
 		this.setMainAttribute(hero.getMainAttribute());
 		
@@ -692,7 +692,7 @@ public class Hero extends Character{
 		// add the selling price to player's money
 		((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).setMoney(
 				(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney() 
-						+ Screen.user.player.getHero().items[itemNumber].getSellPrice())); 
+						+ ((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[itemNumber].getSellPrice())); 
 		// delete the item
 		this.items[itemNumber] = null;
 		GameFrame.allCharacterInfoGameButtons.get(11 + itemNumber).setImage(null);

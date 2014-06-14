@@ -12,8 +12,8 @@ public class User {
 		this.screen.scene = 0; // sets scene to main menu
 	}
 	
-	public void createPlayer(Hero hero){
-		this.player = new Player(playerStartingXPos, playerStartingYPos, hero);
+	public void createPlayer(){
+		this.player = new Player(playerStartingXPos, playerStartingYPos);
 	}
 
 }

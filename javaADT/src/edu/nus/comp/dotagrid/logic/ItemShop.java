@@ -52,7 +52,7 @@ public class ItemShop implements ActionListener{
 		
 		// condition for buying a item : player's item list still has vacancy
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
-			if (Screen.user.player.getHero().items[i] == null) {
+			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[i] == null) {
 				hasVacancy = true;
 				break;
 			}
@@ -64,7 +64,7 @@ public class ItemShop implements ActionListener{
 					- itemDtabase.itemDatabase[itemNumber].getCost() >= 0){
 				
 				// add an item to player and deduce the required amount of money
-				Screen.user.player.getHero().addItem(itemDtabase.itemDatabase[itemNumber]);
+				((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).addItem(itemDtabase.itemDatabase[itemNumber]);
 				((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).setMoney(
 						(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney() 
 								- itemDtabase.itemDatabase[itemNumber].getCost())); 

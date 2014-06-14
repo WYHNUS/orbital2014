@@ -150,13 +150,13 @@ public class GridButtonActions {
 		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + character.getStartingPhysicalAttack());
 		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", character.getTotalPhysicalDefence()));
 		
-		GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getActionPoint());
+		GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getMaxActionPoint());
 		
 		// properties that only hero possess
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {		
 			// check if the hero is owned by the player
 			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
-				Hero tempHeroPlayer = new Hero(Screen.user.player.getHero());
+				Hero tempHeroPlayer = new Hero(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()));
 				updateInfo(tempHeroPlayer);
 			} else {
 				Hero tempHeroNonPlayer = new Hero((Hero)character);

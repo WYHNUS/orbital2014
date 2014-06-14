@@ -29,7 +29,7 @@ public class Character {
 	private double startingPhysicalDefence, basicPhysicalDefence, totalPhysicalDefence;
 	private double startingMagicResistance, totalMagicResistance;
 	
-	private int actionPoint;
+	private int maxActionPoint;
 	private int currentActionPoint;
 
 	public static final int MAX_MOVEMENT_SPEED = 522;
@@ -75,8 +75,8 @@ public class Character {
 		this.setStartingMovementSpeed(startingMovementSpeed);
 		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
 		
-		this.setActionPoint(actionPoint);
-		this.setCurrentActionPoint(this.getActionPoint());
+		this.setMaxActionPoint(actionPoint);
+		this.setCurrentActionPoint(this.getMaxActionPoint());
 		
 		this.setAlive(true);
 	}
@@ -275,17 +275,17 @@ public class Character {
 
 	
 	// accessor and mutator for ActionPoint
-	public int getActionPoint() {
-		return actionPoint;
+	public int getMaxActionPoint() {
+		return maxActionPoint;
 	}
 
 
-	public void setActionPoint(int actionPoint) {
+	public void setMaxActionPoint(int actionPoint) {
 		// minimum AP is 0
 		if(actionPoint <= 0) {
 			System.out.println("Maximum Action Point cannnot go below 0!");
 		} else {
-			this.actionPoint = actionPoint;
+			this.maxActionPoint = actionPoint;
 		}
 	}
 	

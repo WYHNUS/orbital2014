@@ -1,22 +1,12 @@
 package edu.nus.comp.dotagrid.logic;
 
 public class Player {
-	private Hero hero;
 	private int XPos, YPos;
 
 	// constructor
-	public Player(int XPos, int YPos, Hero hero){
-		this.hero = new Hero(hero);
+	public Player(int XPos, int YPos){
 		this.XPos = XPos;
 		this.YPos = YPos;
-	}
-
-	public Hero getHero() {
-		return hero;
-	}
-
-	public void setHero(Hero hero) {
-		this.hero = hero;
 	}
 	
 	public int getXPos() {

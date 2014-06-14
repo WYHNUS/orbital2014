@@ -124,7 +124,7 @@ public class GameButtonActions {
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
-					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentActionPoint(GridFrame.gridButtonMap[x][y].getCharacter().getActionPoint());
+					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentActionPoint(GridFrame.gridButtonMap[x][y].getCharacter().getMaxActionPoint());
 				}
 			}
 		}	

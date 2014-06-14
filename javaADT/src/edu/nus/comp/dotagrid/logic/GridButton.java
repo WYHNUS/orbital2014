@@ -71,7 +71,7 @@ public class GridButton {
 			character = new HeroDatabase().heroDatabase[random.nextInt(HeroDatabase.totalHeroNumber)];
 			
 			// create player!
-			Screen.user.createPlayer((Hero) character);
+			Screen.user.createPlayer();
 			
 			isOccupied = true;
 			isHero = true;

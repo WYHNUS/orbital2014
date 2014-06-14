@@ -17,9 +17,11 @@ public class SellItem implements ActionListener {
 		panel.setLayout(new GridLayout(4, 4));
 
 		for(int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++){
-			if (Screen.user.player.getHero().items[i] != null) {
-				JButton button = new JButton(Screen.user.player.getHero().items[i].getItemName() + ", sell for : " + 
-						Screen.user.player.getHero().items[i].getSellPrice(), Screen.user.player.getHero().items[i].getItemImage());
+			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[i] != null) {
+				JButton button = new JButton(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[i].getItemName() 
+						+ ", sell for : " + 
+						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[i].getSellPrice(), 
+						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[i].getItemImage());
 				
 				button.addActionListener(this);
 				button.setActionCommand("" + i);
@@ -42,10 +44,11 @@ public class SellItem implements ActionListener {
 		// click an item to sell
 		int itemNumber = Integer.parseInt(e.getActionCommand());
 		
-		System.out.println("you have selled " + Screen.user.player.getHero().items[itemNumber].getItemName());
+		System.out.println("you have selled " 
+				+ ((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[itemNumber].getItemName());
 		
 		// delete the selected item from player
-		Screen.user.player.getHero().removeItem(itemNumber);
+		((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).removeItem(itemNumber);
 		
 		// reset money display for player
 		GameFrame.allCharacterInfoGameButtons.get(29).setString("Money : " + 

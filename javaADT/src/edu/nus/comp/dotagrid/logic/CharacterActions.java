@@ -56,15 +56,17 @@ public class CharacterActions {
 				
 				// check if the attacked target is dead
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
-					// character is dead, reset the grid which the dead character was at 
-					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
-					
+
 					// if the attacker is hero, add bounty money into hero's account
 					if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
 						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
 								((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
 								+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
 					}
+					
+					// character is dead, reset the grid which the dead character was at 
+					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
+					
 				}
 			
 			} else {			
