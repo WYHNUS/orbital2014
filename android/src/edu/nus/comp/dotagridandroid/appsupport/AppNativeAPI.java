@@ -6,4 +6,5 @@ public class AppNativeAPI {
 	}
 	public static native void testJS();
 	public static native void testGL();
+	public static native void testZIP();
 }

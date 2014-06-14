@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.*;
+import edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 
 public class Main extends Activity {
@@ -15,6 +16,7 @@ public class Main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		AppNativeAPI.testZIP();
 	}
 	
 	@Override
