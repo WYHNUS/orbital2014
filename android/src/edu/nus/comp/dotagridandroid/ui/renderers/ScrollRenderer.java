@@ -2,6 +2,7 @@ package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.util.*;
 
+import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer.GraphicsResponder;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
@@ -18,6 +19,7 @@ public class ScrollRenderer implements Renderer {
 	private float scrollPositionX = 0, scrollPositionY = 0, processingScrollPositionX, processingScrollPositionY;
 	private float scrollMinX = 0, scrollMinY = 0, scrollMaxX = 0, scrollMaxY = 0;
 
+	private GenericProgram frameProgram;
 	private List<String> renderingOrder = new ArrayList<>();
 	private Map<String, Renderer> renderers = new HashMap<>();
 	private Map<String, float[]> rendererTransforms = new HashMap<>();
@@ -25,6 +27,9 @@ public class ScrollRenderer implements Renderer {
 	private Renderer eventCapturer;
 	private boolean processing;
 
+	public ScrollRenderer () {
+		frameProgram = new GenericProgram(CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY);
+	}
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
 		this.vBufMan = manager;
@@ -123,10 +128,43 @@ public class ScrollRenderer implements Renderer {
 
 	@Override
 	public void draw() {
+		final int
+			vPosition = glGetAttribLocation(frameProgram.getProgramId(), "vPosition"),
+			vColor = glGetUniformLocation(frameProgram.getProgramId(), "vColor"),
+			mModel = glGetUniformLocation(frameProgram.getProgramId(), "model"),
+			mView = glGetUniformLocation(frameProgram.getProgramId(), "view"),
+			mProjection = glGetUniformLocation(frameProgram.getProgramId(), "projection"),
+			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
+			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
+		glEnable(GL_STENCIL_TEST);
+		glClearStencil(0);
+		glClear(GL_STENCIL_BITS);
+		glColorMask(false, false, false, false);
+		glDepthMask(false);
+		glStencilFunc(GL_ALWAYS, 1, 1);
+		glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+		// mask
+		glUseProgram(frameProgram.getProgramId());
+		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glEnableVertexAttribArray(vPosition);
+		glUniform4f(vColor, 0, 0, 0, 1);
+		glUniformMatrix4fv(mModel, 1, false, model, 0);
+		glUniformMatrix4fv(mView, 1, false, view, 0);
+		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
+		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+		glDisableVertexAttribArray(vPosition);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		// actual
+		glColorMask(true, true, true, true);
+		glDepthMask(true);
+		glStencilFunc(GL_EQUAL, 1, 1);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 		for (String name : renderingOrder)
 			renderers.get(name).draw();
-//		for (Renderer r : renderers.values())
-//			r.draw();
+		glDisable(GL_STENCIL_TEST);
 	}
 
 	@Override
@@ -197,6 +235,7 @@ public class ScrollRenderer implements Renderer {
 
 	@Override
 	public void close() {
+		frameProgram.close();
 		for (Renderer r : renderers.values())
 			r.close();
 	}
