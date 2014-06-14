@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
+import javax.swing.JOptionPane;
+
 
 public class GridButtonActions {
 	
@@ -43,13 +45,22 @@ public class GridButtonActions {
 
 		// check to execute move action
 		if (GameButtonActions.readyToMove == true) {
-			// move!
-			new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
+			boolean isWithinMovableRange = calculateWithinMovableRange();
 			
-			// if hero is player, change player's position
-			Screen.user.player.setXPos(toXPos);
-			Screen.user.player.setYPos(toYPos);
+			if (isWithinMovableRange){
+				// move!
+				new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
+				
+				// if hero is player, change player's position
+				Screen.user.player.setXPos(toXPos);
+				Screen.user.player.setYPos(toYPos);
+			} else {
+				JOptionPane.showMessageDialog(null, "Out Of Movable Range!");
+			}
 
+			// move action ended
+			GameButtonActions.readyToMove = false;
+			
 			// player's action ended
 			GameButtonActions.readyToAct = false;
 			
@@ -60,9 +71,18 @@ public class GridButtonActions {
 		
 		// check to execute attack action
 		if (GameButtonActions.readyToAttack == true) {
-			// attack
-			new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);
+			boolean isWithinAttackRange = calculateWithinAttackRange();
+			
+			if (isWithinAttackRange) {
+				// attack!
+				new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);
+			} else {
+				JOptionPane.showMessageDialog(null, "Out Of Attack Range!");
+			}
 
+			// attack action ended
+			GameButtonActions.readyToAttack = false;
+			
 			// player's action ended
 			GameButtonActions.readyToAct = false;
 			
@@ -73,6 +93,16 @@ public class GridButtonActions {
 	}
 	
 
+
+	private boolean calculateWithinMovableRange() {
+		// calculate if the selected grid is within movable range
+		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos) <= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getNumberOfMovableGrid());
+	}
+
+	private boolean calculateWithinAttackRange() {
+		// calculate if the selected grid is within attack range
+		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos) <= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttackArea());
+	}
 
 	private void displayMovableGrids() {
 		// highlight movable grids
