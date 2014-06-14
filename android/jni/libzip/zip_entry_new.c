@@ -64,11 +64,11 @@ _zip_entry_new(struct zip *za)
 	ze = za->entry+za->nentry;
     }
 
-    ze->state = ZIP_ST_UNCHANGED;
+//    ze->state = ZIP_ST_UNCHANGED;
 
-    ze->ch_filename = NULL;
-    ze->ch_comment = NULL;
-    ze->ch_comment_len = -1;
+//    ze->ch_filename = NULL;
+//    ze->ch_comment = NULL;
+//    ze->ch_comment_len = -1;
     ze->source = NULL;
 
     if (za)

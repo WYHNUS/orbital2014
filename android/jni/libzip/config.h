@@ -52,6 +52,26 @@
    `HAVE_STRUCT_TM_TM_ZONE' instead. */
 #define HAVE_TM_ZONE 1
 
+#define HAVE_UINT16_T 1
+
+#define HAVE_UINT32_T 1
+
+#define HAVE_UINT64_T 1
+
+#define HAVE_UINT8_T 1
+
+#define SIZEOF_INT 4
+
+#define SIZEOF_LONG 8
+
+#define SIZEOF_LONG_LONG 8
+
+#define SIZEOF_OFF_T 8
+
+#define SIZEOF_SHORT 2
+
+#define SIZEOF_SIZE_T 8
+
 /* Define to 1 if you don't have `tm_zone' but do have the external array
    `tzname'. */
 /* #undef HAVE_TZNAME */
