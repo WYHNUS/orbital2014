@@ -83,14 +83,14 @@ public class CharacterActions {
 	}
 
 	
-	private void move() {
-		// get the AP required for such movement
-		int usedAP = calculateMovementUsedAP(fromXPos, fromYPos, toXPos, toYPos);
-					
+	private void move() {				
 		// can only move on non-occupied and movable grid
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable() == true 
 				&& GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == false) {
-						
+
+			// get the AP required for such movement
+			int usedAP = calculateMovementUsedAP(fromXPos, fromYPos, toXPos, toYPos);
+			
 			// can only move if character has enough AP
 			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
 							
@@ -121,11 +121,12 @@ public class CharacterActions {
 
 	private int calculateMovementUsedAP(int previouslySelectedXPos, int previouslySelectedYPos, int selectedXPos, int selectedYPos) {
 		// calculate AP used by moving from (previouslySelectedXPos, previouslySelectedYPos) to (selectedXPos, selectedYPos)
-		int numberOfGridsMoved = Math.abs(previouslySelectedXPos - selectedXPos) + Math.abs(previouslySelectedYPos - selectedYPos);
+		FindPath tempPath = new FindPath(GridFrame.gridButtonMap[previouslySelectedXPos][previouslySelectedYPos].getCharacter().getNumberOfMovableGrid());
 		
-		System.out.println("fromXPos = " + fromXPos);
-		System.out.println("fromYPos = " + fromYPos);
+		int numberOfGridsMoved = tempPath.findShortestPath(previouslySelectedXPos, previouslySelectedYPos, selectedXPos, selectedYPos,
+				GridFrame.gridButtonMap[previouslySelectedXPos][previouslySelectedYPos].getCharacter().getNumberOfMovableGrid());
 
+		System.out.println("numberOfGridsMoved = " + numberOfGridsMoved);
 		return (int)(numberOfGridsMoved * GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedInMovingOneGrid());
 	}
 

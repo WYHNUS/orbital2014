@@ -10,6 +10,7 @@ public class GridButtonActions {
 	private int fromXPos;
 	private int fromYPos;
 
+	// constructor
 	public GridButtonActions(int toXPos, int toYPos, int fromXPos, int fromYPos) {
 		this.toXPos = toXPos;
 		this.toYPos = toYPos;
@@ -31,7 +32,7 @@ public class GridButtonActions {
 			displayCharacterInfoOnGameFrame(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
 			
 			// highlight attackable grids when attack is invoked 
-			displayMovableGrids();
+			FindPath.highlightMovableGrids(toXPos, toYPos, GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getNumberOfMovableGrid());
 			displayAttackableGrids();
 			
 		} else {
@@ -45,18 +46,14 @@ public class GridButtonActions {
 
 		// check to execute move action
 		if (GameButtonActions.readyToMove == true) {
-			boolean isWithinMovableRange = calculateWithinMovableRange();
 			
-			if (isWithinMovableRange){
 				// move!
 				new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
 				
 				// if hero is player, change player's position
 				Screen.user.player.setXPos(toXPos);
 				Screen.user.player.setYPos(toYPos);
-			} else {
-				JOptionPane.showMessageDialog(null, "Out Of Movable Range!");
-			}
+			
 
 			// move action ended
 			GameButtonActions.readyToMove = false;
@@ -92,35 +89,12 @@ public class GridButtonActions {
 		
 	}
 	
-
-
-	private boolean calculateWithinMovableRange() {
-		// calculate if the selected grid is within movable range
-		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos) <= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getNumberOfMovableGrid());
-	}
-
+	
 	private boolean calculateWithinAttackRange() {
 		// calculate if the selected grid is within attack range
 		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos) <= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttackArea());
 	}
-
-	private void displayMovableGrids() {
-		// highlight movable grids
-		
-		for(int x=toXPos-GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getNumberOfMovableGrid(); x<toXPos+GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getNumberOfMovableGrid()+1; x++){
-			for(int y=toYPos-GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getNumberOfMovableGrid(); y<toYPos+GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getNumberOfMovableGrid()+1; y++){
-				// x and y need to be within the grid frame 
-				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
-					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
-						// x + y need to be within the number of movable grid
-						if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getNumberOfMovableGrid()) {
-							GridFrame.highlightedMap[x][y] = 1;
-						}
-					}
-				}
-			}
-		}
-	}
+	
 
 	
 	private void displayAttackableGrids() {
