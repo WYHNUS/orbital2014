@@ -50,7 +50,8 @@ public class GameScene implements SceneRenderer {
 	@Override
 	public void setRenderReady() {
 		manager.setCurrentGameState("Current");
-		manager.getCurrentGameState().initialise();
+		// TODO select character
+		manager.getCurrentGameState().initialise("MyHero");
 		manager.getCurrentGameState().setCurrentSceneRenderer(this);
 		final boolean landscape = ratio > 1;
 		state = (GameState) manager.getGameState("Current");
@@ -121,9 +122,12 @@ public class GameScene implements SceneRenderer {
 
 	@Override
 	public void close() {
-		grid.close();
-		status.close();
-		manager.getCurrentGameState().close();
+		if (grid != null)
+			grid.close();
+		if (grid != null)
+			status.close();
+		if (manager != null)
+			manager.getCurrentGameState().close();
 	}
 
 	@Override

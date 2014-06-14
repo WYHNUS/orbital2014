@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.*;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
+import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 
 public class Main extends Activity {
 	private GameLogicManager logicManager = new GameLogicManager(this);
@@ -74,6 +75,9 @@ public class Main extends Activity {
 	@Override
 	public void onBackPressed() {
 		// TODO save game and quit
+		ControlEvent e = new ControlEvent(ControlEvent.TYPE_INTERPRETED, null);
+		e.extendedType = "Cancel";
+		logicManager.processEvent(e);
 	}
 	
 	public GameLogicManager getGameLogicManager() {return logicManager;}

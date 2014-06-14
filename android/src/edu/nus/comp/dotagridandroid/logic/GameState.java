@@ -28,7 +28,8 @@ public class GameState implements Closeable {
 	public void setContext(Context context) {
 		this.context = context;
 	}
-	public void initialise() {
+	public void initialise(String playerCharacter) {
+		this.playerCharacter = playerCharacter;
 		if (initialised || initialising)
 			return;
 		chars = new ConcurrentHashMap<>();
@@ -42,7 +43,7 @@ public class GameState implements Closeable {
 				initialising = true;
 				gameMaster = new GameMaster();
 				// TODO load characters
-				chars.put("MyHero", new Hero("MyHero", "strength",
+				chars.put("MyHero", new Hero("MyHero", 1, 0, "strength",
 						100,
 						100,
 						100,
@@ -58,7 +59,7 @@ public class GameState implements Closeable {
 						100,
 						100,
 						100));
-				chars.put("MyHero2", new Hero("MyHero", "strength",
+				chars.put("MyHero2", new Hero("MyHero", 1, 0, "strength",
 						100,
 						100,
 						100,
@@ -176,10 +177,6 @@ public class GameState implements Closeable {
 	}
 	
 	// characters
-	public void setPlayerCharacter(String name) {
-		if (chars.containsKey(name))
-			playerCharacter = name;
-	}
 	public String getPlayerCharacter() {
 		return playerCharacter;
 	}
@@ -209,9 +206,9 @@ public class GameState implements Closeable {
 	public void setCurrentSceneRenderer (SceneRenderer renderer) {
 		currentSceneRenderer = renderer;
 	}
-	public void notifyAction (ControlEvent e) {
+	public void notifyUpdate (Map<String, Object> updates) {
 		if (currentSceneRenderer != null)
-			;
+			currentSceneRenderer.notifyUpdate(updates);;
 	}
 
 	public void processEvent(ControlEvent e) {
@@ -227,7 +224,7 @@ public class GameState implements Closeable {
 		case "RequestActionList":
 			break;
 		case "Cancel":
-			notifyAction(e);	// bounce back
+			gameMaster.applyRule(this, "Cancel", null);// bounce back
 			break;
 		// game action
 		case "GameAction":

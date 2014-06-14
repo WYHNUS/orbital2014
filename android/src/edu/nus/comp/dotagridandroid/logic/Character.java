@@ -1,6 +1,5 @@
 package edu.nus.comp.dotagridandroid.logic;
 
-
 public class Character {
 	
 	// character compose of : LineCreeps, hero, tower and other buildings
@@ -8,6 +7,8 @@ public class Character {
 	private String characterImage;
 	
 	private String name;
+	
+	private int bountyMoney;
 	
 	private boolean isAlive = false;
 	
@@ -24,15 +25,19 @@ public class Character {
 	private double startingPhysicalDefence, basicPhysicalDefence, totalPhysicalDefence;
 	private double startingMagicResistance, totalMagicResistance;
 	
-	private int actionPoint;
+	private int maxActionPoint;
 	private int currentActionPoint;
 
 	public static final int MAX_MOVEMENT_SPEED = 522;
-	public static final int MIN_MOVEMENT_CONSUME_AP = 2;
-	public static final int MOVEMENT_CONSUME_AP = 20;
+	public static final double MIN_MOVEMENT_CONSUME_AP = 2.0;
+	public static final double MOVEMENT_CONSUME_AP = 20.0;
+
+	public static final double MAX_PHYSICAL_ATTACK_SPEED = 4.54;
+	public static final double MIN_PHYSICAL_ATTACK_CONSUME_AP = 20.0;
+	public static final double PHYSICAL_ATTACK_CONSUME_AP = 38.0;
 	
 	
-	public Character(String name, int startingHP, int startingMP, 
+	public Character(String name, int bountyMoney, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int actionPoint)
 	{
@@ -66,8 +71,8 @@ public class Character {
 		this.setStartingMovementSpeed(startingMovementSpeed);
 		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
 		
-		this.setActionPoint(actionPoint);
-		this.setCurrentActionPoint(this.getActionPoint());
+		this.setMaxActionPoint(actionPoint);
+		this.setCurrentActionPoint(this.getMaxActionPoint());
 		
 		this.setAlive(true);
 	}
@@ -92,7 +97,7 @@ public class Character {
 	
 	public void setStartingHP(int startingHP) {
 		// not possible for startingHP to go below 0
-		if (startingHP <= 0) {
+		if (startingHP < 0) {
 			System.out.println("Error: not possible for starting HP to go below 0");
 		} else {
 			this.startingHP = startingHP;
@@ -105,7 +110,7 @@ public class Character {
 	
 	public void setStartingMP(int startingMP) {
 		// not possible for startingMP to go below 0
-		if (startingMP <= 0) {
+		if (startingMP < 0) {
 			System.out.println("Error: not possible for starting MP to go below 0");
 		} else {
 			this.startingMP = startingMP;
@@ -119,7 +124,7 @@ public class Character {
 
 	public void setCurrentHP(int currentHP) {
 		// if currentHP goes below 0, the character is dead
-		if (currentHP <= 0) {
+		if (currentHP < 0) {
 			this.currentHP = 0;
 			this.setAlive(false);
 		} else {
@@ -135,7 +140,7 @@ public class Character {
 
 	public void setCurrentMP(int currentMP) {
 		// minimum currentMP is 0 
-		if (currentMP <= 0) {
+		if (currentMP < 0) {
 			this.currentMP = 0;
 		} else {
 			this.currentMP = currentMP;
@@ -266,17 +271,17 @@ public class Character {
 
 	
 	// accessor and mutator for ActionPoint
-	public int getActionPoint() {
-		return actionPoint;
+	public int getMaxActionPoint() {
+		return maxActionPoint;
 	}
 
 
-	public void setActionPoint(int actionPoint) {
+	public void setMaxActionPoint(int actionPoint) {
 		// minimum AP is 0
 		if(actionPoint <= 0) {
 			System.out.println("Maximum Action Point cannnot go below 0!");
 		} else {
-			this.actionPoint = actionPoint;
+			this.maxActionPoint = actionPoint;
 		}
 	}
 	
@@ -393,6 +398,10 @@ public class Character {
 	public double APUsedInMovingOneGrid(){
 		return MIN_MOVEMENT_CONSUME_AP + (1 - 1.0 * totalMovementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP;
 	}
+	
+	public double APUsedWhenAttack(){
+		return MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - 1.0 * totalPhysicalAttackSpeed / MAX_PHYSICAL_ATTACK_SPEED) * PHYSICAL_ATTACK_CONSUME_AP;
+	}
 
 	
 	// accessor and mutator for other properties
@@ -416,4 +425,21 @@ public class Character {
 		this.isAlive = isAlive;
 	}
 	
+	public static int getActualDamage(double physicalAttack, double physicalDefence){
+		return (int)((1 - physicalDefence * 0.06 / (1 + 0.06 * physicalDefence) ) * physicalAttack);	
+	}
+
+
+	public int getBountyMoney() {
+		return bountyMoney;
+	}
+
+
+	public void setBountyMoney(int bountyMoney) {
+		if (bountyMoney < 0){
+			System.out.println("Error: not possible for starting HP to go below 0");
+		} else {
+			this.bountyMoney = bountyMoney;
+		}
+	}
 }

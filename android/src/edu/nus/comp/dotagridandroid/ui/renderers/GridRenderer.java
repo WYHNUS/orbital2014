@@ -379,7 +379,7 @@ public class GridRenderer implements Renderer {
 			drawableTexture.put(name, charModelName);
 			drawableVisible.put(name, true);
 			drawableModel.put(name, FlatMatrix4x4Multiplication(
-					FlatTranslationMatrix4x4(2f / columns * pos[0] - 1,2f / rows * pos[1] - 1,0),
+					FlatTranslationMatrix4x4(2f / columns * pos[0] - 1,2f / rows * pos[1] - 1, terrain[pos[0] + pos[1] * columns]),
 					FlatScalingMatrix4x4(1f / columns, 1f / rows, .1f),
 					FlatTranslationMatrix4x4(1,1,1)));
 			// configure light
@@ -419,11 +419,9 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
-		if (updates.containsKey("CharacterPosition")) {
-			boolean dirty = false;
-			
-			if (dirty)
-				responder.updateGraphics();
+		if (updates.containsKey("Characters")) {
+			prepareObjects();
+			responder.updateGraphics();
 		}
 	}
 	@Override
@@ -472,9 +470,7 @@ public class GridRenderer implements Renderer {
 			color = glGetUniformLocation(mapProgram.getProgramId(), "light.color"),
 			specular = glGetUniformLocation(mapProgram.getProgramId(), "light.specular"),
 			attenuation = glGetUniformLocation(mapProgram.getProgramId(), "light.attenuation"),
-			mLight = glGetUniformLocation(mapProgram.getProgramId(), "lightTransform"),
-			layerCount = glGetUniformLocation(mapProgram.getProgramId(), "light.layerCount"),
-			layerFactor = glGetUniformLocation(mapProgram.getProgramId(), "light.layerFactor");
+			mLight = glGetUniformLocation(mapProgram.getProgramId(), "lightTransform");
 		glBlendFunc(GL_ONE, GL_ONE);
 		glUseProgram(mapProgram.getProgramId());
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
@@ -488,7 +484,6 @@ public class GridRenderer implements Renderer {
 		glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
 		glUniform1i(textureLocation, 1);	// changed from 1
 		glUniform1i(shadowLocation, 2);
-		glUniform1f(layerCount, lightSrc.size());
 		// vertex attributes
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -510,7 +505,6 @@ public class GridRenderer implements Renderer {
 			glUniform3f(color, config[3], config[4], config[5]);
 			glUniform1f(specular, config[6]);
 			glUniform1f(attenuation, config[7]);
-			glUniform1f(layerFactor, 1f/c++);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * NormalGenerator.RESOLUTION * (columns * NormalGenerator.RESOLUTION + 1) * 2);
 		}
 		glDisableVertexAttribArray(vPosition);
@@ -532,11 +526,8 @@ public class GridRenderer implements Renderer {
 		specular = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.specular");
 		attenuation = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.attenuation");
 		mLight = glGetUniformLocation(shadowObjProgram.getProgramId(), "lightTransform");
-		layerCount = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.layerCount");
-		layerFactor = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.layerFactor");
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
-		glUniform1f(layerCount, lightSrc.size());
 		for (String key : drawableVertex.keySet()) {
 			if (!drawableVisible.get(key))
 				continue;
@@ -563,7 +554,6 @@ public class GridRenderer implements Renderer {
 				glUniform3f(color, config[3], config[4], config[5]);
 				glUniform1f(specular, config[6]);
 				glUniform1f(attenuation, config[7]);
-				glUniform1f(layerFactor, 1f/c++);
 				glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
 			}
 			glDisableVertexAttribArray(vPosition);
@@ -697,9 +687,7 @@ public class GridRenderer implements Renderer {
 	@Override
 	public boolean passEvent(ControlEvent e) {
 		// Remember: normalise
-		if ((e.type & ControlEvent.TYPE_INTERPRETED) > 0) {
-			return false;
-		} else if (e.type == ControlEvent.TYPE_DOWN) {
+		if (e.type == ControlEvent.TYPE_DOWN) {
 			// unknown just yet
 			return true;
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
