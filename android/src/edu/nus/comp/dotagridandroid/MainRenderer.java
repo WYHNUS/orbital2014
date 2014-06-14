@@ -11,6 +11,7 @@ import android.opengl.*;
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.ui.event.*;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
+import edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI;
 import edu.nus.comp.dotagridandroid.logic.*;
 
 public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
@@ -33,8 +34,10 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		if (r.getReadyState()) {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glViewport(0, 0, width, height);
-			glClearColor(.4f, .6f, .9f, 1);
+//			glClearColor(.4f, .6f, .9f, 1);
+			glClearColor(0,0,0,1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			AppNativeAPI.testGL();
 			r.draw();
 		}
 	}
@@ -79,8 +82,9 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		glEnable(GL_BLEND);
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_TEXTURE);
-		glDepthFunc(GL_LESS);
-		glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+//		glDepthFunc(GL_LESS);
+		glDepthFunc(GL_LEQUAL);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 //		glStencilFunc(GL_ALWAYS, 1, 1);
 //		glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
 	}

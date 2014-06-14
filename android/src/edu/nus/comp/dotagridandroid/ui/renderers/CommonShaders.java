@@ -141,7 +141,7 @@ public class CommonShaders {
 			+ "vec3 shadowValue = texture2D (shadow, autoShadowCoord).xyz;"
 			+ "float depth = (shadowValue.x + shadowValue.y + shadowValue.z / 256.0) * 2.0 - 1.0;"
 			+ "float shadowFactor = exp(shadowDecay * min(depth - actualDepth, 0.0));"
-			+ "gl_FragColor = vec4(light.layerCount * shadowFactor * finalColor, light.layerFactor);"
+			+ "gl_FragColor = vec4(finalColor * shadowFactor, 1.0);"
 		+ "}";
 	public static final String FS_IDENTITY_SPECIAL_LIGHTING_UNIFORMNORMAL
 		= "precision mediump float;"
@@ -173,7 +173,7 @@ public class CommonShaders {
 			+ "vec3 shadowValue = texture2D (shadow, autoShadowCoord).xyz;"
 			+ "float depth = (shadowValue.x + shadowValue.y + shadowValue.z / 256.0) * 2.0 - 1.0;"
 			+ "float shadowFactor = exp(shadowDecay * min(depth - actualDepth, 0.0));"
-			+ "gl_FragColor = vec4(light.layerCount * shadowFactor * finalColor, light.layerFactor);"
+			+ "gl_FragColor = vec4(shadowFactor * finalColor, 1.0);"
 		+ "}";
 	public static final String VS_IDENTITY_SPECIAL_SHADOW
 		= "attribute vec4 vPosition;"

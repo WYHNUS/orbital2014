@@ -123,6 +123,7 @@ public class GameScene implements SceneRenderer {
 	public void close() {
 		grid.close();
 		status.close();
+		manager.getCurrentGameState().close();
 	}
 
 	@Override

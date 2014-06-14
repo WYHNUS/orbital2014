@@ -87,9 +87,9 @@ public class StatusRenderer implements Renderer {
 	@Override
 	public void draw() {
 		// other controls
+		drawFrame();
 		for (Map.Entry<String, Renderer> entry : controls.entrySet())
 			entry.getValue().draw();
-		drawFrame();
 	}
 
 	private void drawFrame() {

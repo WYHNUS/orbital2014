@@ -167,37 +167,6 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {
 		this.manager = manager;
-		// TODO DELETE THE BELOW!
-//		drawableVertex.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-//				-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
-//				1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
-//				1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
-//				-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
-//				-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
-//				-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
-//		}));
-//		drawableTextureCoord.put("Cube", BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
-//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-//				0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-//		}));
-//		drawableNormal.put("Cube", BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-//				0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
-//				1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
-//				0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-//				-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
-//				0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
-//				0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
-//		}));
-//		drawableTexture.put("Cube", "GridMapBackground");
-//		drawableModel.put("Cube", FlatMatrix4x4Multiplication(
-//				FlatTranslationMatrix4x4(0, 0, 0),
-//				FlatScalingMatrix4x4(2f / columns / 4, 2f / rows / 4, .1f),
-//				FlatTranslationMatrix4x4(0, 0, 1)));
-//		drawableVisible.put("Cube", true);
 	}
 	private float bicubic(float f00, float f10, float f01, float f11, float x, float y) {
 		return Vector4CubicInterpolation(new float[]{
@@ -391,9 +360,6 @@ public class GridRenderer implements Renderer {
 					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
 				}
 		}
-		// TODO Remove
-		lightSrc.put("2", new float[]{0.1f,0.1f,BOARD_Z_COORD,1,1,1,1,1});
-		lightDirty.put("1", true);
 	}
 	private void prepareObjects() {
 		final Map<String, Character> chars = manager.getCurrentGameState().getCharacters();
@@ -420,17 +386,18 @@ public class GridRenderer implements Renderer {
 			final float[] lightPos
 				= FlatMatrix4x4Vector4Multiplication(model,
 						new float[]{
-							(.5f + pos[0]) / columns - 1,
-							(.5f + pos[1]) / rows - 1,
+							2 * (.5f + pos[0]) / columns - 1,
+							2 * (.5f + pos[1]) / rows - 1,
 							1 + terrain[pos[0] + pos[1] * columns],	// 1 should be changed
 							1});
-			lightSrc.put("1", new float[]{
+			lightSrc.put(name, new float[]{
 					lightPos[0], lightPos[1], lightPos[2],
 					1, 1, 1,	// TODO change to hero's color
-					1, 1});
+					5, 2});
+			lightOn.put(name, true);
 		}
 		// put all lightSrc dirty
-		for (String name : lightDirty.keySet())
+		for (String name : lightSrc.keySet())
 			lightDirty.put(name, true);
 	}
 	@Override
@@ -508,6 +475,7 @@ public class GridRenderer implements Renderer {
 			mLight = glGetUniformLocation(mapProgram.getProgramId(), "lightTransform"),
 			layerCount = glGetUniformLocation(mapProgram.getProgramId(), "light.layerCount"),
 			layerFactor = glGetUniformLocation(mapProgram.getProgramId(), "light.layerFactor");
+		glBlendFunc(GL_ONE, GL_ONE);
 		glUseProgram(mapProgram.getProgramId());
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, view, 0);
@@ -542,7 +510,7 @@ public class GridRenderer implements Renderer {
 			glUniform3f(color, config[3], config[4], config[5]);
 			glUniform1f(specular, config[6]);
 			glUniform1f(attenuation, config[7]);
-			glUniform1f(layerFactor, 1f/c);
+			glUniform1f(layerFactor, 1f/c++);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * NormalGenerator.RESOLUTION * (columns * NormalGenerator.RESOLUTION + 1) * 2);
 		}
 		glDisableVertexAttribArray(vPosition);
@@ -581,8 +549,7 @@ public class GridRenderer implements Renderer {
 			glEnableVertexAttribArray(vNormal);
 			glEnableVertexAttribArray(textureCoord);
 			glActiveTexture(GL_TEXTURE0);
-//			glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTexture.get(key)).getTexture());//textures.get(drawableTexture.get(key)).getTexture());
-			glBindTexture(GL_TEXTURE_2D, mapTexture.getTexture());
+			glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTexture.get(key)).getTexture());
 			glUniform1i(textureLocation, 0);
 			glUniform1i(shadowLocation, 1);
 			c = 1;
@@ -596,13 +563,14 @@ public class GridRenderer implements Renderer {
 				glUniform3f(color, config[3], config[4], config[5]);
 				glUniform1f(specular, config[6]);
 				glUniform1f(attenuation, config[7]);
-				glUniform1f(layerFactor, 1f/c);
+				glUniform1f(layerFactor, 1f/c++);
 				glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
 			}
 			glDisableVertexAttribArray(vPosition);
 			glDisableVertexAttribArray(vNormal);
 			glDisableVertexAttribArray(textureCoord);
 		}
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	private void drawRay() {
 		if (!hasRay)
@@ -925,15 +893,6 @@ public class GridRenderer implements Renderer {
 				(int) Math.floor(Math.scalb(orgGridPoint[1] + 1, -1) * rows)
 				};
 		hasRay = (orgGridIndex[0] >= 0 && orgGridIndex[0] < columns && orgGridIndex[1] >= 0 && orgGridIndex[1] < rows);
-		// TODO: remove the following part
-		final float[] lightPoint = FlatMatrix4x4Vector4Multiplication(model, orgGridPoint);
-		final float[] lightConfig = lightSrc.get("1");
-		lightConfig[0] = lightPoint[0]; lightConfig[1] = lightPoint[1];
-		if (hasRay)
-			lightConfig[2] = BOARD_Z_COORD + terrain[orgGridIndex[0] + orgGridIndex[1] * columns] * BOARD_Z_COORD;
-		else
-			lightConfig[2] = BOARD_Z_COORD;
-		lightDirty.put("1", true);
 		// TODO: ExtensionEngine
 		edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI.testJS();
 		System.out.println("EE called");

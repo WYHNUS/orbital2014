@@ -5,4 +5,5 @@ public class AppNativeAPI {
 		System.loadLibrary("appsupport");
 	}
 	public static native void testJS();
+	public static native void testGL();
 }

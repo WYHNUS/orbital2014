@@ -31,16 +31,16 @@ public class GameState implements Closeable {
 	public void initialise() {
 		if (initialised || initialising)
 			return;
+		chars = new ConcurrentHashMap<>();
+		objs = new ConcurrentHashMap<>();
+		objPositions = new ConcurrentHashMap<>();
+		objModels = new ConcurrentHashMap<>();
+		objTextures = new ConcurrentHashMap<>();
 		initialisationProcess = new Thread() {
 			@Override
 			public void run() {
 				initialising = true;
 				gameMaster = new GameMaster();
-				chars = new ConcurrentHashMap<>();
-				objs = new ConcurrentHashMap<>();
-				objPositions = new ConcurrentHashMap<>();
-				objModels = new ConcurrentHashMap<>();
-				objTextures = new ConcurrentHashMap<>();
 				// TODO load characters
 				chars.put("MyHero", new Hero("MyHero", "strength",
 						100,
@@ -58,9 +58,27 @@ public class GameState implements Closeable {
 						100,
 						100,
 						100));
+				chars.put("MyHero2", new Hero("MyHero", "strength",
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100,
+						100));
 				objPositions.put("MyHero", new int[]{0, 0});
+				objPositions.put("MyHero2", new int[]{19,19});
 				// TODO load character models
 				chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
+				chars.get("MyHero2").setCharacterImage("MyHeroModel");
 				objModels.put("MyHeroModel", new FloatBuffer[]{
 						// 0: vertex
 						BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
@@ -90,17 +108,20 @@ public class GameState implements Closeable {
 								0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
 						})
 				});
-				System.gc();
-				Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
-				Texture2D tex = new Texture2D (tempBitmap);
-				tempBitmap.recycle();
-				objTextures.put("MyHeroModel", tex);
-				objTextures.put("GridMapBackground", tex);
 				initialised = true;
 				initialising = false;
 			}
 		};
 		initialisationProcess.start();
+		// load resources
+		System.gc();
+		Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
+		Texture2D tex = new Texture2D (tempBitmap);
+		tempBitmap.recycle();
+		objTextures.put("MyHeroModel", tex);
+		objTextures.put("GridMapBackground", tex);
+		try {initialisationProcess.join();} catch (Exception e) {e.printStackTrace();}
+		initialising = false;
 	}
 	
 	@Override
@@ -110,6 +131,8 @@ public class GameState implements Closeable {
 		chars = null;
 		objs = null;
 		objPositions = null;
+		objModels = null;
+		objTextures = null;
 		initialised = false;
 	}
 	
