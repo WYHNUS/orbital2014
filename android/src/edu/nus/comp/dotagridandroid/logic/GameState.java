@@ -192,6 +192,11 @@ public class GameState implements Closeable {
 		return Collections.unmodifiableMap(objPositions);
 	}
 	
+	public void setCharacterPositions(String name, int[] position) {
+		if (chars.containsKey(name) && position != null && position.length == 2)
+			objPositions.put(name, position.clone());
+	}
+	
 	public FloatBuffer[] getCharacterModel(String name) {
 		return objModels.get(name).clone();
 	}
@@ -214,13 +219,14 @@ public class GameState implements Closeable {
 		switch (e.extendedType) {
 		// interface
 		case "ChooseGrid":
+			gameMaster.applyRule(this, "ChooseGrid", e.data.extendedData);
 			currentSceneRenderer.passEvent(e);
 			break;
 		case "RequestItemList":
 			break;
 		case "RequestActionList":
 			break;
-		case "InterfaceCancel":
+		case "Cancel":
 			notifyAction(e);	// bounce back
 			break;
 		// game action

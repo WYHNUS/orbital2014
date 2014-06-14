@@ -904,6 +904,10 @@ public class GridRenderer implements Renderer {
 			newevt.extendedType = "ChooseGrid";
 			newevt.data.extendedData.put("Coordinate", orgGridIndex.clone());
 			manager.processEvent(newevt);
+		} else {
+			ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_INTERPRETED, e.data);
+			newevt.extendedType = "Cancel";
+			manager.processEvent(newevt);
 		}
 		responder.updateGraphics();
 	}
