@@ -9,7 +9,7 @@ import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class NormalGenerator implements Renderer {
-	public static final int RESOLUTION = 8;
+	public static final int RESOLUTION = 4;
 	private final int rows, columns, width, height;
 	private float[] terrain, model;
 	

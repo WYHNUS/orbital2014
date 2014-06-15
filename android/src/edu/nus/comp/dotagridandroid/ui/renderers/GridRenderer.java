@@ -46,7 +46,8 @@ public class GridRenderer implements Renderer {
 	private float[] mapTerrain, mapNormalCoord, mapTextureCoord;
 	private int[] gridLinesIndex, mapIndex;
 	// map buffers
-	private FloatBuffer mapTerrainBuf, mapNormalCoordBuf, mapTextureCoordBuf;
+	private int mapVBO;
+	private FloatBuffer mapBuf, mapTerrainBuf, mapNormalCoordBuf, mapTextureCoordBuf;
 	// resource - renderers
 	private TextRenderer textRender;
 	private NormalGenerator normalGen;
@@ -126,6 +127,8 @@ public class GridRenderer implements Renderer {
 			lightRadius = BASE_ZOOM_FACTOR * LIGHT_MAX_RADIUS * 2 / rows;
 		lightProjection = FlatPerspectiveMatrix4x4(BOARD_Z_COORD * .5f, 2, -lightRadius, lightRadius, lightRadius, -lightRadius);
 		int[] buf = new int[1];
+		glGenBuffers(1, buf, 0);
+		mapVBO = buf[0];
 		glGenFramebuffers(1, buf, 0);
 		frameBuf = buf[0];
 		glGenRenderbuffers(1, buf, 0);
@@ -336,28 +339,41 @@ public class GridRenderer implements Renderer {
 								= 1 - mapNormalCoord[2 * (i * RESOLUTION * arrWidth + s * arrWidth + j * RESOLUTION + t) + 1];
 					}
 		c = 0;
-		mapTerrainBuf = BufferUtils.createFloatBuffer(4 * rows * RESOLUTION * arrWidth * 2);
-		mapNormalCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
-		mapTextureCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
-		mapIndex = new int[rows * RESOLUTION * arrWidth * 2];
+		mapBuf = BufferUtils.createFloatBuffer(8 * rows * RESOLUTION * arrWidth * 2);
+//		mapTerrainBuf = BufferUtils.createFloatBuffer(4 * rows * RESOLUTION * arrWidth * 2);
+//		mapNormalCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
+//		mapTextureCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
+//		mapIndex = new int[rows * RESOLUTION * arrWidth * 2];
 		for (int i = 0; i < rows * RESOLUTION; i++) {
 			if ((i & 0x1) > 0)	// odd
 				for (int j = columns * RESOLUTION; j >= 0; j--) {
-					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
-					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
-					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
-					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
-					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
-					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
+//					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
+//					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
+//					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
+					mapBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4)
+						.put(mapTextureCoord, 2 * (i * arrWidth + j), 2)
+						.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
+//					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
+//					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
+//					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
+					mapBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4)
+						.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2)
+						.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
 				}
 			else
 				for (int j = 0; j <= columns * RESOLUTION; j++) {
-					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
-					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
-					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
-					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
-					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
-					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
+//					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
+//					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
+//					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
+					mapBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4)
+						.put(mapTextureCoord, 2 * (i * arrWidth + j), 2)
+						.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
+//					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
+//					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
+//					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
+					mapBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4)
+						.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2)
+						.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
 				}
 		}
 	}
@@ -413,6 +429,9 @@ public class GridRenderer implements Renderer {
 		normalGen = new NormalGenerator(columns, rows, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
 		normalGen.setRenderReady();
 		mapTerrain = mapNormalCoord = mapTextureCoord = null; mapIndex = null;
+		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
+		glBufferData(GL_ARRAY_BUFFER, Float.SIZE / 8 * 8 * (rows * NormalGenerator.RESOLUTION * (NormalGenerator.RESOLUTION * columns + 1) * 2), mapBuf.position(0), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		prepareObjects();
 		for (String key : lightSrc.keySet())
 			configureShadow(key);
@@ -488,11 +507,15 @@ public class GridRenderer implements Renderer {
 		glUniform1i(textureLocation, 1);	// changed from 1
 		glUniform1i(shadowLocation, 2);
 		// vertex attributes
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+//		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
-		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, mapTextureCoordBuf.position(0));
-		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, 0, mapNormalCoordBuf.position(0));
+//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
+//		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, mapTextureCoordBuf.position(0));
+//		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, 0, mapNormalCoordBuf.position(0));
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 8, 0);
+		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 8, 4 * Float.SIZE / 8);
+		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 8, 6 * Float.SIZE / 8);
 		glEnableVertexAttribArray(vPosition);
 		glEnableVertexAttribArray(textureCoord);
 		glEnableVertexAttribArray(normalCoord);
@@ -513,6 +536,7 @@ public class GridRenderer implements Renderer {
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
 		glDisableVertexAttribArray(normalCoord);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		// drawables
 		glUseProgram(shadowObjProgram.getProgramId());
 		vPosition = glGetAttribLocation(shadowObjProgram.getProgramId(), "vPosition");
@@ -630,8 +654,10 @@ public class GridRenderer implements Renderer {
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, lightView, 0);
 		glUniformMatrix4fv(mProjection, 1, false, lightProjection, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
+//		glBindBuffer(GL_ARRAY_BUFFER, 0);
+//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
+		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 8, 0);
 		glEnableVertexAttribArray(vPosition);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * NormalGenerator.RESOLUTION * (columns * NormalGenerator.RESOLUTION + 1) * 2);
 		glDisableVertexAttribArray(vPosition);
@@ -907,6 +933,7 @@ public class GridRenderer implements Renderer {
 		textRender.close();
 		glDeleteRenderbuffers(1, new int[]{renderBuf}, 0);
 		glDeleteFramebuffers(1, new int[]{frameBuf}, 0);
+		glDeleteBuffers(1, new int[]{mapVBO}, 0);
 		int[] v = new int[shadowMaps.size()];
 		int c = 0;
 		for (Map.Entry<String, Integer> entry : shadowMaps.entrySet())
