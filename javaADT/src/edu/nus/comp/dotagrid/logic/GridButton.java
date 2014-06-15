@@ -36,6 +36,11 @@ public class GridButton {
 		 * 22 : Sentinel Tower 3
 		 * 23 : Sentinel Tower 4
 		 * 
+		 * 24 : Scourge Tower 1
+		 * 25 : Scourge Tower 2
+		 * 26 : Scourge Tower 3
+		 * 27 : Scourge Tower 4
+		 * 
 		 * 99 : player's hero spawn point
 		 * 
 		 */
@@ -62,6 +67,26 @@ public class GridButton {
 		
 		if(imageNumber == 23) {
 			character = new TowerDatabase().towerDatabase[3];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 24) {
+			character = new TowerDatabase().towerDatabase[4];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 25) {
+			character = new TowerDatabase().towerDatabase[5];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 26) {
+			character = new TowerDatabase().towerDatabase[6];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 27) {
+			character = new TowerDatabase().towerDatabase[7];
 			isOccupied = true;
 		}
 		
