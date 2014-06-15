@@ -140,11 +140,19 @@ public class GridFrame {
 		
 		// prepare to draw transparent grids
 		Graphics2D g2d = (Graphics2D) g;
-		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.4f); 
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f); 
 		g2d.setComposite(ac);
 		
 		for (int x=0; x<gridColNumberInScreen; x++) {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
+				
+				// condition to highlight a button
+				if (highlightedMap[x + currentGridXPos][y + currentGridYPos] == 1){
+					g2d.setColor(Color.BLACK);
+					g2d.fillRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+							(int) gridHeight);	
+				}
 				
 				// condition to highlight a button within attackable range
 				if (attackRangeMap[x + currentGridXPos][y + currentGridYPos] == 1){
@@ -154,14 +162,6 @@ public class GridFrame {
 							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
 							(int) gridHeight);			
 				}				
-							
-				// condition to highlight a button
-				if (highlightedMap[x + currentGridXPos][y + currentGridYPos] == 1){
-					g2d.setColor(Color.RED);
-					g2d.fillRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
-							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
-							(int) gridHeight);	
-				}
 				
 			}
 		}

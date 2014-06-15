@@ -6,11 +6,11 @@ public class Tower extends Character {
 			double startingPhysicalAttack, int startingPhysicalAttackArea,
 			double startingPhysicalAttackSpeed, double startingPhysicalDefence,
 			double startingMagicResistance, int startingMovementSpeed,
-			int actionPoint) {
+			int actionPoint, int teamNumber) {
 		super(name, bountyMoney, startingHP, startingMP, startingPhysicalAttack,
 				startingPhysicalAttackArea, startingPhysicalAttackSpeed,
 				startingPhysicalDefence, startingMagicResistance,
-				startingMovementSpeed, actionPoint);
+				startingMovementSpeed, actionPoint, teamNumber);
 		// TODO Auto-generated constructor stub
 	}
 

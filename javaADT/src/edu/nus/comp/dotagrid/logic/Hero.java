@@ -57,13 +57,13 @@ public class Hero extends Character{
 	// constructor
 	public Hero(String heroName, int bountyMoney, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
-			double startingPhysicalDefence, double startingMagicResistance, int actionPoint,
+			double startingPhysicalDefence, double startingMagicResistance, int actionPoint, int teamNumber,
 			int startingStrength, int startingAgility, int startingIntelligence, 
 			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) 
 	{
 		
 		super(heroName, bountyMoney, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
-				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint);
+				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, teamNumber);
 		
 		// initialize attributes specific to heros
 		this.setMainAttribute(mainAttribute);
@@ -119,7 +119,7 @@ public class Hero extends Character{
 	public Hero(Hero hero) {
 		super(hero.getName(), hero.getBountyMoney(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
 				hero.getStartingPhysicalAttackSpeed(), hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
-				hero.getStartingMovementSpeed(), hero.getMaxActionPoint());
+				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());
 		
 		this.setMainAttribute(hero.getMainAttribute());
 		

@@ -19,12 +19,7 @@ public class GridButtonActions {
 	}
 
 	public void updateWhenNoActionInvoked() {
-		// highlight the selected position
-		if (toXPos != -1 && toYPos != -1) {
-			GridFrame.highlightedMap[toXPos][toYPos] = 1;
-		}
-
-
+		
 		// display the selected position's character icon on the characterIcon
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true) {
 
@@ -36,6 +31,9 @@ public class GridButtonActions {
 			displayAttackableGrids();
 			
 		} else {
+			// highlight the selected position if no character is on the grid
+			GridFrame.highlightedMap[toXPos][toYPos] = 1;
+			
 			// display world map icon
 			GameFrame.allCharacterInfoGameButtons.get(0).setImage(GridFrame.terrain[GridFrame.map[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()]]);
 			GameFrame.allCharacterInfoGameButtons.get(0).setIsReadyToDrawImage(true);

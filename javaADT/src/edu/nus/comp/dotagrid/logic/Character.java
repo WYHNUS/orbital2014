@@ -31,6 +31,12 @@ public class Character {
 	
 	private int maxActionPoint;
 	private int currentActionPoint;
+	
+	/* 0 represents neutral 
+	 * 1 represents Sentinel 
+	 * 2 represents Scourge
+	 * */
+	private int teamNumber;
 
 	public static final int MAX_MOVEMENT_SPEED = 522;
 	public static final double MIN_MOVEMENT_CONSUME_AP = 2.0;
@@ -43,11 +49,13 @@ public class Character {
 	
 	public Character(String name, int bountyMoney, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
-					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int actionPoint)
+					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, 
+					int actionPoint, int teamNumber)
 	{
 		
 		this.setName(name);
 		this.setBountyMoney(bountyMoney);
+		this.setTeamNumber(teamNumber);
 		
 		this.setStartingHP(startingHP);
 		this.setStartingMP(startingMP);
@@ -445,6 +453,20 @@ public class Character {
 			System.out.println("Error: not possible for starting HP to go below 0");
 		} else {
 			this.bountyMoney = bountyMoney;
+		}
+	}
+
+
+	public int getTeamNumber() {
+		return teamNumber;
+	}
+
+
+	public void setTeamNumber(int teamNumber) {
+		if (teamNumber != 0 && teamNumber != 1 && teamNumber != 2) {
+			System.out.println("Invalid teamNumber !");
+		} else {
+			this.teamNumber = teamNumber;
 		}
 	}
 }

@@ -117,8 +117,8 @@ public class GameButtonActions {
 
 
 	private void endRound() {
-		GameFrame.round++;
-		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.round);
+		GameFrame.turn++;
+		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.turn);
 		
 		// reset AP for all existing characters
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {

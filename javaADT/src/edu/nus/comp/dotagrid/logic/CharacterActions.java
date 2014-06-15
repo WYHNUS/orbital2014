@@ -40,42 +40,52 @@ public class CharacterActions {
 		// get the AP required for one physical attack
 		int usedAP = calculateAttackUsedAP();
 					
-		// can only attack on non-friendly occupied grid
+		// can only attack on occupied grid
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true) {
 			
-			// can only attack if character has enough AP
-			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
-								
-				// perform attack action
-				GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
-						- Character.getActualDamage(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttack(), GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalDefence()));
-							
-				// reduce character's AP 
-				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
-						GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);
-				
-				// check if the attacked target is dead
-				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
-					// if the attacker is hero, add bounty money into hero's account
-					System.out.println("before attack = " + ((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney());
-					System.out.println("bounty money = " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
-					if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
-						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
-								((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
-								+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
-					}
-					
-					System.out.println("after attack = " + ((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney());
-					
-					
-					// character is dead, reset the grid which the dead character was at 
-					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
-					
-				}
+			// can only attack non-friendly units
+			if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTeamNumber() != GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber()) {
 			
-			} else {			
-				JOptionPane.showMessageDialog(null, "not enough action point to attack!");
+				// can only attack if character has enough AP
+				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
+									
+					// perform attack action
+					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
+							- Character.getActualDamage(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttack(), GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalDefence()));
+								
+					// reduce character's AP 
+					GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
+							GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);
+					
+					// check if the attacked target is dead
+					if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
+						// if the attacker is hero, add bounty money into hero's account
+						System.out.println("before attack = " + ((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney());
+						System.out.println("bounty money = " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
+						if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
+							((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
+									((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
+									+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
+						}
+						
+						System.out.println("after attack = " + ((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney());
+						
+						
+						// character is dead, reset the grid which the dead character was at 
+						GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
+						
+					}
+				
+				} else {			
+					JOptionPane.showMessageDialog(null, "not enough action point to attack!");
+				}
+				
+			} else {
+				JOptionPane.showMessageDialog(null, "Unable to attack friendly units!");
 			}
+			
+		} else {
+			JOptionPane.showMessageDialog(null, "Need to attack a existing character!");
 		}
 		
 		// attack action ended

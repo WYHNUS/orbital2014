@@ -24,6 +24,7 @@ public class HeroDatabase {
 		 * double startingPhysicalDefense, 
 		 * double startingMagicResistance, 
 		 * int actionPoint,
+		 * int teamNumber
 		 * 
 		 * int strength, 
 		 * int agility, 
@@ -35,7 +36,7 @@ public class HeroDatabase {
 		 * 
 		 * */
 		
-		Hero fur = new Hero("fur", heroBountyMoney, heroStartingMoney, "intelligence", 150, 10, 30000, 3, 0.7, 3.52, 20, 100,
+		Hero fur = new Hero("fur", heroBountyMoney, heroStartingMoney, "intelligence", 150, 10, 30000, 3, 0.7, 3.52, 20, 100, 1,
 							19, 18, 21, 1.8, 1.9, 2.9, 295);	
 		fur.setCharacterImage("heroes", "fur");
 		heroDatabase[0] = fur;

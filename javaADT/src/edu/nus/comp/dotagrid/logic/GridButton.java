@@ -94,6 +94,7 @@ public class GridButton {
 			// randomly select a hero from hero database for player to control
 			Random random = new Random();
 			character = new HeroDatabase().heroDatabase[random.nextInt(HeroDatabase.totalHeroNumber)];
+			character.setTeamNumber(1);
 			
 			// create player!
 			Screen.user.createPlayer();
