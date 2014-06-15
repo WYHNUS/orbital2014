@@ -55,20 +55,20 @@ public class Hero extends Character{
 	
 	
 	// constructor
-	public Hero(String heroName, int bountyMoney, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
+	public Hero(String heroName, int bountyMoney, int bountyExp, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 			double startingPhysicalDefence, double startingMagicResistance, int actionPoint, int teamNumber,
 			int startingStrength, int startingAgility, int startingIntelligence, 
 			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) 
 	{
 		
-		super(heroName, bountyMoney, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
+		super(heroName, bountyMoney, bountyExp, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, teamNumber);
 		
 		// initialize attributes specific to heros
 		this.setMainAttribute(mainAttribute);
 	
-		this.setLevel(0);
+		this.setLevel(1);
 		this.setExperience(0);
 		
 		this.setMoney(startingmoney);
@@ -117,14 +117,17 @@ public class Hero extends Character{
 
 
 	public Hero(Hero hero) {
-		super(hero.getName(), hero.getBountyMoney(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
-				hero.getStartingPhysicalAttackSpeed(), hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
+		super(hero.getName(), hero.getBountyMoney(), hero.getBountyExp(), hero.getStartingHP(), hero.getStartingMP(), 
+				hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), hero.getStartingPhysicalAttackSpeed(), 
+				hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
 				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());
 		
 		this.setMainAttribute(hero.getMainAttribute());
 		
 		this.setLevel(hero.getLevel());
 		this.setExperience(hero.getExperience());
+		
+		this.setBountyExp(CalculateLevelInfo.calculateBountyExp(this.getLevel()));
 		
 		this.setMoney(hero.getMoney());
 		this.setKill(hero.getKill());
@@ -186,10 +189,11 @@ public class Hero extends Character{
 	}
 
 
+
 	public void updateHeroAttributeInfo(){
-		this.setBasicStrength(this.getStartingStrength() + this.getLevel() * this.getStrengthGrowth());
-		this.setBasicAgility(this.getStartingAgility() + this.getLevel() * this.getAgilityGrowth());
-		this.setBasicIntelligence(this.getStartingIntelligence() + this.getLevel() * this.getIntelligenceGrowth());
+		this.setBasicStrength(this.getStartingStrength() + (this.getLevel() - 1) * this.getStrengthGrowth());
+		this.setBasicAgility(this.getStartingAgility() + (this.getLevel() - 1) * this.getAgilityGrowth());
+		this.setBasicIntelligence(this.getStartingIntelligence() + (this.getLevel() - 1) * this.getIntelligenceGrowth());
 		
 		this.setTotalStrength(this.getBasicStrength() + this.getTotalItemAddStrength());
 		this.setTotalAgility(this.getBasicAgility() + this.getTotalItemAddAgility());
@@ -472,7 +476,12 @@ public class Hero extends Character{
 
 	public void setExperience(int experience) {
 		this.experience = experience;
+
+		// change hero's level based on experience gained
+		CalculateLevelInfo newLevel = new CalculateLevelInfo(experience);
+		this.setLevel(newLevel.getLevel());
 	}
+
 
 	public int getLevel() {
 		return level;
