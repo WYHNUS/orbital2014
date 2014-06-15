@@ -47,7 +47,7 @@ public class GridRenderer implements Renderer {
 	private int[] gridLinesIndex, mapIndex;
 	// map buffers
 	private int mapVBO;
-	private FloatBuffer mapBuf, mapTerrainBuf, mapNormalCoordBuf, mapTextureCoordBuf;
+	private FloatBuffer mapBuf;//, mapTerrainBuf, mapNormalCoordBuf, mapTextureCoordBuf;
 	// resource - renderers
 	private TextRenderer textRender;
 	private NormalGenerator normalGen;
@@ -442,6 +442,7 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
 		glBufferData(GL_ARRAY_BUFFER, Float.SIZE / 8 * 8 * (rows * resolution * (resolution * columns + 1) * 2), mapBuf.position(0), GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		mapBuf = null;
 		prepareObjects();
 		for (String key : lightSrc.keySet())
 			configureShadow(key);
