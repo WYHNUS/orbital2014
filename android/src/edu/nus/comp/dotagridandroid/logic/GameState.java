@@ -21,7 +21,7 @@ public class GameState implements Closeable {
 	private Map<String, Object> objs;
 	private Map<String, int[]> objPositions;
 	private Map<String, FloatBuffer[]> objModels;
-	private Map<String, Texture2D> objTextures;
+	private Map<String, Texture2D> objTextures, objThumbnail;
 	// game rule object
 	private GameMaster gameMaster;
 	private String playerCharacter;
@@ -40,6 +40,7 @@ public class GameState implements Closeable {
 		objPositions = new ConcurrentHashMap<>();
 		objModels = new ConcurrentHashMap<>();
 		objTextures = new ConcurrentHashMap<>();
+		objThumbnail = new ConcurrentHashMap<>();
 		initialisationProcess = new Thread() {
 			@Override
 			public void run() {
@@ -139,7 +140,9 @@ public class GameState implements Closeable {
 		objModels = null;
 		for (Texture2D tex : objTextures.values())
 			tex.close();
-		objTextures = null;
+		for (Texture2D tex : objThumbnail.values())
+			tex.close();
+		objThumbnail = objTextures = null;
 		initialised = false;
 	}
 	
@@ -206,6 +209,10 @@ public class GameState implements Closeable {
 	
 	public Texture2D getModelTexture(String name) {
 		return isInitialised() ? objTextures.get(name) : null;
+	}
+	
+	public Texture2D getModelThumbnail(String name) {
+		return isInitialised() ? objThumbnail.get(name) : null;
 	}
 	
 	public Map<String, Boolean> areActionPossible (Map<String, Map<String, Object>> actions) {
