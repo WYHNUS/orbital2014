@@ -1,5 +1,6 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
+import edu.nus.comp.dotagridandroid.Closeable;
 import android.graphics.*;
 import android.opengl.*;
 import static android.opengl.GLES20.*;

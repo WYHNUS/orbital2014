@@ -88,6 +88,8 @@ public class ScrollRenderer implements Renderer {
 	}
 	
 	public void setRenderer(String name, Renderer r, float[] transform) {
+		if (name == null)
+			return;
 		if (r != null) {
 			if (!renderers.containsKey(name))
 				renderingOrder.add(name);
@@ -97,8 +99,20 @@ public class ScrollRenderer implements Renderer {
 			renderers.remove(name);
 			renderingOrder.remove(name);
 		}
-		if (name != null && transform != null)
+		if (transform != null)
 			rendererTransforms.put(name, transform);
+		else
+			rendererTransforms.put(name, IdentityMatrix4x4());
+	}
+	
+	public void clearRenderer() {
+		renderingOrder.clear();
+		renderers.clear();
+		rendererTransforms.clear();
+	}
+	
+	public Renderer getRenderer(String name) {
+		return renderers.get(name);
 	}
 
 	@Override

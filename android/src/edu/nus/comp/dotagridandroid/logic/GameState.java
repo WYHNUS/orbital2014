@@ -2,8 +2,10 @@ package edu.nus.comp.dotagridandroid.logic;
 import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.concurrent.*;
+
 import android.content.Context;
 import android.graphics.*;
+import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import edu.nus.comp.dotagridandroid.ui.event.*;
@@ -23,6 +25,7 @@ public class GameState implements Closeable {
 	// game rule object
 	private GameMaster gameMaster;
 	private String playerCharacter;
+	private int[] chosenGrid;
 	public GameState() {
 	}
 	public void setContext(Context context) {
@@ -41,6 +44,7 @@ public class GameState implements Closeable {
 			@Override
 			public void run() {
 				initialising = true;
+				chosenGrid = new int[2];
 				gameMaster = new GameMaster();
 				// TODO load characters
 				chars.put("MyHero", new Hero("MyHero", 1, 0, "strength",
@@ -191,7 +195,7 @@ public class GameState implements Closeable {
 		return isInitialised() ? Collections.unmodifiableMap(objPositions) : null;
 	}
 	
-	public void setCharacterPositions(String name, int[] position) {
+	protected void setCharacterPositions(String name, int[] position) {
 		if (chars.containsKey(name) && position != null && position.length == 2)
 			objPositions.put(name, position.clone());
 	}
@@ -204,13 +208,24 @@ public class GameState implements Closeable {
 		return isInitialised() ? objTextures.get(name) : null;
 	}
 	
+	public Map<String, Boolean> areActionPossible (Map<String, Map<String, Object>> actions) {
+		Map<String, Boolean> possible = new HashMap<>();
+		for (Map.Entry<String, Map<String,Object>> action : actions.entrySet())
+			possible.put(action.getKey(), gameMaster.requestActionPossible(this, action.getKey(), action.getValue()));
+		return Collections.unmodifiableMap(possible);
+	}
+	
+	protected int[] getChosenGrid () {
+		return chosenGrid.clone();
+	}
+	
 	// interface interactions
 	public void setCurrentSceneRenderer (SceneRenderer renderer) {
 		currentSceneRenderer = renderer;
 	}
 	public void notifyUpdate (Map<String, Object> updates) {
 		if (currentSceneRenderer != null)
-			currentSceneRenderer.notifyUpdate(updates);;
+			currentSceneRenderer.notifyUpdate(updates);
 	}
 
 	public void processEvent(ControlEvent e) {
@@ -218,8 +233,11 @@ public class GameState implements Closeable {
 		switch (e.extendedType) {
 		// interface
 		case "ChooseGrid":
+			this.chosenGrid = (int[]) e.data.extendedData.get("Coordinates");
 			gameMaster.applyRule(this, "ChooseGrid", e.data.extendedData);
 			currentSceneRenderer.passEvent(e);
+			break;
+		case "RequestActionDetail":
 			break;
 		case "RequestItemList":
 			break;
@@ -231,6 +249,7 @@ public class GameState implements Closeable {
 		// game action
 		case "GameAction":
 			// send to game master
+			gameMaster.applyRule(this, "GameAction", e.data.extendedData);
 			break;
 		case "GamePause":
 			// pause game

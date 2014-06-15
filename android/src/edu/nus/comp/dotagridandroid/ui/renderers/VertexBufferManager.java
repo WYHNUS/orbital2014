@@ -1,6 +1,8 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 import java.util.*;
 import java.nio.*;
+
+import edu.nus.comp.dotagridandroid.Closeable;
 import static android.opengl.GLES20.*;
 /*
  * Centralised static vertex buffer storage

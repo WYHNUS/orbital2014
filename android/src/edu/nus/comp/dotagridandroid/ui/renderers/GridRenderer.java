@@ -423,6 +423,9 @@ public class GridRenderer implements Renderer {
 			prepareObjects();
 			responder.updateGraphics();
 		}
+		if (updates.containsKey("HighlightGrid")) {
+			
+		}
 	}
 	@Override
 	public boolean getReadyState() {
@@ -758,9 +761,7 @@ public class GridRenderer implements Renderer {
 		cameraParams[10] = 5;
 		cameraParams[11] = PI / 3f;
 		mapRotation = 0;
-		calculateModel();
 		calculateView();
-		hasSelection = false;
 		responder.updateGraphics();
 	}
 	private void onSingleTap(ControlEvent e) {
@@ -883,14 +884,11 @@ public class GridRenderer implements Renderer {
 				(int) Math.floor(Math.scalb(orgGridPoint[1] + 1, -1) * rows)
 				};
 		hasSelection = (orgGridIndex[0] >= 0 && orgGridIndex[0] < columns && orgGridIndex[1] >= 0 && orgGridIndex[1] < rows);
-		// TODO: ExtensionEngine
-//		edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI.testJS();
-//		System.out.println("EE called");
 		// TODO Move hero
 		if (hasSelection) {
 			ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_INTERPRETED, e.data);
 			newevt.extendedType = "ChooseGrid";
-			newevt.data.extendedData.put("Coordinate", orgGridIndex.clone());
+			newevt.data.extendedData.put("Coordinates", orgGridIndex.clone());
 			manager.processEvent(newevt);
 		} else {
 			ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_INTERPRETED, e.data);

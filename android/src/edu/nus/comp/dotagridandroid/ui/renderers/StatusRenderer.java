@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.util.*;
+
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.*;
@@ -93,12 +94,16 @@ public class StatusRenderer implements Renderer {
 		button.setGraphicsResponder(responder);
 		button.setTexture2D(textures);
 		button.setGameLogicManager(manager);
-		button.setPressRespondName("TestButton");
+		button.setPressRespondName("GameAction");
+		button.setPressRespondData(Collections.singletonMap("Action", (Object) "Attack"));
 		button.setRenderReady();
 		ScrollRenderer scroll = (ScrollRenderer) controls.get("Scroll");
 		scroll.setMVP(model, null, null);
-		scroll.setScrollLimit(-2f, 0f, 2f, 0f);
-		scroll.setRenderer("Button", button, FlatScalingMatrix4x4(.25f, .25f, 1));
+		if (landscape)
+			scroll.setScrollLimit(0f, -2f, 0f, 2f);
+		else
+			scroll.setScrollLimit(-2f, 0f, 2f, 0f);
+		scroll.setRenderer("Attack", button, FlatScalingMatrix4x4(.25f, .25f, 1));
 		scroll.setRenderer("Text", text, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.2f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		responder.updateGraphics();
 	}
@@ -112,9 +117,8 @@ public class StatusRenderer implements Renderer {
 	public void draw() {
 		// other controls
 		drawFrame();
-//		for (Map.Entry<String, Renderer> entry : controls.entrySet())
-//			entry.getValue().draw();
-		controls.get("Scroll").draw();
+		for (Renderer r : controls.values())
+			r.draw();
 	}
 
 	private void drawFrame() {
@@ -190,7 +194,13 @@ public class StatusRenderer implements Renderer {
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
-		if (updates.containsKey("SelectedGrid")) {
+		if (updates.containsKey("ChosenGrid")) {
+			System.out.println("Update buttons");
+			// attack button
+			((ButtonRenderer) ((ScrollRenderer) controls.get("Scroll")).getRenderer("Attack")).setEnabled(
+					manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Attack"))).get("GameAction")
+					);
+			// move button
 		}
 	}
 

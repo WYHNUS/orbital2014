@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 import java.util.*;
+
+import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;

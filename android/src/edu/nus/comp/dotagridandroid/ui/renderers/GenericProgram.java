@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import static android.opengl.GLES20.*;
+import edu.nus.comp.dotagridandroid.Closeable;
 
 /* Generic Program
  * Default Shaders Compiling Routines

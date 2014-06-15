@@ -2,9 +2,10 @@ package edu.nus.comp.dotagridandroid.logic;
 
 import java.util.*;
 import java.util.concurrent.*;
+
 import android.content.Context;
+import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
-import edu.nus.comp.dotagridandroid.ui.renderers.Closeable;
 
 public class GameLogicManager implements Closeable {
 	private Map<String, Object> gameSetting = new ConcurrentHashMap<>();

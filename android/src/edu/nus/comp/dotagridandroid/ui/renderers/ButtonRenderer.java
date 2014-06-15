@@ -13,7 +13,6 @@ public class ButtonRenderer implements Renderer {
 	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
 	private GenericProgram buttonProgram;
 	private boolean pressed = false;
-	private Renderer eventResponder;
 	private GraphicsResponder responder;
 	
 	private String eventName;
@@ -23,6 +22,8 @@ public class ButtonRenderer implements Renderer {
 	private GameLogicManager manager;
 	private Map<String, Object> extendedData;
 	private float ratio;
+	
+	private boolean enabled = false;
 	public ButtonRenderer () {
 		model = view = projection = IdentityMatrix4x4();
 		buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
@@ -69,6 +70,10 @@ public class ButtonRenderer implements Renderer {
 	public void setButtonTexture(String name) {
 		if (textures.containsKey(name))
 			textureName = name;
+	}
+	
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	@Override
@@ -137,9 +142,9 @@ public class ButtonRenderer implements Renderer {
 			return hit && e.data.pointerCount == 1;
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
 			if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT / ratio && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT * ratio)
-				return pressed;
+				return pressed && enabled;
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
-			if (hit && e.data.pointerCount == 1 && pressed) {
+			if (hit && e.data.pointerCount == 1 && pressed && enabled) {
 				ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_CLICK | ControlEvent.TYPE_INTERPRETED, new EventData(e.data));
 				newevt.extendedType = eventName;
 				newevt.emitter = this;

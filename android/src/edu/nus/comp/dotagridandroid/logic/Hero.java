@@ -221,7 +221,7 @@ public class Hero extends Character{
 			mainAttribute.equalsIgnoreCase("agility") || 
 			mainAttribute.equalsIgnoreCase("intelligence")) {
 			
-			this.mainAttribute = mainAttribute.toLowerCase();
+			this.mainAttribute = mainAttribute.toLowerCase(Locale.US);
 		} else {
 			System.out.println("Invalid Main Attribute Type!");
 		}		
