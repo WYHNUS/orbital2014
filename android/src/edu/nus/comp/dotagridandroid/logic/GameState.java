@@ -186,7 +186,7 @@ public class GameState implements Closeable {
 	}
 	
 	// characters
-	public String getPlayerCharacter() {
+	public String getPlayerCharacterName() {
 		return playerCharacter;
 	}
 	
@@ -199,8 +199,11 @@ public class GameState implements Closeable {
 	}
 	
 	protected void setCharacterPositions(String name, int[] position) {
-		if (chars.containsKey(name) && position != null && position.length == 2)
-			objPositions.put(name, position.clone());
+		if (chars.containsKey(name))
+			if (position != null && position.length == 2)
+				objPositions.put(name, position.clone());
+			else
+				objPositions.remove(name);
 	}
 	
 	public FloatBuffer[] getCharacterModel(String name) {
@@ -251,7 +254,8 @@ public class GameState implements Closeable {
 		case "RequestActionList":
 			break;
 		case "Cancel":
-			gameMaster.applyRule(this, "Cancel", null);// bounce back
+			this.chosenGrid = new int[] {-1,-1};
+			gameMaster.applyRule(this, "Cancel", null);	// bounce back
 			break;
 		// game action
 		case "GameAction":

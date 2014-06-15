@@ -15,15 +15,15 @@ public class ButtonRenderer implements Renderer {
 	private boolean pressed = false;
 	private GraphicsResponder responder;
 	
-	private String eventName;
 	private VertexBufferManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private String textureName = "DefaultButton";
 	private GameLogicManager manager;
-	private Map<String, Object> extendedData;
+	private String tapEventName, longPressEventName;
+	private Map<String, Object> tapExtendedData, longPressExtendedData;
 	private float ratio;
 	
-	private boolean enabled = false;
+	private boolean tapEnabled = false, longPressEnabled = false;
 	public ButtonRenderer () {
 		model = view = projection = IdentityMatrix4x4();
 		buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
@@ -58,13 +58,22 @@ public class ButtonRenderer implements Renderer {
 		responder = mainRenderer;
 	}
 	
-	public void setPressRespondName(String eventName) {
+	public void setTapRespondName(String eventName) {
 		if (eventName != null)
-			this.eventName = eventName;
+			this.tapEventName = eventName;
 	}
 	
-	public void setPressRespondData(Map<String, Object> data) {
-		extendedData = data; 
+	public void setTapRespondData(Map<String, Object> data) {
+		tapExtendedData = data; 
+	}
+	
+	public void setLongPressRespondName(String eventName) {
+		if (eventName != null)
+			this.longPressEventName = eventName;
+	}
+	
+	public void setLongPressRespondData(Map<String, Object> data) {
+		longPressExtendedData = data;
 	}
 	
 	public void setButtonTexture(String name) {
@@ -72,8 +81,12 @@ public class ButtonRenderer implements Renderer {
 			textureName = name;
 	}
 	
-	public void setEnabled(boolean enabled) {
-		this.enabled = enabled;
+	public void setTapEnabled(boolean enabled) {
+		this.tapEnabled = enabled;
+	}
+	
+	public void setLongPressEnabled(boolean enabled) {
+		this.longPressEnabled = enabled;
 	}
 
 	@Override
@@ -142,14 +155,22 @@ public class ButtonRenderer implements Renderer {
 			return hit && e.data.pointerCount == 1;
 		} else if (e.type == ControlEvent.TYPE_DRAG) {
 			if (Math.abs(e.data.deltaX) < ControlEvent.TAP_DRIFT_LIMIT / ratio && Math.abs(e.data.deltaY) < ControlEvent.TAP_DRIFT_LIMIT * ratio)
-				return pressed && enabled;
+				return pressed && (tapEnabled || longPressEnabled);
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
-			if (hit && e.data.pointerCount == 1 && pressed && enabled) {
-				ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_CLICK | ControlEvent.TYPE_INTERPRETED, new EventData(e.data));
-				newevt.extendedType = eventName;
-				newevt.emitter = this;
-				newevt.data.extendedData = extendedData;
-				manager.processEvent(newevt);
+			if (hit && e.data.pointerCount == 1 && pressed) {
+				if (longPressEnabled && e.data.eventTime - e.data.startTime > ControlEvent.TAP_LONG_TIME_LIMIT) {
+					ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_CLICK | ControlEvent.TYPE_INTERPRETED, new EventData(e.data));
+					newevt.extendedType = longPressEventName;
+					newevt.emitter = this;
+					newevt.data.extendedData = longPressExtendedData;
+					manager.processEvent(newevt);
+				} else if (tapEnabled) {
+					ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_CLICK | ControlEvent.TYPE_INTERPRETED, new EventData(e.data));
+					newevt.extendedType = tapEventName;
+					newevt.emitter = this;
+					newevt.data.extendedData = tapExtendedData;
+					manager.processEvent(newevt);
+				}
 			}
 			return false;
 		}

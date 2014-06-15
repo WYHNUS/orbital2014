@@ -70,7 +70,8 @@ public class GridRenderer implements Renderer {
 	private boolean doubleTap = false;
 	// ray tracing
 	private float[] orgGridPoint;
-	private int [] orgGridIndex;
+	private int[] orgGridIndex;
+	private int[][] highlightedGridIndex;
 	// light sources
 	public final int MAX_LIGHT_SOURCES = CommonShaders.MAX_LIGHT_SOURCE;
 	private final float[] lightObserver = {0,0,BOARD_Z_COORD};
@@ -98,7 +99,7 @@ public class GridRenderer implements Renderer {
 			resolution = 2;
 		else if (columns * rows > 1000)
 			resolution = 4;
-		else if (columns * rows > 500)
+		else if (columns * rows > 200)
 			resolution = 8;
 		else
 			resolution = 16;
@@ -350,37 +351,22 @@ public class GridRenderer implements Renderer {
 					}
 		c = 0;
 		mapBuf = BufferUtils.createFloatBuffer(8 * rows * resolution * arrWidth * 2);
-//		mapTerrainBuf = BufferUtils.createFloatBuffer(4 * rows * RESOLUTION * arrWidth * 2);
-//		mapNormalCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
-//		mapTextureCoordBuf = BufferUtils.createFloatBuffer(2 * rows * RESOLUTION * arrWidth * 2);
 //		mapIndex = new int[rows * RESOLUTION * arrWidth * 2];
 		for (int i = 0; i < rows * resolution; i++) {
 			if ((i & 0x1) > 0)	// odd
 				for (int j = columns * resolution; j >= 0; j--) {
-//					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
-//					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
-//					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
 					mapBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4)
 						.put(mapTextureCoord, 2 * (i * arrWidth + j), 2)
 						.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
-//					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
-//					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
-//					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
 					mapBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4)
 						.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2)
 						.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
 				}
 			else
 				for (int j = 0; j <= columns * resolution; j++) {
-//					mapTerrainBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4);
-//					mapNormalCoordBuf.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
-//					mapTextureCoordBuf.put(mapTextureCoord, 2 * (i * arrWidth + j), 2);
 					mapBuf.put(mapTerrain, 4 * (i * arrWidth + j), 4)
 						.put(mapTextureCoord, 2 * (i * arrWidth + j), 2)
 						.put(mapNormalCoord, 2 * (i * arrWidth + j), 2);
-//					mapTerrainBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4);
-//					mapNormalCoordBuf.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
-//					mapTextureCoordBuf.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2);
 					mapBuf.put(mapTerrain, 4 * ((i + 1) * arrWidth + j), 4)
 						.put(mapTextureCoord, 2 * ((i + 1) * arrWidth + j), 2)
 						.put(mapNormalCoord, 2 * ((i + 1) * arrWidth + j), 2);
@@ -389,7 +375,7 @@ public class GridRenderer implements Renderer {
 	}
 	private void prepareObjects() {
 		final Map<String, Character> chars = manager.getCurrentGameState().getCharacters();
-		final String mainCharacter = manager.getCurrentGameState().getPlayerCharacter();
+		final String mainCharacter = manager.getCurrentGameState().getPlayerCharacterName();
 		final Map<String, int[]> charPositions = manager.getCurrentGameState().getCharacterPositions();
 		// TODO draw character
 		// if friendly, always display
@@ -449,13 +435,12 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
-		if (updates.containsKey("Characters")) {
+		highlightedGridIndex = null;
+		if (updates.containsKey("Characters"))
 			prepareObjects();
-			responder.updateGraphics();
-		}
-		if (updates.containsKey("HighlightGrid")) {
-			
-		}
+		if (updates.containsKey("HighlightGrid"))
+			highlightedGridIndex = (int[][]) updates.get("HighlightGrid");
+		responder.updateGraphics();
 	}
 	@Override
 	public boolean getReadyState() {
@@ -518,12 +503,8 @@ public class GridRenderer implements Renderer {
 		glUniform1i(textureLocation, 1);	// changed from 1
 		glUniform1i(shadowLocation, 2);
 		// vertex attributes
-//		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
-//		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, mapTextureCoordBuf.position(0));
-//		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, 0, mapNormalCoordBuf.position(0));
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 8, 0);
 		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 8, 4 * Float.SIZE / 8);
 		glVertexAttribPointer(normalCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 8, 6 * Float.SIZE / 8);
@@ -601,10 +582,7 @@ public class GridRenderer implements Renderer {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	private void drawSelection() {
-		if (!hasSelection)
-			return;
-		float[] mat = FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(2f/columns * orgGridIndex[0]-1, 2f/rows * orgGridIndex[1]-1, 1));
-		mat = FlatMatrix4x4Multiplication(mat, selectGridMat);
+		float[] mat;
 		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
 				mModel = glGetUniformLocation(gridProgram.getProgramId(), "model"),
 				mView = glGetUniformLocation(gridProgram.getProgramId(), "view"),
@@ -613,15 +591,32 @@ public class GridRenderer implements Renderer {
 				vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 				iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
 		glUseProgram(gridProgram.getProgramId());
-		glUniformMatrix4fv(mModel, 1, false, mat, 0);
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
-		glUniform4f(vColor, 1, 0, 0, 0.2f);
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
 		glEnableVertexAttribArray(vPosition);
-		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+		if (hasSelection) {
+			mat = FlatMatrix4x4Multiplication(
+					model,
+					FlatTranslationMatrix4x4(2f/columns * orgGridIndex[0]-1, 2f/rows * orgGridIndex[1]-1, 1),
+					selectGridMat);
+			glUniformMatrix4fv(mModel, 1, false, mat, 0);
+			glUniform4f(vColor, 1, 0, 0, .2f);
+			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+		}
+		if (highlightedGridIndex != null) {
+			glUniform4f(vColor, 0, 0, 1, .2f);
+			for (int[] idx : highlightedGridIndex) {
+				mat = FlatMatrix4x4Multiplication(
+					model,
+					FlatTranslationMatrix4x4(2f/columns * idx[0]-1, 2f/rows * idx[1]-1, 1),
+					selectGridMat);
+				glUniformMatrix4fv(mModel, 1, false, mat, 0);
+				glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+			}
+		}
 		glDisableVertexAttribArray(vPosition);
 	}
 	@Override
@@ -792,6 +787,7 @@ public class GridRenderer implements Renderer {
 	}
 	private void onDoubleTap(ControlEvent e) {
 		// reset camera
+		highlightedGridIndex = null;
 		cameraParams[0] = cameraParams[1] = cameraParams[3] = cameraParams[4] = cameraParams[6] = cameraParams[8] = 0;
 		cameraParams[2] = .8f;
 		cameraParams[5] = cameraParams[9] = .01f;

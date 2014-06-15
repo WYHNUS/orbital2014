@@ -94,8 +94,12 @@ public class StatusRenderer implements Renderer {
 		button.setGraphicsResponder(responder);
 		button.setTexture2D(textures);
 		button.setGameLogicManager(manager);
-		button.setPressRespondName("GameAction");
-		button.setPressRespondData(Collections.singletonMap("Action", (Object) "Attack"));
+		button.setTapEnabled(true);
+		button.setTapRespondName("GameAction");
+		button.setTapRespondData(Collections.singletonMap("Action", (Object) "Attack"));
+		button.setLongPressEnabled(true);
+		button.setLongPressRespondName("GameAction");
+		button.setLongPressRespondData(Collections.singletonMap("Action", (Object) "RequestAttackArea"));
 		button.setRenderReady();
 		ScrollRenderer scroll = (ScrollRenderer) controls.get("Scroll");
 		scroll.setMVP(model, null, null);
@@ -197,7 +201,7 @@ public class StatusRenderer implements Renderer {
 		if (updates.containsKey("ChosenGrid")) {
 			System.out.println("Update buttons");
 			// attack button
-			((ButtonRenderer) ((ScrollRenderer) controls.get("Scroll")).getRenderer("Attack")).setEnabled(
+			((ButtonRenderer) ((ScrollRenderer) controls.get("Scroll")).getRenderer("Attack")).setTapEnabled(
 					manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Attack"))).get("GameAction")
 					);
 			// move button

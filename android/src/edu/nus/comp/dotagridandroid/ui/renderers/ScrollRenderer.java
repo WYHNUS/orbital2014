@@ -222,7 +222,7 @@ public class ScrollRenderer implements Renderer {
 				}
 			}
 			eventCapturer = null;
-			if (Math.abs(displacement[0]) > DRAG_THRESHOLD || Math.abs(displacement[1]) > DRAG_THRESHOLD)
+			if (Math.abs(e.data.deltaX) > DRAG_THRESHOLD / ratio * 2 || Math.abs(e.data.deltaY) > DRAG_THRESHOLD * ratio * 2)
 				captured = true;
 			return true;
 		} else if (e.type == ControlEvent.TYPE_CLEAR) {
