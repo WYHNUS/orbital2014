@@ -9,7 +9,7 @@ import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class NormalGenerator implements Renderer {
-	public static final int RESOLUTION = 4;
+	private final int resolution;
 	private final int rows, columns, width, height;
 	private float[] terrain, model;
 	
@@ -21,7 +21,8 @@ public class NormalGenerator implements Renderer {
 	private final float[] identity = IdentityMatrix4x4();
 	private boolean renderReady = false;
 	private Thread computeTask;
-	public NormalGenerator (int columns, int rows, float[] terrain, float[] model, int width, int height) {
+	public NormalGenerator (int columns, int rows, int resolution, float[] terrain, float[] model, int width, int height) {
+		this.resolution = resolution;
 		this.rows = rows;
 		this.columns = columns;
 		this.terrain = terrain;
@@ -68,15 +69,15 @@ public class NormalGenerator implements Renderer {
 	public void setMVP(float[] model, float[] view, float[] projection) {}
 
 	private void computeTexture() {
-		pos = BufferUtils.createFloatBuffer(rows * RESOLUTION * columns * RESOLUTION * 24);
-		normal = BufferUtils.createFloatBuffer(rows * columns * RESOLUTION * RESOLUTION * 24);
+		pos = BufferUtils.createFloatBuffer(rows * resolution * columns * resolution * 24);
+		normal = BufferUtils.createFloatBuffer(rows * columns * resolution * resolution * 24);
 		int offset;
-		final int arrWidth = columns * RESOLUTION + 1;
+		final int arrWidth = columns * resolution + 1;
 		for (int i = 0; i < rows; i++) {
-			offset = i * arrWidth * RESOLUTION;
+			offset = i * arrWidth * resolution;
 			for (int j = 0; j < columns; j++) {
-				for (int s = 0; s < RESOLUTION; s++)
-					for (int t = 0; t < RESOLUTION; t++) {
+				for (int s = 0; s < resolution; s++)
+					for (int t = 0; t < resolution; t++) {
 						final int
 							bottomLeft = offset + s * arrWidth + t,
 							bottomRight = bottomLeft + 1,
@@ -149,7 +150,7 @@ public class NormalGenerator implements Renderer {
 						n = new float[] {(n[0] + 1)/2, (n[1] + 1)/2, (n[2] + 1)/2};
 						normal.put(n).put(1).put(n).put(1).put(n).put(1);
 					}
-				offset += RESOLUTION;
+				offset += resolution;
 			}
 		}
 	}
@@ -195,7 +196,7 @@ public class NormalGenerator implements Renderer {
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, pos.position(0));
 		glEnableVertexAttribArray(vPosition);
 		glEnableVertexAttribArray(vColor);
-		glDrawArrays(GL_TRIANGLES, 0, rows * columns * RESOLUTION * RESOLUTION * 6);
+		glDrawArrays(GL_TRIANGLES, 0, rows * columns * resolution * resolution * 6);
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(vColor);
 		pos = normal = null;
