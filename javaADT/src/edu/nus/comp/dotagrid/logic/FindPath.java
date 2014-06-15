@@ -87,8 +87,7 @@ public class FindPath {
 	// find shortest path between two points
 	public int findShortestPath(int startingXPos, int startingYPos, int XPos, int YPos, int movementPoint){
 		createShortestPath(pathXPos, pathYPos, startingXPos, startingYPos, movementPoint);
-
-		System.out.println("Shortest Path Length = " + path[XPos - startingXPos + movementPoint][YPos - startingYPos + movementPoint]);
+		
 		return path[XPos - startingXPos + movementPoint][YPos - startingYPos + movementPoint];
 	}
 	
@@ -109,13 +108,14 @@ public class FindPath {
 				&& path[pathXPos-1][pathYPos] == -1) {
 				
 					// set the value for this position
-					setPathValue(pathXPos-1, pathYPos);
+					setPathValue(pathXPos-1, pathYPos, pathLength);
 					
-					int[] tempArray = new int[4];
+					int[] tempArray = new int[5];
 					tempArray[0] = pathXPos-1;
 					tempArray[1] = pathYPos;
 					tempArray[2] = startingXPos-1;
 					tempArray[3] = startingYPos;
+					tempArray[4] = movementPoint-1;
 					
 					pathQueue.add(tempArray);
 			}
@@ -125,13 +125,14 @@ public class FindPath {
 				&& path[pathXPos][pathYPos-1] == -1) {
 				
 					// set the value for this position
-					setPathValue(pathXPos, pathYPos-1);
+					setPathValue(pathXPos, pathYPos-1, pathLength);
 					
-					int[] tempArray = new int[4];
+					int[] tempArray = new int[5];
 					tempArray[0] = pathXPos;
 					tempArray[1] = pathYPos-1;
 					tempArray[2] = startingXPos;
 					tempArray[3] = startingYPos-1;
+					tempArray[4] = movementPoint-1;
 					
 					pathQueue.add(tempArray);
 				
@@ -142,13 +143,14 @@ public class FindPath {
 				&& path[pathXPos][pathYPos+1] == -1) {
 				
 					// set the value for this position
-					setPathValue(pathXPos, pathYPos+1);
+					setPathValue(pathXPos, pathYPos+1, pathLength);
 					
-					int[] tempArray = new int[4];
+					int[] tempArray = new int[5];
 					tempArray[0] = pathXPos;
 					tempArray[1] = pathYPos+1;
 					tempArray[2] = startingXPos;
 					tempArray[3] = startingYPos+1;
+					tempArray[4] = movementPoint-1;
 					
 					pathQueue.add(tempArray);
 			} 
@@ -158,34 +160,42 @@ public class FindPath {
 				&& path[pathXPos+1][pathYPos] == -1) {
 				
 					// set the value for this position
-					setPathValue(pathXPos+1, pathYPos);
+					setPathValue(pathXPos+1, pathYPos, pathLength);
 					
-					int[] tempArray = new int[4];
+					int[] tempArray = new int[5];
 					tempArray[0] = pathXPos+1;
 					tempArray[1] = pathYPos;
 					tempArray[2] = startingXPos+1;
 					tempArray[3] = startingYPos;
+					tempArray[4] = movementPoint-1;
 					
 					pathQueue.add(tempArray);
 				
 			}
-			
-			createShortestPath(pathQueue.peek()[0], pathQueue.peek()[1], pathQueue.peek()[2], pathQueue.poll()[3], movementPoint-1);
-			
+		}
+		
+		if (pathQueue.isEmpty() == true) {
+			// queue is empty, no more path!
+			return;
+		} else {
+			createShortestPath(pathQueue.peek()[0], pathQueue.peek()[1], pathQueue.peek()[2], pathQueue.peek()[3], pathQueue.poll()[4]);
 		}
 	}
 
 	
-	private void setPathValue(int startingXPos, int startingYPos) {
+	private void setPathValue(int startingXPos, int startingYPos, int pathLength) {
 		// set the path steps for the grid
 		int smallestValue = Integer.MAX_VALUE;
 		
 		// find the smallest value in the surrounding grids
 		for (int i=-1; i<=1; i++) {
 			for (int j=-1; j<=1; j++) {
-				if (path[startingXPos+i][startingYPos+j] != -1 && path[startingXPos+i][startingYPos+j] < smallestValue
-						&& Math.abs(i) != Math.abs(j)) {
-					smallestValue = path[startingXPos+i][startingYPos+j];
+				if (startingXPos+i >= 0 && startingYPos+j >= 0 && 
+						startingXPos+i < pathLength && startingYPos+j < pathLength &&
+						Math.abs(i) != Math.abs(j)){
+					if	(path[startingXPos+i][startingYPos+j] != -1 && path[startingXPos+i][startingYPos+j] < smallestValue) {
+						smallestValue = path[startingXPos+i][startingYPos+j];
+					}
 				}
 			} 
 		}

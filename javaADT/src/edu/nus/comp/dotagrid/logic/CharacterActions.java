@@ -95,10 +95,10 @@ public class CharacterActions {
 				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
 								
 					// perform move action
-					resetGridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
+					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
 					GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
 								
-					// reduce hero's AP 
+					// reduce character's AP 
 					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentActionPoint(
 							GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentActionPoint() - usedAP);
 								
@@ -133,14 +133,5 @@ public class CharacterActions {
 		}
 	}
 
-
-	private void resetGridButton(GridButton resultGridButton){
-		GridFrame.gridButtonMap[toXPos][toYPos].setIsMovable(resultGridButton.getIsMovable());
-		GridFrame.gridButtonMap[toXPos][toYPos].setIsOccupied(resultGridButton.getIsOccupied());
-		GridFrame.gridButtonMap[toXPos][toYPos].setIsPlayer(resultGridButton.getIsPlayer());
-		GridFrame.gridButtonMap[toXPos][toYPos].setIsHero(resultGridButton.getIsHero());
-		GridFrame.gridButtonMap[toXPos][toYPos].setCharacter(resultGridButton.getCharacter());
-	}
-	
 
 }

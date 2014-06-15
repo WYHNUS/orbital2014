@@ -47,13 +47,17 @@ public class GridButtonActions {
 		// check to execute move action
 		if (GameButtonActions.readyToMove == true) {
 			
+			// check if within movable grids
+			if (isWithinMovableRange()) {
 				// move!
 				new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
 				
 				// if hero is player, change player's position
 				Screen.user.player.setXPos(toXPos);
 				Screen.user.player.setYPos(toYPos);
-			
+			} else {
+				JOptionPane.showMessageDialog(null, "Out Of Movable Range!");
+			}
 
 			// move action ended
 			GameButtonActions.readyToMove = false;
@@ -90,6 +94,13 @@ public class GridButtonActions {
 	}
 	
 	
+	private boolean isWithinMovableRange() {
+		// calculate if the selected grid is within movable range
+		FindPath.highlightMovableGrids(fromXPos, fromYPos, GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getNumberOfMovableGrid());
+		
+		return GridFrame.highlightedMap[toXPos][toYPos] == 1;
+	}
+
 	private boolean calculateWithinAttackRange() {
 		// calculate if the selected grid is within attack range
 		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos) <= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttackArea());

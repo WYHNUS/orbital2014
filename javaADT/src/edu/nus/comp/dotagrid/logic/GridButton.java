@@ -81,6 +81,16 @@ public class GridButton {
 	}
 	
 	
+	public GridButton(GridButton gridButton) {
+		this.setIsMovable(gridButton.getIsMovable());
+		this.setIsOccupied(gridButton.getIsOccupied());
+		this.setIsPlayer(gridButton.getIsPlayer());
+		this.setIsHero(gridButton.getIsHero());
+		this.setCharacter(gridButton.getCharacter());
+		this.gridButtonActions = null;
+	}
+
+
 	public void actionPerformed(){
 		// initialize grid button actions
 		if (GridFrame.getPreviouslySelectedXPos() == -1 || GridFrame.getPreviouslySelectedYPos() == -1 ) {
