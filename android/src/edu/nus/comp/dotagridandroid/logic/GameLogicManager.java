@@ -17,7 +17,7 @@ public class GameLogicManager implements Closeable {
 		this.context = context;
 		gameSetting.put("DISPLAY_ANTI_ALIAS_SAMPLINGS", 4);
 		GameState current = new GameState();
-		final int width = 20, height = 20;
+		final int width = 100, height = 100;
 		current.setGridHeight(height);
 		current.setGridWidth(width);
 		final float[] terrain = new float[width * height];

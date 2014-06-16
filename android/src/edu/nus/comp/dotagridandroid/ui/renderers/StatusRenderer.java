@@ -31,6 +31,10 @@ public class StatusRenderer implements Renderer {
 //		Renderer r = new ButtonRenderer();
 //		controls.put("Button", r);
 		controls.put("Scroll", new ScrollRenderer());
+		controls.put("Attack", new ButtonRenderer());
+		controls.put("AttackLabel", new TextRenderer());
+		controls.put("Move", new ButtonRenderer());
+		controls.put("MoveLabel", new TextRenderer());
 	}
 
 	@Override
@@ -78,22 +82,9 @@ public class StatusRenderer implements Renderer {
 	@Override
 	public void setRenderReady() {
 		// control layout
-		TextRenderer text = new TextRenderer();
-		text.setAspectRatio(ratio);
-		text.setVertexBufferManager(vBufMan);
-		text.setGraphicsResponder(responder);
-		text.setTexture2D(textures);
-		text.setGameLogicManager(manager);
-		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
-		text.setRenderReady();
-		text.setText("Attack");
-		text.setTextColour(new float[]{1,0,0,1});
-		ButtonRenderer button = new ButtonRenderer();
-		button.setVertexBufferManager(vBufMan);
-		button.setAspectRatio(ratio);
-		button.setGraphicsResponder(responder);
-		button.setTexture2D(textures);
-		button.setGameLogicManager(manager);
+		ScrollRenderer scroll = (ScrollRenderer) controls.get("Scroll");
+		// attack button
+		ButtonRenderer button = (ButtonRenderer) controls.remove("Attack");
 		button.setTapEnabled(true);
 		button.setTapRespondName("GameAction");
 		button.setTapRespondData(Collections.singletonMap("Action", (Object) "Attack"));
@@ -101,20 +92,49 @@ public class StatusRenderer implements Renderer {
 		button.setLongPressRespondName("GameAction");
 		button.setLongPressRespondData(Collections.singletonMap("Action", (Object) "RequestAttackArea"));
 		button.setRenderReady();
-		ScrollRenderer scroll = (ScrollRenderer) controls.get("Scroll");
+		scroll.setRenderer("Attack", button, FlatScalingMatrix4x4(.25f, .25f, 1));
+		// attack label
+		TextRenderer text = (TextRenderer) controls.remove("AttackLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setText("Attack");
+		text.setTextColour(new float[]{1,-1,-1,1});
+		scroll.setRenderer("Text", text, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		// move button
+		button = (ButtonRenderer) controls.remove("Move");
+		button.setTapEnabled(true);
+		button.setTapRespondName("GameAction");
+		button.setTapRespondData(Collections.singletonMap("Action", (Object) "Move"));
+		button.setLongPressEnabled(true);
+		button.setLongPressRespondName("GameAction");
+		button.setLongPressRespondData(Collections.singletonMap("Action", (Object) "RequestMoveArea"));
+		button.setRenderReady();
+		scroll.setRenderer("Move", button,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -.5f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.5f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+		// move label
+		text = (TextRenderer) controls.remove("MoveLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setText("Move");
+		text.setTextColour(new float[]{1,0,0,1});
+		scroll.setRenderer("MoveLabel", text,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.2f, -.25f, 0), FlatScalingMatrix4x4(.5f/4, .5f/4, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.3f, .25f, 0), FlatScalingMatrix4x4(.5f/4, .5f/4, 1)));
 		scroll.setMVP(model, null, null);
 		if (landscape)
 			scroll.setScrollLimit(0f, -2f, 0f, 2f);
 		else
 			scroll.setScrollLimit(-2f, 0f, 2f, 0f);
-		scroll.setRenderer("Attack", button, FlatScalingMatrix4x4(.25f, .25f, 1));
-		scroll.setRenderer("Text", text, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.2f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		responder.updateGraphics();
 	}
 	
 	@Override
 	public boolean getReadyState() {
-		return controls.get("Scroll").getReadyState();
+		for (Renderer r : controls.values())
+			if (!r.getReadyState())
+				return false;
+		return true;
 	}
 
 	@Override

@@ -47,9 +47,10 @@ public class GameMaster {
 					// TODO: calculate attack area
 					List<int[]> allowed = new ArrayList<>();
 					final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
-					for (int i = 1; i <= playerChar.getTotalPhysicalAttackArea(); i++)
-						for (int j = 1; j <= playerChar.getTotalPhysicalAttackArea() - i; j++)
-							if (prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
+					final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
+					for (int i = -totalAttackArea; i <= totalAttackArea; i++)
+						for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
+							if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
 								allowed.add(new int[]{prevPos[0] + i, prevPos[1] + j});
 					updates.put("HighlightGrid", allowed.toArray(new int[2][allowed.size()]));
 					stateMachine.notifyUpdate(Collections.unmodifiableMap(updates));
@@ -65,13 +66,15 @@ public class GameMaster {
 //						return;
 					playerChar.setCurrentActionPoint((int) currentActionPoint);
 					// move
-					stateMachine.setCharacterPositions(playerCharName, (int[]) options.get("Coordinate"));
+					stateMachine.setCharacterPositions(playerCharName, stateMachine.getChosenGrid());
 					Set<String> characters = Collections.singleton(playerCharName);
 					updates = Collections.singletonMap("Characters", (Object) characters);
 					stateMachine.notifyUpdate(updates);
 					return;
 				}
-				case "RequestMoveArea":
+				case "RequestMoveArea": {
+					System.out.println("Requesting move area");
+				}
 				}
 				
 			}

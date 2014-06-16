@@ -20,6 +20,7 @@ public class GameState implements Closeable {
 	private Map<String, Character> chars;
 	private Map<String, Object> objs;
 	private Map<String, int[]> objPositions;
+	private Map<GridPointIndex, String> posReverseLookup;
 	private Map<String, FloatBuffer[]> objModels;
 	private Map<String, Texture2D> objTextures, objThumbnail;
 	// game rule object
@@ -41,6 +42,7 @@ public class GameState implements Closeable {
 		objModels = new ConcurrentHashMap<>();
 		objTextures = new ConcurrentHashMap<>();
 		objThumbnail = new ConcurrentHashMap<>();
+		posReverseLookup = new ConcurrentHashMap<>();
 		initialisationProcess = new Thread() {
 			@Override
 			public void run() {
@@ -52,11 +54,12 @@ public class GameState implements Closeable {
 						100,
 						100,
 						100,
+						2,
 						100,
 						100,
 						100,
 						100,
-						100,
+						1,
 						100,
 						100,
 						100,
@@ -68,11 +71,12 @@ public class GameState implements Closeable {
 						100,
 						100,
 						100,
+						2,
 						100,
 						100,
 						100,
 						100,
-						100,
+						2,
 						100,
 						100,
 						100,
@@ -80,8 +84,10 @@ public class GameState implements Closeable {
 						100,
 						100,
 						100));
-				objPositions.put("MyHero", new int[]{0, 0});
-				objPositions.put("MyHero2", new int[]{19,19});
+				setCharacterPositions("MyHero", new int[]{0, 0});
+				setCharacterPositions("MyHero2", new int[]{19,19});
+//				objPositions.put("MyHero", new int[]{0, 0});
+//				objPositions.put("MyHero2", new int[]{19,19});
 				// TODO load character models
 				chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
 				chars.get("MyHero2").setCharacterImage("MyHeroModel");
@@ -114,6 +120,8 @@ public class GameState implements Closeable {
 								0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
 						})
 				});
+				// end
+				chosenGrid = objPositions.get(GameState.this.playerCharacter).clone();
 				initialised = true;
 				initialising = false;
 			}
@@ -199,11 +207,19 @@ public class GameState implements Closeable {
 	}
 	
 	protected void setCharacterPositions(String name, int[] position) {
-		if (chars.containsKey(name))
-			if (position != null && position.length == 2)
+		if (chars.containsKey(name)) {
+			if (position != null && position.length == 2) {
+				final GridPointIndex key = new GridPointIndex(position);
+				if (posReverseLookup.containsKey(key))
+					return;	// failed
+				posReverseLookup.remove(key);
+				posReverseLookup.put(key, name);
 				objPositions.put(name, position.clone());
-			else
-				objPositions.remove(name);
+			} else {
+				final GridPointIndex key = new GridPointIndex(objPositions.remove(name));
+				posReverseLookup.remove(key);
+			}
+		}
 	}
 	
 	public FloatBuffer[] getCharacterModel(String name) {

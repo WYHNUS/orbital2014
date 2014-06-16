@@ -45,7 +45,6 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void onSurfaceChanged(GL10 gl, int width, int height) {
-//		close();
 		r = new MainSceneRenderer();
 		System.gc();
 		this.width = width;
@@ -107,6 +106,8 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void close() {
+		if (closed)
+			return;
 		this.closed = true;
 		if (r != null)
 			r.close();

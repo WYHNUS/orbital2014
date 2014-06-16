@@ -376,6 +376,7 @@ public class GridRenderer implements Renderer {
 	private void prepareObjects() {
 		final Map<String, Character> chars = manager.getCurrentGameState().getCharacters();
 		final String mainCharacter = manager.getCurrentGameState().getPlayerCharacterName();
+		final int mainCharacterTeamNumber = chars.get(mainCharacter).getTeamNumber();
 		final Map<String, int[]> charPositions = manager.getCurrentGameState().getCharacterPositions();
 		// TODO draw character
 		// if friendly, always display
@@ -402,11 +403,13 @@ public class GridRenderer implements Renderer {
 							2 * (.5f + pos[1]) / rows - 1,
 							1 + terrain[pos[0] + pos[1] * columns],	// 1 should be changed
 							1});
-			lightSrc.put(name, new float[]{
-					lightPos[0], lightPos[1], lightPos[2],
-					1, 1, 1,	// TODO change to hero's color
-					5, 2});
-			lightOn.put(name, true);
+			if (chars.get(name).getTeamNumber() == mainCharacterTeamNumber) {
+				lightSrc.put(name, new float[]{
+						lightPos[0], lightPos[1], lightPos[2],
+						1, 1, 1,	// TODO change to hero's color
+						5, 2});
+				lightOn.put(name, chars.get(name).isAlive());
+			}
 		}
 		// put all lightSrc dirty
 		for (String name : lightSrc.keySet())
@@ -420,7 +423,7 @@ public class GridRenderer implements Renderer {
 		gridLines = null; gridLinesIndex = null;
 		textRender.setRenderReady();
 		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
-		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
+		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-1, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
 		mapTexture = textures.get("GridMapBackground");
 		normalGen = new NormalGenerator(columns, rows, resolution, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
 		normalGen.setRenderReady();
@@ -563,18 +566,19 @@ public class GridRenderer implements Renderer {
 			glUniform1i(textureLocation, 0);
 			glUniform1i(shadowLocation, 1);
 			c = 1;
-			for (Map.Entry<String, float[]> entry : lightSrc.entrySet()) {
-				glActiveTexture(GL_TEXTURE1);
-				glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
-				final float[] config = entry.getValue();
-				glUniformMatrix4fv(mLight, 1, false, FlatMatrix4x4Multiplication(lightProjection, lightViews.get(entry.getKey())), 0);
-				glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
-				glUniform3f(source, config[0], config[1], config[2]);
-				glUniform3f(color, config[3], config[4], config[5]);
-				glUniform1f(specular, config[6]);
-				glUniform1f(attenuation, config[7]);
-				glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
-			}
+			for (Map.Entry<String, float[]> entry : lightSrc.entrySet())
+				if (lightOn.get(entry.getKey())) {
+					glActiveTexture(GL_TEXTURE1);
+					glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
+					final float[] config = entry.getValue();
+					glUniformMatrix4fv(mLight, 1, false, FlatMatrix4x4Multiplication(lightProjection, lightViews.get(entry.getKey())), 0);
+					glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
+					glUniform3f(source, config[0], config[1], config[2]);
+					glUniform3f(color, config[3], config[4], config[5]);
+					glUniform1f(specular, config[6]);
+					glUniform1f(attenuation, config[7]);
+					glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
+				}
 			glDisableVertexAttribArray(vPosition);
 			glDisableVertexAttribArray(vNormal);
 			glDisableVertexAttribArray(textureCoord);
@@ -609,6 +613,8 @@ public class GridRenderer implements Renderer {
 		if (highlightedGridIndex != null) {
 			glUniform4f(vColor, 0, 0, 1, .2f);
 			for (int[] idx : highlightedGridIndex) {
+				if (idx == null || idx.length != 2)
+					continue;
 				mat = FlatMatrix4x4Multiplication(
 					model,
 					FlatTranslationMatrix4x4(2f/columns * idx[0]-1, 2f/rows * idx[1]-1, 1),
