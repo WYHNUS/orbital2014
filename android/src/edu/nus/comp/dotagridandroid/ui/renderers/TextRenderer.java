@@ -11,7 +11,7 @@ import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 public class TextRenderer implements Renderer {
 	private static final float[] FONTTRANSFORMATION = FlatMatrix4x4Multiplication(
 			FlatScalingMatrix4x4(.5f, .5f, 1),
-			FlatTranslationMatrix4x4(-1, -1, 0));
+			FlatTranslationMatrix4x4(1, -1, 0));
 	// parent resources
 	private GenericProgram textProgram;
 	private MainRenderer.GraphicsResponder responder;
@@ -90,11 +90,11 @@ public class TextRenderer implements Renderer {
 		glEnableVertexAttribArray(vTexture);
 		byte lines = 0;
 		for (String str : text) {
-			for (int i = 0; i < str.length(); i++) {
+			for (int i = 0, len = str.length(); i < len; i++) {
 				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(
 						model,
 						FlatScalingMatrix4x4(1,1/font.getCharacterSizeRatio(),1),
-						FlatTranslationMatrix4x4(i + 1, -lines, 0),
+						FlatTranslationMatrix4x4(i, -lines, 0),
 						FONTTRANSFORMATION), 0);
 				glUniform2fv(charMapOffset, 1, font.getCharacterOffset(str.charAt(i)), 0);
 				glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);

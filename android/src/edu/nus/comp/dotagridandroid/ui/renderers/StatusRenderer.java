@@ -28,8 +28,6 @@ public class StatusRenderer implements Renderer {
 		this.landscape = landscape;
 		this.state = state;
 		frameProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
-//		Renderer r = new ButtonRenderer();
-//		controls.put("Button", r);
 		controls.put("Scroll", new ScrollRenderer());
 		controls.put("Attack", new ButtonRenderer());
 		controls.put("AttackLabel", new TextRenderer());
@@ -117,7 +115,7 @@ public class StatusRenderer implements Renderer {
 		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 		text.setRenderReady();
 		text.setText("Move");
-		text.setTextColour(new float[]{1,0,0,1});
+		text.setTextColour(new float[]{1,-1,-1,1});
 		scroll.setRenderer("MoveLabel", text,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.2f, -.25f, 0), FlatScalingMatrix4x4(.5f/4, .5f/4, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.3f, .25f, 0), FlatScalingMatrix4x4(.5f/4, .5f/4, 1)));
