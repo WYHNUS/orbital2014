@@ -31,6 +31,7 @@ void testZIP () {
 	char * content = new char[st.size + 1];
 	zip_file *f = zip_fopen(z, file, 0);
 	zip_fread (f, content, st.size);
+	zip_fclose(f);
 	zip_close (z);
 	content[st.size] = 0;	// null terminate
 	__android_log_print(ANDROID_LOG_DEBUG, "ZIP", "Content: %s", content);

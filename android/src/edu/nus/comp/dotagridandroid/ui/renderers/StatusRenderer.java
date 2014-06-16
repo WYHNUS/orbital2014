@@ -108,22 +108,22 @@ public class StatusRenderer implements Renderer {
 		button.setLongPressRespondData(Collections.singletonMap("Action", (Object) "RequestMoveArea"));
 		button.setRenderReady();
 		scroll.setRenderer("Move", button,
-				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -.5f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
-					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.5f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -.75f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.75f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
 		// move label
 		text = (TextRenderer) controls.remove("MoveLabel");
 		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 		text.setRenderReady();
-		text.setText("Move");
+		text.setText(" Move ");
 		text.setTextColour(new float[]{1,-1,-1,1});
 		scroll.setRenderer("MoveLabel", text,
-				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.2f, -.25f, 0), FlatScalingMatrix4x4(.5f/4, .5f/4, 1)) :
-					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.3f, .25f, 0), FlatScalingMatrix4x4(.5f/4, .5f/4, 1)));
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -.5f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.5f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		scroll.setMVP(model, null, null);
 		if (landscape)
-			scroll.setScrollLimit(0f, -2f, 0f, 2f);
+			scroll.setScrollLimit(0f, 0f, 0f, 2f);
 		else
-			scroll.setScrollLimit(-2f, 0f, 2f, 0f);
+			scroll.setScrollLimit(-2f, 0f, 0f, 0f);
 		responder.updateGraphics();
 	}
 	
