@@ -29,7 +29,9 @@ public class GameButtonActions {
 		 * 
 		 * actionNumber 6 : zoom out game grid screen by increasing size of a factor of 2
 		 * 
-		 * actionNumber 7 : end this round, start next round, reset all AP
+		 * actionNumber 7 : end this round, start next round: 
+		 * 						1. reset all AP 
+		 * 						2. check if need to spawn new wave of creeps
 		 * 
 		 * actionNumber 8 : invoke ready to movement event
 		 * 
@@ -128,7 +130,10 @@ public class GameButtonActions {
 				}
 			}
 		}	
-
+		
+		// spawn a new wave of creeps
+		LineCreepSpawnPoint.spawnNewWave();
+		
 		// reselect the grid
 		GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		System.out.println("End Round!");

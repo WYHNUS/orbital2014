@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class GameFrame{
 	
-	public static int turn = 0;
+	public static int turn = 1;
 	
 	public int frameWidth;
 	public int frameHeight;
