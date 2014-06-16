@@ -108,12 +108,14 @@ public class GameButtonActions {
 
 	private void sellItem() {
 		// sell an item from player's bought item list
+		System.out.println("show sell item interface!");
 		new SellItem();
 	}
 
 
 	private void showItemShop() {
 		// create a new frame to show item shop list
+		System.out.println("show item shop interface!");
 		new ItemShop();
 	}
 

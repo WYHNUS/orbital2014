@@ -53,16 +53,23 @@ public class Hero extends Character{
 	public static final double MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO = 1.0;
 
 	
+	// constants used in hero constructor
+	public static int heroStartingBountyMoney = 250;
+	public static int heroStartingBountyExp = 100;
+	public static int heroStartingMoney = 875;
+	public static int heroSight = 12;
+	
 	
 	// constructor
-	public Hero(String heroName, int bountyMoney, int bountyExp, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
+	public Hero(String heroName, String mainAttribute, int startingHP, int startingMP, 
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 			double startingPhysicalDefence, double startingMagicResistance, int actionPoint, int teamNumber,
 			int startingStrength, int startingAgility, int startingIntelligence, 
 			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) 
 	{
 		
-		super(heroName, bountyMoney, bountyExp, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
+		super(heroName, heroStartingBountyMoney, heroStartingBountyExp, heroSight, 
+				startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, teamNumber);
 		
 		// initialize attributes specific to heros
@@ -71,7 +78,7 @@ public class Hero extends Character{
 		this.setLevel(1);
 		this.setExperience(0);
 		
-		this.setMoney(startingmoney);
+		this.setMoney(heroStartingMoney);
 		this.setKill(0);
 		this.setAssist(0);
 		this.setDeath(0);
@@ -117,7 +124,7 @@ public class Hero extends Character{
 
 
 	public Hero(Hero hero) {
-		super(hero.getName(), hero.getBountyMoney(), hero.getBountyExp(), hero.getStartingHP(), hero.getStartingMP(), 
+		super(hero.getName(), hero.getBountyMoney(), hero.getBountyExp(), hero.getSight(), hero.getStartingHP(), hero.getStartingMP(), 
 				hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), hero.getStartingPhysicalAttackSpeed(), 
 				hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
 				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());

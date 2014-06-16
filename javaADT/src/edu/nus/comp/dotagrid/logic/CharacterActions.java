@@ -22,6 +22,8 @@ public class CharacterActions {
 		 * 
 		 * actionNumber 2 : attack
 		 * 
+		 * actionNumber 3 : update sight map
+		 * 
 		 * */
 		
 		switch(actionNumber){
@@ -32,6 +34,32 @@ public class CharacterActions {
 			case 2 :
 				attack();
 				break;
+				
+			case 3 :
+				updateSightMap();
+				break;
+		}
+		
+	}
+
+	
+	private void updateSightMap() {
+		// update sight map centered at position (toXPos, toYPos)
+		int sightRange = GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getSight();
+		System.out.println("sightRange" + sightRange);
+		
+		for(int x=toXPos-sightRange; x<toXPos+sightRange+1; x++){
+			for(int y=toYPos-sightRange; y<toYPos+sightRange+1; y++){
+				// x and y need to be within the grid frame 
+				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
+					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
+						// x + y need to be within the number of sight grid
+						if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= sightRange) {
+							GridFrame.sightMap[x][y] = 1;
+						}
+					}
+				}
+			}
 		}
 		
 	}

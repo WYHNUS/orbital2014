@@ -52,6 +52,7 @@ public class GridFrame {
 	
 	public static int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
 	public static int[][] highlightedMap = new int[ROW_NUMBER][COLUMN_NUMBER];
+	public static int[][] sightMap = new int[ROW_NUMBER][COLUMN_NUMBER];
 	public static int[][] attackRangeMap = new int[ROW_NUMBER][COLUMN_NUMBER];
 	
 	public static GridButton[][] gridButtonMap = new GridButton[ROW_NUMBER][COLUMN_NUMBER];
@@ -94,6 +95,10 @@ public class GridFrame {
 		for (int x=0; x<ROW_NUMBER; x++) {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 
 				gridButtonMap[x][y] = new GridButton(map[x][y]);
+				// initialize all maps
+				highlightedMap[x][y] = -1;
+				attackRangeMap[x][y] = -1;
+				sightMap[x][y] = 1;
 			}
 		}	
 	}
@@ -122,7 +127,8 @@ public class GridFrame {
 		for (int x=0; x<gridColNumberInScreen; x++) {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
 				
-				if (gridButtonMap[x + currentGridXPos][y + currentGridYPos].getIsOccupied() == true) {
+				if (gridButtonMap[x + currentGridXPos][y + currentGridYPos].getIsOccupied() == true
+						&& sightMap[x + currentGridXPos][y + currentGridYPos] != -1) {
 					g.drawImage(gridButtonMap[x + currentGridXPos][y + currentGridYPos].getCharacter().getCharacterImage(),
 							(int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
 							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
@@ -144,7 +150,7 @@ public class GridFrame {
 		g2d.setComposite(ac);
 		
 		for (int x=0; x<gridColNumberInScreen; x++) {
-			for (int y=0; y<gridRowNumberInScreen; y++) { 
+			for (int y=0; y<gridRowNumberInScreen; y++) {
 				
 				// condition to highlight a button
 				if (highlightedMap[x + currentGridXPos][y + currentGridYPos] == 1){
@@ -167,10 +173,66 @@ public class GridFrame {
 		}
 		
 		// disable g2d
-		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER));  
+		g2d.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER)); 
 		g2d.dispose();
 	}
+
 	
+	public static void updateSightMap() {
+		// update sight map
+		for (int x=0; x<ROW_NUMBER-1; x++) {
+			for (int y=0; y<COLUMN_NUMBER-1; y++) {
+						
+				// only occupied grid has character
+				if (gridButtonMap[x][y].getIsOccupied() == true) {
+					// only friendly character's sight can be shared
+					if (gridButtonMap[x][y].getCharacter().getTeamNumber() == 
+							gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter().getTeamNumber()){
+						// update selected character's sight
+						new CharacterActions(3, -1, -1, x, y);
+					}
+				}					
+			}
+		}	
+	}
+	
+	
+	// display sight map
+	private void displaySightMap(Graphics g) {
+		// prepare to draw transparent grids
+		Graphics2D g2d = (Graphics2D) g;
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f); 
+		g2d.setComposite(ac);
+		
+		// cover up everything not within friendly units' sight with color black
+		g2d.setColor(Color.BLACK);
+		
+		// display sight map
+		for (int x=0; x<gridColNumberInScreen; x++) {
+			for (int y=0; y<gridRowNumberInScreen; y++) { 
+				if (sightMap[x + currentGridXPos][y + currentGridYPos] == -1) {					
+					g2d.fillRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+							(int) gridHeight);
+				}
+			}
+		}
+
+	}
+	
+
+	private void repaintRect(Graphics g) {		
+		// repaint frames for each rectangle (just to look nicer)
+		for (int x=0; x<gridColNumberInScreen; x++) {
+			for (int y=0; y<gridRowNumberInScreen; y++) { 
+				g.setColor(Color.GRAY);
+				g.drawRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
+						(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
+						(int) gridHeight);
+			}
+		}
+		
+	}
 	
 	
 	// method to update grid frame
@@ -179,11 +241,14 @@ public class GridFrame {
 		gridHeight = GameFrame.FRAME_ROW_NUMBER_OCCUPIED * gameFrameGridHeight / gridRowNumberInScreen;
 		
 		displayGridOnScreen(g);
-		displayGridButtonsOnScreen(g);
-		displayHighlightGrid(g);		
+		displayGridButtonsOnScreen(g);	
+		displaySightMap(g);
+		repaintRect(g);
+		displayHighlightGrid(g);
+		
 	}
-	
-	
+
+
 	// method to check and invoke grid frame event
 	public static void invokeEvent(int handXPos, int handYPos){
 		setSelectedXCoodinatePos(handXPos);
@@ -207,17 +272,21 @@ public class GridFrame {
 			}
 			
 			gridButtonMap[selectedXPos][selectedYPos].actionPerformed();
-		}
+		}		
+
+		GridFrame.updateSightMap();
 		
 	}
 	
 	
 	public static void resetAllCharacterInfo() {
 		// clear all previously highlighted grids and prepare for new round of highlighting XD
+		// clear sight map for further refresh of information
 		for (int x=0; x<ROW_NUMBER; x++) {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 
 				highlightedMap[x][y] = -1;
 				attackRangeMap[x][y] = -1;
+				sightMap[x][y] = -1;
 			}
 		}	
 				

@@ -88,7 +88,7 @@ public class GridButtonActions {
 			// select position which has been attacked
 			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
-		
+
 	}
 	
 	
@@ -108,14 +108,15 @@ public class GridButtonActions {
 	
 	private void displayAttackableGrids() {
 		// highlight attackable grids
+		int physicalAttackArea = GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalAttackArea();
 		
-		for(int x=toXPos-GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalAttackArea(); x<toXPos+GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalAttackArea()+1; x++){
-			for(int y=toYPos-GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalAttackArea(); y<toYPos+GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalAttackArea()+1; y++){
+		for(int x=toXPos-physicalAttackArea; x<toXPos+physicalAttackArea+1; x++){
+			for(int y=toYPos-physicalAttackArea; y<toYPos+physicalAttackArea+1; y++){
 				// x and y need to be within the grid frame 
 				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
 					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
 						// x + y need to be within the number of attackable grid
-						if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalAttackArea()) {
+						if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= physicalAttackArea) {
 							GridFrame.attackRangeMap[x][y] = 1;
 						}
 					}

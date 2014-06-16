@@ -15,6 +15,8 @@ public class Character {
 	private int bountyMoney;
 	private int bountyExp;
 	
+	private int sight;
+	
 	private boolean isAlive = false;
 	
 	private int startingHP, startingMP;
@@ -48,7 +50,7 @@ public class Character {
 	public static final double PHYSICAL_ATTACK_CONSUME_AP = 38.0;
 	
 	
-	public Character(String name, int bountyMoney, int bountyExp, int startingHP, int startingMP, 
+	public Character(String name, int bountyMoney, int bountyExp, int sight, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, 
 					int actionPoint, int teamNumber)
@@ -57,6 +59,8 @@ public class Character {
 		this.setName(name);
 		this.setBountyMoney(bountyMoney);
 		this.setBountyExp(bountyExp);
+		
+		this.setSight(sight);
 		this.setTeamNumber(teamNumber);
 		
 		this.setStartingHP(startingHP);
@@ -472,7 +476,7 @@ public class Character {
 	}
 
 	public int getTeamNumber() {
-		return teamNumber;
+		return this.teamNumber;
 	}
 
 
@@ -482,6 +486,16 @@ public class Character {
 		} else {
 			this.teamNumber = teamNumber;
 		}
+	}
+
+
+	public int getSight() {
+		return sight;
+	}
+
+
+	public void setSight(int sight) {
+		this.sight = sight;
 	}
 
 
