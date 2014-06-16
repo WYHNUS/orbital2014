@@ -20,8 +20,8 @@ public class GridButtonActions {
 
 	public void updateWhenNoActionInvoked() {
 		
-		// display the selected position's character icon on the characterIcon
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true) {
+		// display the selected position's character icon on the characterIcon if within player's sight
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true && GridFrame.sightMap[toXPos][toYPos] == 1) {
 
 			// change allCharacterInfoGameButtons in game frame to the selected character's info
 			displayCharacterInfoOnGameFrame(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
@@ -72,7 +72,7 @@ public class GridButtonActions {
 		if (GameButtonActions.readyToAttack == true) {
 			boolean isWithinAttackRange = calculateWithinAttackRange();
 			
-			if (isWithinAttackRange) {
+			if (isWithinAttackRange && GridFrame.sightMap[toXPos][toYPos] == 1) {
 				// attack!
 				new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);
 			} else {

@@ -108,6 +108,7 @@ public class MainMenu {
 	
 
 	public static void main(String[] args) {
+		
 		JFrame frame = new JFrame("C-DOTA");
 		
 		MainMenu app = new MainMenu();
