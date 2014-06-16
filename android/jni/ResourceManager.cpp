@@ -4,7 +4,7 @@
  *  Created on: 16 Jun, 2014
  *      Author: apple
  */
-
+#include <android/log.h>
 #include "ResourceManager.h"
 
 // accesory method
@@ -19,17 +19,21 @@ ResourceManager::ResourceManager(const char * const pathToPkg = "/sdcard/dotagri
 		throw "Package not found";
 	}
 	// index
-	char * file = "modelIndex";
+	const char * const file = "modelIndex";
 	struct zip_stat st;
 	zip_stat_init(&st);
 	zip_stat(z, file, 0, &st);
-	char * content = new char[st.size];
 	zip_file *zf = zip_fopen(z, file, 0);
+	char * content = new char[st.size];
 	zip_fread(zf, content, st.size);
 	zip_fclose(zf);
 	// model
 	// texture
-	if (png_sig_cmp(content, 0, 8)) {
+	zip_stat(z, file, 0, &st);
+	zf = zip_fopen(z, file, 0);
+	png_byte header[8];
+	zip_fread(zf, header, 8);
+	if (png_sig_cmp(header, 0, 8)) {
 		__android_log_write(ANDROID_LOG_DEBUG, "ResourceManager", "Invalid PNG signature");
 		return;
 	}
@@ -52,8 +56,10 @@ ResourceManager::ResourceManager(const char * const pathToPkg = "/sdcard/dotagri
 	png_bytepp row_pointers = new png_bytep[height];
 	for (int i = 0; i < height; i++)
 		row_pointers[i] = image + i * row_bytes;
-	png_read_image(png_ptr, row_bytes);
-	png_destroy_read_struct(png_ptr, &info_ptr, &end_info_ptr);
+	png_read_image(png_ptr, row_pointers);
+	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info_ptr);
+	zip_fclose(zf);
+	zip_close(z);
 }
 
 ResourceManager::~ResourceManager() {

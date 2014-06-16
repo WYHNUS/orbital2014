@@ -74,6 +74,10 @@ public class GameMaster {
 				}
 				case "RequestMoveArea": {
 					System.out.println("Requesting move area");
+					return;
+				}
+				case "RequestShop": {
+					return;
 				}
 				}
 				
