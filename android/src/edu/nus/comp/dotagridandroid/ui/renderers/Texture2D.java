@@ -8,6 +8,7 @@ import static android.opengl.GLES20.*;
 public class Texture2D implements Closeable {
 	private int width, height;
 	private int textureHandler;
+	private boolean managed = false;
 	public Texture2D(Bitmap image) {
 		this.width = image.getWidth();
 		this.height = image.getHeight();
@@ -20,11 +21,17 @@ public class Texture2D implements Closeable {
 		GLUtils.texImage2D(GL_TEXTURE_2D, 0, image, 0);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
+	public Texture2D(int textureHandler) {
+		this.textureHandler = textureHandler;
+		this.managed = true;
+	}
 	public int getWidth() {return width;}
 	public int getHeight() {return height;}
 	public int getTexture() {return textureHandler;}
 	@Override
 	public void close() {
+		if (managed)
+			return;
 		glDeleteTextures(1, new int[]{textureHandler}, 0);
 	}
 }

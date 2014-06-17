@@ -12,7 +12,12 @@
 class ResourceManager {
 	static void png_read_zip_image(png_structp, png_bytep, png_size_t);
 public:
-	explicit ResourceManager(const char * const);
+	class Model {
+		Model();
+	public:
+		void attachTexture();
+	};
+	explicit ResourceManager(const char * const path = "/sdcard/dotagrid/default.zip");
 	virtual ~ResourceManager();
 };
 

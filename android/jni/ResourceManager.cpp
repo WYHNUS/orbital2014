@@ -12,7 +12,7 @@ void ResourceManager::png_read_zip_image(png_structp png, png_bytep data, png_si
 
 }
 
-ResourceManager::ResourceManager(const char * const pathToPkg = "/sdcard/dotagrid/default.zip") {
+ResourceManager::ResourceManager(const char * const pathToPkg) {
 	int err = 0;
 	zip *z = zip_open(pathToPkg, 0, &err);
 	if (err) {
@@ -27,6 +27,7 @@ ResourceManager::ResourceManager(const char * const pathToPkg = "/sdcard/dotagri
 	char * content = new char[st.size];
 	zip_fread(zf, content, st.size);
 	zip_fclose(zf);
+	// terrain data and map data
 	// model
 	// texture
 	zip_stat(z, file, 0, &st);
@@ -59,6 +60,7 @@ ResourceManager::ResourceManager(const char * const pathToPkg = "/sdcard/dotagri
 	png_read_image(png_ptr, row_pointers);
 	png_destroy_read_struct(&png_ptr, &info_ptr, &end_info_ptr);
 	zip_fclose(zf);
+	// close zip
 	zip_close(z);
 }
 

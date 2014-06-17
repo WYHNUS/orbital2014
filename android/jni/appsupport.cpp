@@ -4,6 +4,7 @@
 #include <android/log.h>
 #include <SoundEngine.h>
 #include <ExtensionEngine.h>
+#include <ResourceManager.h>
 #include <GLES2/gl2.h>
 #include <iostream>
 #include <fstream>
@@ -98,5 +99,25 @@ Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_initiateSoundEngine(JN
 
 JNIEXPORT void JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroySoundEngine(JNIEnv *env, jobject obj) {
+}
+
+JNIEXPORT jlong JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_initiateResourceManager(JNIEnv *env, jobject obj, jstring path) {
+	ResourceManager *man;
+	if (path) {
+		const char *pkgPath = env->GetStringUTFChars(path, 0);
+		man = new ResourceManager(pkgPath);
+		env->ReleaseStringUTFChars(path, pkgPath);
+		return (jlong) man;
+	} else {
+		man = new ResourceManager();
+		return (jlong) man;
+	}
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroyResourceManager(JNIEnv *env, jobject obj, jlong ptr) {
+	ResourceManager *man = (ResourceManager*)ptr;
+	delete man;
 }
 }

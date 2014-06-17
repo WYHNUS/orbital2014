@@ -149,7 +149,7 @@ public class ButtonRenderer implements Renderer {
 		final boolean hit;
 		final float[] mvp = FlatMatrix4x4Multiplication(projection, view, model);
 		final float[] pos = FlatMatrix4x4Vector4Multiplication(FlatInverseMatrix4x4(mvp), new float[]{e.data.x[0], e.data.y[0], -1, 1});
-		hit = pos[0] >= -1 && pos[0] <= 1 && pos[1] >= -1 && pos[1] <= 1; 
+		hit = pos[0] >= -1 && pos[0] <= 1 && pos[1] >= -1 && pos[1] <= 1;
 		if (e.type == ControlEvent.TYPE_DOWN) {
 			pressed = true;
 			return hit && e.data.pointerCount == 1;

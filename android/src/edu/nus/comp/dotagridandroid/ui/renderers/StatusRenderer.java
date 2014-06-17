@@ -33,6 +33,10 @@ public class StatusRenderer implements Renderer {
 		controls.put("AttackLabel", new TextRenderer());
 		controls.put("Move", new ButtonRenderer());
 		controls.put("MoveLabel", new TextRenderer());
+		controls.put("Shop", new ButtonRenderer());
+		controls.put("ShopLabel", new TextRenderer());
+		controls.put("Skill", new ButtonRenderer());
+		controls.put("SkillLabel", new TextRenderer());
 	}
 
 	@Override
@@ -119,11 +123,47 @@ public class StatusRenderer implements Renderer {
 		scroll.setRenderer("MoveLabel", text,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -.5f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.5f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
-		scroll.setMVP(model, null, null);
+		// shop button
+		button = (ButtonRenderer) controls.remove("Shop");
+		button.setTapEnabled(true);
+		button.setTapRespondName("GameAction");
+		button.setTapRespondData(Collections.singletonMap("Action", (Object) "RequestShop"));
+		scroll.setRenderer("Shop", button,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -1.5f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(1.5f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+		// shop label
+		text = (TextRenderer) controls.remove("ShopLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setText(" Shop ");
+		text.setTextColour(new float[]{1,-1,-1,1});
+		scroll.setRenderer("ShopLabel", text,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -1.25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(1.25f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		scroll.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(.375f, 0, 0), FlatScalingMatrix4x4(.75f, 1, 1)), null, null);
+		// skill button
+		button = (ButtonRenderer) controls.remove("Skill");
+		button.setTapEnabled(true);
+		button.setTapRespondName("GameAction");
+		button.setTapRespondData(Collections.singletonMap("Action", (Object) "RequestSkill"));
+		scroll.setRenderer("Skill", button,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -2.25f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2.25f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+		// skill label
+		text = (TextRenderer) controls.remove("SkillLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setText("Skill ");
+		text.setTextColour(new float[]{1,-1,-1,1});
+		scroll.setRenderer("SkillLabel", text,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -2, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		// scroll positioning
+		scroll.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(.375f, 0, 0), FlatScalingMatrix4x4(.75f, 1, 1)), null, null);
 		if (landscape)
-			scroll.setScrollLimit(0f, 0f, 0f, 2f);
+			scroll.setScrollLimit(0f, 0f, 0f, 5f);
 		else
-			scroll.setScrollLimit(-2f, 0f, 0f, 0f);
+			scroll.setScrollLimit(-5f, 0f, 0f, 0f);
 		responder.updateGraphics();
 	}
 	
