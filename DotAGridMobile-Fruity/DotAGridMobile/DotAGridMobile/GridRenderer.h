@@ -7,5 +7,5 @@
 //
 #import "Renderer.h"
 @interface GridRenderer : NSObject <Renderer>
-
+-(id) initWithColumns:(NSInteger) columns rows:(NSInteger)rows terrain:(NSArray*) terrain;
 @end

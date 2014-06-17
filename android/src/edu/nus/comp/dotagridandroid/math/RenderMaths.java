@@ -26,7 +26,7 @@ public class RenderMaths {
 				a[12]*b[0] + a[13]*b[4] + a[14]*b[8] + a[15]*b[12],
 				a[12]*b[1] + a[13]*b[5] + a[14]*b[9] + a[15]*b[13],
 				a[12]*b[2] + a[13]*b[6] + a[14]*b[10] + a[15]*b[14],
-				a[12]*b[3] + a[13]*b[7] + a[14]*b[11] + a[15]*b[15],
+				a[12]*b[3] + a[13]*b[7] + a[14]*b[11] + a[15]*b[15]
 		};
 	}
 	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] ...fs) {

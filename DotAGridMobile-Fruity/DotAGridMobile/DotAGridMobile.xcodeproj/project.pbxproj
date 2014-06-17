@@ -24,6 +24,7 @@
 		18C659091947F921009FED8D /* ExtensionInterface.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C659081947F921009FED8D /* ExtensionInterface.swift */; };
 		18C6590B1947F931009FED8D /* GameLogicManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C6590A1947F931009FED8D /* GameLogicManager.swift */; };
 		18C6590D1947F966009FED8D /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18C6590C1947F966009FED8D /* Item.swift */; };
+		18D42EA7194FE29D00677179 /* RenderMaths.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18D42EA6194FE29D00677179 /* RenderMaths.swift */; };
 		18F175E71948048D006AFAAF /* GridRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F175E61948048D006AFAAF /* GridRenderer.m */; };
 		18F175EB19480A6C006AFAAF /* GenericProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 18F175EA19480A6C006AFAAF /* GenericProgram.m */; };
 		18F175EE19480AFD006AFAAF /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 18F175EC19480AFD006AFAAF /* GLKit.framework */; };
@@ -72,8 +73,9 @@
 		18C6590A1947F931009FED8D /* GameLogicManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameLogicManager.swift; sourceTree = "<group>"; };
 		18C6590C1947F966009FED8D /* Item.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		18C6590F1947FCCE009FED8D /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
+		18D42EA6194FE29D00677179 /* RenderMaths.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderMaths.swift; sourceTree = "<group>"; };
 		18F175E419480366006AFAAF /* CommonShaders.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommonShaders.h; sourceTree = "<group>"; };
-		18F175E61948048D006AFAAF /* GridRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GridRenderer.m; sourceTree = "<group>"; };
+		18F175E61948048D006AFAAF /* GridRenderer.m */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = GridRenderer.m; sourceTree = "<group>"; };
 		18F175E8194804AE006AFAAF /* GridRenderer.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; path = GridRenderer.h; sourceTree = "<group>"; };
 		18F175E91948097A006AFAAF /* GenericProgram.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GenericProgram.h; sourceTree = "<group>"; };
 		18F175EA19480A6C006AFAAF /* GenericProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenericProgram.m; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 		18C658D51947F7DF009FED8D /* DotAGridMobile */ = {
 			isa = PBXGroup;
 			children = (
+				18D42EA2194F7B7700677179 /* Math */,
 				18A9E11319483069008F5C8D /* Event */,
 				18F175E519480467006AFAAF /* Sound */,
 				18C6590E1947FCB3009FED8D /* Renderer */,
@@ -229,6 +232,14 @@
 				18A9E11919484A69008F5C8D /* NormalGenerator.m */,
 			);
 			name = Renderer;
+			sourceTree = "<group>";
+		};
+		18D42EA2194F7B7700677179 /* Math */ = {
+			isa = PBXGroup;
+			children = (
+				18D42EA6194FE29D00677179 /* RenderMaths.swift */,
+			);
+			name = Math;
 			sourceTree = "<group>";
 		};
 		18F175E519480467006AFAAF /* Sound */ = {
@@ -346,6 +357,7 @@
 				18C659091947F921009FED8D /* ExtensionInterface.swift in Sources */,
 				18C658DC1947F7DF009FED8D /* AppDelegate.m in Sources */,
 				18F175EB19480A6C006AFAAF /* GenericProgram.m in Sources */,
+				18D42EA7194FE29D00677179 /* RenderMaths.swift in Sources */,
 				18C658E31947F7DF009FED8D /* MainGLViewController.m in Sources */,
 				18F1762A194827B3006AFAAF /* GameState.swift in Sources */,
 				18C6590B1947F931009FED8D /* GameLogicManager.swift in Sources */,
