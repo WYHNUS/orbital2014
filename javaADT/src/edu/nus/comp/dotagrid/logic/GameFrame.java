@@ -261,7 +261,7 @@ public class GameFrame{
 		allGameButtons.add(versionID);
 		
 		// turn count
-		turnCounter = new GameButton("Turn : 0", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
+		turnCounter = new GameButton("Turn : 1", null, startingXPos + (int) (2 * gridWidth), FRAME_BORDER_HEIGHT, (int) (2 * gridWidth), (int) gridHeight);
 		allGameButtons.add(turnCounter);
 		allCharacterInfoGameButtons.add(turnCounter);
 		

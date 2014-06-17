@@ -68,6 +68,11 @@ Design towers. (both in PC and in Android)
 Feature 8:
 Design line creeps. (both in PC and in Android)
 
+Feature 8.1:
+Line Creeps are capable of upgrading themselves after certain round
+
+Feature 8.2:
+Super Creeps will be sprawned after barracks have been destroyed
 
 
 

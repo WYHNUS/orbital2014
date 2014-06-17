@@ -12,8 +12,8 @@ public class Building  extends Character {
 	public static int buildingMovementSpeed = -99999;
 	public static int buildingActionPoint = 0;
 	
-	
 	public Building(String name, int bountyMoney, int startingHP, double startingPhysicalDefence, int teamNumber) {
+		
 		super(name, bountyMoney, buildingBountyExp, buildingStartingSight, startingHP, buildingStartingMP,
 				buildingPhysicalAttack, buildingPhysicalAttackArea,
 				buildingPhysicalAttackSpeed, startingPhysicalDefence,
@@ -22,4 +22,5 @@ public class Building  extends Character {
 
 		this.setCharacterImage("buildings", this.getName());
 	}
+
 }

@@ -5,10 +5,11 @@ public class LineCreep extends Character{
 	public static int lineCreepActionPoint = 100;
 	public static int lineCreepStartingSight = 6;
 	
-	private int level;
+	public static int levelSentinel = 0;
+	public static int levelScourge = 0;
 
 	public LineCreep(String name, int bountyMoney, int bountyExp, int startingHP, int startingMP, 
-			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
+			double startingPhysicalAttack, double basicPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 			double startingPhysicalDefence, double startingMagicResistance,
 			int startingMovementSpeed, int teamNumber) {
 		
@@ -17,26 +18,13 @@ public class LineCreep extends Character{
 				startingPhysicalDefence, startingMagicResistance,
 				startingMovementSpeed, lineCreepActionPoint, teamNumber);
 		
+		// set basic physical attack
+		this.setBasicPhysicalAttack(basicPhysicalAttack);
+		
+		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack() + this.getBasicPhysicalAttack());
+		
 		// set image
-		this.setCharacterImage("creeps", this.getName());
-		
-		// set level
-		this.setLevel(1);
-		
+		this.setCharacterImage("creeps", this.getName());		
 	}
 	
-
-	public int getLevel() {
-		return level;
-	}
-
-	public void setLevel(int level) {
-		// starting level is the minimum level (level 1)
-		if (level <= 1) {
-			this.level = 1;
-		} else {
-			this.level = level;
-		}
-	}
-
 }

@@ -201,7 +201,7 @@ The hero will respawn after a certain round (depending on hero's level) from the
 
 6 LineCreep
 
-6.1 Infomathion: 
+6.1 Infomathion:  (starting attributes)
 	there are three types of LineCreeps:
 			BountyMoney / BountyExp / HP / MP / PhysicalAttack / Range / AttackSpeed / PhysicalDefence / MagicResis / MovementSpeed 
 
@@ -216,10 +216,45 @@ The hero will respawn after a certain round (depending on hero's level) from the
 	there are three different locations (top, mid, bottom) for each team (scourge and sentinel), which makes a total of six spawn locations. (each with fixed position)
 
 	every 10 turns, each spawn location will create a new wave of line creeps.
-	each wave consists: 4 meele + 1 ranged 
+	each wave consists: 3 meele + 1 ranged 
 
 	every 50 turns, each spawn location will create a new wave of line creeps with different formation.
-	each wave consists: 4 meele + 1 ranged + 1 siege
+	each wave consists: 3 meele + 1 ranged + 1 siege
+
+
+6.3 LineCreeps have levels (advanced attributes)
+	after every 200 rounds, meele and ranged creeps will automatically level up (maximum level : 30)
+
+	each level will increase for 10HP and 1 physicalAttack for meele creeps
+	each level will increase for 10HP and 2 physicalAttack for ranged creeps
+
+
+
+6.4 LineCreeps SpawnPoints will increase spawning number 
+	meele creeps number in each spawn point will increase by 1 after every 200 rounds (maximum 6)
+	ranged creeps and siege creeps number in each spawn point will increase by 1 after every 600 rounds (maximum 2)
+
+
+
+6.5 LineCreeps will upgrade further after corresponding barrack has been destroyed
+
+	for each line: (top/mid/bottom)
+	if meele barrack has been destroyed, meele creep will gain extra attributes: (upon 6.4)
+		HP : +150 + 9 * level
+		attack : +19 + level
+		defence : +1
+
+	if ranged barrack has been destroyed, ranged creep will gain extra attributes: (upon 6.4)
+		HP : +175 + 8 * level
+		attack : +20 + level
+		defence : +1
+
+		siege creep will gain extra attack : +16
+		
+	
+	if all meele and ranged barracks have been destroyed for all three lines (top/mid/bottom) :
+		creep level will automatically upgrade to level 30
+
 
 
 

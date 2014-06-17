@@ -90,6 +90,8 @@ public class CharacterActions {
 						// check if should end the game
 						GameEnded.isGameEnded();
 						
+						BuildingDatabase.isBarracksDestroyed();
+						
 						// if the attacker is hero, add bounty money and bounty Exp into hero's account
 						if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
 							

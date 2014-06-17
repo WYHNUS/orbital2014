@@ -71,7 +71,7 @@ public class Character {
 		this.setCurrentMP(this.getmaxMP());
 		
 		this.setStartingPhysicalAttack(startingPhysicalAttack);
-		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
+		this.setBasicPhysicalAttack(0);
 		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
 		
 		this.setStartingPhysicalAttackArea(startingPhysicalAttackArea);

@@ -1,34 +1,73 @@
 package edu.nus.comp.dotagrid.logic;
 
+import javax.swing.JOptionPane;
+
 public class BuildingDatabase {
 	public static final int TOTAL_BUILDING_NUMBER = 6;
+	
+	// count for number of barracks which been destroyed
+	public static int destroyedSentinelBarrackNumber = 0;
+	public static int destroyedScourgeBarrackNumber = 0;
 	
 	public static Building[] buildingDatabase = new Building[TOTAL_BUILDING_NUMBER];
 	
 	// sentinel buildings
-	public static int[] sentinelBasePosition = {14, 84};
+	public static int sentinelBaseXPos = 14;
+	public static int sentinelBaseYPos = 84;
 	
-	public static int[] sentinelTopMeeleBarrackPosition = {5, 68};
-	public static int[] sentinelTopRangedBarrackPosition = {11, 68};
+	public static int sentinelTopMeeleBarrackXPos = 5;
+	public static int sentinelTopMeeleBarrackYPos = 68;
+	public static boolean isDestroyedSentinelTopMeeleBarrack = false;
 	
-	public static int[] sentinelMidMeeleBarrackPosition = {21, 72};
-	public static int[] sentinelMidRangedBarrackPosition = {27, 78};
+	public static int sentinelTopRangedBarrackXPos = 11; 
+	public static int sentinelTopRangedBarrackYPos = 68;
+	public static boolean isDestroyedSentinelTopRangedBarrack = false;
 	
-	public static int[] sentinelBotMeeleBarrackPosition = {30, 87};
-	public static int[] sentinelBotRangedBarrackPosition = {30, 93};
+	public static int sentinelMidMeeleBarrackXPos = 21; 
+	public static int sentinelMidMeeleBarrackYPos = 72;
+	public static boolean isDestroyedSentinelMidMeeleBarrack = false;
+	
+	public static int sentinelMidRangedBarrackXPos = 27; 
+	public static int sentinelMidRangedBarrackYPos = 78;
+	public static boolean isDestroyedSentinelMidRangedBarrack = false;
+	
+	public static int sentinelBotMeeleBarrackXPos = 30; 
+	public static int sentinelBotMeeleBarrackYPos = 87;
+	public static boolean isDestroyedSentinelBotMeeleBarrack = false;
+	
+	public static int sentinelBotRangedBarrackXPos = 30;
+	public static int sentinelBotRangedBarrackYPos = 93;
+	public static boolean isDestroyedSentinelBotRangedBarrack = false;
 	
 	
 	// scourge buildings
-	public static int[] scourgeBasePosition = {85, 15};
+	public static int scourgeBaseXPos = 85;
+	public static int scourgeBaseYPos = 15;
 	
-	public static int[] scourgeTopMeeleBarrackPosition = {69, 6};
-	public static int[] scourgeTopRangedBarrackPosition = {69, 12};
+	public static int scourgeTopMeeleBarrackXPos = 69;
+	public static int scourgeTopMeeleBarrackYPos = 6;
+	public static boolean isDestroyedScourgeTopMeeleBarrack = false;
 	
-	public static int[] scourgeMidMeeleBarrackPosition = {72, 21};
-	public static int[] scourgeMidRangedBarrackPosition = {78, 27};
+	public static int scourgeTopRangedBarrackXPos = 69;
+	public static int scourgeTopRangedBarrackYPos = 12;
+	public static boolean isDestroyedScourgeTopRangedBarrack = false;
 	
-	public static int[] scourgeBotMeeleBarrackPosition = {87, 31};
-	public static int[] scourgeBotRangedBarrackPosition = {93, 31};
+	public static int scourgeMidMeeleBarrackXPos = 72;
+	public static int scourgeMidMeeleBarrackYPos = 21;
+	public static boolean isDestroyedScourgeMidMeeleBarrack = false;
+	
+	public static int scourgeMidRangedBarrackXPos = 78;
+	public static int scourgeMidRangedBarrackYPos = 27;
+	public static boolean isDestroyedScourgeMidRangedBarrack = false;
+	
+	public static int scourgeBotMeeleBarrackXPos = 87;
+	public static int scourgeBotMeeleBarrackYPos = 31;
+	public static boolean isDestroyedScourgeBotMeeleBarrack = false;
+	
+	public static int scourgeBotRangedBarrackXPos = 93; 
+	public static int scourgeBotRangedBarrackYPos = 31;
+	public static boolean isDestroyedScourgeBotRangedBarrack = false;
+	
 	
 	public BuildingDatabase(){
 		/*
@@ -57,6 +96,115 @@ public class BuildingDatabase {
 		
 		buildingDatabase[4] = scourgeMeeleBarrack;
 		buildingDatabase[5] = scourgeRangedBarrack;
+		
+	}
+
+	
+
+	public static void isBarracksDestroyed() {
+		// check if any of the barracks has been destroyed by the attack action
+		
+		// sentinel barracks
+		
+		// only check if barrack has not been destroyed
+		if (!isDestroyedSentinelTopMeeleBarrack) {
+			if (GridFrame.gridButtonMap[sentinelTopMeeleBarrackXPos][sentinelTopMeeleBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedSentinelTopMeeleBarrack = true;
+				destroyedSentinelBarrackNumber++;
+			}
+		}	
+		
+		if (!isDestroyedSentinelTopRangedBarrack) {
+			if (GridFrame.gridButtonMap[sentinelTopRangedBarrackXPos][sentinelTopRangedBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedSentinelTopRangedBarrack = true;
+				destroyedSentinelBarrackNumber++;
+			}
+		}
+		
+		if (!isDestroyedSentinelMidMeeleBarrack) {
+			if (GridFrame.gridButtonMap[sentinelMidMeeleBarrackXPos][sentinelMidMeeleBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedSentinelMidMeeleBarrack = true;
+				destroyedSentinelBarrackNumber++;
+			}
+		}
+
+		if (!isDestroyedSentinelMidRangedBarrack) {
+			if (GridFrame.gridButtonMap[sentinelMidRangedBarrackXPos][sentinelMidRangedBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedSentinelMidRangedBarrack = true;
+				destroyedSentinelBarrackNumber++;
+			}
+		}
+
+		if (!isDestroyedSentinelBotMeeleBarrack) {
+			if (GridFrame.gridButtonMap[sentinelBotMeeleBarrackXPos][sentinelBotMeeleBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedSentinelBotMeeleBarrack = true;
+				destroyedSentinelBarrackNumber++;
+			}
+		}
+		
+		if (!isDestroyedSentinelBotRangedBarrack) {
+			if (GridFrame.gridButtonMap[sentinelBotRangedBarrackXPos][sentinelBotRangedBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedSentinelBotRangedBarrack = true;
+				destroyedSentinelBarrackNumber++;
+			}
+		}
+		
+		if (destroyedSentinelBarrackNumber == 6) LineCreep.levelSentinel = 30;
+		
+		// not possible scenario, report error
+		if (destroyedSentinelBarrackNumber > 6) 
+			JOptionPane.showMessageDialog(null, "An error has occured for value of [destroyedSentinelBarrackNumber]! = " + destroyedSentinelBarrackNumber);
+		
+		// scourge  barracks
+		
+		if (!isDestroyedScourgeTopMeeleBarrack) {
+			if (GridFrame.gridButtonMap[scourgeTopMeeleBarrackXPos][scourgeTopMeeleBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedScourgeTopMeeleBarrack = true;
+				destroyedScourgeBarrackNumber++;
+			}
+		}
+		
+		if (!isDestroyedScourgeTopRangedBarrack) {
+			if (GridFrame.gridButtonMap[scourgeTopRangedBarrackXPos][scourgeTopRangedBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedScourgeTopRangedBarrack = true;
+				destroyedScourgeBarrackNumber++;
+			}
+		}
+		
+		if (!isDestroyedScourgeMidMeeleBarrack) {
+			if (GridFrame.gridButtonMap[scourgeMidMeeleBarrackXPos][scourgeMidMeeleBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedScourgeMidMeeleBarrack = true;
+				destroyedScourgeBarrackNumber++;
+			}
+		}
+		
+		if (!isDestroyedScourgeMidRangedBarrack) {
+			if (GridFrame.gridButtonMap[scourgeMidRangedBarrackXPos][scourgeMidRangedBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedScourgeMidRangedBarrack = true;
+				destroyedScourgeBarrackNumber++;
+			}
+		}
+		
+		if (!isDestroyedScourgeBotMeeleBarrack) {
+			if (GridFrame.gridButtonMap[scourgeBotMeeleBarrackXPos][scourgeBotMeeleBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedScourgeBotMeeleBarrack = true;
+				destroyedScourgeBarrackNumber++;
+			}
+		}
+		
+		if (!isDestroyedScourgeBotRangedBarrack) {
+			if (GridFrame.gridButtonMap[scourgeBotRangedBarrackXPos][scourgeBotRangedBarrackYPos].getCharacter().isAlive() == false){
+				isDestroyedScourgeBotRangedBarrack = true;
+				destroyedScourgeBarrackNumber++;
+			}
+		}
+		
+		if (destroyedScourgeBarrackNumber == 6) LineCreep.levelScourge = 30;
+		
+		// not possible scenario, report error
+		if (destroyedScourgeBarrackNumber > 6) 
+			JOptionPane.showMessageDialog(null, "An error has occured for value of [destroyedScourgeBarrackNumber]! = " + destroyedScourgeBarrackNumber);
+		
 		
 	}
 }

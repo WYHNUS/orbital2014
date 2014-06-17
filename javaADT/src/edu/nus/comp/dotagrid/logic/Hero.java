@@ -72,6 +72,9 @@ public class Hero extends Character{
 				startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, teamNumber);
 		
+		// reset basic physical attack
+		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
+		
 		// initialize attributes specific to heros
 		this.setMainAttribute(mainAttribute);
 	
