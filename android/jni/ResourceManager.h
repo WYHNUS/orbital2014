@@ -9,13 +9,16 @@
 #define RESOURCEMANAGER_H_
 #include <zip.h>
 #include <png.h>
+#include <map>
+#include <string>
 class ResourceManager {
-	static void png_read_zip_image(png_structp, png_bytep, png_size_t);
+	std::map<std::string, int> textureHandlers, modelHandlers;
 public:
 	class Model {
 		Model();
 	public:
 		void attachTexture();
+		void testDraw();
 	};
 	explicit ResourceManager(const char * const path = "/sdcard/dotagrid/default.zip");
 	virtual ~ResourceManager();

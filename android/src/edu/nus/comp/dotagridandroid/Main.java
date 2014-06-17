@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.*;
+import edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 
@@ -16,6 +17,7 @@ public class Main extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		AppNativeAPI.testJS();
 	}
 	
 	@Override
