@@ -106,7 +106,7 @@ public class GridButton {
 		
 		if(imageNumber == 29) {
 			// scourge fountain
-			character = new TowerDatabase().towerDatabase[8];
+			character = new TowerDatabase().towerDatabase[9];
 			isOccupied = true;
 		}
 		
@@ -154,6 +154,7 @@ public class GridButton {
 			
 			// create player!
 			Screen.user.createPlayer();
+			Player.setTeamNumber(character.getTeamNumber());
 			
 			isOccupied = true;
 			isHero = true;

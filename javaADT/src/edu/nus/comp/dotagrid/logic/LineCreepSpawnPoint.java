@@ -12,7 +12,7 @@ public class LineCreepSpawnPoint {
 	public static final int SENTINEL_MID_LINE_SPAWN_X_POS = 24;
 	public static final int SENTINEL_MID_LINE_SPAWN_Y_POS = 75;
 	
-	public static final int SENTINEL_BOT_LINE_SPAWN_X_POS = 75;	
+	public static final int SENTINEL_BOT_LINE_SPAWN_X_POS = 28;	
 	public static final int SENTINEL_BOT_LINE_SPAWN_Y_POS = 90;
 	
 	public static final int SCOURGE_TOP_LINE_SPAWN_X_POS = 70;	

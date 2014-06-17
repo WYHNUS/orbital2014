@@ -19,7 +19,7 @@ public class BuildingDatabase {
 	
 	
 	// scourge buildings
-	public static int[] scourgeBasePosition = {84, 15};
+	public static int[] scourgeBasePosition = {85, 15};
 	
 	public static int[] scourgeTopMeeleBarrackPosition = {69, 6};
 	public static int[] scourgeTopRangedBarrackPosition = {69, 12};

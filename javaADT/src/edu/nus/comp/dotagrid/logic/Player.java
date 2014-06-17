@@ -2,6 +2,7 @@ package edu.nus.comp.dotagrid.logic;
 
 public class Player {
 	private int XPos, YPos;
+	private static int teamNumber;
 
 	// constructor
 	public Player(int XPos, int YPos){
@@ -23,6 +24,14 @@ public class Player {
 
 	public void setYPos(int yPos) {
 		YPos = yPos;
+	}
+
+	public static int getTeamNumber() {
+		return teamNumber;
+	}
+
+	public static void setTeamNumber(int teamNumber) {
+		Player.teamNumber = teamNumber;
 	}
 
 }
