@@ -246,9 +246,9 @@ public class Character {
 
 
 	public void setStartingPhysicalAttackArea(int physicalAttackArea) {
-		// minimum physical attack area is 1
-		if (physicalAttackArea <= 1) {
-			this.startingPhysicalAttackArea = 1;
+		// minimum physical attack area is 0
+		if (physicalAttackArea <= 0) {
+			this.startingPhysicalAttackArea = 0;
 		} else {
 			this.startingPhysicalAttackArea = physicalAttackArea;
 		}
@@ -260,9 +260,9 @@ public class Character {
 
 
 	public void setTotalPhysicalAttackArea(int totalPhysicalAttackArea) {
-		// minimum physical attack is 0
-		if (totalPhysicalAttackArea <= 1) {
-			this.totalPhysicalAttackArea = 1;
+		// minimum physical attack area is 0
+		if (totalPhysicalAttackArea <= 0) {
+			this.totalPhysicalAttackArea = 0;
 		} else {
 			this.totalPhysicalAttackArea = totalPhysicalAttackArea;
 		}
@@ -298,7 +298,7 @@ public class Character {
 	public void setMaxActionPoint(int actionPoint) {
 		// minimum AP is 0
 		if(actionPoint <= 0) {
-			System.out.println("Maximum Action Point cannnot go below 0!");
+			this.maxActionPoint = 0;
 		} else {
 			this.maxActionPoint = actionPoint;
 		}

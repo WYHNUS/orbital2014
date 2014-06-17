@@ -109,6 +109,7 @@ public class GridButtonActions {
 	private void displayAttackableGrids() {
 		// highlight attackable grids
 		int physicalAttackArea = GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalAttackArea();
+
 		
 		for(int x=toXPos-physicalAttackArea; x<toXPos+physicalAttackArea+1; x++){
 			for(int y=toYPos-physicalAttackArea; y<toYPos+physicalAttackArea+1; y++){

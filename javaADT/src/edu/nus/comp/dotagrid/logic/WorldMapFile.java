@@ -15,7 +15,7 @@ public class WorldMapFile {
 	
 	public WorldMap getWorldMap(){
 		try{
-			file = new FileInputStream("res/WorldMap/Map/Map.dota");
+			file = new FileInputStream("res/WorldMap/Map/worldMap.dota");
 			reader = new InputStreamReader(file);
 			
 			scanner = new Scanner(reader);

@@ -6,23 +6,23 @@ import java.util.Queue;
 
 public class LineCreepSpawnPoint {
 	
-	public static final int SENTINEL_TOP_LINE_SPAWN_X_POS = 10;
-	public static final int SENTINEL_TOP_LINE_SPAWN_Y_POS = 147;
+	public static final int SENTINEL_TOP_LINE_SPAWN_X_POS = 8;
+	public static final int SENTINEL_TOP_LINE_SPAWN_Y_POS = 69;
 	
-	public static final int SENTINEL_MID_LINE_SPAWN_X_POS = 36;
-	public static final int SENTINEL_MID_LINE_SPAWN_Y_POS = 163;
+	public static final int SENTINEL_MID_LINE_SPAWN_X_POS = 24;
+	public static final int SENTINEL_MID_LINE_SPAWN_Y_POS = 75;
 	
-	public static final int SENTINEL_BOT_LINE_SPAWN_X_POS = 46;	
-	public static final int SENTINEL_BOT_LINE_SPAWN_Y_POS = 184;
+	public static final int SENTINEL_BOT_LINE_SPAWN_X_POS = 75;	
+	public static final int SENTINEL_BOT_LINE_SPAWN_Y_POS = 90;
 	
-	public static final int SCOURGE_TOP_LINE_SPAWN_X_POS = 152;	
-	public static final int SCOURGE_TOP_LINE_SPAWN_Y_POS = 15;
+	public static final int SCOURGE_TOP_LINE_SPAWN_X_POS = 70;	
+	public static final int SCOURGE_TOP_LINE_SPAWN_Y_POS = 9;
 
-	public static final int SCOURGE_MID_LINE_SPAWN_X_POS = 163;
-	public static final int SCOURGE_MID_LINE_SPAWN_Y_POS = 36;
+	public static final int SCOURGE_MID_LINE_SPAWN_X_POS = 75;
+	public static final int SCOURGE_MID_LINE_SPAWN_Y_POS = 24;
 	
-	public static final int SCOURGE_BOT_LINE_SPAWN_X_POS = 189;	
-	public static final int SCOURGE_BOT_LINE_SPAWN_Y_POS = 51;
+	public static final int SCOURGE_BOT_LINE_SPAWN_X_POS = 91;	
+	public static final int SCOURGE_BOT_LINE_SPAWN_Y_POS = 30;
 	
 	public static int MEELE_CREEP_NUMBER = 4;
 	public static int RANGED_CREEP_NUMBER = 1;

@@ -51,42 +51,98 @@ public class GridButton {
 		}
 		
 		if(imageNumber == 20) {
+			// sentinelTower1
 			character = new TowerDatabase().towerDatabase[0];
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 21) {
+			// sentinelTower2
 			character = new TowerDatabase().towerDatabase[1];
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 22) {
+			// sentinelTower3
 			character = new TowerDatabase().towerDatabase[2];
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 23) {
+			// sentinelTower4
 			character = new TowerDatabase().towerDatabase[3];
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 24) {
+			// scourgeTower1
 			character = new TowerDatabase().towerDatabase[4];
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 25) {
+			// scourgeTower2
 			character = new TowerDatabase().towerDatabase[5];
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 26) {
+			// scourgeTower3
 			character = new TowerDatabase().towerDatabase[6];
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 27) {
+			// scourgeTower4
 			character = new TowerDatabase().towerDatabase[7];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 28) {
+			// sentinel fountain
+			character = new TowerDatabase().towerDatabase[8];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 29) {
+			// scourge fountain
+			character = new TowerDatabase().towerDatabase[8];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 30) {
+			// sentinelBase
+			character = BuildingDatabase.buildingDatabase[0];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 31) {
+			// scourgeBase
+			character = BuildingDatabase.buildingDatabase[1];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 32) {
+			// sentinelMeeleBarrack
+			character = BuildingDatabase.buildingDatabase[2];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 33) {
+			// sentinelRangedBarrack
+			character = BuildingDatabase.buildingDatabase[3];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 34) {
+			// scourgeMeeleBarrack
+			character = BuildingDatabase.buildingDatabase[4];
+			isOccupied = true;
+		}
+		
+		if(imageNumber == 35) {
+			// scourgeRangedBarrack
+			character = BuildingDatabase.buildingDatabase[5];
 			isOccupied = true;
 		}
 		

@@ -46,7 +46,6 @@ public class CharacterActions {
 	private void updateSightMap() {
 		// update sight map centered at position (toXPos, toYPos)
 		int sightRange = GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getSight();
-		System.out.println("sightRange" + sightRange);
 		
 		for(int x=toXPos-sightRange; x<toXPos+sightRange+1; x++){
 			for(int y=toYPos-sightRange; y<toYPos+sightRange+1; y++){

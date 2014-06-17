@@ -15,8 +15,8 @@ public class GridFrame {
 	WorldMapFile worldMapFile;
 
 	
-	public static final int ROW_NUMBER = 200;
-	public static final int COLUMN_NUMBER = 200;
+	public static final int ROW_NUMBER = 100;
+	public static final int COLUMN_NUMBER = 100;
 	
 	public static final int minRowNumberInScreen = 7;
 	public static final int minColNumberInScreen = 10;
@@ -166,7 +166,7 @@ public class GridFrame {
 					g2d.setStroke(new BasicStroke(10));
 					g2d.drawRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
 							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
-							(int) gridHeight);			
+							(int) gridHeight);
 				}				
 				
 			}
@@ -179,6 +179,13 @@ public class GridFrame {
 
 	
 	public static void updateSightMap() {
+		// reset sight map first
+		for (int x=0; x<ROW_NUMBER-1; x++) {
+			for (int y=0; y<COLUMN_NUMBER-1; y++) {
+				sightMap[x][y] = -1;
+			}
+		}
+		
 		// update sight map
 		for (int x=0; x<ROW_NUMBER-1; x++) {
 			for (int y=0; y<COLUMN_NUMBER-1; y++) {
@@ -275,7 +282,6 @@ public class GridFrame {
 		}		
 
 		GridFrame.updateSightMap();
-		
 	}
 	
 	
@@ -286,7 +292,6 @@ public class GridFrame {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 
 				highlightedMap[x][y] = -1;
 				attackRangeMap[x][y] = -1;
-				sightMap[x][y] = -1;
 			}
 		}	
 				

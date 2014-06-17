@@ -3,7 +3,7 @@ package edu.nus.comp.dotagrid.logic;
 public class LineCreep extends Character{
 	
 	public static int lineCreepActionPoint = 100;
-	public static int lineCreepStartingSight = 10;
+	public static int lineCreepStartingSight = 6;
 
 	public LineCreep(String name, int bountyMoney, int bountyExp, int startingHP, int startingMP, 
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 

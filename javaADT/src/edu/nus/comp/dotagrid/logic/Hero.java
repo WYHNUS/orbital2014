@@ -57,7 +57,7 @@ public class Hero extends Character{
 	public static int heroStartingBountyMoney = 250;
 	public static int heroStartingBountyExp = 100;
 	public static int heroStartingMoney = 875;
-	public static int heroSight = 12;
+	public static int heroSight = 7;
 	
 	
 	// constructor
