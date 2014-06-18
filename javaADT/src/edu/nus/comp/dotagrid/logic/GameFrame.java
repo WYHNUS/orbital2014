@@ -237,6 +237,15 @@ public class GameFrame{
 		skills[6] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
 		skills[7] = new GameButton("skill", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5+3) * gridWidth + (6*0.5) * gridWidth + 3 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
 				
+		skills[0].setActionNumber(20);
+		skills[1].setActionNumber(21);
+		skills[2].setActionNumber(22);
+		skills[3].setActionNumber(23);
+		skills[4].setActionNumber(24);
+		skills[5].setActionNumber(25);
+		skills[6].setActionNumber(26);
+		skills[7].setActionNumber(27);
+		
 		allGameButtons.add(skills[0]);
 		allGameButtons.add(skills[1]);
 		allGameButtons.add(skills[2]);

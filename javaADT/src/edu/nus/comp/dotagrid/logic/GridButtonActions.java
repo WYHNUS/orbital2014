@@ -51,8 +51,10 @@ public class GridButtonActions {
 				new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
 				
 				// if hero is player, change player's position
-				Screen.user.player.setXPos(toXPos);
-				Screen.user.player.setYPos(toYPos);
+				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
+					Screen.user.player.setXPos(toXPos);
+					Screen.user.player.setYPos(toYPos);
+				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Out Of Movable Range!");
 			}

@@ -45,6 +45,8 @@ public class GameButtonActions {
 		 * 
 		 * actionNumber 13 : pop up a sell item menu
 		 * 
+		 * actionNumber 20 - 27 : invoke ready to cast spell event
+		 * 
 		 */
 
 		switch (actionNumber) {
@@ -101,7 +103,51 @@ public class GameButtonActions {
 			case 13 :
 				sellItem();
 				break;
-								
+						
+				
+				
+			case 20 :
+				playerHeroCastSpell(0);
+				break;
+				
+			case 21 :
+				playerHeroCastSpell(1);
+				break;
+				
+			case 22 :
+				playerHeroCastSpell(2);
+				break;
+				
+			case 23 :
+				playerHeroCastSpell(3);
+				break;
+				
+			case 24 :
+				playerHeroCastSpell(4);
+				break;
+				
+			case 25 :
+				playerHeroCastSpell(5);
+				break;
+				
+			case 26 :
+				playerHeroCastSpell(6);
+				break;
+				
+			case 27 :
+				playerHeroCastSpell(7);
+				break;
+		}
+	}
+
+	
+
+	private void playerHeroCastSpell(int playerSkillIndex) {
+		// based on playerSkillIndex, determine which player's skill to cast
+		
+		// check if hero's skill list is empty
+		if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex] != null) {
+			((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].invokeSkillAction();
 		}
 	}
 

@@ -113,7 +113,7 @@ public class Item {
 	}
 
 	public void setItemImage() {
-		this.itemImage = new ImageIcon("res/items/" + "/" + itemName + ".png");
+		this.itemImage = new ImageIcon("res/items/" + itemName + ".png");
 	}
 	
 	public String getItemName() {

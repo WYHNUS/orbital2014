@@ -122,6 +122,7 @@ public class Hero extends Character{
 		this.setTotalPhysicalAttack(this.getBasicPhysicalAttack() + this.getTotalMainAttribute() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO);
 		
 		this.items = new Item[GameFrame.MAX_ITEM_NUMBER];
+		this.skills = new Skill[GameFrame.MAX_SKILL_NUMBER];
 	}
 	
 
@@ -188,14 +189,14 @@ public class Hero extends Character{
 			}
 		}
 		
-		/*
+		
 		this.skills = new Skill[GameFrame.MAX_SKILL_NUMBER];
 		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
 			if (hero.skills[i] != null){
 				this.skills[i] = new Skill(hero.skills[i]);
 			}
 		}
-		*/
+		
 	}
 
 
@@ -716,6 +717,19 @@ public class Hero extends Character{
 		// delete the item
 		this.items[itemNumber] = null;
 		GameFrame.allCharacterInfoGameButtons.get(11 + itemNumber).setImage(null);
+	}
+	
+	
+	// add in a skill
+	public void addSkill(Skill skill){
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
+			if(this.skills[i] == null){
+				this.skills[i] = new Skill(skill);
+				GameFrame.allCharacterInfoGameButtons.get(17 + i).setImage(skill.getItemImage().getImage());
+				System.out.println("Player has learnt a new skill!");
+				break;
+			}
+		}
 	}
 
 }

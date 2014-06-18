@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.awt.Image;
+
 import javax.swing.ImageIcon;
 
 public class Skill {
@@ -13,7 +15,7 @@ public class Skill {
 	private ImageIcon skillImage;
 	
 	private int skillType;
-	private String skilName;
+	private String skillName;
 	
 	private int usedMP;
 	private int usedActionPoint;
@@ -28,7 +30,7 @@ public class Skill {
 	// constructor
 	public Skill(int skillType, String skilName, int[] attributes) {
 		this.skillType = skillType;
-		this.skilName = skilName;
+		this.skillName = skilName;
 		
 		switch(this.skillType) {
 		
@@ -49,6 +51,22 @@ public class Skill {
 	
 	
 	
+	public Skill(Skill skill) {
+		this.setImage(skillImage.getImage());
+		
+		this.setSkillType(skill.getSkillType());
+		this.setSkillName(skill.getSkillName());
+
+		this.setUsedMP(skill.getUsedMP());
+		this.setUsedActionPoint(skill.getUsedActionPoint());
+		this.setCastRange(skill.getCastRange());
+		
+		this.setCoolDownRounds(skill.getCoolDownRounds());
+		this.setCurrentRound(skill.getCurrentRound());
+	}
+
+
+
 	public int getSkillType() {
 		return skillType;
 	}
@@ -112,13 +130,30 @@ public class Skill {
 
 
 
-	public String getSkilName() {
-		return skilName;
+	public String getSkillName() {
+		return skillName;
 	}
 
 
 
-	public void setSkilName(String skilName) {
-		this.skilName = skilName;
+	public void setSkillName(String skilName) {
+		this.skillName = skilName;
+	}
+
+
+
+	public ImageIcon getImage() {
+		return skillImage;
+	}
+
+	public void setImage(Image image) {
+		this.skillImage = new ImageIcon("res/skills/" + skillName + ".png");
+	}
+
+
+
+	public void invokeSkillAction() {
+		// TODO Auto-generated method stub
+		
 	}
 }
