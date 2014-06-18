@@ -31,6 +31,7 @@ public class Skill {
 	public Skill(int skillType, String skilName, int[] attributes) {
 		this.skillType = skillType;
 		this.skillName = skilName;
+		this.setImage();
 		
 		switch(this.skillType) {
 		
@@ -47,15 +48,17 @@ public class Skill {
 				
 				break;
 		}
+		
+
 	}
 	
 	
 	
 	public Skill(Skill skill) {
-		this.setImage(skillImage.getImage());
 		
 		this.setSkillType(skill.getSkillType());
 		this.setSkillName(skill.getSkillName());
+		this.setImage();
 
 		this.setUsedMP(skill.getUsedMP());
 		this.setUsedActionPoint(skill.getUsedActionPoint());
@@ -146,8 +149,8 @@ public class Skill {
 		return skillImage;
 	}
 
-	public void setImage(Image image) {
-		this.skillImage = new ImageIcon("res/skills/" + skillName + ".png");
+	public void setImage() {
+		this.skillImage = new ImageIcon("res/skills/" + skillName + ".gif");
 	}
 
 

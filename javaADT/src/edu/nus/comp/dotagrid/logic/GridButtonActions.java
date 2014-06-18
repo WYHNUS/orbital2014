@@ -217,17 +217,16 @@ public class GridButtonActions {
 		GameFrame.allCharacterInfoGameButtons.get(15).setIsReadyToDrawImage(true);
 		GameFrame.allCharacterInfoGameButtons.get(16).setIsReadyToDrawImage(true);
 		
-		/*
+		
 		// skill list
-		GameFrame.allCharacterInfoGameButtons.get(17).
-		GameFrame.allCharacterInfoGameButtons.get(18).
-		GameFrame.allCharacterInfoGameButtons.get(19).
-		GameFrame.allCharacterInfoGameButtons.get(20).
-		GameFrame.allCharacterInfoGameButtons.get(21).
-		GameFrame.allCharacterInfoGameButtons.get(22).
-		GameFrame.allCharacterInfoGameButtons.get(23).
-		GameFrame.allCharacterInfoGameButtons.get(24).
-		*/
+		GameFrame.allCharacterInfoGameButtons.get(17).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(18).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(19).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(20).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(21).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(22).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(23).setIsReadyToDrawImage(true);
+		GameFrame.allCharacterInfoGameButtons.get(24).setIsReadyToDrawImage(true);
 		
 		// KDA
 		GameFrame.allCharacterInfoGameButtons.get(26).setString("Kill : " + hero.getKill());

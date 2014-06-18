@@ -97,6 +97,7 @@ public class Screen extends JPanel implements Runnable {
 		loadGame();
 		
 		new BuildingDatabase();
+		new SkillDatabase();
 
 		// game loop
 		while (running) {

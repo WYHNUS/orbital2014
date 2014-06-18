@@ -42,6 +42,7 @@ public class HeroDatabase {
 							150, 10, 30000, 3, 0.7, 3.52, 20, 100, 1,
 							19, 18, 21, 1.8, 1.9, 2.9, 295);	
 		fur.setCharacterImage("heroes", "fur");
+		fur.addSkill(SkillDatabase.skillDatabase[0]);
 		heroDatabase[0] = fur;
 		
 	}
