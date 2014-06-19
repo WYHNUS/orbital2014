@@ -178,9 +178,14 @@ public class StatusRenderer implements Renderer {
 	@Override
 	public void draw() {
 		// other controls
+		drawStatusBar();
 		drawFrame();
 		for (Renderer r : controls.values())
 			r.draw();
+	}
+	
+	private void drawStatusBar() {
+		// TODO status bar
 	}
 
 	private void drawFrame() {

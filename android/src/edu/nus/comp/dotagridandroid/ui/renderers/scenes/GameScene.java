@@ -1,6 +1,6 @@
 package edu.nus.comp.dotagridandroid.ui.renderers.scenes;
 
-import java.util.Map;
+import java.util.*;
 
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.*;
@@ -17,6 +17,15 @@ public class GameScene implements SceneRenderer {
 	private VertexBufferManager vBufMan;
 	// resources
 	private Renderer grid, status, eventCapturer;
+	private final Map<String, Renderer> dialogControl = new HashMap<>();
+	private float[] dialogMat;
+	private GenericProgram dialogProgram;
+	private boolean landscape;
+	
+	public GameScene () {
+		dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY);
+		
+	}
 
 	@Override
 	public void setVertexBufferManager(VertexBufferManager manager) {
@@ -34,6 +43,7 @@ public class GameScene implements SceneRenderer {
 	@Override
 	public void setAspectRatio(float ratio) {
 		this.ratio = ratio;
+		landscape = ratio > 1;
 	}
 
 	@Override
@@ -53,7 +63,6 @@ public class GameScene implements SceneRenderer {
 		// TODO select character
 		manager.getCurrentGameState().initialise("MyHero");
 		manager.getCurrentGameState().setCurrentSceneRenderer(this);
-		final boolean landscape = ratio > 1;
 		state = (GameState) manager.getGameState("Current");
 		manager.getCurrentGameState().isInitialised();
 		grid = new GridRenderer(state.getGridWidth(), state.getGridHeight(), state.getTerrain());
@@ -81,8 +90,35 @@ public class GameScene implements SceneRenderer {
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
+		if (updates.containsKey("Dialog"))
+			prepareDialog((String) updates.get("Dialog"));
 		grid.notifyUpdate(updates);
 		status.notifyUpdate(updates);
+	}
+	
+	private void prepareDialog(String dialogType) {
+		dialogControl.clear();
+		switch (dialogType) {
+		case "ChooseSkill": {
+			// display skill panel
+			break;
+		}
+		case "ItemShop": {
+			// display item shop
+			if (landscape) {
+				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.5f, .9f, 1));
+			} else {
+				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.9f, .5f, 1));
+			}
+			break;
+		}
+		case "SellItem": {
+			break;
+		}
+		case "QuitGame": {
+			break;
+		}
+		}
 	}
 	
 	@Override
@@ -94,6 +130,13 @@ public class GameScene implements SceneRenderer {
 	public void draw() {
 		grid.draw();
 		status.draw();
+		drawDialog();
+	}
+	
+	private void drawDialog() {
+		// draw background
+		for (Renderer r : dialogControl.values())
+			r.draw();
 	}
 
 	@Override
@@ -102,15 +145,11 @@ public class GameScene implements SceneRenderer {
 			eventCapturer = status;
 			if (eventCapturer.passEvent(e))
 				return true;
-			else {
-				eventCapturer = grid;
-				if (eventCapturer.passEvent(e))
-					return true;
-				else {
-					eventCapturer = null;
-					return false;
-				}
-			}
+			eventCapturer = grid;
+			if (eventCapturer.passEvent(e))
+				return true;
+			eventCapturer = null;
+			return false;
 		} else if (eventCapturer.passEvent(e))
 			return true;
 		else {
@@ -128,6 +167,7 @@ public class GameScene implements SceneRenderer {
 			status.close();
 		if (manager != null)
 			manager.getCurrentGameState().close();
+		dialogProgram.close();
 	}
 
 	@Override
