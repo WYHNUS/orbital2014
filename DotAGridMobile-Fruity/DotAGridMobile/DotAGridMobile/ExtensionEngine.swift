@@ -22,7 +22,7 @@ class ExtensionEngine {
         vm = JSVirtualMachine()
         context = JSContext(virtualMachine: self.vm)
         interface = ExtensionInterface(logicMan: logicMan, delegateFor: self);
-        context.setValue(interface as AnyObject, forKey: "INTERFACE")
+        context.setValue(interface as AnyObject!, forKey: "INTERFACE")
         context.evaluateScript(source)
         engineHandler = context.objectForKeyedSubscript("ENGINE")
         configHandler = context.objectForKeyedSubscript("CONFIG")

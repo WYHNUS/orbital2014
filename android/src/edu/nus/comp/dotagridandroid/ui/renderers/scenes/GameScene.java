@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers.scenes;
 
 import java.util.*;
+
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.*;
@@ -9,7 +10,7 @@ import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class GameScene implements SceneRenderer {
-	private static final int CELLS_PER_ROW = 5;
+	private static final int CELLS_PER_ROW = 4;
 	private static final float CELL_MARGIN = .05f;
 	
 	private GameLogicManager manager;
@@ -126,7 +127,9 @@ public class GameScene implements SceneRenderer {
 			scroll.setGLResourceManager(vBufMan);
 			scroll.setGameLogicManager(manager);
 			scroll.setTexture2D(textures);
-			scroll.setMVP(dialogMat, null, null);
+			scroll.setMVP(FlatMatrix4x4Multiplication(dialogMat,FlatTranslationMatrix4x4(0, .1f, 0),FlatScalingMatrix4x4(1, .9f, 1)), null, null);
+			ButtonRenderer r;
+			TextRenderer t;
 			for (String name : itemInShop.keySet()) {
 				if (column == CELLS_PER_ROW) {
 					column = 0; row ++;
@@ -134,7 +137,7 @@ public class GameScene implements SceneRenderer {
 				final Map<String, Object> respondData = new HashMap<>();
 				respondData.put("Action", "BuyItem");
 				respondData.put("Item", name);
-				ButtonRenderer r = new ButtonRenderer();
+				r = new ButtonRenderer();
 				r.setTexture2D(textures);
 				r.setAspectRatio(ratio);
 				r.setGLResourceManager(vBufMan);
@@ -152,10 +155,26 @@ public class GameScene implements SceneRenderer {
 								(CELL_MARGIN + cellWidth) * row + CELL_MARGIN + cellWidth / 2 + 1,
 								0),
 						FlatScalingMatrix4x4(cellWidth / 2, cellWidth / 2, 1)));
+				t = new TextRenderer();
+				t.setTexture2D(textures);
+				t.setGLResourceManager(vBufMan);
+				t.setAspectRatio(ratio);
+				t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+				t.setRenderReady();
+				t.setText(itemInShop.get(name).getItemName());
+				scroll.setRenderer("ItemLabel-" + name, t, null);
 				column++;
 			}
 			scroll.setScrollLimit(0f, -(row + 1) * (CELL_MARGIN + cellWidth), 0f, 0f);
 			dialogControl.put("Scroll", scroll);
+			// cancel button
+			r = new ButtonRenderer();
+			r.setTexture2D(textures);
+			r.setAspectRatio(ratio);
+			r.setGLResourceManager(vBufMan);
+			r.setRenderReady();
+			r.setTapEnabled(true);
+			r.setTapRespondName("Cancel");
 			hasDialog = true;
 			break;
 		}

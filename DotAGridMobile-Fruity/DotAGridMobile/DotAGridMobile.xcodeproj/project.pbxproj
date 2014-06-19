@@ -439,6 +439,7 @@
 				METAL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Ofast";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -474,6 +475,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				METAL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Ofast";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -491,7 +493,7 @@
 				PRODUCT_MODULE_NAME = DotAGridMobileLogic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = DotAGridMobile/SwiftObjCBridge.h;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_OPTIMIZATION_LEVEL = "-Ofast";
 			};
 			name = Debug;
 		};
@@ -507,6 +509,7 @@
 				PRODUCT_MODULE_NAME = DotAGridMobileLogic;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OBJC_BRIDGING_HEADER = DotAGridMobile/SwiftObjCBridge.h;
+				SWIFT_OPTIMIZATION_LEVEL = "-Ofast";
 			};
 			name = Release;
 		};
