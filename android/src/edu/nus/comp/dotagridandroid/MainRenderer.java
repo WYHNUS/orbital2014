@@ -17,7 +17,7 @@ import edu.nus.comp.dotagridandroid.logic.*;
 public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	private Context context;
 	private MainSurfaceView view;
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	private CommonShapes cs;
 	private Renderer r;
 	private int width, height;
@@ -38,7 +38,6 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 //			glClearColor(.4f, .6f, .9f, 1);
 			glClearColor(0,0,0,1);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//			AppNativeAPI.testGL();
 			r.draw();
 		}
 	}
@@ -51,7 +50,7 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		this.height = height;
 		glViewport(0, 0, width, height);
 		float ratio = (float) width / height;
-		vBufMan = new VertexBufferManager();
+		vBufMan = new GLResourceManager();
 		cs = new CommonShapes(vBufMan);
 		// TODO: different resolution of maps
 		// TODO: change resource name
@@ -64,12 +63,13 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		image.recycle();
 		System.gc();
 		texture2d.put("StatusControlBackground", texture2d.get("GridMapBackground"));//new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dota2bg)));
+		texture2d.put("DialogBackground", texture2d.get("GridMapBackground"));
 //		image.recycle();
 		System.gc();
 		texture2d.put("DefaultButton", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.button)));
 		image.recycle();
 		System.gc();
-		r.setVertexBufferManager(vBufMan);
+		r.setGLResourceManager(vBufMan);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));
 		r.setGameLogicManager(manager);
 		r.setGraphicsResponder(new GraphicsResponder());
@@ -92,6 +92,8 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 	}
 	
 	public void passEvent (ControlEvent event) {
+		if (closed)
+			return;
 		if (r != null) {
 			// normalise
 			event.data.deltaX /= width / 2;

@@ -1,7 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers.scenes;
 
 import java.util.*;
-
+import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.*;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
@@ -9,26 +9,30 @@ import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class GameScene implements SceneRenderer {
+	private static final int CELLS_PER_ROW = 5;
+	private static final float CELL_MARGIN = .05f;
+	
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
 	private GameState state;
 	private float ratio;
 	private Map<String, Texture2D> textures;
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	// resources
 	private Renderer grid, status, eventCapturer;
 	private final Map<String, Renderer> dialogControl = new HashMap<>();
 	private float[] dialogMat;
 	private GenericProgram dialogProgram;
 	private boolean landscape;
+	private boolean hasDialog;
 	
 	public GameScene () {
-		dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY);
+		dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
 		
 	}
 
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		this.vBufMan = manager;
 	}
 
@@ -71,12 +75,12 @@ public class GameScene implements SceneRenderer {
 		status.setGameLogicManager(manager);
 		status.setGraphicsResponder(responder);
 		status.setTexture2D(textures);
-		status.setVertexBufferManager(vBufMan);
+		status.setGLResourceManager(vBufMan);
 		grid.setAspectRatio(ratio);
 		grid.setGameLogicManager(manager);
 		grid.setGraphicsResponder(responder);
 		grid.setTexture2D(textures);
-		grid.setVertexBufferManager(vBufMan);
+		grid.setGLResourceManager(vBufMan);
 		if (landscape)
 			status.setMVP(
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(1-.1f*ratio,0,-1),FlatScalingMatrix4x4(.1f*ratio,1,1)),
@@ -90,6 +94,7 @@ public class GameScene implements SceneRenderer {
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
+		hasDialog = false;
 		if (updates.containsKey("Dialog"))
 			prepareDialog((String) updates.get("Dialog"));
 		grid.notifyUpdate(updates);
@@ -97,6 +102,9 @@ public class GameScene implements SceneRenderer {
 	}
 	
 	private void prepareDialog(String dialogType) {
+		hasDialog = false;
+		for (Renderer r : dialogControl.values())
+			r.close();
 		dialogControl.clear();
 		switch (dialogType) {
 		case "ChooseSkill": {
@@ -110,6 +118,45 @@ public class GameScene implements SceneRenderer {
 			} else {
 				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.9f, .5f, 1));
 			}
+			final Map<String, Item> itemInShop = manager.getCurrentGameState().getItemsInShop();
+			int column = 0, row = 0;
+			final float leftCellOffset = (2 - CELL_MARGIN) / CELLS_PER_ROW,
+					cellWidth = leftCellOffset - CELL_MARGIN;
+			ScrollRenderer scroll = new ScrollRenderer();
+			scroll.setGLResourceManager(vBufMan);
+			scroll.setGameLogicManager(manager);
+			scroll.setTexture2D(textures);
+			scroll.setMVP(dialogMat, null, null);
+			for (String name : itemInShop.keySet()) {
+				if (column == CELLS_PER_ROW) {
+					column = 0; row ++;
+				}
+				final Map<String, Object> respondData = new HashMap<>();
+				respondData.put("Action", "BuyItem");
+				respondData.put("Item", name);
+				ButtonRenderer r = new ButtonRenderer();
+				r.setTexture2D(textures);
+				r.setAspectRatio(ratio);
+				r.setGLResourceManager(vBufMan);
+				r.setRenderReady();
+				r.setTapEnabled(manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", respondData)).get("GameAction"));
+				r.setTapRespondName("GameAction");
+				r.setTapRespondData(respondData);
+				r.setLongPressEnabled(true);
+				r.setLongPressRespondName("RequestItem");
+				r.setLongPressRespondData(Collections.singletonMap("Item", (Object) name));
+				r.setRenderReady();
+				scroll.setRenderer("Item-" + name, r, FlatMatrix4x4Multiplication(
+						FlatTranslationMatrix4x4(
+								(CELL_MARGIN + cellWidth) * column + CELL_MARGIN + cellWidth / 2 - 1,
+								(CELL_MARGIN + cellWidth) * row + CELL_MARGIN + cellWidth / 2 + 1,
+								0),
+						FlatScalingMatrix4x4(cellWidth / 2, cellWidth / 2, 1)));
+				column++;
+			}
+			scroll.setScrollLimit(0f, -(row + 1) * (CELL_MARGIN + cellWidth), 0f, 0f);
+			dialogControl.put("Scroll", scroll);
+			hasDialog = true;
 			break;
 		}
 		case "SellItem": {
@@ -123,7 +170,10 @@ public class GameScene implements SceneRenderer {
 	
 	@Override
 	public boolean getReadyState() {
-		return grid.getReadyState() && status.getReadyState();
+		boolean success = grid.getReadyState() && status.getReadyState();
+		for (Renderer r : dialogControl.values())
+			success &= r.getReadyState();
+		return success;
 	}
 
 	@Override
@@ -135,8 +185,36 @@ public class GameScene implements SceneRenderer {
 	
 	private void drawDialog() {
 		// draw background
-		for (Renderer r : dialogControl.values())
-			r.draw();
+		if (hasDialog) {
+			final int
+				vPosition = glGetAttribLocation(dialogProgram.getProgramId(), "vPosition"),
+				textureCoord = glGetAttribLocation(dialogProgram.getProgramId(), "textureCoord"),
+				textureLocation = glGetUniformLocation(dialogProgram.getProgramId(), "texture"),
+				mModel = glGetUniformLocation(dialogProgram.getProgramId(), "model"),
+				mView = glGetUniformLocation(dialogProgram.getProgramId(), "view"),
+				mProjection = glGetUniformLocation(dialogProgram.getProgramId(), "projection"),
+				vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
+				vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
+				iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
+			glUseProgram(dialogProgram.getProgramId());
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, textures.get("DialogBackground").getTexture());
+			glUniform1i(textureLocation, 0);
+			glUniformMatrix4fv(mModel, 1, false, dialogMat, 0);
+			glUniformMatrix4fv(mView, 1, false, IdentityMatrix4x4(), 0);
+			glUniformMatrix4fv(mProjection, 1, false, IdentityMatrix4x4(), 0);
+			glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
+			glEnableVertexAttribArray(vPosition);
+			glEnableVertexAttribArray(textureCoord);
+			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+			glDisableVertexAttribArray(vPosition);
+			glDisableVertexAttribArray(textureCoord);
+			for (Renderer r : dialogControl.values())
+				r.draw();
+		}
 	}
 
 	@Override
@@ -145,6 +223,12 @@ public class GameScene implements SceneRenderer {
 			eventCapturer = status;
 			if (eventCapturer.passEvent(e))
 				return true;
+			if (hasDialog)
+				for (Renderer r : dialogControl.values()) {
+					eventCapturer = r;
+					if (eventCapturer.passEvent(e))
+						return true;
+				}
 			eventCapturer = grid;
 			if (eventCapturer.passEvent(e))
 				return true;

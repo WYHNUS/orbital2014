@@ -169,7 +169,14 @@ public class GameState implements Closeable {
 		if (!initialised)
 			return;
 	}
+	
+	public void resetTimer() {
+		if (!initialised)
+			return;
+	}
 
+	//terrain
+	
 	public int getGridWidth() {
 		return gridWidth;
 	}
@@ -235,6 +242,12 @@ public class GameState implements Closeable {
 		return isInitialised() ? objThumbnail.get(name) : null;
 	}
 	
+	// items
+	public Map<String, Item> getItemsInShop() {
+		return Collections.unmodifiableMap(itemShop);
+	}
+	
+	// interface interactions
 	public Map<String, Boolean> areActionPossible (Map<String, Map<String, Object>> actions) {
 		Map<String, Boolean> possible = new HashMap<>();
 		for (Map.Entry<String, Map<String,Object>> action : actions.entrySet())
@@ -246,10 +259,10 @@ public class GameState implements Closeable {
 		return chosenGrid.clone();
 	}
 	
-	// interface interactions
 	public void setCurrentSceneRenderer (SceneRenderer renderer) {
 		currentSceneRenderer = renderer;
 	}
+	
 	public void notifyUpdate (Map<String, Object> updates) {
 		if (currentSceneRenderer != null)
 			currentSceneRenderer.notifyUpdate(updates);
@@ -262,11 +275,17 @@ public class GameState implements Closeable {
 		case "ChooseGrid":
 			this.chosenGrid = (int[]) e.data.extendedData.get("Coordinates");
 			gameMaster.applyRule(this, "ChooseGrid", e.data.extendedData);
-			currentSceneRenderer.passEvent(e);
+			break;
+		case "RequestAttackArea":
+			gameMaster.applyRule(this, "RequestAttackArea", null);
+			break;
+		case "RequestMoveArea":
+			gameMaster.applyRule(this, "RequestMoveArea", null);
 			break;
 		case "RequestActionDetail":
 			break;
-		case "RequestItemList":
+		case "RequestItemShop":
+			currentSceneRenderer.notifyUpdate(Collections.singletonMap("Dialog", (Object) "ItemShop")); 
 			break;
 		case "RequestActionList":
 			break;

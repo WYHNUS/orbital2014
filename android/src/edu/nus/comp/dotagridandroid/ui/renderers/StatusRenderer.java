@@ -10,7 +10,7 @@ import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class StatusRenderer implements Renderer {
 	private GameState state;
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private float ratio;
 	private GameLogicManager manager;
@@ -40,10 +40,10 @@ public class StatusRenderer implements Renderer {
 	}
 
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		this.vBufMan = manager;
 		for (Map.Entry<String, Renderer> entry : controls.entrySet())
-			entry.getValue().setVertexBufferManager(manager);;
+			entry.getValue().setGLResourceManager(manager);;
 	}
 
 	@Override
@@ -91,8 +91,7 @@ public class StatusRenderer implements Renderer {
 		button.setTapRespondName("GameAction");
 		button.setTapRespondData(Collections.singletonMap("Action", (Object) "Attack"));
 		button.setLongPressEnabled(true);
-		button.setLongPressRespondName("GameAction");
-		button.setLongPressRespondData(Collections.singletonMap("Action", (Object) "RequestAttackArea"));
+		button.setLongPressRespondName("RequestAttackArea");
 		button.setRenderReady();
 		scroll.setRenderer("Attack", button, FlatScalingMatrix4x4(.25f, .25f, 1));
 		// attack label
@@ -108,8 +107,7 @@ public class StatusRenderer implements Renderer {
 		button.setTapRespondName("GameAction");
 		button.setTapRespondData(Collections.singletonMap("Action", (Object) "Move"));
 		button.setLongPressEnabled(true);
-		button.setLongPressRespondName("GameAction");
-		button.setLongPressRespondData(Collections.singletonMap("Action", (Object) "RequestMoveArea"));
+		button.setLongPressRespondName("RequestMoveArea");
 		button.setRenderReady();
 		scroll.setRenderer("Move", button,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -.75f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
@@ -126,8 +124,7 @@ public class StatusRenderer implements Renderer {
 		// shop button
 		button = (ButtonRenderer) controls.remove("Shop");
 		button.setTapEnabled(true);
-		button.setTapRespondName("GameAction");
-		button.setTapRespondData(Collections.singletonMap("Action", (Object) "RequestShop"));
+		button.setTapRespondName("RequestItemShop");
 		scroll.setRenderer("Shop", button,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -1.5f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(1.5f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
@@ -144,8 +141,7 @@ public class StatusRenderer implements Renderer {
 		// skill button
 		button = (ButtonRenderer) controls.remove("Skill");
 		button.setTapEnabled(true);
-		button.setTapRespondName("GameAction");
-		button.setTapRespondData(Collections.singletonMap("Action", (Object) "RequestSkill"));
+		button.setTapRespondName("RequestSkill");
 		scroll.setRenderer("Skill", button,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -2.25f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2.25f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));

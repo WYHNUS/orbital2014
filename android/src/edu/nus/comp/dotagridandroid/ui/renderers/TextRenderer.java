@@ -15,7 +15,7 @@ public class TextRenderer implements Renderer {
 	// parent resources
 	private GenericProgram textProgram;
 	private MainRenderer.GraphicsResponder responder;
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	// render params
 	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
 	// text attrs
@@ -133,7 +133,7 @@ public class TextRenderer implements Renderer {
 	}
 
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		vBufMan = manager;
 	}
 	

@@ -8,7 +8,7 @@ import edu.nus.comp.dotagridandroid.ui.renderers.scenes.*;
 
 public class MainSceneRenderer implements Renderer {
 	
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private float ratio;
 	private GameLogicManager manager;
@@ -21,9 +21,9 @@ public class MainSceneRenderer implements Renderer {
 	}
 
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		this.vBufMan = manager;
-		scene.setVertexBufferManager(manager);
+		scene.setGLResourceManager(manager);
 	}
 
 	@Override

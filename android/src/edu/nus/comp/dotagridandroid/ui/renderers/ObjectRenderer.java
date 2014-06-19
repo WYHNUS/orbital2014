@@ -8,11 +8,11 @@ import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 
 public class ObjectRenderer implements Renderer {
 
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	private float[] model, view, projection;
 
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		this.vBufMan = manager;
 	}
 

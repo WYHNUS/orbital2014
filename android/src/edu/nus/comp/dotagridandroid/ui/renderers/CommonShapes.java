@@ -1,8 +1,8 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 public class CommonShapes {
-	private VertexBufferManager vBufMan;
-	public CommonShapes (VertexBufferManager man) {
+	private GLResourceManager vBufMan;
+	public CommonShapes (GLResourceManager man) {
 		vBufMan = man;
 		// Square
 		vBufMan.setVertexBuffer("GenericFullSquare", new float[]{-1,1,0,1,-1,-1,0,1,1,-1,0,1,1,1,0,1});

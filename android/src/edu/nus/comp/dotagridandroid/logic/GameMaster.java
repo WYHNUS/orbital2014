@@ -30,6 +30,27 @@ public class GameMaster {
 //			stateMachine.notifyUpdate(updates);
 			break;
 		}
+		case "RequestAttackArea": {
+			Map<String, Object> updates = new HashMap<>();
+			// TODO: calculate attack area
+			List<int[]> allowed = new ArrayList<>();
+			final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
+			final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
+			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
+				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
+					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
+						allowed.add(new int[]{prevPos[0] + i, prevPos[1] + j});
+			updates.put("HighlightGrid", allowed.toArray(new int[2][allowed.size()]));
+			stateMachine.notifyUpdate(Collections.unmodifiableMap(updates));
+			return;
+		}
+		case "RequestMoveArea": {
+			System.out.println("Requesting move area");
+			return;
+		}
+		case "RequestItemShop": {
+			return;
+		}
 		case "GameAction": {
 			// check if action is possible
 			if (requestActionPossible(stateMachine, actionName, options)) {
@@ -42,20 +63,6 @@ public class GameMaster {
 					updates.put("Characters", Collections.singleton("ALL"));
 					stateMachine.notifyUpdate(Collections.unmodifiableMap(updates));
 					return;
-				case "RequestAttackArea": {
-					System.out.println("Requesting Attack Area");
-					// TODO: calculate attack area
-					List<int[]> allowed = new ArrayList<>();
-					final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
-					final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
-					for (int i = -totalAttackArea; i <= totalAttackArea; i++)
-						for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
-							if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
-								allowed.add(new int[]{prevPos[0] + i, prevPos[1] + j});
-					updates.put("HighlightGrid", allowed.toArray(new int[2][allowed.size()]));
-					stateMachine.notifyUpdate(Collections.unmodifiableMap(updates));
-					return;
-				}
 				case "Move": {
 					System.out.println("Game action is move");
 					final int[] reqPos = stateMachine.getChosenGrid();
@@ -72,21 +79,20 @@ public class GameMaster {
 					stateMachine.notifyUpdate(updates);
 					return;
 				}
-				case "RequestMoveArea": {
-					System.out.println("Requesting move area");
-					return;
-				}
-				case "RequestShop": {
-					return;
+				case "BuyItem": {
+					break;
 				}
 				}
 				
 			}
 			break;
 		}
+		case "Cancel":
+			// nothing
+			stateMachine.notifyUpdate(Collections.singletonMap("Cancel", (Object) "ALL"));
+			return;
 		}
 	}
-	// Hard coded rules go below
 
 	public boolean requestActionPossible(GameState stateMachine, String actionName, Map<String, Object> options) {
 		final int[] targetGrid = stateMachine.getChosenGrid();

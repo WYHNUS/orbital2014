@@ -10,7 +10,9 @@ import static android.opengl.GLES20.*;
  * WARNING:
  * OpenGL ES only support unsigned short as indices
  */
-public class VertexBufferManager implements Closeable {
+public class GLResourceManager implements Closeable {
+	public static final int FLOAT_BYTES = Float.SIZE / 8, SHORT_BYTES = Short.SIZE / 8;
+	
 	private int[] bufs = new int[2];
 	private int vBufHandler, iBufHandler;
 	private Map<String, Integer> vOffset = new HashMap<>(), iOffset = new HashMap<>();
@@ -18,8 +20,9 @@ public class VertexBufferManager implements Closeable {
 	private Map<String, short[]> iBuf = new HashMap<>();
 	private Boolean dirtyVertex = false, dirtyIndex = false;
 	private Integer capacity = 0, indexes = 0;
-	final static int FLOAT_BYTES = Float.SIZE / 8, SHORT_BYTES = Short.SIZE / 8;
-	public VertexBufferManager () {
+	
+	private Map<String, GenericProgram> programs = new HashMap<>();
+	public GLResourceManager () {
 		glGenBuffers(2, bufs, 0);
 		vBufHandler = bufs[0];
 		iBufHandler = bufs[1];
@@ -106,8 +109,22 @@ public class VertexBufferManager implements Closeable {
 		dirtyIndex = false;
 	}
 	
+	public GenericProgram getProgram(String name) {
+		return programs.get(name);
+	}
+	public void setProgram(String name, GenericProgram program) {
+		if (name != null) {
+			if (program != null)
+				programs.put(name, program);
+			else
+				programs.remove(name);
+		}
+	}
+	
 	@Override
 	public void close() {
 		glDeleteBuffers(2, bufs, 0);
+		for (GenericProgram program : programs.values())
+			program.close();
 	}
 }

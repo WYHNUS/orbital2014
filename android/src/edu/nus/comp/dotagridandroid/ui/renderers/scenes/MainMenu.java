@@ -7,12 +7,12 @@ import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import edu.nus.comp.dotagridandroid.ui.renderers.Renderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.Texture2D;
-import edu.nus.comp.dotagridandroid.ui.renderers.VertexBufferManager;
+import edu.nus.comp.dotagridandroid.ui.renderers.GLResourceManager;
 
 public class MainMenu implements Renderer {
 
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		// TODO Auto-generated method stub
 
 	}

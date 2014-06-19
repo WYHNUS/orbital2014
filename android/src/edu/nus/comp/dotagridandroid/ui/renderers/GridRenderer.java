@@ -17,7 +17,7 @@ public class GridRenderer implements Renderer {
 	public static final int SHADOW_MAP_TEXTURE_DIMENSION = 2048;
 	private static final float LIGHT_MAX_RADIUS = 5;
 	
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private final int rows, columns;
 	private GameLogicManager manager;
@@ -44,7 +44,7 @@ public class GridRenderer implements Renderer {
 	private float[] selectGridMat, gridLines, terrain;
 	// temporary map characteristics - do not use after init
 	private float[] mapTerrain, mapNormalCoord, mapTextureCoord;
-	private int[] gridLinesIndex, mapIndex;
+	private int[] gridLinesIndex;
 	// map buffers
 	private int mapVBO;
 	private FloatBuffer mapBuf;//, mapTerrainBuf, mapNormalCoordBuf, mapTextureCoordBuf;
@@ -54,7 +54,6 @@ public class GridRenderer implements Renderer {
 	// gesture states
 	private boolean hasSelection = false;
 	private boolean processingTranslation = false, processingPerspective = false;
-	private boolean mvpDirty = true;
 	// translation
 	private final float[] translationDeltaCoord = {-1,-1};
 	// perspective
@@ -155,9 +154,9 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {}
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		vBufMan = manager;
-		textRender.setVertexBufferManager(vBufMan);
+		textRender.setGLResourceManager(vBufMan);
 	};
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}
@@ -170,7 +169,6 @@ public class GridRenderer implements Renderer {
 	public void setAspectRatio(float ratio) {
 		// projection parameters - constant for this aspect ratio
 		this.ratio = ratio;
-		mvpDirty = true;
 		final float lens_radius = cameraParams[9] * (float) Math.tan(cameraParams[11] / 2);
 		if (ratio > 1)
 			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
@@ -427,7 +425,7 @@ public class GridRenderer implements Renderer {
 		mapTexture = textures.get("GridMapBackground");
 		normalGen = new NormalGenerator(columns, rows, resolution, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
 		normalGen.setRenderReady();
-		mapTerrain = mapNormalCoord = mapTextureCoord = null; mapIndex = null;
+		mapTerrain = mapNormalCoord = mapTextureCoord = null;
 		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
 		glBufferData(GL_ARRAY_BUFFER, Float.SIZE / 8 * 8 * (rows * resolution * (resolution * columns + 1) * 2), mapBuf.position(0), GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -515,7 +513,6 @@ public class GridRenderer implements Renderer {
 		glEnableVertexAttribArray(textureCoord);
 		glEnableVertexAttribArray(normalCoord);
 		// light configurations
-		int c = 1;
 		for (Map.Entry<String, float[]> entry : lightSrc.entrySet()) {
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
@@ -565,7 +562,6 @@ public class GridRenderer implements Renderer {
 			glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTexture.get(key)).getTexture());
 			glUniform1i(textureLocation, 0);
 			glUniform1i(shadowLocation, 1);
-			c = 1;
 			for (Map.Entry<String, float[]> entry : lightSrc.entrySet())
 				if (lightOn.get(entry.getKey())) {
 					glActiveTexture(GL_TEXTURE1);
@@ -688,7 +684,6 @@ public class GridRenderer implements Renderer {
 	}
 	// coordinate calculations
 	private void calculateModel() {
-		mvpDirty = true;
 		if (rows > columns)
 			model = FlatScalingMatrix4x4(columns / (float) rows * BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR, BOARD_Z_COORD);
 		else if (rows < columns)
@@ -698,7 +693,6 @@ public class GridRenderer implements Renderer {
 //		model = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0,0,BOARD_Z_COORD), model);
 	}
 	private void calculateView () {
-		mvpDirty = true;
 		if (processingTranslation)
 			view = FlatTranslationMatrix4x4(-cameraParams[0]-translationDeltaCoord[0],-cameraParams[1]-translationDeltaCoord[1],-cameraParams[2]);
 		else
@@ -871,8 +865,8 @@ public class GridRenderer implements Renderer {
 		// TODO: Camera Parameter Calibration
 		if (zoomDelta + cameraParams[2] < BOARD_Z_COORD + cameraParams[9])
 			perspectiveCameraZoom = BOARD_Z_COORD + cameraParams[9] - cameraParams[2];
-		else if (zoomDelta + cameraParams[2] > 20 * (BOARD_Z_COORD + cameraParams[9]))
-			perspectiveCameraZoom = 20 * (BOARD_Z_COORD + cameraParams[9]) - cameraParams[2];
+		else if (zoomDelta + cameraParams[2] > BOARD_Z_COORD + cameraParams[10])
+			perspectiveCameraZoom = BOARD_Z_COORD + cameraParams[10] - cameraParams[2];
 		else
 			perspectiveCameraZoom = zoomDelta;
 		// look-at displacement

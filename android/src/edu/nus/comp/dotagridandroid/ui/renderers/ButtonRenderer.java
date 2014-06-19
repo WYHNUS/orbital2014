@@ -13,9 +13,8 @@ public class ButtonRenderer implements Renderer {
 	private float[] model = IdentityMatrix4x4(), view = IdentityMatrix4x4(), projection = IdentityMatrix4x4();
 	private GenericProgram buttonProgram;
 	private boolean pressed = false;
-	private GraphicsResponder responder;
 	
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private String textureName = "DefaultButton";
 	private GameLogicManager manager;
@@ -26,12 +25,16 @@ public class ButtonRenderer implements Renderer {
 	private boolean tapEnabled = false, longPressEnabled = false;
 	public ButtonRenderer () {
 		model = view = projection = IdentityMatrix4x4();
-		buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
 	}
 
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		vBufMan = manager;
+		buttonProgram = manager.getProgram("identityTexturedWithTone");
+		if (buttonProgram == null) {
+			buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED_TONED);
+			manager.setProgram("identityTexturedWithTone", buttonProgram);
+		}
 	}
 
 	@Override
@@ -55,7 +58,6 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public void setGraphicsResponder(GraphicsResponder mainRenderer) {
-		responder = mainRenderer;
 	}
 	
 	public void setTapRespondName(String eventName) {
@@ -100,8 +102,7 @@ public class ButtonRenderer implements Renderer {
 	}
 
 	@Override
-	public void setRenderReady() {
-	}
+	public void setRenderReady() {}
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {}
@@ -119,7 +120,8 @@ public class ButtonRenderer implements Renderer {
 			mView = glGetUniformLocation(buttonProgram.getProgramId(), "view"),
 			mProjection = glGetUniformLocation(buttonProgram.getProgramId(), "projection"),
 			textureLocation = glGetUniformLocation(buttonProgram.getProgramId(), "texture"),
-			textureCoord = glGetAttribLocation(buttonProgram.getProgramId(), "textureCoord");
+			textureCoord = glGetAttribLocation(buttonProgram.getProgramId(), "textureCoord"),
+			textureTone = glGetUniformLocation(buttonProgram.getProgramId(), "textureColorTone");
 		final int
 			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
@@ -131,6 +133,10 @@ public class ButtonRenderer implements Renderer {
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, textures.get(textureName).getTexture());
 		glUniform1i(textureLocation, 0);
+		if (tapEnabled)
+			glUniform4f(textureTone, 0, 0, 0, 0);
+		else
+			glUniform4f(textureLocation, -.79f, -.28f, -.93f, 0);	// 21% red, 72% green, 7% blue
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
@@ -179,8 +185,6 @@ public class ButtonRenderer implements Renderer {
 	}
 
 	@Override
-	public void close() {
-		buttonProgram.close();
-	}
+	public void close() {}
 
 }

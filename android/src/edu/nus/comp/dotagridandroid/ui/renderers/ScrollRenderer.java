@@ -11,7 +11,7 @@ import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 public class ScrollRenderer implements Renderer {
 	public static final float DRAG_THRESHOLD = .01f;
 	private GameLogicManager manager;
-	private VertexBufferManager vBufMan;
+	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private float ratio;
 	private GraphicsResponder responder;
@@ -31,7 +31,7 @@ public class ScrollRenderer implements Renderer {
 		frameProgram = new GenericProgram(CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY);
 	}
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 		this.vBufMan = manager;
 	}
 

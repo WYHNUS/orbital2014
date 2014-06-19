@@ -47,7 +47,7 @@ public class NormalGenerator implements Renderer {
 		computeTask.start();
 	}
 	@Override
-	public void setVertexBufferManager(VertexBufferManager manager) {
+	public void setGLResourceManager(GLResourceManager manager) {
 	}
 
 	@Override
