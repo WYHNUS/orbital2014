@@ -3,8 +3,12 @@ package edu.nus.comp.dotagrid.logic;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 public class Skill {
+	
+	public static int invokedSkillType = -1;
+	
 	/*
 	 * Skill type : 
 	 * 
@@ -24,7 +28,7 @@ public class Skill {
 	
 	// coolDownRounds records the minimum rounds, if a hero has casted this spell, needed to end before using this skill again
 	// currentRound records the rounds needed to end before using this skill again
-	private int coolDownRounds, currentRound;
+	private int coolDownRounds, currentCoolDownRound;
 	
 	
 	// constructor
@@ -41,7 +45,7 @@ public class Skill {
 				this.usedActionPoint = attributes[1];
 				this.castRange = attributes[2];
 				this.coolDownRounds = attributes[3];
-				this.setCurrentRound(0);
+				this.setCurrentCoolDownRound(0);
 				break;
 				
 			case 2 :
@@ -65,7 +69,7 @@ public class Skill {
 		this.setCastRange(skill.getCastRange());
 		
 		this.setCoolDownRounds(skill.getCoolDownRounds());
-		this.setCurrentRound(skill.getCurrentRound());
+		this.setCurrentCoolDownRound(skill.getCurrentCoolDownRound());
 	}
 
 
@@ -121,14 +125,18 @@ public class Skill {
 
 
 
-	public int getCurrentRound() {
-		return currentRound;
+	public int getCurrentCoolDownRound() {
+		return currentCoolDownRound;
 	}
 
 
 
-	public void setCurrentRound(int currentRound) {
-		this.currentRound = currentRound;
+	public void setCurrentCoolDownRound(int currentRound) {
+		if (currentRound <= 0) {
+			this.currentCoolDownRound = 0;
+		} else {
+			this.currentCoolDownRound = currentRound;
+		}
 	}
 
 
@@ -155,8 +163,30 @@ public class Skill {
 
 
 
-	public void invokeSkillAction() {
-		// TODO Auto-generated method stub
+	public void invokeSkillAction(int heroXPos, int heroYPos) {
 		
+		// reset attack map and highlighted map
+		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
+			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
+				GridFrame.highlightedMap[x][y] = -1;
+				GridFrame.attackRangeMap[x][y] = -1;
+			}
+		}	
+					
+		// change highlighted map
+		for(int x=heroXPos-this.getCastRange(); x<heroXPos+this.getCastRange()+1; x++){
+			for(int y=heroYPos-this.getCastRange(); y<heroYPos+this.getCastRange()+1; y++){
+				// x and y need to be within the grid frame 
+				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
+					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
+						// x + y need to be within the number of attackable grid
+						if (Math.abs(heroXPos - x) + Math.abs(heroYPos - y) <= this.getCastRange()) {
+							GridFrame.highlightedMap[x][y] = 1;
+						}
+					}
+				}
+			}
+		}
+
 	}
 }

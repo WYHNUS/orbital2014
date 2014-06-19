@@ -3,6 +3,7 @@ package edu.nus.comp.dotagrid.logic;
 public class Player {
 	private int XPos, YPos;
 	private static int teamNumber;
+	public static int invokedPlayerSkillIndex;
 
 	// constructor
 	public Player(int XPos, int YPos){

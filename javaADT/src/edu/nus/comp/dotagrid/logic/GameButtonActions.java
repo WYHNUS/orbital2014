@@ -7,6 +7,7 @@ public class GameButtonActions {
 	public static boolean readyToAct = false;
 	public static boolean readyToMove = false;
 	public static boolean readyToAttack = false;
+	public static boolean readyToCastSpell = false;
 	
 	private int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
 	private int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
@@ -147,7 +148,15 @@ public class GameButtonActions {
 		
 		// check if hero's skill list is empty
 		if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex] != null) {
-			((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].invokeSkillAction();
+			// if not empty, ready to cast spell
+			((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].
+					invokeSkillAction(Screen.user.player.getXPos(), Screen.user.player.getYPos());
+			
+			GameButtonActions.readyToAct = true;
+			GameButtonActions.readyToCastSpell  = true;
+			
+			Skill.invokedSkillType = ((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].getSkillType();
+			Player.invokedPlayerSkillIndex = playerSkillIndex;
 		}
 	}
 
@@ -175,6 +184,17 @@ public class GameButtonActions {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
 					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentActionPoint(GridFrame.gridButtonMap[x][y].getCharacter().getMaxActionPoint());
+					
+					// if character is hero, reset all hero's skills' current cooldown round
+					if (GridFrame.gridButtonMap[x][y].getIsHero() == true) {
+						for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
+							// check if skill exists
+							if (((Hero)GridFrame.gridButtonMap[x][y].getCharacter()).skills[i] != null){
+								((Hero)GridFrame.gridButtonMap[x][y].getCharacter()).skills[i].setCurrentCoolDownRound(((Hero)GridFrame.gridButtonMap[x][y].getCharacter()).skills[i].getCurrentCoolDownRound() - 1);
+							}
+						}
+					}
+						
 				}
 			}
 		}	

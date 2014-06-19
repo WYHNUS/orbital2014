@@ -41,6 +41,7 @@ public class GridButtonActions {
 	}
 
 	public void updateWhenSomeActionsInvoked() {
+		// only one of the readyToMove / readyToAttack / readyToCastSpell can be true at each time interval (use if{} else if{} to save time)
 
 		// check to execute move action
 		if (GameButtonActions.readyToMove == true) {
@@ -50,11 +51,6 @@ public class GridButtonActions {
 				// move!
 				new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
 				
-				// if hero is player, change player's position
-				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
-					Screen.user.player.setXPos(toXPos);
-					Screen.user.player.setYPos(toYPos);
-				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Out Of Movable Range!");
 			}
@@ -71,7 +67,7 @@ public class GridButtonActions {
 		
 		
 		// check to execute attack action
-		if (GameButtonActions.readyToAttack == true) {
+		else if (GameButtonActions.readyToAttack == true) {
 			boolean isWithinAttackRange = calculateWithinAttackRange();
 			
 			if (isWithinAttackRange && GridFrame.sightMap[toXPos][toYPos] == 1) {
@@ -90,10 +86,36 @@ public class GridButtonActions {
 			// select position which has been attacked
 			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
+		
+		// check to execute cast spell (hero's skill) action
+		else if (GameButtonActions.readyToCastSpell  == true) {
+			boolean isWithinCastingRange = calculateWithinSkillRange();
+			
+			if (isWithinCastingRange) {
+				// cast this spell !
+				new CharacterActions(4, fromXPos, fromYPos, toXPos, toYPos);
+			} else {
+				JOptionPane.showMessageDialog(null, "Out Of Skill Casting Range!");
+			}
+			
+			// casting action ended
+			GameButtonActions.readyToCastSpell = false;
+			
+			// player's action ended
+			GameButtonActions.readyToAct = false;
+			
+			// select position which has been attacked
+			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+		}
 
 	}
 	
 	
+	private boolean calculateWithinSkillRange() {
+		// calculate if the selected grid is within attack range
+		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos)) <= ((Hero)(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter())).skills[Player.invokedPlayerSkillIndex].getCastRange();	
+	}
+
 	private boolean isWithinMovableRange() {
 		// calculate if the selected grid is within movable range
 		FindPath.highlightMovableGrids(fromXPos, fromYPos, GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getNumberOfMovableGrid());
