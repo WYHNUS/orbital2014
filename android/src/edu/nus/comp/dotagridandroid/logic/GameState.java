@@ -18,11 +18,12 @@ public class GameState implements Closeable {
 	private Thread initialisationProcess;
 	private SceneRenderer currentSceneRenderer;
 	private Map<String, Character> chars;
-	private Map<String, Object> objs;
+	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
 	private Map<String, FloatBuffer[]> objModels;
 	private Map<String, Texture2D> objTextures, objThumbnail;
+	private Map<String, Item> itemShop;
 	// game rule object
 	private GameMaster gameMaster;
 	private String playerCharacter;
@@ -43,6 +44,7 @@ public class GameState implements Closeable {
 		objTextures = new ConcurrentHashMap<>();
 		objThumbnail = new ConcurrentHashMap<>();
 		posReverseLookup = new ConcurrentHashMap<>();
+		itemShop = new ConcurrentHashMap<>();
 		initialisationProcess = new Thread() {
 			@Override
 			public void run() {
@@ -86,8 +88,6 @@ public class GameState implements Closeable {
 						100));
 				setCharacterPositions("MyHero", new int[]{0, 0});
 				setCharacterPositions("MyHero2", new int[]{19,19});
-//				objPositions.put("MyHero", new int[]{0, 0});
-//				objPositions.put("MyHero2", new int[]{19,19});
 				// TODO load character models
 				chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
 				chars.get("MyHero2").setCharacterImage("MyHeroModel");
@@ -151,6 +151,7 @@ public class GameState implements Closeable {
 		for (Texture2D tex : objThumbnail.values())
 			tex.close();
 		objThumbnail = objTextures = null;
+		itemShop = null;
 		initialised = false;
 	}
 	

@@ -1,6 +1,6 @@
 package edu.nus.comp.dotagridandroid.logic;
 
-public class Character {
+public class Character extends GameObject {
 	
 	// character compose of : LineCreeps, hero, tower and other buildings
 	
