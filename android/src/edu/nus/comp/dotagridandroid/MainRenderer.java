@@ -32,6 +32,8 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 
 	@Override
 	public void onDrawFrame(GL10 gl) {
+		// Actual starting point of drawing
+		// Initiates a chain of drawing commands encapsulated in respective rendering controllers
 		if (!closed && r.getReadyState()) {
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glViewport(0, 0, width, height);

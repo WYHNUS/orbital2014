@@ -15,6 +15,8 @@ public class Main extends Activity {
 	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		// Activity is created here
+		// Proceed to MainSurfaceView for more details
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		AppNativeAPI.testJS();
@@ -29,6 +31,7 @@ public class Main extends Activity {
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		// this handler is called before any other
+		// TODO lock rotation or whatever
 		super.onConfigurationChanged(newConfig);
 		Display display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
 		switch (display.getRotation()) {

@@ -11,7 +11,7 @@
 #include <zip.h>
 void testExtensionEngine() {
 	ExtensionEngine* engine = ExtensionEngine::Create();
-	engine->loadScript(std::string("1 + 1;"));
+	engine->loadScript(std::string("var a = new ExtensionInterface();a.gameDelegate=function(){return 1;};a.gameDelegate() + 1;"));
 	engine->execute();
 	ExtensionEngine::Destroy(engine);
 }

@@ -18,6 +18,9 @@ public class MainSurfaceView
 	
 	public MainSurfaceView(Context context) {
 		super(context);
+		// Keep a reference to the Main class (Activity)
+		// We will retrieve resources and assets from it
+		// Proceed to init method
 		init(context);
 	}
 	
@@ -27,11 +30,13 @@ public class MainSurfaceView
 	}
 	
 	private void init(Context context) {
+		// Here we must configure OpenGL settings
+		// This is where we set anti-aliasing by loading game settings and put it in
 		EGLConfiguration config = new EGLConfiguration(((Main) context).getGameLogicManager());
 		setEGLConfigChooser(config);
 		setEGLContextClientVersion(2);
+		// Load our MainRenderer - most important
 		setRenderer(r = new MainRenderer(context, this));
-		// just in case: turn on the below will reduce draw cycles, but we probably don't need it
 		setRenderMode(GLSurfaceView.RENDERMODE_WHEN_DIRTY);
 	}
 	
@@ -52,6 +57,7 @@ public class MainSurfaceView
 	
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
+		// Starting point of Event Dispatch
 		int action = MotionEventCompat.getActionMasked(event), actionIndex;
 		EventData d;
 		switch (action) {
