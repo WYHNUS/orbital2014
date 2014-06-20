@@ -22,11 +22,8 @@ public class TextRenderer implements Renderer {
 	private TextFont font;
 	private List<String> text = Collections.emptyList();
 	private float[] textColour = {1,-1,-1,0};
-	
+	private boolean yAligned = false;
 	public TextRenderer () {
-		textProgram = new GenericProgram(
-				CommonShaders.VS_IDENTITY_TEXTURED_SCALED_OFFSET,
-				CommonShaders.FS_IDENTITY_TEXTURED_TONED);
 	}
 	
 	@Override
@@ -41,7 +38,6 @@ public class TextRenderer implements Renderer {
 
 	@Override
 	public void close() {
-		textProgram.close();
 	}
 	
 	public void setText (String text) {
@@ -56,10 +52,13 @@ public class TextRenderer implements Renderer {
 	}
 	public void setTextColour (float[] colour) {textColour = colour;}
 	public void setTextFont (TextFont font) {this.font = font;}
+	public void setYAligned (boolean value) {this.yAligned = value;}
 
 	@Override
 	public void draw() {
-		int
+		if (text == null)
+			return;
+		final int
 			vPosition = glGetAttribLocation(textProgram.getProgramId(), "vPosition"),
 			vTexture = glGetAttribLocation(textProgram.getProgramId(), "textureCoord"),
 			mModel = glGetUniformLocation(textProgram.getProgramId(), "model"),
@@ -69,7 +68,7 @@ public class TextRenderer implements Renderer {
 			textureScale = glGetUniformLocation(textProgram.getProgramId(), "textureScale"),
 			textureColourTone = glGetUniformLocation(textProgram.getProgramId(), "textureColorTone"),
 			texture = glGetUniformLocation(textProgram.getProgramId(), "texture");
-		int
+		final int
 			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
 			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex"),
 			vTexOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted");
@@ -93,7 +92,7 @@ public class TextRenderer implements Renderer {
 			for (int i = 0, len = str.length(); i < len; i++) {
 				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(
 						model,
-						FlatScalingMatrix4x4(1,1/font.getCharacterSizeRatio(),1),
+						yAligned ? FlatScalingMatrix4x4(font.getCharacterSizeRatio(), 1, 1) : FlatScalingMatrix4x4(1,1/font.getCharacterSizeRatio(),1),
 						FlatTranslationMatrix4x4(i, -lines, 0),
 						FONTTRANSFORMATION), 0);
 				glUniform2fv(charMapOffset, 1, font.getCharacterOffset(str.charAt(i)), 0);
@@ -135,6 +134,13 @@ public class TextRenderer implements Renderer {
 	@Override
 	public void setGLResourceManager(GLResourceManager manager) {
 		vBufMan = manager;
+		textProgram = vBufMan.getProgram("textProgram");
+		if (textProgram == null) {
+			textProgram = new GenericProgram(
+					CommonShaders.VS_IDENTITY_TEXTURED_SCALED_OFFSET,
+					CommonShaders.FS_IDENTITY_TEXTURED_TONED);
+			vBufMan.setProgram("textProgram", textProgram);
+		}
 	}
 	
 	@Override

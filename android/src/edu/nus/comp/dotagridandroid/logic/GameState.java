@@ -120,6 +120,21 @@ public class GameState implements Closeable {
 								0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
 						})
 				});
+				Item itm = new Item("TestItem", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+				itm.setItemImage("DefaultButton");
+				itemShop.put("TestItem", itm);
+				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+				itm.setItemImage("DefaultButton");
+				itemShop.put("TestItem2", itm);
+				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+				itm.setItemImage("DefaultButton");
+				itemShop.put("TestItem3", itm);
+				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+				itm.setItemImage("DefaultButton");
+				itemShop.put("TestItem4", itm);
+				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+				itm.setItemImage("DefaultButton");
+				itemShop.put("TestItem5", itm);
 				// end
 				chosenGrid = objPositions.get(GameState.this.playerCharacter).clone();
 				initialised = true;

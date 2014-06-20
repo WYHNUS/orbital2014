@@ -10,8 +10,8 @@ import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class GameScene implements SceneRenderer {
-	private static final int CELLS_PER_ROW = 4;
-	private static final float CELL_MARGIN = .05f;
+	private static final int CELLS_PER_ROW = 3;
+	private static final float CELL_MARGIN = .1f;
 	
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
@@ -127,6 +127,7 @@ public class GameScene implements SceneRenderer {
 			scroll.setGLResourceManager(vBufMan);
 			scroll.setGameLogicManager(manager);
 			scroll.setTexture2D(textures);
+			scroll.setGraphicsResponder(responder);
 			scroll.setMVP(FlatMatrix4x4Multiplication(dialogMat,FlatTranslationMatrix4x4(0, .1f, 0),FlatScalingMatrix4x4(1, .9f, 1)), null, null);
 			ButtonRenderer r;
 			TextRenderer t;
@@ -141,6 +142,7 @@ public class GameScene implements SceneRenderer {
 				r.setTexture2D(textures);
 				r.setAspectRatio(ratio);
 				r.setGLResourceManager(vBufMan);
+				r.setGameLogicManager(manager);
 				r.setRenderReady();
 				r.setTapEnabled(manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", respondData)).get("GameAction"));
 				r.setTapRespondName("GameAction");
@@ -152,20 +154,29 @@ public class GameScene implements SceneRenderer {
 				scroll.setRenderer("Item-" + name, r, FlatMatrix4x4Multiplication(
 						FlatTranslationMatrix4x4(
 								(CELL_MARGIN + cellWidth) * column + CELL_MARGIN + cellWidth / 2 - 1,
-								(CELL_MARGIN + cellWidth) * row + CELL_MARGIN + cellWidth / 2 + 1,
+								1 - ((CELL_MARGIN + cellWidth) * row + CELL_MARGIN + cellWidth / 2),
 								0),
 						FlatScalingMatrix4x4(cellWidth / 2, cellWidth / 2, 1)));
 				t = new TextRenderer();
 				t.setTexture2D(textures);
 				t.setGLResourceManager(vBufMan);
 				t.setAspectRatio(ratio);
+				t.setGraphicsResponder(responder);
 				t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+				t.setTextColour(new float[]{-1,-1,1,0});
 				t.setRenderReady();
 				t.setText(itemInShop.get(name).getItemName());
-				scroll.setRenderer("ItemLabel-" + name, t, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, 0), FlatScalingMatrix4x4(1, 1, 1)));
+				t.setYAligned(true);
+				scroll.setRenderer("ItemLabel-" + name, t,
+						FlatMatrix4x4Multiplication(
+								FlatTranslationMatrix4x4(
+										(CELL_MARGIN + cellWidth) * column + CELL_MARGIN - 1,
+										1 - ((CELL_MARGIN + cellWidth) * (row + 1) + CELL_MARGIN * .1f),
+										0),
+								FlatScalingMatrix4x4(.8f * CELL_MARGIN, .8f * CELL_MARGIN, 1)));
 				column++;
 			}
-			scroll.setScrollLimit(0f, -(row + 1) * (CELL_MARGIN + cellWidth), 0f, 0f);
+			scroll.setScrollLimit(0f, 0f, 0f, (row + 1) * (CELL_MARGIN + cellWidth) + CELL_MARGIN);
 			dialogControl.put("Scroll", scroll);
 			// cancel button
 			r = new ButtonRenderer();
