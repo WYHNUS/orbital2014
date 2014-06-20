@@ -19,13 +19,12 @@ public class Hero extends Character{
 	
 	// total attribute is calculated by taking basic attribute + attributes obtained from items
 	private double totalStrength, totalAgility, totalIntelligence;
-	
-	private double HPGainPerRound, MPGainPerRound;
 
 	private int level;
 	private int experience;
 
 	public Skill[] skills;
+	private int unusedSkillCount = 1;
 	
 	// items and total attributes added from items
 	public Item[] items;
@@ -45,12 +44,16 @@ public class Hero extends Character{
 	public static final int STRENGTH_ADD_HP_RATIO = 19;
 	public static final int INTELLIGENCE_ADD_MP_RATIO = 13;
 	
-	public static final double STRENGTH_ADD_HP_PER_ROUND = 3.0;
-	public static final double INTELLIGENCE_ADD_MP_PER_ROUND = 4.0;
-	public static final double AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 1 / 7.0;
+	public static final double STRENGTH_ADD_HP_PER_ROUND = 0.3;
+	public static final double INTELLIGENCE_ADD_MP_PER_ROUND = 0.4;
+	public static final double AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 0.02;
 	
 	public static final double AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO = 0.01;
 	public static final double MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO = 1.0;
+	
+
+	public static double HeroHPGainPerRound = 1.0;
+	public static double HeroMPGainPerRound = 2.5;
 
 	
 	// constants used in hero constructor
@@ -113,8 +116,8 @@ public class Hero extends Character{
 		this.setCurrentHP(this.getmaxHP());
 		this.setCurrentMP(this.getmaxMP());
 		
-		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND);
-		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND);
+		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + HeroHPGainPerRound);
+		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + HeroMPGainPerRound);
 
 		this.setTotalPhysicalDefence(this.getBasicPhysicalDefence() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_DEFENCE_RATIO);		
 		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO);
@@ -139,6 +142,8 @@ public class Hero extends Character{
 		
 		this.setLevel(hero.getLevel());
 		this.setExperience(hero.getExperience());
+		
+		this.setUnusedSkillCount(hero.getUnusedSkillCount());
 		
 		this.setBountyExp(CalculateLevelInfo.calculateBountyExp(this.getLevel()));
 		
@@ -218,8 +223,8 @@ public class Hero extends Character{
 		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO + this.getTotalItemAddHP()));
 		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO + this.getTotalItemAddMP()));
 		
-		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + this.getTotalItemAddHPGainPerRound());
-		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + this.getTotalItemAddMPGainPerRound());
+		this.setHPGainPerRound(HeroHPGainPerRound + this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + this.getTotalItemAddHPGainPerRound());
+		this.setMPGainPerRound(HeroMPGainPerRound + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + this.getTotalItemAddMPGainPerRound());
 		
 		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO
 				+ this.getTotalItemAddPhysicalAttackSpeed());
@@ -457,30 +462,7 @@ public class Hero extends Character{
 		}
 	}
 
-
-	// accessor and mutator for HP and MP Gain Per Round
 	
-	public double getHPGainPerRound() {
-		return HPGainPerRound;
-	}
-
-
-	public void setHPGainPerRound(double HPGainPerRound) {
-		// there is no upper/lower boundary for HPGainPerRound
-		this.HPGainPerRound = HPGainPerRound;
-	}
-
-
-	public double getMPGainPerRound() {
-		return MPGainPerRound;
-	}
-
-
-	public void setMPGainPerRound(double MPGainPerRound) {
-		this.MPGainPerRound = MPGainPerRound;
-	}
-
-
 	// accessor and mutator for level and experience
 
 	public int getExperience() {
@@ -492,6 +474,10 @@ public class Hero extends Character{
 
 		// change hero's level based on experience gained
 		CalculateLevelInfo newLevel = new CalculateLevelInfo(experience);
+		
+		// if hero levels up, add one unused skill count
+		this.setUnusedSkillCount(this.getUnusedSkillCount() + (newLevel.getLevel() - this.getLevel()));
+		
 		this.setLevel(newLevel.getLevel());
 	}
 
@@ -731,6 +717,22 @@ public class Hero extends Character{
 				System.out.println("Player has learnt a new skill!");
 				break;
 			}
+		}
+	}
+
+
+
+	public int getUnusedSkillCount() {
+		return unusedSkillCount;
+	}
+
+
+
+	public void setUnusedSkillCount(int unusedSkillCount) {
+		if (unusedSkillCount < 0) {
+			System.out.println("unusedSkillCount cannnot go below 0!");
+		} else {
+			this.unusedSkillCount = unusedSkillCount;
 		}
 	}
 

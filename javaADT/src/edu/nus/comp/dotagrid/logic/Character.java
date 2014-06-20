@@ -23,6 +23,8 @@ public class Character {
 	private int maxHP, maxMP;
 	private int currentHP, currentMP;	
 	
+	private double HPGainPerRound, MPGainPerRound;
+	
 	private int startingMovementSpeed, totalMovementSpeed;
 	
 	private double startingPhysicalAttack, basicPhysicalAttack, totalPhysicalAttack;
@@ -146,6 +148,9 @@ public class Character {
 		if (currentHP < 0) {
 			this.currentHP = 0;
 			this.setAlive(false);
+		} else if (currentHP > this.getmaxHP()) {
+			// current HP cannnot go beyond max HP value
+			this.currentHP = this.getmaxHP();
 		} else {
 			this.currentHP = currentHP;
 		}
@@ -161,6 +166,9 @@ public class Character {
 		// minimum currentMP is 0 
 		if (currentMP < 0) {
 			this.currentMP = 0;
+		}  else if (currentMP > this.getmaxMP()) {
+			// current MP cannnot go beyond max MP value
+			this.currentMP = this.getmaxMP();
 		} else {
 			this.currentMP = currentMP;
 		}
@@ -195,6 +203,30 @@ public class Character {
 		} else {
 			this.maxMP = maxMP;
 		}
+	}
+
+
+
+	// accessor and mutator for HP and MP Gain Per Round
+	
+	public double getHPGainPerRound() {
+		return HPGainPerRound;
+	}
+
+
+	public void setHPGainPerRound(double HPGainPerRound) {
+		// there is no upper/lower boundary for HPGainPerRound
+		this.HPGainPerRound = HPGainPerRound;
+	}
+
+
+	public double getMPGainPerRound() {
+		return MPGainPerRound;
+	}
+
+
+	public void setMPGainPerRound(double MPGainPerRound) {
+		this.MPGainPerRound = MPGainPerRound;
 	}
 
 

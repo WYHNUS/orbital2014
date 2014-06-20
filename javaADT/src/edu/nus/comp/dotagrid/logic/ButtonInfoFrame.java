@@ -1,5 +1,8 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -73,6 +76,12 @@ public class ButtonInfoFrame {
 			}
 		
 		} // end switch
+		
+		frame.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				GridFrame.popupJFrame = false;
+			}
+		});
 		
 		
 		panel.add(label);

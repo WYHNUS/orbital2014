@@ -8,6 +8,7 @@ public class GameButtonActions {
 	public static boolean readyToMove = false;
 	public static boolean readyToAttack = false;
 	public static boolean readyToCastSpell = false;
+	public static boolean readyToUpgradeSkill = false;
 	
 	private int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
 	private int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
@@ -92,6 +93,7 @@ public class GameButtonActions {
 				break;
 				
 			case 10 :
+				upgradeSkill();
 				break;
 			
 			case 11 : 
@@ -143,20 +145,58 @@ public class GameButtonActions {
 
 	
 
+	private void upgradeSkill() {
+		// check if selected character is player's hero
+		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer()) {
+			// check if player's hero has positive unused skill point
+			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getUnusedSkillCount() > 0) {
+				readyToUpgradeSkill = true;
+			}
+		}
+	}
+
+
+
 	private void playerHeroCastSpell(int playerSkillIndex) {
 		// based on playerSkillIndex, determine which player's skill to cast
 		
-		// check if hero's skill list is empty
-		if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex] != null) {
-			// if not empty, ready to cast spell
-			((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].
-					invokeSkillAction(Screen.user.player.getXPos(), Screen.user.player.getYPos());
+		// check if the selected grid is player's hero!
+		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer()) {
 			
-			GameButtonActions.readyToAct = true;
-			GameButtonActions.readyToCastSpell  = true;
+			// check if hero's skill list is empty
+			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex] != null) {
+				
+				// if not empty, check if the action is to cast spell or upgrade skill
+				if (readyToUpgradeSkill = true) {
+					System.out.println("not suppose to print!");
+					// upgrade skill !
+					((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].
+						setSkillLevel(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].getSkillLevel()
+								+ 1);
+					// deduct unused skill count
+					((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).
+						setUnusedSkillCount(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getUnusedSkillCount() - 1);
+					
+					readyToUpgradeSkill = false;
+					
+				} else {
+					
+					// cast spell if skill level is not 0!
+					if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].getSkillLevel() > 0) {
+						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].
+								invokeSkillAction(Screen.user.player.getXPos(), Screen.user.player.getYPos());
+						
+						GameButtonActions.readyToAct = true;
+						GameButtonActions.readyToCastSpell  = true;
+						
+						Skill.invokedSkillType = ((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].getSkillType();
+						Player.invokedPlayerSkillIndex = playerSkillIndex;
+					} else {
+						JOptionPane.showMessageDialog(null, "You have not leanrt this skill!");
+					}
+				}
+			}
 			
-			Skill.invokedSkillType = ((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].getSkillType();
-			Player.invokedPlayerSkillIndex = playerSkillIndex;
 		}
 	}
 
@@ -179,11 +219,15 @@ public class GameButtonActions {
 		GameFrame.turn++;
 		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.turn);
 		
-		// reset AP for all existing characters
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
+					// reset AP for all existing characters
 					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentActionPoint(GridFrame.gridButtonMap[x][y].getCharacter().getMaxActionPoint());
+					
+					// reset HP and MP for all existing characters
+					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentHP((int)(GridFrame.gridButtonMap[x][y].getCharacter().getCurrentHP() + GridFrame.gridButtonMap[x][y].getCharacter().getHPGainPerRound()));
+					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentMP((int)(GridFrame.gridButtonMap[x][y].getCharacter().getCurrentMP() + GridFrame.gridButtonMap[x][y].getCharacter().getMPGainPerRound()));
 					
 					// if character is hero, reset all hero's skills' current cooldown round
 					if (GridFrame.gridButtonMap[x][y].getIsHero() == true) {

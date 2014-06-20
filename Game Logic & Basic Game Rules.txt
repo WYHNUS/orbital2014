@@ -69,7 +69,6 @@ movementSpeed = initialMovementSpeed + movementSpeedGainFromItem + movementSpeed
 
 
 
-
 2. Player controls a hero starting from a fixed grid position ([playerStartingGridXPos][playerStartingGridYPos])
 
 
@@ -285,6 +284,8 @@ MIN_PHYSICAL_ATTACK_CONSUME_AP = 20
 PHYSICAL_ATTACK_CONSUME_AP = 38
 
 
+HERO_HP_GAIN_PER_ROUND = 0.01
+HERO_MP_GAIN_PER_ROUND = 0.25
 
 
 
