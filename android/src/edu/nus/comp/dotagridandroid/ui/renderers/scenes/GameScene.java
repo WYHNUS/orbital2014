@@ -162,7 +162,7 @@ public class GameScene implements SceneRenderer {
 				t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 				t.setRenderReady();
 				t.setText(itemInShop.get(name).getItemName());
-				scroll.setRenderer("ItemLabel-" + name, t, null);
+				scroll.setRenderer("ItemLabel-" + name, t, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, 0), FlatScalingMatrix4x4(1, 1, 1)));
 				column++;
 			}
 			scroll.setScrollLimit(0f, -(row + 1) * (CELL_MARGIN + cellWidth), 0f, 0f);
