@@ -151,6 +151,8 @@ public class GameButtonActions {
 			// check if player's hero has positive unused skill point
 			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getUnusedSkillCount() > 0) {
 				readyToUpgradeSkill = true;
+			} else {
+				JOptionPane.showMessageDialog(null, "You don't have any unused skill!");
 			}
 		}
 	}
@@ -165,10 +167,9 @@ public class GameButtonActions {
 			
 			// check if hero's skill list is empty
 			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex] != null) {
-				
+
 				// if not empty, check if the action is to cast spell or upgrade skill
-				if (readyToUpgradeSkill = true) {
-					System.out.println("not suppose to print!");
+				if (readyToUpgradeSkill == true) {
 					// upgrade skill !
 					((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].
 						setSkillLevel(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].getSkillLevel()

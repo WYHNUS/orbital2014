@@ -23,19 +23,19 @@ public class BuildingDatabase {
 	public static int sentinelTopRangedBarrackYPos = 68;
 	public static boolean isDestroyedSentinelTopRangedBarrack = false;
 	
-	public static int sentinelMidMeeleBarrackXPos = 21; 
+	public static int sentinelMidMeeleBarrackXPos = 20; 
 	public static int sentinelMidMeeleBarrackYPos = 72;
 	public static boolean isDestroyedSentinelMidMeeleBarrack = false;
 	
-	public static int sentinelMidRangedBarrackXPos = 27; 
+	public static int sentinelMidRangedBarrackXPos = 26; 
 	public static int sentinelMidRangedBarrackYPos = 78;
 	public static boolean isDestroyedSentinelMidRangedBarrack = false;
 	
-	public static int sentinelBotMeeleBarrackXPos = 30; 
+	public static int sentinelBotMeeleBarrackXPos = 29; 
 	public static int sentinelBotMeeleBarrackYPos = 87;
 	public static boolean isDestroyedSentinelBotMeeleBarrack = false;
 	
-	public static int sentinelBotRangedBarrackXPos = 30;
+	public static int sentinelBotRangedBarrackXPos = 29;
 	public static int sentinelBotRangedBarrackYPos = 93;
 	public static boolean isDestroyedSentinelBotRangedBarrack = false;
 	
@@ -44,27 +44,27 @@ public class BuildingDatabase {
 	public static int scourgeBaseXPos = 85;
 	public static int scourgeBaseYPos = 15;
 	
-	public static int scourgeTopMeeleBarrackXPos = 69;
+	public static int scourgeTopMeeleBarrackXPos = 70;
 	public static int scourgeTopMeeleBarrackYPos = 6;
 	public static boolean isDestroyedScourgeTopMeeleBarrack = false;
 	
-	public static int scourgeTopRangedBarrackXPos = 69;
+	public static int scourgeTopRangedBarrackXPos = 70;
 	public static int scourgeTopRangedBarrackYPos = 12;
 	public static boolean isDestroyedScourgeTopRangedBarrack = false;
 	
-	public static int scourgeMidMeeleBarrackXPos = 72;
+	public static int scourgeMidMeeleBarrackXPos = 73;
 	public static int scourgeMidMeeleBarrackYPos = 21;
 	public static boolean isDestroyedScourgeMidMeeleBarrack = false;
 	
-	public static int scourgeMidRangedBarrackXPos = 78;
+	public static int scourgeMidRangedBarrackXPos = 79;
 	public static int scourgeMidRangedBarrackYPos = 27;
 	public static boolean isDestroyedScourgeMidRangedBarrack = false;
 	
-	public static int scourgeBotMeeleBarrackXPos = 87;
+	public static int scourgeBotMeeleBarrackXPos = 88;
 	public static int scourgeBotMeeleBarrackYPos = 31;
 	public static boolean isDestroyedScourgeBotMeeleBarrack = false;
 	
-	public static int scourgeBotRangedBarrackXPos = 93; 
+	public static int scourgeBotRangedBarrackXPos = 94; 
 	public static int scourgeBotRangedBarrackYPos = 31;
 	public static boolean isDestroyedScourgeBotRangedBarrack = false;
 	

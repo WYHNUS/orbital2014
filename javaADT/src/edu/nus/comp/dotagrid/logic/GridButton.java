@@ -41,6 +41,18 @@ public class GridButton {
 		 * 26 : Scourge Tower 3
 		 * 27 : Scourge Tower 4
 		 * 
+		 * 28 : sentinel fountain
+		 * 29 : scourge fountain
+		 * 
+		 * 30 : sentinelBase
+		 * 31 : scourgeBase
+		 * 
+		 * 32 : sentinelMeeleBarrack
+		 * 33 : sentinelRangedBarrack
+		 * 
+		 * 34 : scourgeMeeleBarrack
+		 * 35 : scourgeRangedBarrack
+		 * 
 		 * 99 : player's hero spawn point
 		 * 
 		 */
