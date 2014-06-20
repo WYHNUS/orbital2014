@@ -21,7 +21,7 @@ public class GameScene implements SceneRenderer {
 	private GLResourceManager vBufMan;
 	// resources
 	private Renderer grid, status, eventCapturer;
-	private final Map<String, Renderer> dialogControl = new HashMap<>();
+	private final Map<String, Renderer> dialogControl = new LinkedHashMap<>();	// IMPORTANT: necessary to maintain order of drawing
 	private float[] dialogMat;
 	private GenericProgram dialogProgram;
 	private boolean landscape;
@@ -181,11 +181,30 @@ public class GameScene implements SceneRenderer {
 			// cancel button
 			r = new ButtonRenderer();
 			r.setTexture2D(textures);
+			r.setGameLogicManager(manager);
 			r.setAspectRatio(ratio);
 			r.setGLResourceManager(vBufMan);
+			r.setMVP(FlatMatrix4x4Multiplication(
+					dialogMat,
+					FlatTranslationMatrix4x4(0, -.9f, 0),
+					FlatScalingMatrix4x4(.5f, .1f, 1)), null, null);
 			r.setRenderReady();
 			r.setTapEnabled(true);
 			r.setTapRespondName("Cancel");
+			t = new TextRenderer();
+			t.setGLResourceManager(vBufMan);
+			t.setAspectRatio(ratio);
+			t.setGraphicsResponder(responder);
+			t.setTextColour(new float[]{0,0,0,0});
+			t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+			t.setRenderReady();
+			t.setMVP(FlatMatrix4x4Multiplication(
+					dialogMat,
+					FlatTranslationMatrix4x4(-.25f, -.8f, 0),
+					FlatScalingMatrix4x4(.5f / 5, .5f / 5, 1)), null, null);
+			t.setText("Cancel");
+			dialogControl.put("Cancel", r);
+			dialogControl.put("CancelLabel", t);
 			hasDialog = true;
 			break;
 		}
