@@ -62,7 +62,7 @@ public class GridButtonActions {
 			GameButtonActions.readyToAct = false;
 			
 			// reselect player's hero position
-			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
 		
 		
@@ -84,7 +84,7 @@ public class GridButtonActions {
 			GameButtonActions.readyToAct = false;
 			
 			// select position which has been attacked
-			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
 		
 		// check to execute cast spell (hero's skill) action
@@ -105,7 +105,7 @@ public class GridButtonActions {
 			GameButtonActions.readyToAct = false;
 			
 			// select position which has been attacked
-			GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
 
 	}
@@ -241,14 +241,9 @@ public class GridButtonActions {
 		
 		
 		// skill list
-		GameFrame.allCharacterInfoGameButtons.get(17).setIsReadyToDrawImage(true);
-		GameFrame.allCharacterInfoGameButtons.get(18).setIsReadyToDrawImage(true);
-		GameFrame.allCharacterInfoGameButtons.get(19).setIsReadyToDrawImage(true);
-		GameFrame.allCharacterInfoGameButtons.get(20).setIsReadyToDrawImage(true);
-		GameFrame.allCharacterInfoGameButtons.get(21).setIsReadyToDrawImage(true);
-		GameFrame.allCharacterInfoGameButtons.get(22).setIsReadyToDrawImage(true);
-		GameFrame.allCharacterInfoGameButtons.get(23).setIsReadyToDrawImage(true);
-		GameFrame.allCharacterInfoGameButtons.get(24).setIsReadyToDrawImage(true);
+		for (int i=17; i<=24; i++) {
+			GameFrame.allCharacterInfoGameButtons.get(i).setIsReadyToDrawImage(true);
+		}
 		
 		// KDA
 		GameFrame.allCharacterInfoGameButtons.get(26).setString("Kill : " + hero.getKill());

@@ -17,12 +17,11 @@ public class ItemShop implements ActionListener{
 	ItemDatabase itemDtabase; 
 	
 	public static boolean shouldUpdateItemInFo = false;
-	public static boolean itemshopPopup = false;
 	
 	public ItemShop(){
 		JFrame frame = new JFrame("SHOP");
 		
-		itemshopPopup = true;
+		GridFrame.popupJFrame = true;
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(4, 4));
@@ -42,7 +41,7 @@ public class ItemShop implements ActionListener{
 		
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				itemshopPopup = false;
+				GridFrame.popupJFrame = false;
 			}
 		});
 		
@@ -84,7 +83,7 @@ public class ItemShop implements ActionListener{
 				
 				// reselect the grid
 				shouldUpdateItemInFo = true;
-				GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+				GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 				
 				System.out.println("Player has bought an item : " + itemDtabase.itemDatabase[itemNumber].getItemName());
 				

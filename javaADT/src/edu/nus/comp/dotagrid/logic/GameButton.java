@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 
@@ -53,6 +54,10 @@ public class GameButton{
 	
 	public void setImage(Image image){
 		this.image = image;
+	}
+	
+	public Image getImage(){
+		return this.image;
 	}
 	
 	public void setColor(Graphics g, Color color) {
@@ -111,5 +116,6 @@ public class GameButton{
 		System.out.println(actionNumber + " game button action is invoked!");
 		new GameButtonActions(actionNumber);
 	}
+
 	
 }

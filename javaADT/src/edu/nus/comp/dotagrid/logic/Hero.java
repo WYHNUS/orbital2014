@@ -133,6 +133,8 @@ public class Hero extends Character{
 				hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
 				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());
 		
+		this.setCurrentActionPoint(hero.getCurrentActionPoint());
+		
 		this.setMainAttribute(hero.getMainAttribute());
 		
 		this.setLevel(hero.getLevel());

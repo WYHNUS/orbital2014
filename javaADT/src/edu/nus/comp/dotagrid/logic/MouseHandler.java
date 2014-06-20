@@ -13,8 +13,16 @@ public class MouseHandler implements MouseListener{
 		handXPos = e.getXOnScreen();
 		handYPos = e.getYOnScreen();
 		
-		GameFrame.invokeEvent(handXPos, handYPos);
-		GridFrame.invokeEvent(handXPos, handYPos);
+		if(e.getButton() == MouseEvent.BUTTON1) {
+            // left click
+			GameFrame.invokeLeftClickEvent(handXPos, handYPos);
+			GridFrame.invokeLeftClickEvent(handXPos, handYPos);
+			
+        } else if (e.getButton() == MouseEvent.BUTTON3) {
+            // right click
+        	GameFrame.invokeRightClickEvent(handXPos, handYPos);
+        }
+		
 	}
 
 

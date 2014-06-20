@@ -203,7 +203,7 @@ public class GameButtonActions {
 		LineCreepSpawnPoint.spawnNewWave();
 		
 		// reselect the grid
-		GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+		GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		System.out.println("End Round!");
 	}	
 

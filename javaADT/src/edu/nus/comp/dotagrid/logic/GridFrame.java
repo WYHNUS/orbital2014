@@ -14,6 +14,8 @@ public class GridFrame {
 	WorldMap worldMap;
 	WorldMapFile worldMapFile;
 
+	// a public boolean to check if any JFrame has poped up
+	public static boolean popupJFrame = false;
 	
 	public static final int ROW_NUMBER = 100;
 	public static final int COLUMN_NUMBER = 100;
@@ -257,7 +259,7 @@ public class GridFrame {
 
 
 	// method to check and invoke grid frame event
-	public static void invokeEvent(int handXPos, int handYPos){
+	public static void invokeLeftClickEvent(int handXPos, int handYPos){
 		setSelectedXCoodinatePos(handXPos);
 		setSelectedYCoodinatePos(handYPos);
 		
@@ -270,7 +272,7 @@ public class GridFrame {
 			// reset all character info!
 			resetAllCharacterInfo();			
 			
-			if (ItemShop.itemshopPopup == false && SellItem.sellItemPopup == false) {
+			if (popupJFrame == false) {
 				// set the coordinates for the selected position
 				previouslySelectedXPos = selectedXPos;
 				previouslySelectedYPos = selectedYPos;			

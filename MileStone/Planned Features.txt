@@ -51,7 +51,7 @@ Feature 6.4:
 Action : choose and upgrade hero's skill
 
 Feature 6.5:
-Action : use item
+Action : use item (haven't design usable items)
 
 Feature 6.6:
 Action : use skill

@@ -11,12 +11,11 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class SellItem implements ActionListener {
-	public static boolean sellItemPopup = false;
 	
 	public SellItem(){
 		JFrame frame = new JFrame("SELL");
 		
-		sellItemPopup = true;
+		GridFrame.popupJFrame = true;
 		
 		JPanel panel = new JPanel();
 		panel.setLayout(new GridLayout(4, 4));
@@ -37,7 +36,7 @@ public class SellItem implements ActionListener {
 		
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
-				sellItemPopup = false;
+				GridFrame.popupJFrame = false;
 			}
 		});
 		
@@ -65,7 +64,7 @@ public class SellItem implements ActionListener {
 		
 		// reselect the grid
 		ItemShop.shouldUpdateItemInFo = true;
-		GridFrame.invokeEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+		GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		
 		// reset updateInfo boolean
 		ItemShop.shouldUpdateItemInFo = false;

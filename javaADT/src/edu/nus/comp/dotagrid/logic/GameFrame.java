@@ -93,7 +93,6 @@ public class GameFrame{
 	GameButton zoomIn;
 	GameButton zoomOut;
 	
-	
 
 	// constructor
 	public GameFrame(Graphics g, Frame frame) {
@@ -116,9 +115,9 @@ public class GameFrame{
 	
 	public void updateGameFrame(Graphics g){
 		// draw game frame
+		drawAllReadyImage(g);
 		displayAllButtons(g);
 		
-		drawAllReadyImage(g);
 	}
 
 	
@@ -382,7 +381,7 @@ public class GameFrame{
 	}
 
 	
-	public static void invokeEvent(int handXPos, int handYPos){
+	public static void invokeLeftClickEvent(int handXPos, int handYPos){
 		
 		// check through allGameButtons for the correct button that has been pressed
 		for (int i=0; i<allGameButtons.size(); i++) {
@@ -392,7 +391,19 @@ public class GameFrame{
 				break;
 			}
 		}
-
 	}
 
+	
+	public static void invokeRightClickEvent(int handXPos, int handYPos){
+		
+		// check through allGameButtons for the correct button that has been pressed
+		for (int i=0; i<allGameButtons.size(); i++) {
+			if (allGameButtons.get(i).checkEvent(handXPos, handYPos)) {
+				allGameButtons.get(i).resetBoolean();
+				// pop-out a menu to show the selected game button's detailed information
+				new ButtonInfoFrame(i);
+				break;
+			}
+		}
+	}
 }

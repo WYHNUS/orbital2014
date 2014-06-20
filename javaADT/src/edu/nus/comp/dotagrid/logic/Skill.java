@@ -24,6 +24,7 @@ public class Skill {
 	private int usedMP;
 	private int usedActionPoint;
 	
+	private int skillLevel;
 	private int castRange;
 	
 	// coolDownRounds records the minimum rounds, if a hero has casted this spell, needed to end before using this skill again
@@ -36,6 +37,7 @@ public class Skill {
 		this.skillType = skillType;
 		this.skillName = skilName;
 		this.setImage();
+		this.skillLevel = 0;
 		
 		switch(this.skillType) {
 		
@@ -160,6 +162,17 @@ public class Skill {
 	public void setImage() {
 		this.skillImage = new ImageIcon("res/skills/" + skillName + ".gif");
 	}
+
+	
+	public int getSkillLevel() {
+		return skillLevel;
+	}
+
+	public void setSkillLevel(int skillLevel) {
+		this.skillLevel = skillLevel;
+	}
+
+
 
 
 
