@@ -5,11 +5,18 @@ ExtensionEngine::ExtensionEngine() {
 	v8::V8::Initialize();
 	iso = v8::Isolate::New();
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "ISO: %p\n", iso);
+	v8::Isolate::Scope iso_scope(iso);
+	v8::Locker locker(iso);
+	v8::HandleScope scope(iso);
+	v8::Handle<v8::Context> newContext = v8::Context::New(iso);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Context: ISO: %p\n", iso);
+	context.Reset(iso, newContext);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Context Stored");
 }
 
 ExtensionEngine::~ExtensionEngine() {
+	context.Reset();
 	iso->Dispose();
-//	v8::V8::Dispose();
 }
 
 void ExtensionEngine::loadScript(const std::string& src) {
@@ -25,8 +32,8 @@ void ExtensionEngine::execute() {
 	// create handlescope - important
 	v8::HandleScope scope (iso);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Scope");
-	v8::Handle<v8::Context> context = v8::Context::New(iso);
-	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Context: ISO: %p\n", iso);
+	v8::Handle<v8::Context> context = v8::Local<v8::Context>::New(iso, this->context);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Using stored context");
 	v8::Context::Scope context_scope(context);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Context Scope");
 	v8::Handle<v8::String> source = v8::String::NewFromUtf8(iso, src.c_str());

@@ -52,7 +52,6 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		float ratio = (float) width / height;
 		vBufMan = new GLResourceManager();
 		cs = new CommonShapes(vBufMan);
-		// TODO: different resolution of maps
 		// TODO: change resource name
 		// TODO: allow decoding from network, stream, files etc (to be done in GameState)
 		Bitmap image;

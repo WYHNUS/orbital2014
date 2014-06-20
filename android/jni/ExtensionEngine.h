@@ -4,6 +4,7 @@
 #include <string>
 class ExtensionEngine {
 	v8::Isolate *iso;
+	v8::Persistent<v8::Context> context;
 	std::string src;
 	ExtensionEngine();
 	~ExtensionEngine();

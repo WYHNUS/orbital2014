@@ -9,13 +9,14 @@ import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import edu.nus.comp.dotagridandroid.ui.event.*;
+import edu.nus.comp.dotagridandroid.appsupport.*;
 
 public class GameState implements Closeable {
 	private int gridWidth, gridHeight;
+	private String packagePath;
 	private float[] terrain;
 	private Context context;
-	private boolean initialised = false, initialising = false;
-	private Thread initialisationProcess;
+	private boolean initialised = false;
 	private SceneRenderer currentSceneRenderer;
 	private Map<String, Character> chars;
 	private Map<String, GameObject> objs;
@@ -24,19 +25,22 @@ public class GameState implements Closeable {
 	private Map<String, FloatBuffer[]> objModels;
 	private Map<String, Texture2D> objTextures, objThumbnail;
 	private Map<String, Item> itemShop;
+	private ResourceManager resMan;
 	// game rule object
 	private GameMaster gameMaster;
 	private String playerCharacter;
 	private int[] chosenGrid;
-	public GameState() {
+	public GameState(String packagePath) {
+		this.packagePath = packagePath;
 	}
 	public void setContext(Context context) {
 		this.context = context;
 	}
 	public void initialise(String playerCharacter) {
 		this.playerCharacter = playerCharacter;
-		if (initialised || initialising)
+		if (initialised)
 			return;
+		resMan = AppNativeAPI.createResourceManager(null);
 		chars = new ConcurrentHashMap<>();
 		objs = new ConcurrentHashMap<>();
 		objPositions = new ConcurrentHashMap<>();
@@ -45,117 +49,110 @@ public class GameState implements Closeable {
 		objThumbnail = new ConcurrentHashMap<>();
 		posReverseLookup = new ConcurrentHashMap<>();
 		itemShop = new ConcurrentHashMap<>();
-		initialisationProcess = new Thread() {
-			@Override
-			public void run() {
-				initialising = true;
-				chosenGrid = new int[2];
-				gameMaster = new GameMaster();
-				// TODO load characters
-				chars.put("MyHero", new Hero("MyHero", 1, 0, "strength",
-						100,
-						100,
-						100,
-						2,
-						100,
-						100,
-						100,
-						100,
-						1,
-						100,
-						100,
-						100,
-						100,
-						100,
-						100,
-						100));
-				chars.put("MyHero2", new Hero("MyHero", 1, 0, "strength",
-						100,
-						100,
-						100,
-						2,
-						100,
-						100,
-						100,
-						100,
-						2,
-						100,
-						100,
-						100,
-						100,
-						100,
-						100,
-						100));
-				setCharacterPositions("MyHero", new int[]{0, 0});
-				setCharacterPositions("MyHero2", new int[]{19,19});
-				// TODO load character models
-				chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
-				chars.get("MyHero2").setCharacterImage("MyHeroModel");
-				objModels.put("MyHeroModel", new FloatBuffer[]{
-						// 0: vertex
-						BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-								-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
-								1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
-								1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
-								-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
-								-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
-								-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
-						}),
-						// 1: texture
-						BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
-								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-								0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-						}),
-						// 2: normal - vec4 - important!
-						BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-								0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
-								1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
-								0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-								-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
-								0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
-								0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
-						})
-				});
-				Item itm = new Item("TestItem", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-				itm.setItemImage("DefaultButton");
-				itemShop.put("TestItem", itm);
-				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-				itm.setItemImage("DefaultButton");
-				itemShop.put("TestItem2", itm);
-				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-				itm.setItemImage("DefaultButton");
-				itemShop.put("TestItem3", itm);
-				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-				itm.setItemImage("DefaultButton");
-				itemShop.put("TestItem4", itm);
-				itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-				itm.setItemImage("DefaultButton");
-				itemShop.put("TestItem5", itm);
-				// end
-				chosenGrid = objPositions.get(GameState.this.playerCharacter).clone();
-				initialised = true;
-				initialising = false;
-			}
-		};
-		initialisationProcess.start();
+		chosenGrid = new int[2];
+		gameMaster = new GameMaster();
+		// TODO load characters
+		chars.put("MyHero", new Hero("MyHero", 1, 0, "strength",
+				100,
+				100,
+				100,
+				2,
+				100,
+				100,
+				100,
+				100,
+				1,
+				100,
+				100,
+				100,
+				100,
+				100,
+				100,
+				100));
+		chars.put("MyHero2", new Hero("MyHero", 1, 0, "strength",
+				100,
+				100,
+				100,
+				2,
+				100,
+				100,
+				100,
+				100,
+				2,
+				100,
+				100,
+				100,
+				100,
+				100,
+				100,
+				100));
+		setCharacterPositions("MyHero", new int[]{0, 0});
+		setCharacterPositions("MyHero2", new int[]{19,19});
+		// TODO load character models
+		chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
+		chars.get("MyHero2").setCharacterImage("MyHeroModel");
+		objModels.put("MyHeroModel", new FloatBuffer[]{
+				// 0: vertex
+				BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+						-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
+						1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
+						1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
+						-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
+						-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
+						-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
+				}),
+				// 1: texture
+				BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
+						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
+				}),
+				// 2: normal - vec4 - important!
+				BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
+						0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
+						1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
+						0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
+						-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
+						0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
+						0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
+				})
+		});
+		Item itm = new Item("TestItem", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		itm.setItemImage("DefaultButton");
+		itemShop.put("TestItem", itm);
+		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		itm.setItemImage("DefaultButton");
+		itemShop.put("TestItem2", itm);
+		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		itm.setItemImage("DefaultButton");
+		itemShop.put("TestItem3", itm);
+		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		itm.setItemImage("DefaultButton");
+		itemShop.put("TestItem4", itm);
+		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		itm.setItemImage("DefaultButton");
+		itemShop.put("TestItem5", itm);
+		// end
+		chosenGrid = objPositions.get(GameState.this.playerCharacter).clone();
 		// load resources
-		System.gc();
-		Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
-		Texture2D tex = new Texture2D (tempBitmap);
-		tempBitmap.recycle();
-		objTextures.put("MyHeroModel", tex);
-		objTextures.put("GridMapBackground", tex);
-		try {initialisationProcess.join();} catch (Exception e) {e.printStackTrace();}
-		initialising = false;
+//		System.gc();
+//		Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
+//		Texture2D tex = new Texture2D (tempBitmap);
+//		tempBitmap.recycle();
+		objTextures.put("MyHeroModel", new Texture2D(resMan.getTexture("GridMapBackground")));//tex);
+		objTextures.put("GridMapBackground", new Texture2D(resMan.getTexture("GridMapBackground")));//tex);
+		initialised = true;
 	}
 	
 	@Override
 	public void close() {
+		if (!initialised)
+			return;
 		// release resources
+		resMan.close();
 		gameMaster = null;
 		chars = null;
 		objs = null;
@@ -168,11 +165,6 @@ public class GameState implements Closeable {
 		objThumbnail = objTextures = null;
 		itemShop = null;
 		initialised = false;
-	}
-	
-	public boolean isInitialised() {
-		try {initialisationProcess.join();} catch (Exception e) {e.printStackTrace();}
-		return initialised;
 	}
 	
 	public void startTimer() {
@@ -209,7 +201,7 @@ public class GameState implements Closeable {
 	}
 
 	public float[] getTerrain() {
-		return isInitialised() ? terrain : null;
+		return terrain;
 	}
 
 	public void setTerrain(float[] terrain) {
@@ -222,11 +214,11 @@ public class GameState implements Closeable {
 	}
 	
 	public Map<String, Character> getCharacters() {
-		return isInitialised() ? Collections.unmodifiableMap(chars) : null;
+		return Collections.unmodifiableMap(chars);
 	}
 	
 	public Map<String, int[]> getCharacterPositions() {
-		return isInitialised() ? Collections.unmodifiableMap(objPositions) : null;
+		return Collections.unmodifiableMap(objPositions);
 	}
 	
 	protected void setCharacterPositions(String name, int[] position) {
@@ -246,15 +238,15 @@ public class GameState implements Closeable {
 	}
 	
 	public FloatBuffer[] getCharacterModel(String name) {
-		return isInitialised() ? objModels.get(name).clone() : null;
+		return objModels.get(name).clone();
 	}
 	
 	public Texture2D getModelTexture(String name) {
-		return isInitialised() ? objTextures.get(name) : null;
+		return objTextures.get(name);
 	}
 	
 	public Texture2D getModelThumbnail(String name) {
-		return isInitialised() ? objThumbnail.get(name) : null;
+		return objThumbnail.get(name);
 	}
 	
 	// items
@@ -327,5 +319,8 @@ public class GameState implements Closeable {
 			break;
 		}
 		/// Use Hard code game rules
+	}
+	public boolean isInitialised() {
+		return initialised;
 	}
 }

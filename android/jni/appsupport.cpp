@@ -120,4 +120,14 @@ Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroyResourceManager
 	ResourceManager *man = (ResourceManager*)ptr;
 	delete man;
 }
+
+JNIEXPORT jlong JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getTextureHandler(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
+	const char *textureName = env->GetStringUTFChars(name, 0);
+	ResourceManager *man = (ResourceManager*)ptr;
+	jlong ret = man->getTextureHandler(std::string(textureName));
+	env->ReleaseStringUTFChars(name, textureName);
+	return ret;
+}
+
 }

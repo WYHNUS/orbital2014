@@ -4,3 +4,4 @@ APP_CPPFLAGS += -std=c++11
 APP_CPPFLAGS += -frtti
 APP_CPPFLAGS += -fexceptions
 APP_CPPFLAGS += -DANDROID
+APP_OPTIM := debug

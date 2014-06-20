@@ -4,15 +4,15 @@
  *  Created on: 16 Jun, 2014
  *      Author: apple
  */
+#include "ResourceManager.h"
 #include <cstdlib>
 #include <android/log.h>
-#include "ResourceManager.h"
 #include <sstream>
 #include <vector>
 #include <exception>
 #include <GLES2/gl2.h>
 
-void readPNG(zip_file *zf, int textureHandler) {
+void readPNG(zip_file *zf, const int textureHandler) {
 	png_byte header[8];
 	// read header
 	zip_fread(zf, header, 8);
@@ -28,6 +28,7 @@ void readPNG(zip_file *zf, int textureHandler) {
 		return;
 	}
 	png_set_read_fn(png_ptr, (png_voidp) zf, [] (png_structp pngStruct, png_bytep data, png_size_t length) {
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Loading ...%d", length);
 		zip_file *zf = static_cast<zip_file*>(png_get_io_ptr(pngStruct));
 		zip_fread(zf, data, length);
 	});
@@ -38,6 +39,7 @@ void readPNG(zip_file *zf, int textureHandler) {
 	int bit_depth, color_type;
 	png_uint_32 width, height;
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
+	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Width %d, Height %d, BitDepth %d", width, height, bit_depth);
 	// adjust image
 	// transparency -> alpha
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
@@ -78,11 +80,17 @@ void readPNG(zip_file *zf, int textureHandler) {
 	case PNG_COLOR_TYPE_GRAY_ALPHA:
 		textureFormat = GL_LUMINANCE_ALPHA;
 	}
+	glGetError();
 	glBindTexture(GL_TEXTURE_2D, textureHandler);
+	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "glBindTexture:%d", glGetError());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "glTexParameteri(min_filter,mipmap_linear):%d", glGetError());
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "glTexParameteri(mag_filter,linear):%d", glGetError());
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, textureFormat, GL_UNSIGNED_BYTE, image);
+	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "glTexImage2D:%d", glGetError());
 	glGenerateMipmap(GL_TEXTURE_2D);
+	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "glGenerateMipmap:%d", glGetError());
 	delete[] image;
 }
 
@@ -97,6 +105,7 @@ std::string trim (const std::string& str) {
 	else
 		return std::string();
 }
+
 size_t readOBJ(zip_file *zf, size_t fileSize, float *&vAttribute) {
 	// read obj file
 	if (vAttribute)
@@ -210,33 +219,73 @@ size_t readOBJ(zip_file *zf, size_t fileSize, float *&vAttribute) {
 	delete vertexPosition, texturePosition, normalVector, faces;
 	return offset;
 }
+
 ResourceManager::ResourceManager(const char * const pathToPkg) {
+	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "read from package located @ %s", pathToPkg);
 	int err = 0;
 	zip *z = zip_open(pathToPkg, 0, &err);
 	if (err) {
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Package failed to open");
 		throw "Package not found";
 	}
-	// index
-	const char * const file = "modelIndex";
+	char const * file;
+	char * content;
+	std::string contentStr;
+	std::stringstream *ss;
 	struct zip_stat st;
 	zip_stat_init(&st);
-	zip_stat(z, file, 0, &st);
-	zip_file *zf = zip_fopen(z, file, 0);
-	char * content = new char[st.size];
-	zip_fread(zf, content, st.size);
-	zip_fclose(zf);
+	zip_file *zf;
+	// index
+//	file = "modelIndex";
+//	zip_stat(z, file, 0, &st);
+//	zf = zip_fopen(z, file, 0);
+//	content = new char[st.size];
+//	zip_fread(zf, content, st.size);
+//	zip_fclose(zf);
 	// terrain data and map data
 	// model
-	// texture
-	std::string textureName;
-	int offset = 0;
+	// texture index
+	file = "textureIndex";
 	zip_stat(z, file, 0, &st);
+	content = new char[st.size + 1];
 	zf = zip_fopen(z, file, 0);
+	zip_fread(zf, content, st.size);
+	content[st.size] = 0;	// null terminate
 	zip_fclose(zf);
+	contentStr = std::string(content);
+	delete[] content;
+	ss = new std::stringstream(contentStr);
+	while (!ss->eof()) {
+		std::string textureName, textureFile;
+		*ss >> textureName >> textureFile;
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load texture %s from %s", textureName.c_str(), textureFile.c_str());
+		if (textureName.size() > 0 && textureFile.size() > 0) {
+			zf = zip_fopen(z, textureFile.c_str(), 0);
+			if (zf) {
+				GLuint tex[1];
+				glGenTextures(1, tex);
+				textureHandlers[textureName] = tex[0];
+				__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Texture GLuint: %d", textureHandlers[textureName]);
+				readPNG(zf, textureHandlers[textureName]);
+			} else
+				__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", textureFile.c_str());
+		}
+	}
+	delete ss;
 	// close zip
 	zip_close(z);
 }
 
 ResourceManager::~ResourceManager() {
+	GLuint *textures = new GLuint[textureHandlers.size()];
+	int c = 0;
+	for (auto& itr : textureHandlers)
+		textures[c++] = itr.second;
+	glDeleteTextures(c, textures);
+	delete[] textures;
+}
+
+GLuint ResourceManager::getTextureHandler(const std::string name) {
+	return textureHandlers[name];
 }
 
