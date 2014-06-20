@@ -8,6 +8,10 @@ public class Hero extends Character{
 	private double basicMainAttribute;
 	private double totalMainAttribute;
 	
+	private int heroSpawningXPos = -1;
+	private int heroSpawningYPos = -1;
+	
+	
 	// when display in the game frame, the format will be <basic attribute> + " + " + <attributes obtained from items>
 	
 	// starting attribute is given when constructing the hero
@@ -135,6 +139,9 @@ public class Hero extends Character{
 				hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), hero.getStartingPhysicalAttackSpeed(), 
 				hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
 				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());
+
+		this.setHeroSpawningXPos(hero.getHeroSpawningXPos());
+		this.setHeroSpawningYPos(hero.getHeroSpawningYPos());
 		
 		this.setCurrentActionPoint(hero.getCurrentActionPoint());
 		
@@ -239,7 +246,26 @@ public class Hero extends Character{
 		this.setTotalPhysicalAttack(this.getBasicPhysicalAttack() + this.getTotalItemAddPhysicalAttack());
 	}
 	
+
+	// accessor and mutator for hero spawning position
 	
+	public int getHeroSpawningXPos() {
+		return heroSpawningXPos;
+	}
+
+	public void setHeroSpawningXPos(int heroSpawningXPos) {
+		this.heroSpawningXPos = heroSpawningXPos;
+	}
+
+	public int getHeroSpawningYPos() {
+		return heroSpawningYPos;
+	}
+
+	public void setHeroSpawningYPos(int heroSpawningYPos) {
+		this.heroSpawningYPos = heroSpawningYPos;
+	}
+
+
 	
 	// accessor and mutator for three primary attributes: strength, agility, intelligence
 
@@ -525,7 +551,7 @@ public class Hero extends Character{
 
 	public void setMoney(int money) {
 		if (money <= 0) {
-			System.out.println("player's money cannot be less than 0!");
+			this.money = 0;
 		} else {
 			this.money = money;
 		}

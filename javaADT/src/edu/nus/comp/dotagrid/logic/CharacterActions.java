@@ -171,7 +171,11 @@ public class CharacterActions {
 						// check if should end the game
 						GameEnded.isGameEnded();
 						
+						// check if any barracks are destroyed
 						BuildingDatabase.isBarracksDestroyed();
+						
+						// reset AI isAttack
+						AICharacter.isAttack = false;
 						
 						// if the attacker is hero, add bounty money and bounty Exp into hero's account
 						if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
@@ -188,6 +192,23 @@ public class CharacterActions {
 							
 						}
 						
+						// if the hero is dead
+						if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {
+							// deduct dead hero's money
+							((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setMoney(
+									((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getMoney() 
+									- GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
+							
+							// check if the dead hero is player's hero
+							if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
+								Screen.user.player.setXPos(Screen.user.playerStartingXPos);
+								Screen.user.player.setYPos(Screen.user.playerStartingYPos);
+							}
+							
+							// hero revive from its original spawning position
+							GridFrame.gridButtonMap[((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningXPos()][((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningYPos()]
+									 = new GridButton(GridFrame.gridButtonMap[toXPos][toYPos]);
+						}
 						
 						// character is dead, reset the grid which the dead character was at 
 						GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);

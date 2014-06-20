@@ -14,7 +14,7 @@ public class GridFrame {
 	WorldMap worldMap;
 	WorldMapFile worldMapFile;
 
-	// a public boolean to check if any JFrame has poped up
+	// a public boolean to check if any JFrame has popped up
 	public static boolean popupJFrame = false;
 	
 	public static final int ROW_NUMBER = 100;

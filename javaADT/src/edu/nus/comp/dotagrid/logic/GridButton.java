@@ -168,6 +168,10 @@ public class GridButton {
 			Screen.user.createPlayer();
 			Player.setTeamNumber(character.getTeamNumber());
 			
+			// set player's hero's starting position
+			((Hero)character).setHeroSpawningXPos(Screen.user.playerStartingXPos);
+			((Hero)character).setHeroSpawningYPos(Screen.user.playerStartingYPos);
+			
 			isOccupied = true;
 			isHero = true;
 			isPlayer = true;
