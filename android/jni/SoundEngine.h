@@ -42,22 +42,21 @@ class SoundEngine {
 	SLuint32 channels;
 	SLuint32 speakers; // enum SL_SPEAKER_*
 	// play queue
-	static void bufferQueuePlayerCallBack (const SLObjectItf, const void *, SLuint32, SLresult, SLuint32, void*);
-	void bufferQueuePop() const;
+	static void bufferQueuePlayerCallBack (SLAndroidSimpleBufferQueueItf, void *);
+	void bufferQueuePop();
 
 	std::map<std::string, AssetAudioControl> assetControls;
 	std::queue<BufferItem> bqManagedQueue;
 
 	bool bufferQueueEnabled;
-	mutable int bqHead, bqTail;
+	int bqHead, bqTail;
 
-	mutable int test;
+	int test;
 
 	SoundEngine();
 	~SoundEngine();
 public:
-	static const int SAMPLING_RATE = 8000;
-	static const int BUFFER_SIZE = 80000;
+	static const int BUFFER_SIZE = 8000;
 	static const int BUFFER_COUNT = 10;
 	static SoundEngine* Create();
 	static void Destroy(const SoundEngine*);

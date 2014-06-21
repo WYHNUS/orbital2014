@@ -5,6 +5,7 @@
  *      Author: dingxiangfei
  */
 #include "SoundEngine.h"
+#include <cstdlib>
 #include <android/log.h>
 #include <jni.h>
 #include <sys/types.h>
@@ -34,7 +35,7 @@ SoundEngine::SoundEngine() : bufferQueuePlayer(0), masterBuffer(0), bufferQueueE
 	// initialisation complete
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Initialisation Complete");
 	channels = 1;
-	samplingRate = SL_SAMPLINGRATE_8;
+	samplingRate = SL_SAMPLINGRATE_11_025;
 	speakers = SL_SPEAKER_FRONT_CENTER;
 	test = 0;
 }
@@ -44,6 +45,7 @@ void SoundEngine::prepareBufferQueuePlayer() {
 		return;
 	bufferQueueEnabled = true;
 	masterBuffer = new short[SoundEngine::BUFFER_SIZE * SoundEngine::BUFFER_COUNT];
+	memset(masterBuffer, 0, SoundEngine::BUFFER_SIZE * SoundEngine::BUFFER_COUNT);
 	bqHead = bqTail = 0;
 	SLDataLocator_AndroidSimpleBufferQueue bufferQueue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, SoundEngine::BUFFER_COUNT};
 	SLDataFormat_PCM formatPCM = {
@@ -61,9 +63,9 @@ void SoundEngine::prepareBufferQueuePlayer() {
 	SLDataSink audioSink = {&outputMix, NULL};
 	// player setup
 	SLresult result;
-	const SLInterfaceID ids[] = {SL_IID_BUFFERQUEUE, SL_IID_EFFECTSEND, SL_IID_VOLUME};
-	const SLboolean reqs[] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
-	result = (*engineEngine)->CreateAudioPlayer(engineEngine, &bufferQueuePlayer, &audioSrc, &audioSink, 3, ids, reqs);
+	const SLInterfaceID ids[] = {SL_IID_BUFFERQUEUE, SL_IID_EFFECTSEND, SL_IID_VOLUME, SL_IID_PLAY};
+	const SLboolean reqs[] = {SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE};
+	result = (*engineEngine)->CreateAudioPlayer(engineEngine, &bufferQueuePlayer, &audioSrc, &audioSink, 4, ids, reqs);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Engine Interface %p: Request New BufferQueue Player, Result: %d", engineEngine, result);
 	result = (*bufferQueuePlayer)->Realize(bufferQueuePlayer, SL_BOOLEAN_FALSE);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: Realised, Result: %d", bufferQueuePlayer, result);
@@ -71,17 +73,21 @@ void SoundEngine::prepareBufferQueuePlayer() {
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: Play, Result: %d", bufferQueuePlayer, result);
 	result = (*bufferQueuePlayer)->GetInterface(bufferQueuePlayer, SL_IID_BUFFERQUEUE, &bufferQueuePlayerBufferQueue);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: BufferQueue, Result: %d", bufferQueuePlayer, result);
-	result = (*bufferQueuePlayer)->RegisterCallback(bufferQueuePlayer, &bufferQueuePlayerCallBack, this);
+	result = (*bufferQueuePlayerBufferQueue)->RegisterCallback(bufferQueuePlayerBufferQueue, bufferQueuePlayerCallBack, this);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: BufferQueueCallback, Result: %d", bufferQueuePlayer, result);
 	result = (*bufferQueuePlayer)->GetInterface(bufferQueuePlayer, SL_IID_EFFECTSEND, &bufferQueuePlayerEffectSend);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: EffectSend, Result: %d", bufferQueuePlayer, result);
 	result = (*bufferQueuePlayer)->GetInterface(bufferQueuePlayer, SL_IID_VOLUME, &bufferQueuePlayerVolume);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: Volume, Result: %d", bufferQueuePlayer, result);
+	for (int i = 0; i < SoundEngine::BUFFER_COUNT; i++) {
+		result = (*bufferQueuePlayerBufferQueue)->Enqueue(bufferQueuePlayerBufferQueue, masterBuffer + i * SoundEngine::BUFFER_SIZE, SoundEngine::BUFFER_SIZE);
+		__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: Buffer %d, Result:%d", bufferQueuePlayer, i, result);
+	}
 	result = (*bufferQueuePlayerPlay)->SetPlayState(bufferQueuePlayerPlay, SL_PLAYSTATE_PLAYING);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: Set to playing, Result: %d", bufferQueuePlayer, result);
 }
 
-void SoundEngine::bufferQueuePop() const {
+void SoundEngine::bufferQueuePop() {
 	if (bufferQueueEnabled) {
 		bqHead++;
 		if (bqHead == SoundEngine::BUFFER_COUNT)
@@ -89,10 +95,10 @@ void SoundEngine::bufferQueuePop() const {
 	}
 }
 
-void SoundEngine::bufferQueuePlayerCallBack (const SLObjectItf bufferQueuePlayer, const void *context, SLuint32, SLresult, SLuint32, void*) {
-	const SoundEngine *se = static_cast<const SoundEngine*>(context);
-	se->test++;
+void SoundEngine::bufferQueuePlayerCallBack (SLAndroidSimpleBufferQueueItf bufferQueue, void *context) {
+	SoundEngine *se = static_cast<SoundEngine*>(context);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Test=%d", se->test);
+	se->test++;
 	if (se->bqHead != se->bqTail) {
 		(*se->bufferQueuePlayerBufferQueue)->Enqueue(se->bufferQueuePlayerBufferQueue, se->masterBuffer + se->bqHead * SoundEngine::BUFFER_SIZE, SoundEngine::BUFFER_SIZE);
 		se->bufferQueuePop();
@@ -164,6 +170,7 @@ void SoundEngine::setAssetPlayerSeek(const std::string& name, SLmillisecond posi
 }
 
 void SoundEngine::setAssetPlayerPlayState(const std::string& name, bool play) {
+	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Test=%d", test);
 	if (assetControls.find(name) != assetControls.end()) {
 		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Set '%s' play state", name.c_str());
 		SLresult result = (*assetControls[name].assetPlayerPlay)

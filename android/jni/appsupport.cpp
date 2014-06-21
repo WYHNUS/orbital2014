@@ -57,7 +57,7 @@ extern "C" {
 
 JNIEXPORT void JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testSL(JNIEnv *env, jobject obj) {
-	testSoundEngine();
+//	testSoundEngine();
 }
 
 JNIEXPORT void JNICALL
