@@ -1,6 +1,5 @@
 #include <string>
 #include <jni.h>
-#include <v8.h>
 #include <android/log.h>
 #include <SoundEngine.h>
 #include <ExtensionEngine.h>
@@ -8,35 +7,20 @@
 #include <GLES2/gl2.h>
 #include <iostream>
 #include <fstream>
-#include <zip.h>
+#include <json/json.h>
+
 void testExtensionEngine() {
 	ExtensionEngine* engine = ExtensionEngine::Create();
-	engine->loadScript(std::string("var a = new ExtensionInterface();a.gameDelegate=function(){return 1;};a.gameDelegate() + 1;"));
+	engine->loadScript(std::string("var a = new ExtensionInterface();a.gameDelegate=function(){return 1;};a.gameDelegate();"));
 	engine->execute();
+	engine->applyRule();
 	ExtensionEngine::Destroy(engine);
 }
 
 void testSoundEngine() {
 	SoundEngine *se = SoundEngine::Create();
+	se->prepareBufferQueuePlayer();
 	SoundEngine::Destroy(se);
-}
-
-void testZIP () {
-	__android_log_print(ANDROID_LOG_DEBUG, "ZIP", "TestStart");
-	int err = 0;
-	zip *z = zip_open("/sdcard/test.zip", 0, &err);
-	const char *file = "test";
-	struct zip_stat st;
-	zip_stat_init(&st);
-	zip_stat(z, file, 0, &st);
-	char * content = new char[st.size + 1];
-	zip_file *f = zip_fopen(z, file, 0);
-	zip_fread (f, content, st.size);
-	zip_fclose(f);
-	zip_close (z);
-	content[st.size] = 0;	// null terminate
-	__android_log_print(ANDROID_LOG_DEBUG, "ZIP", "Content: %s", content);
-	delete[] content;
 }
 
 void testGL() {
@@ -71,13 +55,8 @@ void testGL() {
 extern "C" {
 
 JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testZIP(JNIEnv *env, jobject obj) {
-	testZIP();
-}
-
-JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testGL(JNIEnv *env, jobject obj) {
-	testGL();
+Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testSL(JNIEnv *env, jobject obj) {
+	testSoundEngine();
 }
 
 JNIEXPORT void JNICALL
@@ -85,20 +64,42 @@ Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testJS(JNIEnv *env, jo
 	testExtensionEngine();
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jlong JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_createExtensionEngine(JNIEnv *env, jobject obj) {
+	return (jlong) ExtensionEngine::Create();
 }
 
 JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroyExtensionEngine(JNIEnv *env, jobject obj) {
+Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroyExtensionEngine(JNIEnv *env, jobject obj, jlong ptr) {
+	ExtensionEngine::Destroy((ExtensionEngine*) ptr);
 }
 
-JNIEXPORT void JNICALL
+JNIEXPORT jlong JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_initiateSoundEngine(JNIEnv *env, jobject obj) {
+	return (jlong) SoundEngine::Create();
 }
 
 JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroySoundEngine(JNIEnv *env, jobject obj) {
+Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroySoundEngine(JNIEnv *env, jobject obj, jlong ptr) {
+	SoundEngine::Destroy((SoundEngine*) ptr);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_prepareBufferQueuePlayer(JNIEnv *env, jobject obj, jlong ptr) {
+	SoundEngine *se = (SoundEngine*) ptr;
+	if (se)
+		se->prepareBufferQueuePlayer();
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_prepareAssetPlayer(JNIEnv *env, jobject obj, jlong ptr, jstring name, jint fd, jlong start, jlong length) {
+	SoundEngine *se = (SoundEngine*) ptr;
+	if (se) {
+		const char * strName = env->GetStringUTFChars(name, 0);
+		std::string strNameParam (strName);
+		se->prepareAssetPlayer(strNameParam, fd, start, length);
+		env->ReleaseStringUTFChars(name, strName);
+	}
 }
 
 JNIEXPORT jlong JNICALL

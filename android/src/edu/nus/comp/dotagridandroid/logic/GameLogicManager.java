@@ -5,6 +5,7 @@ import java.util.concurrent.*;
 
 import android.content.Context;
 import edu.nus.comp.dotagridandroid.Closeable;
+import edu.nus.comp.dotagridandroid.appsupport.*;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 
 public class GameLogicManager implements Closeable {
@@ -12,8 +13,11 @@ public class GameLogicManager implements Closeable {
 	private Map<String, GameState>gameStates = new ConcurrentHashMap<>();
 	private GameState currentState;
 	private Context context;
+	private SoundEngine se;
 
 	public GameLogicManager(Context context) {
+		se = AppNativeAPI.createSoundEngine();
+		se.prepareBufferQueuePlayer();
 		this.context = context;
 		gameSetting.put("DISPLAY_ANTI_ALIAS_SAMPLINGS", 4);
 		GameState current = new GameState(null);
@@ -77,6 +81,9 @@ public class GameLogicManager implements Closeable {
 	@Override
 	public void close() {
 		// app will close, save states
+		for (GameState state : gameStates.values())
+			state.close();
+		se.close();
 	}
 
 	public static class GameStateUpdateDelegate {

@@ -30,6 +30,7 @@ public:
 	static void Destroy(const ExtensionEngine*);
 	void loadScript (const std::string&);
 	void execute();
+	void applyRule();
 
 };
 extern

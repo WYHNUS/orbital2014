@@ -33,14 +33,14 @@ public class GameMaster {
 		case "RequestAttackArea": {
 			Map<String, Object> updates = new HashMap<>();
 			// TODO: calculate attack area
-			List<int[]> allowed = new ArrayList<>();
+			List<List<Integer>> allowed = new ArrayList<>();
 			final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
 			final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
 			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
 				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
 					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
-						allowed.add(new int[]{prevPos[0] + i, prevPos[1] + j});
-			updates.put("HighlightGrid", allowed.toArray(new int[2][allowed.size()]));
+						allowed.add(Arrays.asList(prevPos[0] + i, prevPos[1] + j));
+			updates.put("HighlightGrid", Collections.unmodifiableList(allowed));
 			stateMachine.notifyUpdate(Collections.unmodifiableMap(updates));
 			return;
 		}
@@ -74,7 +74,7 @@ public class GameMaster {
 					playerChar.setCurrentActionPoint((int) currentActionPoint);
 					// move
 					stateMachine.setCharacterPositions(playerCharName, stateMachine.getChosenGrid());
-					Set<String> characters = Collections.singleton(playerCharName);
+					List<String> characters = Collections.singletonList(playerCharName);
 					updates = Collections.singletonMap("Characters", (Object) characters);
 					stateMachine.notifyUpdate(updates);
 					return;

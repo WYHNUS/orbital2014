@@ -57,6 +57,20 @@ ExtensionEngine::ExtensionEngine() {
 				itf->gameDelegate.Reset(info.GetIsolate(), value);
 				__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate settle down");
 			});
+	newInterfaceTemplate->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(iso, "notifyUpdate"),
+			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+				v8::Isolate* iso = info.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::Locker locker(iso);
+				v8::Handle<v8::FunctionTemplate> func = v8::FunctionTemplate::New(iso,
+						[] (const v8::FunctionCallbackInfo<v8::Value> &args) {
+							v8::Isolate* iso = args.GetIsolate();
+							v8::Isolate::Scope iso_scope(iso);
+							v8::Locker locker(iso);
+							ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(args.Holder()->GetInternalField(0))->Value());
+						});
+				info.GetReturnValue().Set(func->GetFunction());
+			});
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate Registered");
 	interfaceTemplate.Reset(iso, newInterfaceTemplate);
 	DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso] = this;
@@ -108,6 +122,24 @@ void ExtensionEngine::execute() {
 		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Error: No return value");
 	} else if (!result->IsUndefined()) {
 		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Debug: convert to string handler");
+		v8::String::Utf8Value str (result);
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Result: %s", *str);
+	}
+}
+
+void ExtensionEngine::applyRule() {
+	v8::Isolate::Scope iso_scope(iso);
+	v8::Locker locker (iso);
+	v8::HandleScope scope (iso);
+	v8::Handle<v8::Context> context = v8::Local<v8::Context>::New(iso, this->context);
+	v8::Handle<v8::Function> gameDelegate = v8::Local<v8::Function>::Cast(v8::Local<v8::Value>::New(iso, this->currentInterface->gameDelegate));
+	v8::Context::Scope context_scope(context);
+	v8::TryCatch tryCatch;
+	v8::Handle<v8::Value> result = gameDelegate->CallAsFunction(context->Global(), 0, 0);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Apply Rule Success");
+	if (result.IsEmpty() || result->IsUndefined()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Action is dropped by the script");
+	} else {
 		v8::String::Utf8Value str (result);
 		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Result: %s", *str);
 	}

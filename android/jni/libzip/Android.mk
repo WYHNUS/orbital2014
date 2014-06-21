@@ -91,7 +91,6 @@ LOCAL_SRC_FILES :=\
 	zip_unchange_archive.c \
 	zip_unchange_data.c \
 	zip_utf-8.c
-
 LOCAL_LDLIBS := -lz
 
 #include $(BUILD_SHARED_LIBRARY)

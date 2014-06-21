@@ -439,8 +439,16 @@ public class GridRenderer implements Renderer {
 		highlightedGridIndex = null;
 		if (updates.containsKey("Characters"))
 			prepareObjects();
-		if (updates.containsKey("HighlightGrid"))
-			highlightedGridIndex = (int[][]) updates.get("HighlightGrid");
+		if (updates.containsKey("HighlightGrid")) {
+			List<Object> grids = (List<Object>) updates.get("HighlightGrid");
+			highlightedGridIndex = new int[grids.size()][2];
+			int c = 0;
+			for (Object grid : grids) {
+				highlightedGridIndex[c][0] = ((Number) ((List<Object>) grid).get(0)).intValue();
+				highlightedGridIndex[c][1] = ((Number) ((List<Object>) grid).get(1)).intValue();
+				c++;
+			}
+		}
 		responder.updateGraphics();
 	}
 	@Override

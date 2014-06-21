@@ -11,6 +11,7 @@
 #include <SLES/OpenSLES_Android.h>
 #include <string>
 #include <map>
+#include <queue>
 const SLEnvironmentalReverbSettings envReverbSettings = SL_I3DL2_ENVIRONMENT_PRESET_STONECORRIDOR;
 class SoundEngine {
 	struct AssetAudioControl {
@@ -22,8 +23,13 @@ class SoundEngine {
 		SLMuteSoloItf assetPlayerMuteSolo;
 		SLVolumeItf assetPlayerVolume;
 	};
+	struct BufferItem {
+		size_t length;
+		short *buffer;
+	};
+	short *masterBuffer;
 	SLEngineItf engineEngine;
-	SLObjectItf engineObject, outputMixObject, bufferQueuePlayer, assetPlayer;
+	SLObjectItf engineObject, outputMixObject, bufferQueuePlayer;
 	SLEnvironmentalReverbItf outputMixEnvironmentalReverb;
 	SLPlayItf bufferQueuePlayerPlay, assetPlayerPlay;
 	SLSeekItf assetPlayerSeek;
@@ -36,19 +42,26 @@ class SoundEngine {
 	SLuint32 channels;
 	SLuint32 speakers; // enum SL_SPEAKER_*
 	// play queue
-	static void bufferQueuePlayerCallBack (const SLObjectItf, void const *, SLuint32, SLresult, SLuint32, void*);
+	static void bufferQueuePlayerCallBack (const SLObjectItf, const void *, SLuint32, SLresult, SLuint32, void*);
+
 	std::map<std::string, AssetAudioControl> assetControls;
+	std::queue<BufferItem> bqManagedQueue;
+
+	int test;
+
 	SoundEngine();
 	~SoundEngine();
 public:
+	static const int SAMPLING_RATE = 8000;
+	static const int BUFFERSIZE = 800000;
 	static SoundEngine* Create();
 	static void Destroy(const SoundEngine*);
 	// buffer
 	void prepareBufferQueuePlayer();
 	// asset
 	void prepareAssetPlayer(const std::string&, int fd, off_t start, off_t length);
-	void setAssetPlayerLoop(const std::string&, bool loop);
-	void setAssetPlayerPlayState(const std::string&, bool play);
+	void setAssetPlayerLoop(const std::string&, bool);
+	void setAssetPlayerPlayState(const std::string&, bool);
 	void setAssetPlayerVolume(int);
 };
 
