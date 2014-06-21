@@ -1,6 +1,7 @@
 #include <string>
 #include <jni.h>
 #include <android/log.h>
+#include <android/asset_manager_jni.h>
 #include <SoundEngine.h>
 #include <ExtensionEngine.h>
 #include <ResourceManager.h>
@@ -92,12 +93,72 @@ Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_prepareBufferQueuePlaye
 }
 
 JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_prepareAssetPlayer(JNIEnv *env, jobject obj, jlong ptr, jstring name, jint fd, jlong start, jlong length) {
+Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_prepareAssetPlayer(
+		JNIEnv *env,
+		jobject obj,
+		jlong ptr,
+		jobject assetMan,
+		jstring file,
+		jstring name) {
+	SoundEngine *se = (SoundEngine*) ptr;
+	if (se) {
+		const char * strName = env->GetStringUTFChars(name, 0);
+		const char * fileName = env->GetStringUTFChars(file, 0);
+		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Load %s for sound '%s'", fileName, strName);
+		AAssetManager* mgr = AAssetManager_fromJava(env, assetMan);
+		AAsset* asset = AAssetManager_open(mgr, fileName, AASSET_MODE_UNKNOWN);
+		env->ReleaseStringUTFChars(file, fileName);
+
+		off_t start, length;
+		int fd = AAsset_openFileDescriptor(asset, &start, &length);
+		AAsset_close(asset);
+
+		std::string strNameParam (strName);
+		se->prepareAssetPlayer(strNameParam, fd, start, length);
+		env->ReleaseStringUTFChars(name, strName);
+	}
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerPlayState(JNIEnv *env, jobject obj, jlong ptr, jstring name, jboolean playState) {
 	SoundEngine *se = (SoundEngine*) ptr;
 	if (se) {
 		const char * strName = env->GetStringUTFChars(name, 0);
 		std::string strNameParam (strName);
-		se->prepareAssetPlayer(strNameParam, fd, start, length);
+		se->setAssetPlayerPlayState(strNameParam, playState);
+		env->ReleaseStringUTFChars(name, strName);
+	}
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerStop(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
+	SoundEngine *se = (SoundEngine*) ptr;
+	if (se) {
+		const char * strName = env->GetStringUTFChars(name, 0);
+		std::string strNameParam (strName);
+		se->setAssetPlayerStop(strNameParam);
+		env->ReleaseStringUTFChars(name, strName);
+	}
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerLoop(JNIEnv *env, jobject obj, jlong ptr, jstring name, jboolean loop) {
+	SoundEngine *se = (SoundEngine*) ptr;
+	if (se) {
+		const char * strName = env->GetStringUTFChars(name, 0);
+		std::string strNameParam (strName);
+		se->setAssetPlayerLoop(strNameParam, loop);
+		env->ReleaseStringUTFChars(name, strName);
+	}
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerSeek(JNIEnv *env, jobject obj, jlong ptr, jstring name, jlong position) {
+	SoundEngine *se = (SoundEngine*) ptr;
+	if (se) {
+		const char * strName = env->GetStringUTFChars(name, 0);
+		std::string strNameParam (strName);
+		se->setAssetPlayerSeek(strNameParam, SLmillisecond(position));
 		env->ReleaseStringUTFChars(name, strName);
 	}
 }

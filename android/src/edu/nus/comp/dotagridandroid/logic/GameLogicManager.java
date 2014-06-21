@@ -16,8 +16,6 @@ public class GameLogicManager implements Closeable {
 	private SoundEngine se;
 
 	public GameLogicManager(Context context) {
-		se = AppNativeAPI.createSoundEngine();
-		se.prepareBufferQueuePlayer();
 		this.context = context;
 		gameSetting.put("DISPLAY_ANTI_ALIAS_SAMPLINGS", 4);
 		GameState current = new GameState(null);
@@ -55,6 +53,22 @@ public class GameLogicManager implements Closeable {
 		current.setTerrain(terrain);
 		gameStates.put("Current", current);	// dummy
 	}
+	
+	public void initiateSoundEngine() {
+		se = AppNativeAPI.createSoundEngine(context);
+		se.prepareBufferQueuePlayer();
+		// prepare common asset sounds
+		prepareAssetSound("glass.ogg", "click");	// click
+	}
+	
+	public void prepareAssetSound(String file, String name) {
+		se.prepareAssetPlayer(file, name);
+	}
+	
+	public void playAssetSound(String name) {
+		se.setAssetPlayerStop(name);
+		se.setAssetPlayerPlayState(name, true);
+	}
 
 	public Object getGameSetting(String key) {
 		return gameSetting.get(key);
@@ -78,12 +92,17 @@ public class GameLogicManager implements Closeable {
 		return currentState;
 	}
 	
+	public void saveGame() {
+		// TODO save game states
+	}
+	
 	@Override
 	public void close() {
 		// app will close, save states
 		for (GameState state : gameStates.values())
 			state.close();
-		se.close();
+		if (se != null)
+			se.close();
 	}
 
 	public static class GameStateUpdateDelegate {

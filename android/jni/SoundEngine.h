@@ -43,17 +43,22 @@ class SoundEngine {
 	SLuint32 speakers; // enum SL_SPEAKER_*
 	// play queue
 	static void bufferQueuePlayerCallBack (const SLObjectItf, const void *, SLuint32, SLresult, SLuint32, void*);
+	void bufferQueuePop() const;
 
 	std::map<std::string, AssetAudioControl> assetControls;
 	std::queue<BufferItem> bqManagedQueue;
 
-	int test;
+	bool bufferQueueEnabled;
+	mutable int bqHead, bqTail;
+
+	mutable int test;
 
 	SoundEngine();
 	~SoundEngine();
 public:
 	static const int SAMPLING_RATE = 8000;
-	static const int BUFFERSIZE = 800000;
+	static const int BUFFER_SIZE = 80000;
+	static const int BUFFER_COUNT = 10;
 	static SoundEngine* Create();
 	static void Destroy(const SoundEngine*);
 	// buffer
@@ -62,6 +67,8 @@ public:
 	void prepareAssetPlayer(const std::string&, int fd, off_t start, off_t length);
 	void setAssetPlayerLoop(const std::string&, bool);
 	void setAssetPlayerPlayState(const std::string&, bool);
+	void setAssetPlayerSeek(const std::string&, SLmillisecond);
+	void setAssetPlayerStop(const std::string&);
 	void setAssetPlayerVolume(int);
 };
 

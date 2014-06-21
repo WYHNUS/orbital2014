@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagridandroid.appsupport;
 
+import android.content.Context;
+
 public class AppNativeAPI {
 	static {
 		System.loadLibrary("appsupport");
@@ -22,7 +24,7 @@ public class AppNativeAPI {
 		return new ResourceManager(initiateResourceManager(path));
 	}
 	
-	public static SoundEngine createSoundEngine() {
-		return new SoundEngine(initiateSoundEngine());
+	public static SoundEngine createSoundEngine(Context context) {
+		return new SoundEngine(initiateSoundEngine(), context.getAssets());
 	}
 }

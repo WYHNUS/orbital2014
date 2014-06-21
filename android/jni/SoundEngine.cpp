@@ -10,8 +10,7 @@
 #include <sys/types.h>
 #include <android/asset_manager.h>
 #include <android/asset_manager_jni.h>
-SoundEngine::SoundEngine() : bufferQueuePlayer(0) {
-	masterBuffer = new short[SoundEngine::BUFFERSIZE];
+SoundEngine::SoundEngine() : bufferQueuePlayer(0), masterBuffer(0), bufferQueueEnabled(false) {
 	SLresult result;
 	result = slCreateEngine(&engineObject, 0, NULL, 0, NULL, NULL);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Engine Object Address: %p, Result: %d", engineObject, result);
@@ -41,7 +40,12 @@ SoundEngine::SoundEngine() : bufferQueuePlayer(0) {
 }
 
 void SoundEngine::prepareBufferQueuePlayer() {
-	SLDataLocator_AndroidSimpleBufferQueue bufferQueue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, 2};
+	if (bufferQueueEnabled)
+		return;
+	bufferQueueEnabled = true;
+	masterBuffer = new short[SoundEngine::BUFFER_SIZE * SoundEngine::BUFFER_COUNT];
+	bqHead = bqTail = 0;
+	SLDataLocator_AndroidSimpleBufferQueue bufferQueue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, SoundEngine::BUFFER_COUNT};
 	SLDataFormat_PCM formatPCM = {
 			SL_DATAFORMAT_PCM,
 			channels,
@@ -77,22 +81,26 @@ void SoundEngine::prepareBufferQueuePlayer() {
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "BufferQueuePlayer %p: Set to playing, Result: %d", bufferQueuePlayer, result);
 }
 
+void SoundEngine::bufferQueuePop() const {
+	if (bufferQueueEnabled) {
+		bqHead++;
+		if (bqHead == SoundEngine::BUFFER_COUNT)
+			bqHead = 0;
+	}
+}
+
 void SoundEngine::bufferQueuePlayerCallBack (const SLObjectItf bufferQueuePlayer, const void *context, SLuint32, SLresult, SLuint32, void*) {
-	SoundEngine *se = const_cast<SoundEngine*>(static_cast<const SoundEngine*>(context));
+	const SoundEngine *se = static_cast<const SoundEngine*>(context);
 	se->test++;
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Test=%d", se->test);
-	if (!se->bqManagedQueue.empty()) {
-		BufferItem buf = se->bqManagedQueue.front();
-		se->bqManagedQueue.pop();
-		if (buf.length <= SoundEngine::BUFFERSIZE) {
-			memcpy(se->masterBuffer, buf.buffer, buf.length);
-			(*se->bufferQueuePlayerBufferQueue)->Enqueue(se->bufferQueuePlayerBufferQueue, se->masterBuffer, buf.length);
-		}
-		delete[] buf.buffer;
+	if (se->bqHead != se->bqTail) {
+		(*se->bufferQueuePlayerBufferQueue)->Enqueue(se->bufferQueuePlayerBufferQueue, se->masterBuffer + se->bqHead * SoundEngine::BUFFER_SIZE, SoundEngine::BUFFER_SIZE);
+		se->bufferQueuePop();
 	}
 }
 
 void SoundEngine::prepareAssetPlayer(const std::string& key, int fd, off_t start, off_t length) {
+	__android_log_print(ANDROID_LOG_DEBUG, "SE", "FD=%d Start=%ld Length=%ld", fd, start, length);
 	SLDataLocator_AndroidFD fileDescriptor = {SL_DATALOCATOR_ANDROIDFD, fd, start, length};
 	SLDataFormat_MIME formatMime = {SL_DATAFORMAT_MIME, NULL, SL_CONTAINERTYPE_UNSPECIFIED};
 	SLDataSource audioSrc = {&fileDescriptor, &formatMime};
@@ -115,7 +123,7 @@ void SoundEngine::prepareAssetPlayer(const std::string& key, int fd, off_t start
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Asset Player %p: MuteSolo, Result: %d", control.assetPlayer, result);
 	result = (*control.assetPlayer)->GetInterface(control.assetPlayer, SL_IID_VOLUME, &control.assetPlayerVolume);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Asset Player %p: Volume, Result: %d", control.assetPlayer, result);
-	result = (*control.assetPlayerSeek)->SetLoop(control.assetPlayerSeek, SL_BOOLEAN_TRUE, 0, SL_TIME_UNKNOWN);
+	result = (*control.assetPlayerSeek)->SetLoop(control.assetPlayerSeek, SL_BOOLEAN_FALSE, 0, SL_TIME_UNKNOWN);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Asset Player %p: Set to loop, Result: %d", control.assetPlayer, result);
 	assetControls[key] = control;
 }
@@ -135,7 +143,8 @@ SoundEngine::~SoundEngine() {
 	if (engineObject)
 		(*engineObject)->Destroy(engineObject);
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Release EngineObject");
-	delete[] masterBuffer;
+	if (masterBuffer)
+		delete[] masterBuffer;
 }
 
 void SoundEngine::setAssetPlayerLoop(const std::string& name, bool loop) {
@@ -146,11 +155,29 @@ void SoundEngine::setAssetPlayerLoop(const std::string& name, bool loop) {
 	}
 }
 
+void SoundEngine::setAssetPlayerSeek(const std::string& name, SLmillisecond position) {
+	if (assetControls.find(name) != assetControls.end()) {
+		SLresult result = (*assetControls[name].assetPlayerSeek)
+				->SetPosition(assetControls[name].assetPlayerSeek, position, SL_SEEKMODE_FAST);
+		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Asset Player %p: Set position, Result: %d", assetControls[name].assetPlayer, result);
+	}
+}
+
 void SoundEngine::setAssetPlayerPlayState(const std::string& name, bool play) {
 	if (assetControls.find(name) != assetControls.end()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Set '%s' play state", name.c_str());
 		SLresult result = (*assetControls[name].assetPlayerPlay)
 				->SetPlayState(assetControls[name].assetPlayerPlay, play ? SL_PLAYSTATE_PLAYING : SL_PLAYSTATE_PAUSED);
 		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Asset Player %p: Set play state, Result: %d", assetControls[name].assetPlayer, result);
+	}
+}
+
+void SoundEngine::setAssetPlayerStop(const std::string& name) {
+	if (assetControls.find(name) != assetControls.end()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Stop '%s'", name.c_str());
+		SLresult result = (*assetControls[name].assetPlayerPlay)
+				->SetPlayState(assetControls[name].assetPlayerPlay, SL_PLAYSTATE_STOPPED);
+		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Asset Player %p: Stop, Result: %d", assetControls[name].assetPlayer, result);
 	}
 }
 

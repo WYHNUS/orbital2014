@@ -806,6 +806,8 @@ public class GridRenderer implements Renderer {
 		responder.updateGraphics();
 	}
 	private void onSingleTap(ControlEvent e) {
+		// test
+		manager.playAssetSound("click");
 		rayTrace(e);
 	}
 	private void onProcessingAttackAngleDone(ControlEvent e) {

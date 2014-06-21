@@ -10,8 +10,10 @@ import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 
 public class Main extends Activity {
-	private GameLogicManager logicManager = new GameLogicManager(this);
+	private GameLogicManager logicManager;
 	public Main() {
+		super();
+		logicManager = new GameLogicManager(this);
 	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -19,6 +21,7 @@ public class Main extends Activity {
 		// Proceed to MainSurfaceView for more details
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		logicManager.initiateSoundEngine();
 		AppNativeAPI.testJS();
 		AppNativeAPI.testSL();
 	}
@@ -27,6 +30,8 @@ public class Main extends Activity {
 	protected void onDestroy() {
 		super.onDestroy();
 		// save game state
+		logicManager.saveGame();
+		logicManager.close();
 	}
 	
 	@Override
