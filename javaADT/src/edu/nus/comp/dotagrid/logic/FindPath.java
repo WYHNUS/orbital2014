@@ -37,6 +37,12 @@ public class FindPath {
 		pathQueue = new LinkedList<int[]>();
 	}
 	
+
+	// getter
+	public int[][] getPath() {
+		return path;
+	}
+	
 	
 	// methods
 	
@@ -91,7 +97,7 @@ public class FindPath {
 		return path[XPos - startingXPos + movementPoint][YPos - startingYPos + movementPoint];
 	}
 	
-	
+
 	// create path int-2D-array which store the shortest path to each grid
 	private void createShortestPath(int pathXPos, int pathYPos, int startingXPos, int startingYPos, int movementPoint) {
 		

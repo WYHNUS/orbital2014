@@ -263,6 +263,31 @@ The hero will respawn after a certain round (depending on hero's level) from the
 
 
 
+7 AI Logic
+
+7.1 Tower AI
+	 Find the nearest enemy within attack range, 
+		if find, attack this enemy until 
+			1. tower has no more ActionPoint -> end this tower AI round
+			2. target enemy is dead - > recursive call!
+
+		 if no enemy within attack range, end this AI round
+
+
+7.2 LineCreep AI
+	 find nearest enemy in sight
+		if find, 
+			calculate the shortest path towards the nearest position around the target
+				then, move towards the enemy until 
+					1. AI has no more action point
+					2. Enemy is within attack range
+						1. Attack until AI has no more ActionPoint -> end this LineCreep AI round
+						2. target enmey is dead -> recursive call!
+		if not find,
+			calculate the shortest path towards targeted positions (stored in LineCreep AI's attribute)
+
+
+
 
 
 

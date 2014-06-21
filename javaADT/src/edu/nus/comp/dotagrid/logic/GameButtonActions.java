@@ -244,15 +244,24 @@ public class GameButtonActions {
 			}
 		}
 		
+		
+		// AI's turn
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
-					
 					// only non-player controlled character need AI to perform action
 					if (!GridFrame.gridButtonMap[x][y].getIsPlayer()){
 						// AI action!
 						new AICharacter(x, y);
 					}
+				}
+			}
+		}
+		
+		
+		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
+			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
+				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
 					
 					// reset AP for all existing characters
 					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentActionPoint(GridFrame.gridButtonMap[x][y].getCharacter().getMaxActionPoint());
