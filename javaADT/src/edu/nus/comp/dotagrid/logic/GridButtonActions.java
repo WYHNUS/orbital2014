@@ -70,9 +70,26 @@ public class GridButtonActions {
 		else if (GameButtonActions.readyToAttack == true) {
 			boolean isWithinAttackRange = calculateWithinAttackRange();
 			
+			// check if within attackable range
 			if (isWithinAttackRange && GridFrame.sightMap[toXPos][toYPos] == 1) {
-				// attack!
-				new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);
+				// can only attack on occupied grid
+				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true) {
+					// can only attack non-friendly units
+					if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTeamNumber() != GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber()) {
+						// can only attack if character has enough AP
+						if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - (int)(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedWhenAttack()) >= 0){
+							// attack!
+							new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);} 
+						
+						else {			
+							JOptionPane.showMessageDialog(null, "not enough action point to attack!");
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Unable to attack friendly units!");
+					}
+				} else {
+					JOptionPane.showMessageDialog(null, "Need to attack a existing character!");
+				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Out Of Attack Range!");
 			}

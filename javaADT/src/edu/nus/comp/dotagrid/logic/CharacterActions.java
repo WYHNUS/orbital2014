@@ -147,86 +147,64 @@ public class CharacterActions {
 	private void attack() {
 		// get the AP required for one physical attack
 		int usedAP = calculateAttackUsedAP();
-					
-		// can only attack on occupied grid
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true) {
-			
-			// can only attack non-friendly units
-			if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTeamNumber() != GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber()) {
-			
-				// can only attack if character has enough AP
-				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
-									
-					// perform attack action
-					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
-							- Character.getActualDamage(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttack(), GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalDefence()));
+				
+		// perform attack action
+		GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
+				- Character.getActualDamage(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttack(), GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalDefence()));
 								
-					// reduce character's AP 
-					GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
-							GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);
+		// reduce character's AP 
+		GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
+				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);
+						
+		// check if the attacked target is dead
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
+				
+			// check if should end the game
+			GameEnded.isGameEnded();
 					
-					// check if the attacked target is dead
-					if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
+			// check if any barracks are destroyed
+			BuildingDatabase.isBarracksDestroyed();
 						
-						// check if should end the game
-						GameEnded.isGameEnded();
+			// reset AI isAttack
+			AICharacter.isAttack = false;
 						
-						// check if any barracks are destroyed
-						BuildingDatabase.isBarracksDestroyed();
-						
-						// reset AI isAttack
-						AICharacter.isAttack = false;
-						
-						// if the attacker is hero, add bounty money and bounty Exp into hero's account
-						if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
+			// if the attacker is hero, add bounty money and bounty Exp into hero's account
+			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
 							
-							// add money
-							((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
-									((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
-									+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
+				// add money
+				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
+						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
+						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
 							
-							// add Experience
-							((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setExperience(
-									((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getExperience()
-									+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyExp());
+				// add Experience
+				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setExperience(
+						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getExperience()
+						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyExp());
 							
-						}
-						
-						// if the hero is dead
-						if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {
-							// deduct dead hero's money
-							((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setMoney(
-									((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getMoney() 
-									- GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
-							
-							// check if the dead hero is player's hero
-							if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
-								Screen.user.player.setXPos(Screen.user.playerStartingXPos);
-								Screen.user.player.setYPos(Screen.user.playerStartingYPos);
-							}
-							
-							// hero revive from its original spawning position
-							GridFrame.gridButtonMap[((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningXPos()][((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningYPos()]
-									 = new GridButton(GridFrame.gridButtonMap[toXPos][toYPos]);
-						}
-						
-						// character is dead, reset the grid which the dead character was at 
-						GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
-						
-					}
-				
-				} else {			
-					JOptionPane.showMessageDialog(null, "not enough action point to attack!");
-				}
-				
-			} else {
-				JOptionPane.showMessageDialog(null, "Unable to attack friendly units!");
 			}
-			
-		} else {
-			JOptionPane.showMessageDialog(null, "Need to attack a existing character!");
+						
+			// if the hero is dead
+			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {
+				// deduct dead hero's money
+				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setMoney(
+						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getMoney() 
+						- GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
+							
+				// check if the dead hero is player's hero
+				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
+					Screen.user.player.setXPos(Screen.user.playerStartingXPos);
+					Screen.user.player.setYPos(Screen.user.playerStartingYPos);
+				}
+							
+				// hero revive from its original spawning position
+				GridFrame.gridButtonMap[((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningXPos()][((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningYPos()]
+						= new GridButton(GridFrame.gridButtonMap[toXPos][toYPos]);
+			}	
+						
+			// character is dead, reset the grid which the dead character was at 
+			GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
 		}
-		
+			
 		// attack action ended
 		GameButtonActions.readyToAttack = false;
 	}
