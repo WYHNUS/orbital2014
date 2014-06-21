@@ -188,6 +188,15 @@ public class GridButton {
 		this.setCharacter(gridButton.getCharacter());
 		this.gridButtonActions = null;
 	}
+	
+	public GridButton(Character chara) {
+		this.setIsMovable(true);
+		this.setIsOccupied(true);
+		this.setIsPlayer(false);
+		this.setIsHero(true);
+		this.setCharacter(chara);
+		this.gridButtonActions = null;
+	}
 
 
 	public void actionPerformed(){

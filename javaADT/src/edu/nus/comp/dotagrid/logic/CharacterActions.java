@@ -196,9 +196,11 @@ public class CharacterActions {
 					Screen.user.player.setYPos(Screen.user.playerStartingYPos);
 				}
 							
-				// hero revive from its original spawning position
-				GridFrame.gridButtonMap[((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningXPos()][((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getHeroSpawningYPos()]
-						= new GridButton(GridFrame.gridButtonMap[toXPos][toYPos]);
+				// update reviveQueue
+				Pair<Hero, Integer> dead = new Pair<Hero, Integer>((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter(), 
+						CalculateLevelInfo.calculateDeathCount(((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getLevel()));
+				Hero.reviveQueue.add(dead);
+				
 			}	
 						
 			// character is dead, reset the grid which the dead character was at 

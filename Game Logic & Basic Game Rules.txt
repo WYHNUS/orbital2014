@@ -119,7 +119,9 @@ Use a skill
 Consume AP = depends on individual skill
 
 
-3.7 
+3.7 Upgrade Skill
+When a hero levels up, he will gain one unused skill point.
+Player / AI hero can use their unused skill point to upgrade skills.
 
 
 
@@ -136,7 +138,9 @@ Consume AP = depends on individual skill
 Some money will be awarded to hero.
 
 4.2 Kill a hero
-Some money will be awarded to hero and the killed hero (be it controled by player or computer) will respawn after a certain round (depending on hero's level).
+Some money will be awarded to hero.
+The killed hero (be it controled by player or computer) will have money deducted from their account. (let's say say amount that would be awarded to hero)
+Also, the killed hero will respawn after a certain round (deathcount = 2 * hero's level).
 
 4.3 Destroy a tower
 All friendly hero will gain a money bonus and if the tower is destroyed by a hero, this hero will have an extra money bonus.

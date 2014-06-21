@@ -1,8 +1,11 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.ArrayList;
 
 
 public class Hero extends Character{
+	
+	public static ArrayList<Pair<Hero, Integer>> reviveQueue = new ArrayList<Pair<Hero, Integer>>();
 	
 	private String mainAttribute;
 	private double basicMainAttribute;

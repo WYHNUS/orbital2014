@@ -13,7 +13,7 @@ public class AICharacter {
 	private int startingYPos;
 	
 	private int[] nearestEnmeyPos = new int[2];
-	public static int test = 0;
+	
 	
 	public AICharacter(int XPos, int YPos) {
 		startingXPos = XPos;
@@ -69,7 +69,7 @@ public class AICharacter {
 	
 	private void findNearestEnmey(Queue<int[]> uncheckedPosition, ArrayList<int[]> checkedPosition, int attackRange) {
 		// find the coordinates for nearest enemy within attack range, store its coordinates in an int[], if there isn't any enemy, return {-1, -1}
-		test++;
+
 		// base case :
 		if (uncheckedPosition.isEmpty() == true) {
 			nearestEnmeyPos[0] = -1;

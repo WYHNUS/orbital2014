@@ -275,7 +275,7 @@ public class LineCreepSpawnPoint {
 	}
 	
 
-	private static <T extends Character> void spawn(Queue<int[]> positionQueue, ArrayList<int[]> checkedPosition, Queue<T> characterQueue) {
+	public static <T extends Character> void spawn(Queue<int[]> positionQueue, ArrayList<int[]> checkedPosition, Queue<T> characterQueue) {
 		// this method :
 		// put all characters in the characterQueue into non-occupied grid position nearest to position : (XPos, YPos)
 		// the ArrayList checkedPosition is to store check positions

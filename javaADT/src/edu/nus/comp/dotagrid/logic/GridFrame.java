@@ -195,8 +195,7 @@ public class GridFrame {
 				// only occupied grid has character
 				if (gridButtonMap[x][y].getIsOccupied() == true) {
 					// only friendly character's sight can be shared
-					if (gridButtonMap[x][y].getCharacter().getTeamNumber() == 
-							gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter().getTeamNumber()){
+					if (gridButtonMap[x][y].getCharacter().getTeamNumber() == Player.getTeamNumber()){
 						// update selected character's sight
 						new CharacterActions(3, -1, -1, x, y);
 					}

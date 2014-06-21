@@ -178,5 +178,13 @@ public class CalculateLevelInfo {
 		
 		return bountyExp;
 	}
+	
+	
+	
+	public static int calculateDeathCount(int level){
+		// when a hero is killed, he will revive after (2 * level) turns
+		int deathcountConstant = 2;
+		return deathcountConstant * level;
+	}
 
 }

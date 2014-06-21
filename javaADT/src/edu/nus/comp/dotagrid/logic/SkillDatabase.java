@@ -15,7 +15,7 @@ public class SkillDatabase {
 			// usedMP, usedActionPoint, castRange, coolDownRounds
 			
 			{
-				int[] attributes = {50, 80, 150, 10};
+				int[] attributes = {50, 80, 200, 10};
 				Skill teleportation = new Skill(skillType, "Teleportation", attributes);
 				skillDatabase[0] = teleportation;
 			}

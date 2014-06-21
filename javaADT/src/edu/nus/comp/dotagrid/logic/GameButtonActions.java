@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.Iterator;
+
 import javax.swing.JOptionPane;
 
 
@@ -219,6 +221,28 @@ public class GameButtonActions {
 	private void endRound() {
 		GameFrame.turn++;
 		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.turn);
+
+		// spawn a new wave of creeps
+		LineCreepSpawnPoint.spawnNewWave();
+		
+		// update reviveQueue
+		for (Iterator<Pair<Hero, Integer>> iterator = Hero.reviveQueue.iterator(); iterator.hasNext();) {
+			Pair<Hero, Integer> element = iterator.next();
+			element.setSecond(element.getSecond() - 1);
+			if (element.getSecond() <= 0) {
+				// hero revive from its original spawning position
+				GridFrame.gridButtonMap[element.getFirst().getHeroSpawningXPos()][element.getFirst().getHeroSpawningYPos()]
+						= new GridButton(element.getFirst());
+				
+				// check if the revived hero is player's hero
+				if (element.getFirst().getHeroSpawningXPos() == Screen.user.playerStartingXPos
+						&& element.getFirst().getHeroSpawningYPos() == Screen.user.playerStartingYPos) {
+					GridFrame.gridButtonMap[element.getFirst().getHeroSpawningXPos()][element.getFirst().getHeroSpawningYPos()].setIsPlayer(true);
+				}
+				
+				iterator.remove();
+			}
+		}
 		
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
@@ -250,9 +274,6 @@ public class GameButtonActions {
 				}
 			}
 		}	
-		
-		// spawn a new wave of creeps
-		LineCreepSpawnPoint.spawnNewWave();
 		
 		// reselect the grid
 		GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
