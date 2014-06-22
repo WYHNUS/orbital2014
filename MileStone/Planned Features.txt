@@ -21,10 +21,10 @@ Feature 3:
 Design a few heroes feature for player to control throughout the game. (both in PC and in Android)
 
 Feature 3.5:
-Hero modeling in renders
+Hero modeling in renders. 
 
 Feature 3.6:
-Implement round feature.
+Implement round feature. (in PC)
 
 Feature 4:
 Allow hero to move around in the game map. (both in PC and in Android)
@@ -39,54 +39,60 @@ Feature 6:
 Allow hero to perform various actions. (both in PC and in Android)
 
 Feature 6.1:
-Action : buy item
+Action : buy item  (in PC)
 
 Feature 6.2:
-Action : sell item
+Action : sell item  (in PC)
 
 Feature 6.3:
-Design skills and level.
+Design skills and level.  (in PC)
 
 Feature 6.4:
-Action : choose and upgrade hero's skill
+Action : choose and upgrade hero's skill  (in PC)
 
 Feature 6.5:
-Action : use item (haven't design usable items)
+Action : use skill  (in PC)
 
 Feature 6.6:
-Action : use skill
-
-Feature 6.7:
-Action : attack
+Action : attack  (both in PC and in Android)
 
 Feature 6.99:
-Design a proper world map. 
+Design a proper world map. (both in PC and in Android)
 
 Feature 7:
-Design towers. (both in PC and in Android)
+Design towers. (in PC)
 
 Feature 8:
-Design line creeps. (both in PC and in Android)
+Design line creeps. (in PC)
 
 Feature 8.1:
-Line Creeps are capable of upgrading themselves after certain round
+Line Creeps are capable of upgrading themselves after certain round  (in PC)
 
 Feature 8.2:
-Super Creeps will be sprawned after barracks have been destroyed
+Super Creeps will be sprawned after barracks have been destroyed  (in PC)
+
+Feature 9:
+Design towers AI. (in PC)
+
+Feature 9.1:
+Customisable Map Mesh  (both in PC and in Android)
+
+Feature 9.2:
+Better Graphics: Lighting  (in Android)
+
+
+
 
 
 
 
 Advanced Features (to be done before next next milestone) :
 
-Feature 9:
-Design towers AI. (both in PC and in Android)
+Feature #6.7:
+Design a few usable items
 
-Feature 9.1:
-Customisable Map Mesh
-
-Feature 9.2:
-Better Graphics: Lighting
+Feature #6.8:
+Action : use usable item 
 
 Feature 10:
 Design rudimentary line creeps AI. (both in PC and in Android)
@@ -102,6 +108,10 @@ Allow player to game with AI. (one on one) (both in PC and in Android)
 
 Feature 14:
 Design help menu to show game features and how to play the game. (both in PC and in Android)
+
+
+In Addition :
+Port all existing Game Logic in PC to Android
 
 
 
