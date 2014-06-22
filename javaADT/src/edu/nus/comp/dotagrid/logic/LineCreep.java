@@ -1,6 +1,10 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.ArrayList;
+
 public class LineCreep extends Character{
+	
+	private ArrayList<int[]> AItargetPos = new ArrayList<int[]>();
 	
 	public static int lineCreepActionPoint = 100;
 	public static int lineCreepStartingSight = 6;
@@ -31,6 +35,14 @@ public class LineCreep extends Character{
 		
 		// set image
 		this.setCharacterImage("creeps", this.getName());		
+	}
+
+	public ArrayList<int[]> getAItargetPos() {
+		return AItargetPos;
+	}
+
+	public void addAItargetPos(int[] targetPos) {
+		AItargetPos.add(targetPos);
 	}
 	
 }

@@ -193,12 +193,16 @@ public class LineCreepSpawnPoint {
 		sentinelTop.add(sentinelTopPosition);
 		
 		if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == false) {
+			LineCreepDatabase.setSentinelTopCreepsTargets(SentinelCreeps1);
 			spawn(sentinelTop, checkedPosition, SentinelCreeps1);
 		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == true) {
+			LineCreepDatabase.setSentinelTopCreepsTargets(SuperSentinelCreeps1);
 			spawn(sentinelTop, checkedPosition, SuperSentinelCreeps1);
 		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == false) {
+			LineCreepDatabase.setSentinelTopCreepsTargets(SuperMeeleSentinelCreeps1);
 			spawn(sentinelTop, checkedPosition, SuperMeeleSentinelCreeps1);
 		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == true) {
+			LineCreepDatabase.setSentinelTopCreepsTargets(SuperRangeSentinelCreeps1);
 			spawn(sentinelTop, checkedPosition, SuperRangeSentinelCreeps1);
 		}
 		
@@ -208,12 +212,16 @@ public class LineCreepSpawnPoint {
 		sentinelMid.add(sentinelMidPosition);		
 		
 		if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == false) {
+			LineCreepDatabase.setSentinelMidCreepsTargets(SentinelCreeps2);
 			spawn(sentinelMid, checkedPosition, SentinelCreeps2);
 		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == true) {
+			LineCreepDatabase.setSentinelMidCreepsTargets(SuperSentinelCreeps2);
 			spawn(sentinelMid, checkedPosition, SuperSentinelCreeps2);
 		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == false) {
+			LineCreepDatabase.setSentinelMidCreepsTargets(SuperMeeleSentinelCreeps2);
 			spawn(sentinelMid, checkedPosition, SuperMeeleSentinelCreeps2);
 		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == true) {
+			LineCreepDatabase.setSentinelMidCreepsTargets(SuperRangeSentinelCreeps2);
 			spawn(sentinelMid, checkedPosition, SuperRangeSentinelCreeps2);
 		}
 		
@@ -223,12 +231,16 @@ public class LineCreepSpawnPoint {
 		sentinelBot.add(sentinelBotPosition);
 		
 		if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == false) {
+			LineCreepDatabase.setSentinelBotCreepsTargets(SentinelCreeps3);
 			spawn(sentinelBot, checkedPosition, SentinelCreeps3);
 		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == true) {
+			LineCreepDatabase.setSentinelBotCreepsTargets(SuperSentinelCreeps3);
 			spawn(sentinelBot, checkedPosition, SuperSentinelCreeps3);
 		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == false) {
+			LineCreepDatabase.setSentinelBotCreepsTargets(SuperMeeleSentinelCreeps3);
 			spawn(sentinelBot, checkedPosition, SuperMeeleSentinelCreeps3);
 		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == true) {
+			LineCreepDatabase.setSentinelBotCreepsTargets(SuperRangeSentinelCreeps3);
 			spawn(sentinelBot, checkedPosition, SuperRangeSentinelCreeps3);
 		}
 		
@@ -239,13 +251,17 @@ public class LineCreepSpawnPoint {
 		Queue<int[]> scourgeTop = new LinkedList<int[]>(); 
 		scourgeTop.add(scourgeTopPosition);
 		
-		if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == false) {
+		if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == false) {
+			LineCreepDatabase.setScourgeTopCreepsTargets(ScourgeCreeps1);
 			spawn(scourgeTop, checkedPosition, ScourgeCreeps1);
-		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == true) {
+		} else if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == true) {
+			LineCreepDatabase.setScourgeTopCreepsTargets(SuperScourgeCreeps1);
 			spawn(scourgeTop, checkedPosition, SuperScourgeCreeps1);
-		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == false) {
+		} else if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == false) {
+			LineCreepDatabase.setScourgeTopCreepsTargets(SuperMeeleScourgeCreeps1);
 			spawn(scourgeTop, checkedPosition, SuperMeeleScourgeCreeps1);
-		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == true) {
+		} else if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == true) {
+			LineCreepDatabase.setScourgeTopCreepsTargets(SuperRangeScourgeCreeps1);
 			spawn(scourgeTop, checkedPosition, SuperRangeScourgeCreeps1);
 		}
 		
@@ -255,13 +271,17 @@ public class LineCreepSpawnPoint {
 		Queue<int[]> scourgeMid = new LinkedList<int[]>(); 
 		scourgeMid.add(scourgeMidPosition);
 		
-		if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == false) {
+		if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == false) {
+			LineCreepDatabase.setScourgeMidCreepsTargets(ScourgeCreeps2);
 			spawn(scourgeMid, checkedPosition, ScourgeCreeps2);
-		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == true) {
+		} else if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == true) {
+			LineCreepDatabase.setScourgeMidCreepsTargets(SuperScourgeCreeps2);
 			spawn(scourgeMid, checkedPosition, SuperScourgeCreeps2);
-		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == false) {
+		} else if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == false) {
+			LineCreepDatabase.setScourgeMidCreepsTargets(SuperMeeleScourgeCreeps2);
 			spawn(scourgeMid, checkedPosition, SuperMeeleScourgeCreeps2);
-		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == true) {
+		} else if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == true) {
+			LineCreepDatabase.setScourgeMidCreepsTargets(SuperRangeScourgeCreeps2);
 			spawn(scourgeMid, checkedPosition, SuperRangeScourgeCreeps2);
 		}
 		
@@ -269,13 +289,17 @@ public class LineCreepSpawnPoint {
 		Queue<int[]> scourgeBot = new LinkedList<int[]>(); 
 		scourgeBot.add(scourgeBotPosition);
 		
-		if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == false) {
+		if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == false) {
+			LineCreepDatabase.setScourgeBotCreepsTargets(ScourgeCreeps3);
 			spawn(scourgeBot, checkedPosition, ScourgeCreeps3);
-		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == true) {
+		} else if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == true) {
+			LineCreepDatabase.setScourgeBotCreepsTargets(SuperScourgeCreeps3);
 			spawn(scourgeBot, checkedPosition, SuperScourgeCreeps3);
-		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == false) {
+		} else if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == false) {
+			LineCreepDatabase.setScourgeBotCreepsTargets(SuperMeeleScourgeCreeps3);
 			spawn(scourgeBot, checkedPosition, SuperMeeleScourgeCreeps3);
-		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == true) {
+		} else if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == true) {
+			LineCreepDatabase.setScourgeBotCreepsTargets(SuperRangeScourgeCreeps3);
 			spawn(scourgeBot, checkedPosition, SuperRangeScourgeCreeps3);
 		}
 				

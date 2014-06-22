@@ -14,6 +14,7 @@ public class BuildingDatabase {
 	// sentinel buildings
 	public static int sentinelBaseXPos = 14;
 	public static int sentinelBaseYPos = 84;
+	public static int[] sentinelBasePos = {14, 84};
 	
 	public static int sentinelTopMeeleBarrackXPos = 5;
 	public static int sentinelTopMeeleBarrackYPos = 68;
@@ -43,6 +44,7 @@ public class BuildingDatabase {
 	// scourge buildings
 	public static int scourgeBaseXPos = 85;
 	public static int scourgeBaseYPos = 15;
+	public static int[] scourgeBasePos = {85, 15};
 	
 	public static int scourgeTopMeeleBarrackXPos = 70;
 	public static int scourgeTopMeeleBarrackYPos = 6;
