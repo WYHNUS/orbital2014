@@ -31,7 +31,6 @@ public class AICharacter {
 		if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof LineCreep){
 			// line creep AI
 			findNearestEnemyInSight();
-			
 			// check if there is any enemy within sight
 			if (nearestEnemyPos[0] != -1 && nearestEnemyPos[1] != -1) {
 				// if yes, move towards the enemy until it's within the attack range
@@ -40,7 +39,7 @@ public class AICharacter {
 				AIAttack();
 			} else {
 				// move to next targeted position
-				
+				moveTowardsNextTarget();
 			}
 			
 		}
@@ -59,6 +58,105 @@ public class AICharacter {
 	}
 	
 	
+	private void moveTowardsNextTarget() {
+		// find nearest non-occupied grid around targeted position x,y
+		int[] targetPos = ((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
+		Queue<int[]> uncheckedPosition = new LinkedList<int[]>();
+		uncheckedPosition.add(targetPos);
+		
+		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
+		
+		findNearestNonOccupiedPos(uncheckedPosition, checkedPosition);
+		
+		// store the nearest non-occupied grid's position
+		int targetXPos = uncheckedPosition.peek()[0];
+		int targetYPos = uncheckedPosition.peek()[1];
+		
+		// find the path moving the AI character from (startingXPos, startingYPos) to (targetXPos, targetYPos)
+		
+		// store the distance between the two positions
+		int distance = 2 * (Math.abs(targetXPos - startingXPos) + Math.abs(targetYPos - startingYPos));
+		
+		FindPath tempPath = new FindPath(distance);
+		tempPath.findShortestPath(startingXPos, startingYPos, targetXPos, targetYPos, distance);
+		
+		// store path map into tempPathMap
+		int[][] tempPathMap = tempPath.getPath();
+		
+		// store target's coordinates' positions in tempPathMap
+		int targetMapXPos = distance + targetXPos - startingXPos;
+		int targetMapYPos = distance + targetYPos - startingYPos;
+		
+		
+		while (tempPathMap[targetMapXPos][targetMapYPos] > movement) {
+			if (targetMapXPos-1 >= 0 && targetMapXPos-1 < 2*distance
+					&& (tempPathMap[targetMapXPos-1][targetMapYPos] == tempPathMap[targetMapXPos][targetMapYPos] - 1)) {
+				targetMapXPos--;
+			} else if (targetMapXPos+1 >= 0 && targetMapXPos+1 < 2*distance
+					&& (tempPathMap[targetMapXPos+1][targetMapYPos] == tempPathMap[targetMapXPos][targetMapYPos] - 1)) {
+				targetMapXPos++;
+			} else if (targetMapYPos-1 >= 0 && targetMapYPos-1 < 2*distance
+					&& (tempPathMap[targetMapXPos][targetMapYPos-1] == tempPathMap[targetMapXPos][targetMapYPos] - 1)) {
+				targetMapYPos--;
+			} else if (targetMapYPos+1 >= 0 && targetMapYPos+1 < 2*distance
+					&& (tempPathMap[targetMapXPos][targetMapYPos+1] == tempPathMap[targetMapXPos][targetMapYPos] - 1)) {
+				targetMapYPos++;
+			} 
+		}
+		
+		// reset targeted position
+		targetXPos = targetMapXPos + startingXPos - distance;
+		targetYPos = targetMapYPos + startingYPos - distance;
+		
+		// now, the number of grids moved from (startingXPos, startingYPos) to (targetXPos, targetYPos) <= movement
+		// and the grid position of (targetXPos, targetYPos) is on the path to targeted position
+		new CharacterActions(1, startingXPos, startingYPos, targetXPos, targetYPos);
+	}
+
+
+	private void findNearestNonOccupiedPos(Queue<int[]> uncheckedPosition,
+			ArrayList<int[]> checkedPosition) {
+		// check nearest non-occupied position starting from the first element from the unchecked queue
+		
+		// base case:
+		if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getIsMovable() == true
+				&& GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getIsOccupied() == false) {
+			// first element in the unchecked queue satisfy the searching condition
+			return;
+		} else {
+			// add surrounding grids into position
+			
+			if (!isChecked(checkedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1])){
+				int[] newPos = {uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1]};
+				uncheckedPosition.add(newPos);
+			}
+			 
+						
+			if (!isChecked(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1)){
+				int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1};
+				uncheckedPosition.add(newPos);
+			}
+						
+			if (!isChecked(checkedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1])){
+				int[] newPos = {uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1]};
+				uncheckedPosition.add(newPos);
+			}
+						
+			if (!isChecked(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1)){
+				int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1};
+				uncheckedPosition.add(newPos);
+			}
+						
+			// add the current position into checked queue
+			checkedPosition.add(uncheckedPosition.poll());
+					
+			// recursive call!
+			findNearestNonOccupiedPos(uncheckedPosition, checkedPosition);
+		}
+		
+	}
+
+
 	private void moveTowardsEnemy() {
 		// move towards nearestEnemyPos until the Enemy is within AI's attack range
 		

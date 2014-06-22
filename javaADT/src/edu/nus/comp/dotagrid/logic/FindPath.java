@@ -93,7 +93,6 @@ public class FindPath {
 	// find shortest path between two points
 	public int findShortestPath(int startingXPos, int startingYPos, int XPos, int YPos, int movementPoint){
 		createShortestPath(pathXPos, pathYPos, startingXPos, startingYPos, movementPoint);
-		
 		return path[XPos - startingXPos + movementPoint][YPos - startingYPos + movementPoint];
 	}
 	

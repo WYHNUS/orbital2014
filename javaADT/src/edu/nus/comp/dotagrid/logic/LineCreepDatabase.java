@@ -1,5 +1,6 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.LinkedList;
 import java.util.Queue;
 
 public class LineCreepDatabase {
@@ -101,71 +102,88 @@ public class LineCreepDatabase {
 	
 	
 	public static void setSentinelTopCreepsTargets(Queue<LineCreep> creeps){
-		while (creeps.isEmpty() == false) {
+		Queue<LineCreep> tempQueue = new LinkedList<LineCreep>();
+		while (!creeps.isEmpty()) {
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower3Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.scourgeBasePos);
-			creeps.poll();
+			tempQueue.add(creeps.poll());
 		}
+		creeps.addAll(tempQueue);
 	}
 	
 	public static void setSentinelMidCreepsTargets(Queue<LineCreep> creeps){
-		while (creeps.isEmpty() == false) {
+		Queue<LineCreep> tempQueue = new LinkedList<LineCreep>();
+		while (!creeps.isEmpty()) {
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower3Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.scourgeBasePos);
-			creeps.poll();
+			tempQueue.add(creeps.poll());
 		}
-		
+		creeps.addAll(tempQueue);
 	}
 	
 	public static void setSentinelBotCreepsTargets(Queue<LineCreep> creeps){
-		while (creeps.isEmpty() == false) {
+		Queue<LineCreep> tempQueue = new LinkedList<LineCreep>();
+		while (!creeps.isEmpty()) {
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower3Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.scourgeBasePos);
-			creeps.poll();
+			tempQueue.add(creeps.poll());
 		}
+		creeps.addAll(tempQueue);
 	}
 	
 	
 	public static void setScourgeTopCreepsTargets(Queue<LineCreep> creeps){
-		while (creeps.isEmpty() == false) {
+		Queue<LineCreep> tempQueue = new LinkedList<LineCreep>();
+		while (!creeps.isEmpty()) {
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower3Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.sentinelBasePos);
-			creeps.poll();
+			tempQueue.add(creeps.poll());
 		}
+		creeps.addAll(tempQueue);
 	}
 	
 	public static void setScourgeMidCreepsTargets(Queue<LineCreep> creeps){
-		while (creeps.isEmpty() == false) {
+		Queue<LineCreep> tempQueue = new LinkedList<LineCreep>();
+		while (!creeps.isEmpty()) {
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower3Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.sentinelBasePos);
-			creeps.poll();
+			tempQueue.add(creeps.poll());
 		}
+		creeps.addAll(tempQueue);
 	}
 	
 	public static void setScourgeBotCreepsTargets(Queue<LineCreep> creeps){
-		while (creeps.isEmpty() == false) {
+		Queue<LineCreep> tempQueue = new LinkedList<LineCreep>();
+		while (!creeps.isEmpty()) {
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower3Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.sentinelBasePos);
-			creeps.poll();
+			tempQueue.add(creeps.poll());
 		}
+		creeps.addAll(tempQueue);
 	}
 
 }
