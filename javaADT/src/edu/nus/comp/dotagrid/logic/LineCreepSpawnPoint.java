@@ -58,8 +58,6 @@ public class LineCreepSpawnPoint {
 		// initialize checkedPosition
 		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
 		
-		LineCreepDatabase lineCreeps = new LineCreepDatabase();
-		
 		// change the number of spawning creeps
 		if (GameFrame.turn <= 600) {
 			MEELE_CREEP_NUMBER = 3 + GameFrame.turn / 200;
@@ -84,6 +82,9 @@ public class LineCreepSpawnPoint {
 		
 		// add meele creeps
 		for (int i=0; i<MEELE_CREEP_NUMBER; i++) {
+			// create database for operating
+			LineCreepDatabase lineCreeps = new LineCreepDatabase();
+			
 			SentinelCreeps.add(lineCreeps.lineCreepDatabase[0]);
 			ScourgeCreeps.add(lineCreeps.lineCreepDatabase[3]);
 			SuperRangeSentinelCreeps.add(lineCreeps.lineCreepDatabase[0]);
@@ -96,6 +97,9 @@ public class LineCreepSpawnPoint {
 		
 		// add ranged creeps
 		for (int i=0; i<RANGED_CREEP_NUMBER; i++) {
+			// create database for operating
+			LineCreepDatabase lineCreeps = new LineCreepDatabase();
+						
 			SentinelCreeps.add(lineCreeps.lineCreepDatabase[1]);
 			ScourgeCreeps.add(lineCreeps.lineCreepDatabase[4]);
 			SuperMeeleSentinelCreeps.add(lineCreeps.lineCreepDatabase[1]);
@@ -109,6 +113,9 @@ public class LineCreepSpawnPoint {
 		// add siege creeps every 50 turns
 		if (GameFrame.turn % 50 == 0) {
 			for (int i=0; i<SIEGE_CREEP_NUMBER; i++) {
+				// create database for operating
+				LineCreepDatabase lineCreeps = new LineCreepDatabase();
+				
 				SentinelCreeps.add(lineCreeps.lineCreepDatabase[2]);
 				ScourgeCreeps.add(lineCreeps.lineCreepDatabase[5]);
 				SuperMeeleSentinelCreeps.add(lineCreeps.lineCreepDatabase[2]);

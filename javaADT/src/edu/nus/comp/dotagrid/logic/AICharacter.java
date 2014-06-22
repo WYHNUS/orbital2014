@@ -84,8 +84,8 @@ public class AICharacter {
 			for (int x=-attackRange; x<=attackRange; x++) {
 				for (int y=-attackRange; y<=attackRange; y++) {
 					// within attack range
-					if (Math.abs(x) != Math.abs(y)) {
-						// within map
+					if (Math.abs(x) + Math.abs(y) <= attackRange) {
+						// within sight map
 						if (enemyXPos+x >= 0 && enemyXPos+x < 2*sight && enemyYPos+y >= 0 && enemyYPos+y < 2*sight) {
 							// reachable
 							if (tempPathMap[enemyXPos+x][enemyYPos+y] != -1) {
