@@ -4,9 +4,14 @@ import java.util.concurrent.*;
 
 public class Hero extends Character{
 	
+	public static ArrayList<Pair<Hero, Integer>> reviveQueue = new ArrayList<>();
+	
 	private String mainAttribute;
 	private double basicMainAttribute;
 	private double totalMainAttribute;
+	
+	private int heroSpawningXPos = -1;
+	private int heroSpawningYPos = -1;
 	
 	// when display in the game frame, the format will be <basic attribute> + " + " + <attributes obtained from items>
 	
@@ -20,7 +25,7 @@ public class Hero extends Character{
 	// total attribute is calculated by taking basic attribute + attributes obtained from items
 	private double totalStrength, totalAgility, totalIntelligence;
 	
-	private double HPGainPerRound, MPGainPerRound;
+	private int unusedSkillCount = 1;
 
 	private int level;
 	private int experience;
@@ -44,13 +49,16 @@ public class Hero extends Character{
 	// define a list of constants for calculation
 	public static final int STRENGTH_ADD_HP_RATIO = 19;
 	public static final int INTELLIGENCE_ADD_MP_RATIO = 13;
-	
-	public static final double STRENGTH_ADD_HP_PER_ROUND = 3.0;
-	public static final double INTELLIGENCE_ADD_MP_PER_ROUND = 4.0;
-	public static final double AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 1 / 7.0;
+
+	public static final double STRENGTH_ADD_HP_PER_ROUND = 0.3;
+	public static final double INTELLIGENCE_ADD_MP_PER_ROUND = 0.4;
+	public static final double AGILITY_ADD_PHYSICAL_DEFENCE_RATIO = 0.02;
 	
 	public static final double AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO = 0.01;
 	public static final double MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO = 1.0;
+
+	public static double HeroHPGainPerRound = 1.0;
+	public static double HeroMPGainPerRound = 2.5;
 
 	public static final int MAX_ITEM_NUMBER = 6;
 	public static final int MAX_SKILL_NUMBER = 8;
@@ -104,9 +112,9 @@ public class Hero extends Character{
 		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO));
 		this.setCurrentHP(this.getmaxHP());
 		this.setCurrentMP(this.getmaxMP());
-		
-		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND);
-		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND);
+
+		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + HeroHPGainPerRound);
+		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + HeroMPGainPerRound);
 
 		this.setTotalPhysicalDefence(this.getBasicPhysicalDefence() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_DEFENCE_RATIO);		
 		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO);
@@ -169,6 +177,20 @@ public class Hero extends Character{
 		this.setBasicPhysicalAttack(hero.getBasicPhysicalAttack());
 		this.setTotalPhysicalAttack(hero.getTotalPhysicalAttack());
 		
+		this.setLevel(hero.getLevel());
+		this.setExperience(hero.getExperience());
+		
+		this.setUnusedSkillCount(hero.getUnusedSkillCount());
+		
+		this.setBountyExp(CalculateLevelInfo.calculateBountyExp(this.getLevel()));
+		
+		this.setMoney(hero.getMoney());
+		
+		this.setCurrentActionPoint(hero.getCurrentActionPoint());
+
+		this.setHeroSpawningXPos(hero.getHeroSpawningXPos());
+		this.setHeroSpawningYPos(hero.getHeroSpawningYPos());
+		
 		for (Map.Entry<String, Item> entry : hero.items.entrySet())
 			this.items.put(entry.getKey(), new Item(entry.getValue()));
 		
@@ -191,9 +213,9 @@ public class Hero extends Character{
 		
 		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO + this.getTotalItemAddHP()));
 		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO + this.getTotalItemAddMP()));
-		
-		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + this.getTotalItemAddHPGainPerRound());
-		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + this.getTotalItemAddMPGainPerRound());
+
+		this.setHPGainPerRound(HeroHPGainPerRound + this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + this.getTotalItemAddHPGainPerRound());
+		this.setMPGainPerRound(HeroMPGainPerRound + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + this.getTotalItemAddMPGainPerRound());
 		
 		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO
 				+ this.getTotalItemAddPhysicalAttackSpeed());
@@ -208,7 +230,23 @@ public class Hero extends Character{
 		this.setTotalPhysicalAttack(this.getBasicPhysicalAttack() + this.getTotalItemAddPhysicalAttack());
 	}
 	
+	// accessor and mutator for hero spawning position
 	
+	public int getHeroSpawningXPos() {
+		return heroSpawningXPos;
+	}
+
+	public void setHeroSpawningXPos(int heroSpawningXPos) {
+		this.heroSpawningXPos = heroSpawningXPos;
+	}
+
+	public int getHeroSpawningYPos() {
+		return heroSpawningYPos;
+	}
+
+	public void setHeroSpawningYPos(int heroSpawningYPos) {
+		this.heroSpawningYPos = heroSpawningYPos;
+	}
 	
 	// accessor and mutator for three primary attributes: strength, agility, intelligence
 
@@ -432,29 +470,6 @@ public class Hero extends Character{
 	}
 
 
-	// accessor and mutator for HP and MP Gain Per Round
-	
-	public double getHPGainPerRound() {
-		return HPGainPerRound;
-	}
-
-
-	public void setHPGainPerRound(double HPGainPerRound) {
-		// there is no upper/lower boundary for HPGainPerRound
-		this.HPGainPerRound = HPGainPerRound;
-	}
-
-
-	public double getMPGainPerRound() {
-		return MPGainPerRound;
-	}
-
-
-	public void setMPGainPerRound(double MPGainPerRound) {
-		this.MPGainPerRound = MPGainPerRound;
-	}
-
-
 	// accessor and mutator for level and experience
 
 	public int getExperience() {
@@ -508,7 +523,7 @@ public class Hero extends Character{
 
 	public void setMoney(int money) {
 		if (money <= 0) {
-			System.out.println("player's money cannot be less than 0!");
+			this.money = 0;
 		} else {
 			this.money = money;
 		}
@@ -639,6 +654,18 @@ public class Hero extends Character{
 	public void removeItem(String name){
 		if (items.containsKey(name))
 			this.money += items.remove(name).getSellPrice();
+	}public int getUnusedSkillCount() {
+		return unusedSkillCount;
+	}
+
+
+
+	public void setUnusedSkillCount(int unusedSkillCount) {
+		if (unusedSkillCount < 0) {
+			System.out.println("unusedSkillCount cannnot go below 0!");
+		} else {
+			this.unusedSkillCount = unusedSkillCount;
+		}
 	}
 
 }

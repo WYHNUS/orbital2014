@@ -12,7 +12,7 @@ var PI = 3.14159265365;
 //@objc
 class RenderMaths/* : NSObject */{
     class func FlatMatrix4x4Multiplication (a:Array<Float>, b:Array<Float>) -> Array<Float> {
-        var k = a[0]*b[0] + a[1]*b[100] + a[2] + a[3];
+//        var k = a[0]*b[0] + a[0]*b[0] + a[0] + a[0];
         return [
 //            a[0]*b[0] + a[1]*b[4] + a[2]*b[8] + a[3]*b[12],
 //            a[0]*b[1] + a[1]*b[5] + a[2]*b[9] + a[3]*b[13],
@@ -31,5 +31,11 @@ class RenderMaths/* : NSObject */{
 //            a[12]*b[2] + a[13]*b[6] + a[14]*b[10] + a[15]*b[14],
 //            a[12]*b[3] + a[13]*b[7] + a[14]*b[11] + a[15]*b[15]
         ];
+    }
+}
+
+class A {
+    func Something (a:Array<Float>, b:Array<Float>) {
+        var k = a[0]*b[0] + a[0]*b[0] + a[0]*b[0] + a[0]*b[0];
     }
 }

@@ -9,12 +9,15 @@ public class Character extends GameObject {
 	private String name;
 	
 	private int bountyMoney;
+	private int bountyExp;
 	
 	private boolean isAlive = false;
 	
 	private int startingHP, startingMP;
 	private int maxHP, maxMP;
-	private int currentHP, currentMP;	
+	private int currentHP, currentMP;
+	
+	private double HPGainPerRound, MPGainPerRound;
 	
 	private int startingMovementSpeed, totalMovementSpeed;
 	
@@ -135,6 +138,9 @@ public class Character extends GameObject {
 		if (currentHP < 0) {
 			this.currentHP = 0;
 			this.setAlive(false);
+		} else if (currentHP > this.getmaxHP()) {
+			// current HP cannnot go beyond max HP value
+			this.currentHP = this.getmaxHP();
 		} else {
 			this.currentHP = currentHP;
 		}
@@ -150,6 +156,9 @@ public class Character extends GameObject {
 		// minimum currentMP is 0 
 		if (currentMP < 0) {
 			this.currentMP = 0;
+		} else if (currentMP > this.getmaxMP()) {
+			// current MP cannnot go beyond max MP value
+			this.currentMP = this.getmaxMP();
 		} else {
 			this.currentMP = currentMP;
 		}
@@ -186,8 +195,25 @@ public class Character extends GameObject {
 		}
 	}
 
+	public double getHPGainPerRound() {
+		return HPGainPerRound;
+	}
 
-	
+
+	public void setHPGainPerRound(double HPGainPerRound) {
+		// there is no upper/lower boundary for HPGainPerRound
+		this.HPGainPerRound = HPGainPerRound;
+	}
+
+
+	public double getMPGainPerRound() {
+		return MPGainPerRound;
+	}
+
+
+	public void setMPGainPerRound(double MPGainPerRound) {
+		this.MPGainPerRound = MPGainPerRound;
+	}
 	
 	// accessor and mutator for physical attack -/speed/area
 	
@@ -451,6 +477,19 @@ public class Character extends GameObject {
 		}
 	}	public int getTeamNumber() {
 		return teamNumber;
+	}
+
+	public int getBountyExp() {
+		return bountyExp;
+	}
+
+
+	public void setBountyExp(int bountyExp) {
+		if (bountyExp < 0){
+			System.out.println("Error: not possible for bountyExp to go below 0");
+		} else {
+			this.bountyExp = bountyExp;
+		}
 	}
 
 
