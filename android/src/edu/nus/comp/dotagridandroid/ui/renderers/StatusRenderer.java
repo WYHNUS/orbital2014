@@ -37,6 +37,8 @@ public class StatusRenderer implements Renderer {
 		controls.put("ShopLabel", new TextRenderer());
 		controls.put("Skill", new ButtonRenderer());
 		controls.put("SkillLabel", new TextRenderer());
+		controls.put("NextRound", new ButtonRenderer());
+		controls.put("NextRoundLabel", new TextRenderer());
 	}
 
 	@Override
@@ -87,12 +89,12 @@ public class StatusRenderer implements Renderer {
 		ScrollRenderer scroll = (ScrollRenderer) controls.get("Scroll");
 		// attack button
 		ButtonRenderer button = (ButtonRenderer) controls.remove("Attack");
+		button.setRenderReady();
 		button.setTapEnabled(true);
 		button.setTapRespondName("GameAction");
 		button.setTapRespondData(Collections.singletonMap("Action", (Object) "Attack"));
 		button.setLongPressEnabled(true);
 		button.setLongPressRespondName("RequestAttackArea");
-		button.setRenderReady();
 		scroll.setRenderer("Attack", button, FlatScalingMatrix4x4(.25f, .25f, 1));
 		// attack label
 		TextRenderer text = (TextRenderer) controls.remove("AttackLabel");
@@ -103,12 +105,12 @@ public class StatusRenderer implements Renderer {
 		scroll.setRenderer("Text", text, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		// move button
 		button = (ButtonRenderer) controls.remove("Move");
+		button.setRenderReady();
 		button.setTapEnabled(true);
 		button.setTapRespondName("GameAction");
 		button.setTapRespondData(Collections.singletonMap("Action", (Object) "Move"));
 		button.setLongPressEnabled(true);
 		button.setLongPressRespondName("RequestMoveArea");
-		button.setRenderReady();
 		scroll.setRenderer("Move", button,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -.75f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.75f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
@@ -123,6 +125,7 @@ public class StatusRenderer implements Renderer {
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(.5f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		// shop button
 		button = (ButtonRenderer) controls.remove("Shop");
+		button.setRenderReady();
 		button.setTapEnabled(true);
 		button.setTapRespondName("RequestItemShop");
 		scroll.setRenderer("Shop", button,
@@ -137,9 +140,9 @@ public class StatusRenderer implements Renderer {
 		scroll.setRenderer("ShopLabel", text,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -1.25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(1.25f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
-		scroll.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(.375f, 0, 0), FlatScalingMatrix4x4(.75f, 1, 1)), null, null);
 		// skill button
 		button = (ButtonRenderer) controls.remove("Skill");
+		button.setRenderReady();
 		button.setTapEnabled(true);
 		button.setTapRespondName("RequestSkill");
 		scroll.setRenderer("Skill", button,
@@ -154,8 +157,28 @@ public class StatusRenderer implements Renderer {
 		scroll.setRenderer("SkillLabel", text,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -2, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		// next round button
+		button = (ButtonRenderer) controls.remove("NextRound");
+		button.setRenderReady();
+		button.setTapEnabled(true);
+		button.setTapRespondName("GameAction");
+		button.setTapRespondData(Collections.singletonMap("Action", (Object) "NextRound"));
+		scroll.setRenderer("NextRound", button,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -3, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(3, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+		// next round label
+		text = (TextRenderer) controls.remove("NextRoundLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setTexts(" Next ", "Round ");
+		scroll.setRenderer("NextRoundLabel", text,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -2.75f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2.75f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		// scroll positioning
-		scroll.setMVP(FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(.375f, 0, 0), FlatScalingMatrix4x4(.75f, 1, 1)), null, null);
+		scroll.setMVP(
+				landscape ? FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, -.25f, 0), FlatScalingMatrix4x4(1, .75f, 1)) :
+					FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(.25f, 0, 0), FlatScalingMatrix4x4(.75f, 1, 1)),
+				null, null);
 		if (landscape)
 			scroll.setScrollLimit(0f, 0f, 0f, 5f);
 		else
@@ -257,13 +280,16 @@ public class StatusRenderer implements Renderer {
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
-		if (updates.containsKey("ChosenGrid")) {
+		if (updates.containsKey("ChosenGrid") || updates.containsKey("Characters")) {
 			System.out.println("Update buttons");
 			// attack button
 			((ButtonRenderer) ((ScrollRenderer) controls.get("Scroll")).getRenderer("Attack")).setTapEnabled(
 					manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Attack"))).get("GameAction")
 					);
 			// move button
+			((ButtonRenderer) ((ScrollRenderer) controls.get("Scroll")).getRenderer("Move")).setTapEnabled(
+					manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Move"))).get("GameAction")
+					);
 		}
 	}
 

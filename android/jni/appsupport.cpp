@@ -113,8 +113,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_prepareAssetPlayer(
 		int fd = AAsset_openFileDescriptor(asset, &start, &length);
 		AAsset_close(asset);
 
-		std::string strNameParam (strName);
-		se->prepareAssetPlayer(strNameParam, fd, start, length);
+		se->prepareAssetPlayer(std::string(strName), fd, start, length);
 		env->ReleaseStringUTFChars(name, strName);
 	}
 }
@@ -124,8 +123,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerPlayState
 	SoundEngine *se = (SoundEngine*) ptr;
 	if (se) {
 		const char * strName = env->GetStringUTFChars(name, 0);
-		std::string strNameParam (strName);
-		se->setAssetPlayerPlayState(strNameParam, playState);
+		se->setAssetPlayerPlayState(std::string(strName), playState);
 		env->ReleaseStringUTFChars(name, strName);
 	}
 }
@@ -135,8 +133,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerStop(JNIE
 	SoundEngine *se = (SoundEngine*) ptr;
 	if (se) {
 		const char * strName = env->GetStringUTFChars(name, 0);
-		std::string strNameParam (strName);
-		se->setAssetPlayerStop(strNameParam);
+		se->setAssetPlayerStop(std::string(strName));
 		env->ReleaseStringUTFChars(name, strName);
 	}
 }
@@ -146,8 +143,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerLoop(JNIE
 	SoundEngine *se = (SoundEngine*) ptr;
 	if (se) {
 		const char * strName = env->GetStringUTFChars(name, 0);
-		std::string strNameParam (strName);
-		se->setAssetPlayerLoop(strNameParam, loop);
+		se->setAssetPlayerLoop(std::string(strName), loop);
 		env->ReleaseStringUTFChars(name, strName);
 	}
 }
@@ -157,8 +153,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerSeek(JNIE
 	SoundEngine *se = (SoundEngine*) ptr;
 	if (se) {
 		const char * strName = env->GetStringUTFChars(name, 0);
-		std::string strNameParam (strName);
-		se->setAssetPlayerSeek(strNameParam, SLmillisecond(position));
+		se->setAssetPlayerSeek(std::string(strName), SLmillisecond(position));
 		env->ReleaseStringUTFChars(name, strName);
 	}
 }
@@ -188,6 +183,24 @@ Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getTextureHandler(J
 	const char *textureName = env->GetStringUTFChars(name, 0);
 	ResourceManager *man = (ResourceManager*)ptr;
 	jlong ret = man->getTextureHandler(std::string(textureName));
+	env->ReleaseStringUTFChars(name, textureName);
+	return ret;
+}
+
+JNIEXPORT jlong JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getModelHandler(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
+	const char *textureName = env->GetStringUTFChars(name, 0);
+	ResourceManager *man = (ResourceManager*)ptr;
+	jlong ret = man->getModelHandler(std::string(textureName));
+	env->ReleaseStringUTFChars(name, textureName);
+	return ret;
+}
+
+JNIEXPORT jlong JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getModelSize(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
+	const char *textureName = env->GetStringUTFChars(name, 0);
+	ResourceManager *man = (ResourceManager*)ptr;
+	jlong ret = man->getModelSize(std::string(textureName));
 	env->ReleaseStringUTFChars(name, textureName);
 	return ret;
 }

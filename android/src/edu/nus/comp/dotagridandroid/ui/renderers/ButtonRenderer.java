@@ -136,7 +136,7 @@ public class ButtonRenderer implements Renderer {
 		if (tapEnabled)
 			glUniform4f(textureTone, 0, 0, 0, 0);
 		else
-			glUniform4f(textureLocation, -.79f, -.28f, -.93f, 0);	// 21% red, 72% green, 7% blue
+			glUniform4f(textureTone, -.79f, -.28f, -.93f, 0);	// 21% red, 72% green, 7% blue
 		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);

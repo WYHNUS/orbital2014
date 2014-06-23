@@ -46,7 +46,7 @@ public class TextRenderer implements Renderer {
 			responder.updateGraphics();
 		}
 	}
-	public void setTexts (String[] text) {
+	public void setTexts (String... text) {
 		this.text = Arrays.asList(text);
 		responder.updateGraphics();
 	}

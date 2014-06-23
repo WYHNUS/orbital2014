@@ -142,8 +142,9 @@ public class GameState implements Closeable {
 //		Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
 //		Texture2D tex = new Texture2D (tempBitmap);
 //		tempBitmap.recycle();
-		objTextures.put("MyHeroModel", new Texture2D(resMan.getTexture("GridMapBackground")));//tex);
-		objTextures.put("GridMapBackground", new Texture2D(resMan.getTexture("GridMapBackground")));//tex);
+		objTextures.put("Terrain", new Texture2D(resMan.getTexture("GridMapBackground")));
+		objTextures.put("MyHeroModel", new Texture2D(resMan.getTexture("MyHeroModel")));;
+		objTextures.put("GridMapBackground", new Texture2D(resMan.getTexture("MyHeroModel")));
 		initialised = true;
 	}
 	
@@ -227,7 +228,8 @@ public class GameState implements Closeable {
 				final GridPointIndex key = new GridPointIndex(position);
 				if (posReverseLookup.containsKey(key))
 					return;	// failed
-				posReverseLookup.remove(key);
+				if (objPositions.get(name) != null && posReverseLookup.containsKey(new GridPointIndex(objPositions.get(name))))
+					posReverseLookup.remove(new GridPointIndex(objPositions.get(name)));
 				posReverseLookup.put(key, name);
 				objPositions.put(name, position.clone());
 			} else {
@@ -237,8 +239,20 @@ public class GameState implements Closeable {
 		}
 	}
 	
-	public FloatBuffer[] getCharacterModel(String name) {
-		return objModels.get(name).clone();
+	public String getCharacterAtPosition (int[] position) {
+		return posReverseLookup.get(new GridPointIndex(position));
+	}
+	
+//	public Map<String, FloatBuffer[]> getCharacterModel(String name) {
+//		return objModels.get(name);
+//	}
+	
+	public int getCharacterModel(String name) {
+		return resMan.getModel(name);
+	}
+	
+	public int getCharacterModelSize(String name) {
+		return resMan.getModelSize(name);
 	}
 	
 	public Texture2D getModelTexture(String name) {

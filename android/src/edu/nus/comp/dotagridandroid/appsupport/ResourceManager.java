@@ -7,6 +7,8 @@ public class ResourceManager implements Closeable{
 		System.loadLibrary("appsupport");
 	}
 	private static native long getTextureHandler(long ptr, String name);
+	private static native long getModelHandler(long ptr, String name);
+	private static native long getModelSize(long ptr, String name);
 	// java
 	private long ptr;
 	protected ResourceManager(long ptr) {
@@ -19,5 +21,13 @@ public class ResourceManager implements Closeable{
 	
 	public int getTexture(String name) {
 		return (int) getTextureHandler(ptr, name);
+	}
+	
+	public int getModel(String name) {
+		return (int) getModelHandler(ptr, name);
+	}
+	
+	public int getModelSize(String name) {
+		return (int) getModelSize(ptr, name);
 	}
 }

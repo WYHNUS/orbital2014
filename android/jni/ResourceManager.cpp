@@ -28,7 +28,7 @@ void readPNG(zip_file *zf, const int textureHandler) {
 		return;
 	}
 	png_set_read_fn(png_ptr, (png_voidp) zf, [] (png_structp pngStruct, png_bytep data, png_size_t length) {
-		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Loading ...%d", length);
+//		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Loading ...%d", length);
 		zip_file *zf = static_cast<zip_file*>(png_get_io_ptr(pngStruct));
 		zip_fread(zf, data, length);
 	});
@@ -106,10 +106,9 @@ std::string trim (const std::string& str) {
 		return std::string();
 }
 
-size_t readOBJ(zip_file *zf, size_t fileSize, float *&vAttribute) {
+void readOBJ(zip_file *zf, size_t fileSize, GLuint bufferHandler, unsigned int &size) {
 	// read obj file
-	if (vAttribute)
-		return 0;
+	float * vAttribute = NULL;
 	char * content = new char[fileSize];
 	zip_fread(zf, content, fileSize);
 	std::string *contentStr = new std::string(content);
@@ -128,24 +127,25 @@ size_t readOBJ(zip_file *zf, size_t fileSize, float *&vAttribute) {
 			float x, y, z, w;
 			std::vector<float> v;
 			*ss >> str;
-			str = trim(str);
+			if (str.size() == 0)
+				continue;
 			switch (str[0]) {
 			case 'v':
 				if (str.length() == 1) {
 					// vertex
 					*ss >> x >> y >> z;
 					// optional w
-					do {*ss >> c;} while (c == ' ' || c == '\t');
-					if ((c >= '0' && c <= '9') || c == '.') {
-						ss->putback(c);
-						*ss >> w;
-					} else {
-						w = 1;
-						if (c == '\n' || c == '\r')
-							ss->putback(c);
-						std::getline(*ss, str);
-					}
-					v.push_back(x); v.push_back(y); v.push_back(z); v.push_back(w);
+//					do {*ss >> c;} while (c == ' ' || c == '\t');
+//					if ((c >= '0' && c <= '9') || c == '.') {
+//						ss->putback(c);
+//						*ss >> w;
+//					} else {
+//						w = 1;
+//						if (c == '\n' || c == '\r')
+//							ss->putback(c);
+//						std::getline(*ss, str);
+//					}
+					v.push_back(x); v.push_back(y); v.push_back(z); v.push_back(1);
 					vertexPosition->push_back(v);
 				} else if (str[1] == 't') {
 					// texture, accept x and y only
@@ -170,54 +170,68 @@ size_t readOBJ(zip_file *zf, size_t fileSize, float *&vAttribute) {
 					int t = str.find_first_of('/');
 					int no = atoi(str.substr(0, t).c_str());
 					if (no <= 0)
-						throw "Invalid format";
+						throw std::string("Invalid format");
 					f.push_back(no);
 					str = str.substr(t + 1, str.length() - t - 1);
 					t = str.find_first_of('/');
 					no = atoi(str.substr(0, t).c_str());
 					if (no <= 0)
-						throw "Invalid format";
+						throw std::string("Invalid format");
 					f.push_back(no);
 					str = str.substr(t + 1, str.length() - t - 1);
 					no = atoi(str.c_str());
 					if (no <= 0)
-						throw "Invalid format";
+						throw std::string("Invalid format");
 					f.push_back(no);
 				}
+				faces->push_back(f);
 				break;
 			}
 			default:
 				std::getline(*ss, str);
 			}
 		}
-		vAttribute = new float[faces->size() * 10];
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Vertex no=%d Texture no=%d Normal no=%d Face no=%d",
+				vertexPosition->size(),
+				texturePosition->size(),
+				normalVector->size(),
+				faces->size());
+		vAttribute = new float[faces->size() * 30];
 		for (int i = 0; i < faces->size(); i++)
 			for (int j = 0; j < 3; j++) {
+//				__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Face %d %d/%d/%d", i, faces->at(i)[j * 3], faces->at(i)[j * 3 + 1], faces->at(i)[j * 3 + 2]);
 				// vertex
-				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j])[0];
-				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j])[1];
-				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j])[2];
-				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j])[3];
+				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j * 3] - 1)[0];
+				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j * 3] - 1)[1];
+				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j * 3] - 1)[2];
+				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j * 3] - 1)[3];
 				// texture
-				vAttribute[offset++] = texturePosition->at(faces->at(i)[j + 1])[0];
-				vAttribute[offset++] = texturePosition->at(faces->at(i)[j + 1])[1];
+				vAttribute[offset++] = texturePosition->at(faces->at(i)[j * 3 + 1] - 1)[0];
+				vAttribute[offset++] = texturePosition->at(faces->at(i)[j * 3 + 1] - 1)[1];
 				// normal
-				vAttribute[offset++] = normalVector->at(faces->at(i)[j + 2])[0];
-				vAttribute[offset++] = normalVector->at(faces->at(i)[j + 2])[1];
-				vAttribute[offset++] = normalVector->at(faces->at(i)[j + 2])[2];
+				vAttribute[offset++] = normalVector->at(faces->at(i)[j * 3 + 2] - 1)[0];
+				vAttribute[offset++] = normalVector->at(faces->at(i)[j * 3 + 2] - 1)[1];
+				vAttribute[offset++] = normalVector->at(faces->at(i)[j * 3 + 2] - 1)[2];
 				vAttribute[offset++] = 0;
 			}
+		size = faces->size() * 3;	// every face has three vertices, of cause
+		glGetError();
+		glBindBuffer(GL_ARRAY_BUFFER, bufferHandler);
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "glBindBuffer %d", glGetError());
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * faces->size() * 30, vAttribute, GL_STATIC_DRAW);
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "glBufferData %d", glGetError());
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		delete[] vAttribute;
 	} catch (std::string& e) {
-		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "readOBJ: %s", e.c_str());
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "readOBJ Exception: %s", e.c_str());
 		if (vAttribute)
 			delete[] vAttribute;
 	} catch (std::exception& e) {
-		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "readOBJ: %s", e.what());
+		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "readOBJ Exception: %s", e.what());
 		if (vAttribute)
 			delete[] vAttribute;
 	}
 	delete vertexPosition, texturePosition, normalVector, faces;
-	return offset;
 }
 
 ResourceManager::ResourceManager(const char * const pathToPkg) {
@@ -244,48 +258,103 @@ ResourceManager::ResourceManager(const char * const pathToPkg) {
 //	zip_fclose(zf);
 	// terrain data and map data
 	// model
+	file = "modelIndex";
+	zip_stat(z, file, 0, &st);
+	content = new char[st.size + 1];
+	zf = zip_fopen(z, file, 0);
+	if (zf) {
+		zip_fread(zf, content, st.size);
+		zip_fclose(zf);
+		content[st.size] = 0;
+		contentStr = std::string(content);
+		ss = new std::stringstream(contentStr);
+		while (!ss->eof()) {
+			std::string modelName, modelFile;
+			*ss >> modelName >> modelFile;
+			__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load model %s from %s", modelName.c_str(), modelFile.c_str());
+			if (modelName.size() > 0 && modelFile.size() > 0) {
+				zip_stat(z, modelFile.c_str(), 0, &st);
+				zf = zip_fopen(z, modelFile.c_str(), 0);
+				if (zf) {
+					GLuint buf[1];
+					glGenBuffers(1, buf);
+					modelHandlers[modelName] = buf[0];
+					readOBJ(zf, st.size, modelHandlers[modelName], modelSizes[modelName]);
+				} else
+					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", modelName.c_str());
+			}
+		}
+	}
+	delete[] content;
 	// texture index
 	file = "textureIndex";
 	zip_stat(z, file, 0, &st);
 	content = new char[st.size + 1];
 	zf = zip_fopen(z, file, 0);
-	zip_fread(zf, content, st.size);
-	content[st.size] = 0;	// null terminate
-	zip_fclose(zf);
-	contentStr = std::string(content);
-	delete[] content;
-	ss = new std::stringstream(contentStr);
-	while (!ss->eof()) {
-		std::string textureName, textureFile;
-		*ss >> textureName >> textureFile;
-		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load texture %s from %s", textureName.c_str(), textureFile.c_str());
-		if (textureName.size() > 0 && textureFile.size() > 0) {
-			zf = zip_fopen(z, textureFile.c_str(), 0);
-			if (zf) {
-				GLuint tex[1];
-				glGenTextures(1, tex);
-				textureHandlers[textureName] = tex[0];
-				__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Texture GLuint: %d", textureHandlers[textureName]);
-				readPNG(zf, textureHandlers[textureName]);
-			} else
-				__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", textureFile.c_str());
+	if (zf) {
+		zip_fread(zf, content, st.size);
+		zip_fclose(zf);
+		content[st.size] = 0;	// null terminate
+		contentStr = std::string(content);
+		ss = new std::stringstream(contentStr);
+		while (!ss->eof()) {
+			std::string textureName, textureFile;
+			*ss >> textureName >> textureFile;
+			__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load texture %s from %s", textureName.c_str(), textureFile.c_str());
+			if (textureName.size() > 0 && textureFile.size() > 0) {
+				zf = zip_fopen(z, textureFile.c_str(), 0);
+				if (zf) {
+					GLuint tex[1];
+					glGenTextures(1, tex);
+					textureHandlers[textureName] = tex[0];
+					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Texture GLuint: %d", textureHandlers[textureName]);
+					readPNG(zf, textureHandlers[textureName]);
+				} else
+					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", textureFile.c_str());
+			}
 		}
+		delete ss;
 	}
-	delete ss;
+	delete[] content;
 	// close zip
 	zip_close(z);
 }
 
 ResourceManager::~ResourceManager() {
-	GLuint *textures = new GLuint[textureHandlers.size()];
+	GLuint *buf = new GLuint[textureHandlers.size()];
 	int c = 0;
-	for (auto& itr : textureHandlers)
-		textures[c++] = itr.second;
-	glDeleteTextures(c, textures);
-	delete[] textures;
+	for (const auto &itr : textureHandlers)
+		buf[c++] = itr.second;
+	glDeleteTextures(c, buf);
+	delete[] buf;
+	buf = new GLuint[modelHandlers.size()];
+	c = 0;
+	for (const auto &itr : modelHandlers)
+		buf[c++] = itr.second;
+	glDeleteBuffers(c, buf);
+	delete[] buf;
 }
 
-GLuint ResourceManager::getTextureHandler(const std::string name) {
-	return textureHandlers[name];
+GLuint ResourceManager::getTextureHandler(const std::string& name) {
+	const auto &itr = textureHandlers.find(name);
+	if (itr != textureHandlers.end())
+		return itr->second;
+	else
+		return 0;
 }
 
+GLuint ResourceManager::getModelHandler(const std::string& name) {
+	const auto &itr = modelHandlers.find(name);
+	if (itr != modelHandlers.end())
+		return itr->second;
+	else
+		return 0;
+}
+
+unsigned int ResourceManager::getModelSize(const std::string& name) {
+	const auto &itr = modelSizes.find(name);
+	if (itr != modelSizes.end())
+		return itr->second;
+	else
+		return 0;
+}

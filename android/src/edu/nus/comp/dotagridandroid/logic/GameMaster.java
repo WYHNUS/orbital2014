@@ -9,6 +9,7 @@ public class GameMaster {
 		final int[] prevPos = stateMachine.getCharacterPositions().get(stateMachine.getPlayerCharacterName());
 		switch (actionName) {
 		case "ChooseGrid": {
+			stateMachine.notifyUpdate(Collections.singletonMap("ChosenGrid", options.get("Coordinate")));
 			break;
 		}
 		case "RequestAttackArea": {
@@ -50,8 +51,6 @@ public class GameMaster {
 //					// calculate AP
 					final double actionPointUsed = playerChar.APUsedInMovingOneGrid() * (Math.abs(reqPos[0] - prevPos[0]) + Math.abs(reqPos[1] - prevPos[1]));
 					final double currentActionPoint = playerChar.getCurrentActionPoint() - actionPointUsed;
-//					if (currentActionPoint < 0)
-//						return;
 					playerChar.setCurrentActionPoint((int) currentActionPoint);
 					// move
 					stateMachine.setCharacterPositions(playerCharName, stateMachine.getChosenGrid());
@@ -76,15 +75,55 @@ public class GameMaster {
 	}
 
 	public boolean requestActionPossible(GameState stateMachine, String actionName, Map<String, Object> options) {
-		final int[] targetGrid = stateMachine.getChosenGrid();
+		final int[] targetGrid = stateMachine.getChosenGrid(), heroGrid = stateMachine.getCharacterPositions().get(stateMachine.getPlayerCharacterName());
+		final Map<String, Character> chars = stateMachine.getCharacters();
 		switch (actionName) {
 		case "GameAction":
 			switch ((String) options.get("Action")) {
-			case "Attack":
+			case "Move" : {
+				if (targetGrid[0] >= stateMachine.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= stateMachine.getGridHeight() || targetGrid[1] < 0)
+					return false;
+				return true;
+			}
+			case "Attack": {
+				if (targetGrid[0] >= stateMachine.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= stateMachine.getGridHeight() || targetGrid[1] < 0)
+					return false;
+				Hero hero = (Hero) stateMachine.getCharacters().get(stateMachine.getPlayerCharacterName());
+				return stateMachine.getCharacterAtPosition(targetGrid) != null &&	// has hero, linecreep or tower
+						hero.getTotalPhysicalAttackArea() + hero.getTotalItemAddPhysicalAttackArea()
+						>= Math.abs(targetGrid[0] - heroGrid[0])
+						+ Math.abs(targetGrid[1] - heroGrid[1]) &&	// within attack area
+						hero.getCurrentActionPoint() > Hero.MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - hero.getTotalPhysicalAttackSpeed() / Character.MAX_PHYSICAL_ATTACK_SPEED)
+							* Hero.PHYSICAL_ATTACK_CONSUME_AP;	// has enough action points
+			}
 			}
 			break;
 		}
 		// TODO TEST
 		return true;
+	}
+	
+	private double findLowestMoveAPConsumption (int[] start, int[] end, float[] terrain, int width, int height, Character character) {
+		final int[][] dirs = new int[][] {{-1,0},{1,0},{0,-1},{0,1}};
+		final double TERRAIN_CONST = 1;	// TODO terrain factor
+		Queue<int[]> q = new LinkedList<>();
+		double[] map = new double[width * height];
+		Arrays.fill(map, character.getMaxActionPoint() + 1);
+		map[start[0] + start[1] * width] = 0;
+		q.add(start);
+		while (!q.isEmpty()) {
+			final int[] prevPos = q.remove();
+			for (byte i = 0; i < 4; i++) 
+				if (prevPos[0] + dirs[i][0] < width && prevPos[0] + dirs[i][0] >= 0 &&
+						prevPos[1] + dirs[i][1] < height && prevPos[1] + dirs[i][1] >= 0) {
+					final double APconsumed = character.APUsedInMovingOneGrid() +
+							Math.max(0, terrain[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width] - terrain[prevPos[0] + prevPos[1] * width]) * TERRAIN_CONST;
+					if (APconsumed < map[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width]) {
+						map[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width] = APconsumed;
+						q.add(new int[]{prevPos[0] + dirs[i][0], prevPos[1] + dirs[i][1]});
+					}
+				}
+		}
+		return map[end[0] + end[1] * width];
 	}
 }

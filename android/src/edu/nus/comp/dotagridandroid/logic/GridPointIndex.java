@@ -15,7 +15,7 @@ public final class GridPointIndex {
 	public boolean equals(Object o) {
 		if (o == null || !(o instanceof GridPointIndex))
 			return false;
-		return ((GridPointIndex) o).idx.equals(idx);
+		return Arrays.equals(((GridPointIndex) o).idx, idx);
 	}
 	
 	@Override

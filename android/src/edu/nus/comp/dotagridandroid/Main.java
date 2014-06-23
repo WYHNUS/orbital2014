@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagridandroid;
 
+import java.io.*;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -10,6 +12,8 @@ import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 
 public class Main extends Activity {
+	public static final String applicationDir = "/sdcard/dotagrid";
+	public static final String pathToDefaultPkg = "/sdcard/dotagrid/default.zip";
 	private GameLogicManager logicManager;
 	public Main() {
 		super();
@@ -21,6 +25,31 @@ public class Main extends Activity {
 		// Proceed to MainSurfaceView for more details
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		// check if default package exists
+		// TODO put default.bin in assets
+		File defaultPkg = new File(pathToDefaultPkg);
+		if (!defaultPkg.exists() || defaultPkg.isDirectory()) {
+			if (defaultPkg.isDirectory())
+				defaultPkg.delete();
+			defaultPkg = new File(applicationDir);
+			if (!defaultPkg.exists())
+				defaultPkg.mkdir();
+			else if (!defaultPkg.isDirectory())
+				throw new RuntimeException("Please remove 'dotagrid' file in your external storage's root folder (REQUIRED)");
+			try {
+				InputStream in = getAssets().open("default.bin");
+				FileOutputStream file = new FileOutputStream(pathToDefaultPkg);
+				byte[] buf = new byte[2048];
+				int count;
+				while ((count = in.read(buf)) != -1)
+					file.write(buf, 0, count);
+				file.flush();
+				file.getFD().sync();
+				file.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 		logicManager.initiateSoundEngine();
 		AppNativeAPI.testJS();
 		AppNativeAPI.testSL();

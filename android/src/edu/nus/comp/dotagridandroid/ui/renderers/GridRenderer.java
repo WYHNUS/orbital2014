@@ -12,7 +12,7 @@ import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
 public class GridRenderer implements Renderer {
-	public static final float BOARD_Z_COORD = .01f;
+	public static final float BOARD_Z_COORD = .1f;
 	public static final float BASE_ZOOM_FACTOR = 0.5f;
 	public static final int SHADOW_MAP_TEXTURE_DIMENSION = 2048;
 	private static final float LIGHT_MAX_RADIUS = 5;
@@ -82,10 +82,12 @@ public class GridRenderer implements Renderer {
 	private final Map<String, Integer> shadowMaps = new ConcurrentHashMap<>();
 	private final float[] lightProjection;
 	// drawables
-	private final Map<String, FloatBuffer>
-		drawableVertex = new ConcurrentHashMap<>(),
-		drawableTextureCoord = new ConcurrentHashMap<>(),
-		drawableNormal = new ConcurrentHashMap<>();
+//	private final Map<String, FloatBuffer>
+//		drawableVertex = new ConcurrentHashMap<>(),
+//		drawableTextureCoord = new ConcurrentHashMap<>(),
+//		drawableNormal = new ConcurrentHashMap<>();
+	private final Map<String, Integer> drawableModelHandlers = new ConcurrentHashMap<>();
+	private final Map<String, Integer> drawableModelSizes = new ConcurrentHashMap<>();
 	private final Map<String, String> drawableTexture = new ConcurrentHashMap<>();
 	private final Map<String, float[]> drawableModel = new ConcurrentHashMap<>();
 	private final Map<String, Boolean> drawableVisible = new ConcurrentHashMap<>();
@@ -382,11 +384,13 @@ public class GridRenderer implements Renderer {
 		// for now, just draw everything
 		for (String name : chars.keySet()) {
 			final String charModelName = chars.get(name).getCharacterImage();
-			final FloatBuffer[] charModel = manager.getCurrentGameState().getCharacterModel(charModelName);
+//			final FloatBuffer[] charModel = manager.getCurrentGameState().getCharacterModel(charModelName);
 			final int[] pos = charPositions.get(name);
-			drawableVertex.put(name, charModel[0]);
-			drawableTextureCoord.put(name, charModel[1]);
-			drawableNormal.put(name, charModel[2]);
+//			drawableVertex.put(name, charModel[0]);
+//			drawableTextureCoord.put(name, charModel[1]);
+//			drawableNormal.put(name, charModel[2]);
+			drawableModelHandlers.put(name, manager.getCurrentGameState().getCharacterModel(charModelName));
+			drawableModelSizes.put(name, manager.getCurrentGameState().getCharacterModelSize(charModelName));
 			drawableTexture.put(name, charModelName);
 			drawableVisible.put(name, true);
 			drawableModel.put(name, FlatMatrix4x4Multiplication(
@@ -555,14 +559,19 @@ public class GridRenderer implements Renderer {
 		mLight = glGetUniformLocation(shadowObjProgram.getProgramId(), "lightTransform");
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
-		for (String key : drawableVertex.keySet()) {
+//		for (String key : drawableVertex.keySet()) {
+		for (String key : drawableModelHandlers.keySet()) {
 			if (!drawableVisible.get(key))
 				continue;
 			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
-			final FloatBuffer fBuf = drawableVertex.get(key);
-			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
-			glVertexAttribPointer(vNormal, 4, GL_FLOAT, false, 0, drawableNormal.get(key).position(0));
-			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, drawableTextureCoord.get(key).position(0));
+//			final FloatBuffer fBuf = drawableVertex.get(key);
+//			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
+//			glVertexAttribPointer(vNormal, 4, GL_FLOAT, false, 0, drawableNormal.get(key).position(0));
+//			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, drawableTextureCoord.get(key).position(0));
+			glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
+			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
+			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 4);
+			glVertexAttribPointer(vNormal, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 6);
 			glEnableVertexAttribArray(vPosition);
 			glEnableVertexAttribArray(vNormal);
 			glEnableVertexAttribArray(textureCoord);
@@ -581,7 +590,8 @@ public class GridRenderer implements Renderer {
 					glUniform3f(color, config[3], config[4], config[5]);
 					glUniform1f(specular, config[6]);
 					glUniform1f(attenuation, config[7]);
-					glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
+//					glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
+					glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
 				}
 			glDisableVertexAttribArray(vPosition);
 			glDisableVertexAttribArray(vNormal);
@@ -680,12 +690,16 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		// drawables
-		for (String key : drawableVertex.keySet()) {
+//		for (String key : drawableVertex.keySet()) {
+		for (String key : drawableModelHandlers.keySet()) {
 			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
-			final FloatBuffer fBuf = drawableVertex.get(key);
-			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
+//			final FloatBuffer fBuf = drawableVertex.get(key);
+//			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
+			glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
+			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
 			glEnableVertexAttribArray(vPosition);
-			glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
+//			glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
+			glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
 			glDisableVertexAttribArray(vPosition);
 		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
