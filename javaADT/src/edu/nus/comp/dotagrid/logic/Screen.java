@@ -52,7 +52,6 @@ public class Screen extends JPanel implements Runnable {
 			// start game!				
 			g.setColor(Color.BLACK);	
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
-			
 
 			if (isFrameInitialized == false) {				
 				// draw game frame

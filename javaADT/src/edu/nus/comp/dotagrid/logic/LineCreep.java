@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class LineCreep extends Character{
 	
-	private ArrayList<int[]> AItargetPos = new ArrayList<int[]>();
+	private ArrayList<int[]> AItargetPos;
 	
 	public static int lineCreepActionPoint = 100;
 	public static int lineCreepStartingSight = 6;
@@ -35,6 +35,9 @@ public class LineCreep extends Character{
 		
 		// set image
 		this.setCharacterImage("creeps", this.getName());		
+		
+		// initialize targeted position
+		AItargetPos = new ArrayList<int[]>();
 	}
 
 	public ArrayList<int[]> getAItargetPos() {
@@ -42,7 +45,7 @@ public class LineCreep extends Character{
 	}
 
 	public void addAItargetPos(int[] targetPos) {
-		AItargetPos.add(targetPos);
+		this.AItargetPos.add(targetPos);
 	}
 	
 }

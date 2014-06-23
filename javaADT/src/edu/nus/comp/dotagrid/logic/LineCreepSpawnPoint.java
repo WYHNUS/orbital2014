@@ -36,7 +36,6 @@ public class LineCreepSpawnPoint {
 		 * spawn new normal wave every 10 turns
 		 * spawn new extended wave every 50 turns
 		*/
-
 		
 		if (GameFrame.turn % 10 == 0) {
 			createWave();
@@ -55,8 +54,6 @@ public class LineCreepSpawnPoint {
 			LineCreep.levelScourge = GameFrame.turn / 200;
 		}
 		
-		// initialize checkedPosition
-		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
 		
 		// change the number of spawning creeps
 		if (GameFrame.turn <= 600) {
@@ -65,244 +62,284 @@ public class LineCreepSpawnPoint {
 			SIEGE_CREEP_NUMBER = 1 + GameFrame.turn / 600;
 		}
 		
+
+		// create line creep database
+		new LineCreepDatabase();
+		
 		
 		// each spawn point spawn MEELE_CREEP_NUMBER meele creeps + RANGED_CREEP_NUMBER ranged creep
-		Queue <LineCreep> SentinelCreeps = new LinkedList<LineCreep>();
-		Queue <LineCreep> ScourgeCreeps = new LinkedList<LineCreep>();
-		
-		Queue <LineCreep> SuperMeeleSentinelCreeps = new LinkedList<LineCreep>();
-		Queue <LineCreep> SuperMeeleScourgeCreeps = new LinkedList<LineCreep>();
-		
-		Queue <LineCreep> SuperRangeSentinelCreeps = new LinkedList<LineCreep>();
-		Queue <LineCreep> SuperRangeScourgeCreeps = new LinkedList<LineCreep>();
-		
-		Queue <LineCreep> SuperSentinelCreeps = new LinkedList<LineCreep>();
-		Queue <LineCreep> SuperScourgeCreeps = new LinkedList<LineCreep>();
-		
-		
-		// add meele creeps
-		for (int i=0; i<MEELE_CREEP_NUMBER; i++) {
-			// create database for operating
-			LineCreepDatabase lineCreeps = new LineCreepDatabase();
-			
-			SentinelCreeps.add(lineCreeps.lineCreepDatabase[0]);
-			ScourgeCreeps.add(lineCreeps.lineCreepDatabase[3]);
-			SuperRangeSentinelCreeps.add(lineCreeps.lineCreepDatabase[0]);
-			SuperRangeScourgeCreeps.add(lineCreeps.lineCreepDatabase[3]);
-			SuperMeeleSentinelCreeps.add(lineCreeps.lineCreepDatabase[6]);
-			SuperMeeleScourgeCreeps.add(lineCreeps.lineCreepDatabase[9]);
-			SuperSentinelCreeps.add(lineCreeps.lineCreepDatabase[6]);
-			SuperScourgeCreeps.add(lineCreeps.lineCreepDatabase[9]);
-		}
-		
-		// add ranged creeps
-		for (int i=0; i<RANGED_CREEP_NUMBER; i++) {
-			// create database for operating
-			LineCreepDatabase lineCreeps = new LineCreepDatabase();
-						
-			SentinelCreeps.add(lineCreeps.lineCreepDatabase[1]);
-			ScourgeCreeps.add(lineCreeps.lineCreepDatabase[4]);
-			SuperMeeleSentinelCreeps.add(lineCreeps.lineCreepDatabase[1]);
-			SuperMeeleScourgeCreeps.add(lineCreeps.lineCreepDatabase[4]);
-			SuperRangeSentinelCreeps.add(lineCreeps.lineCreepDatabase[7]);
-			SuperRangeScourgeCreeps.add(lineCreeps.lineCreepDatabase[10]);
-			SuperSentinelCreeps.add(lineCreeps.lineCreepDatabase[7]);
-			SuperScourgeCreeps.add(lineCreeps.lineCreepDatabase[10]);
-		}
-		
-		// add siege creeps every 50 turns
-		if (GameFrame.turn % 50 == 0) {
-			for (int i=0; i<SIEGE_CREEP_NUMBER; i++) {
-				// create database for operating
-				LineCreepDatabase lineCreeps = new LineCreepDatabase();
-				
-				SentinelCreeps.add(lineCreeps.lineCreepDatabase[2]);
-				ScourgeCreeps.add(lineCreeps.lineCreepDatabase[5]);
-				SuperMeeleSentinelCreeps.add(lineCreeps.lineCreepDatabase[2]);
-				SuperMeeleScourgeCreeps.add(lineCreeps.lineCreepDatabase[5]);
-				SuperRangeSentinelCreeps.add(lineCreeps.lineCreepDatabase[8]);
-				SuperRangeScourgeCreeps.add(lineCreeps.lineCreepDatabase[11]);
-				SuperSentinelCreeps.add(lineCreeps.lineCreepDatabase[8]);
-				SuperScourgeCreeps.add(lineCreeps.lineCreepDatabase[11]);
-			}
-		}
-		
-		
-		// make copies for creep queue		
-		LinkedList<LineCreep> SentinelCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SentinelCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SentinelCreeps3 = new LinkedList<LineCreep>();
-		SentinelCreeps1.addAll(SentinelCreeps);
-		SentinelCreeps2.addAll(SentinelCreeps);
-		SentinelCreeps3.addAll(SentinelCreeps);
-		
-		LinkedList<LineCreep> ScourgeCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> ScourgeCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> ScourgeCreeps3 = new LinkedList<LineCreep>();
-		ScourgeCreeps1.addAll(ScourgeCreeps);
-		ScourgeCreeps2.addAll(ScourgeCreeps);
-		ScourgeCreeps3.addAll(ScourgeCreeps);
-		
-		LinkedList<LineCreep> SuperMeeleSentinelCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperMeeleSentinelCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperMeeleSentinelCreeps3 = new LinkedList<LineCreep>();
-		SuperMeeleSentinelCreeps1.addAll(SuperMeeleSentinelCreeps);
-		SuperMeeleSentinelCreeps2.addAll(SuperMeeleSentinelCreeps);
-		SuperMeeleSentinelCreeps3.addAll(SuperMeeleSentinelCreeps);
-		
-		LinkedList<LineCreep> SuperMeeleScourgeCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperMeeleScourgeCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperMeeleScourgeCreeps3 = new LinkedList<LineCreep>();
-		SuperMeeleScourgeCreeps1.addAll(SuperMeeleScourgeCreeps);
-		SuperMeeleScourgeCreeps2.addAll(SuperMeeleScourgeCreeps);
-		SuperMeeleScourgeCreeps3.addAll(SuperMeeleScourgeCreeps);
-		
-		LinkedList<LineCreep> SuperRangeSentinelCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperRangeSentinelCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperRangeSentinelCreeps3 = new LinkedList<LineCreep>();
-		SuperRangeSentinelCreeps1.addAll(SuperRangeSentinelCreeps);
-		SuperRangeSentinelCreeps2.addAll(SuperRangeSentinelCreeps);
-		SuperRangeSentinelCreeps3.addAll(SuperRangeSentinelCreeps);
-		
-		LinkedList<LineCreep> SuperRangeScourgeCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperRangeScourgeCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperRangeScourgeCreeps3 = new LinkedList<LineCreep>();
-		SuperRangeScourgeCreeps1.addAll(SuperRangeScourgeCreeps);
-		SuperRangeScourgeCreeps2.addAll(SuperRangeScourgeCreeps);
-		SuperRangeScourgeCreeps3.addAll(SuperRangeScourgeCreeps);
-		
-		LinkedList<LineCreep> SuperSentinelCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperSentinelCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperSentinelCreeps3 = new LinkedList<LineCreep>();
-		SuperSentinelCreeps1.addAll(SuperSentinelCreeps);
-		SuperSentinelCreeps2.addAll(SuperSentinelCreeps);
-		SuperSentinelCreeps3.addAll(SuperSentinelCreeps);
-		
-		LinkedList<LineCreep> SuperScourgeCreeps1 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperScourgeCreeps2 = new LinkedList<LineCreep>();
-		LinkedList<LineCreep> SuperScourgeCreeps3 = new LinkedList<LineCreep>();
-		SuperScourgeCreeps1.addAll(SuperScourgeCreeps);
-		SuperScourgeCreeps2.addAll(SuperScourgeCreeps);
-		SuperScourgeCreeps3.addAll(SuperScourgeCreeps);
-		
 		
 		// spawn sentinel line creeps
+		
+		Queue <LineCreep> topSentinelCreeps = new LinkedList<LineCreep>();
 		
 		int[] sentinelTopPosition = {SENTINEL_TOP_LINE_SPAWN_X_POS, SENTINEL_TOP_LINE_SPAWN_Y_POS};
 		Queue<int[]> sentinelTop = new LinkedList<int[]>(); 
 		sentinelTop.add(sentinelTopPosition);
 		
-		if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == false) {
-			LineCreepDatabase.setSentinelTopCreepsTargets(SentinelCreeps1);
-			spawn(sentinelTop, checkedPosition, SentinelCreeps1);
-		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == true) {
-			LineCreepDatabase.setSentinelTopCreepsTargets(SuperSentinelCreeps1);
-			spawn(sentinelTop, checkedPosition, SuperSentinelCreeps1);
-		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == false) {
-			LineCreepDatabase.setSentinelTopCreepsTargets(SuperMeeleSentinelCreeps1);
-			spawn(sentinelTop, checkedPosition, SuperMeeleSentinelCreeps1);
-		} else if (BuildingDatabase.isDestroyedScourgeTopMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeTopRangedBarrack == true) {
-			LineCreepDatabase.setSentinelTopCreepsTargets(SuperRangeSentinelCreeps1);
-			spawn(sentinelTop, checkedPosition, SuperRangeSentinelCreeps1);
+		// initialize checkedPosition
+		ArrayList<int[]> checkedPosition1 = new ArrayList<int[]>();
+		
+		if (!BuildingDatabase.isDestroyedScourgeTopMeeleBarrack) {
+			// create normal wave of sentinel meele creeps
+			LineCreepDatabase.createSentinelMeeleCreeps(topSentinelCreeps, MEELE_CREEP_NUMBER);
+		} else {
+			// create super wave of sentinel meele creeps
+			LineCreepDatabase.createSentinelSuperMeeleCreeps(topSentinelCreeps, MEELE_CREEP_NUMBER);
 		}
 		
+		if (!BuildingDatabase.isDestroyedScourgeTopRangedBarrack) {
+			// create normal wave of sentinel ranged + siege creeps
+			LineCreepDatabase.createSentinelRangedCreeps(topSentinelCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createSentinelSiegeCreeps(topSentinelCreeps, SIEGE_CREEP_NUMBER);
+			}
+		} else {
+			// create super wave of sentinel ranged + siege creeps
+			LineCreepDatabase.createSentinelSuperRangedCreeps(topSentinelCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createSentinelSuperSiegeCreeps(topSentinelCreeps, SIEGE_CREEP_NUMBER);
+			}
+		}
+		
+		// add targeted position
+		LineCreepDatabase.setSentinelTopCreepsTargets(topSentinelCreeps);
+		
+		// spawn!
+		spawn(sentinelTop, checkedPosition1, topSentinelCreeps);
+		
+		
+		
+		// mid line
+
+		Queue <LineCreep> midSentinelCreeps = new LinkedList<LineCreep>();
 		
 		int[] sentinelMidPosition = {SENTINEL_MID_LINE_SPAWN_X_POS, SENTINEL_MID_LINE_SPAWN_Y_POS};
 		Queue<int[]> sentinelMid = new LinkedList<int[]>(); 
-		sentinelMid.add(sentinelMidPosition);		
+		sentinelMid.add(sentinelMidPosition);
 		
-		if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == false) {
-			LineCreepDatabase.setSentinelMidCreepsTargets(SentinelCreeps2);
-			spawn(sentinelMid, checkedPosition, SentinelCreeps2);
-		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == true) {
-			LineCreepDatabase.setSentinelMidCreepsTargets(SuperSentinelCreeps2);
-			spawn(sentinelMid, checkedPosition, SuperSentinelCreeps2);
-		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == false) {
-			LineCreepDatabase.setSentinelMidCreepsTargets(SuperMeeleSentinelCreeps2);
-			spawn(sentinelMid, checkedPosition, SuperMeeleSentinelCreeps2);
-		} else if (BuildingDatabase.isDestroyedScourgeMidMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeMidRangedBarrack == true) {
-			LineCreepDatabase.setSentinelMidCreepsTargets(SuperRangeSentinelCreeps2);
-			spawn(sentinelMid, checkedPosition, SuperRangeSentinelCreeps2);
+		// initialize checkedPosition
+		ArrayList<int[]> checkedPosition2 = new ArrayList<int[]>();
+		
+		if (!BuildingDatabase.isDestroyedScourgeMidMeeleBarrack) {
+			// create normal wave of sentinel meele creeps
+			LineCreepDatabase.createSentinelMeeleCreeps(midSentinelCreeps, MEELE_CREEP_NUMBER);
+		} else {
+			// create super wave of sentinel meele creeps
+			LineCreepDatabase.createSentinelSuperMeeleCreeps(midSentinelCreeps, MEELE_CREEP_NUMBER);
 		}
 		
+		if (!BuildingDatabase.isDestroyedScourgeMidRangedBarrack) {
+			// create normal wave of sentinel ranged + siege creeps
+			LineCreepDatabase.createSentinelRangedCreeps(midSentinelCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createSentinelSiegeCreeps(midSentinelCreeps, SIEGE_CREEP_NUMBER);
+			}
+		} else {
+			// create super wave of sentinel ranged + siege creeps
+			LineCreepDatabase.createSentinelSuperRangedCreeps(midSentinelCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createSentinelSuperSiegeCreeps(midSentinelCreeps, SIEGE_CREEP_NUMBER);
+			}
+		}
+		
+		// add targeted position
+		LineCreepDatabase.setSentinelMidCreepsTargets(midSentinelCreeps);
+		
+		// spawn!
+		spawn(sentinelMid, checkedPosition2, midSentinelCreeps);
+		
+		
+		
+		// bottom line
+		
+		Queue <LineCreep> botSentinelCreeps = new LinkedList<LineCreep>();
 		
 		int[] sentinelBotPosition = {SENTINEL_BOT_LINE_SPAWN_X_POS, SENTINEL_BOT_LINE_SPAWN_Y_POS};
 		Queue<int[]> sentinelBot = new LinkedList<int[]>(); 
 		sentinelBot.add(sentinelBotPosition);
 		
-		if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == false) {
-			LineCreepDatabase.setSentinelBotCreepsTargets(SentinelCreeps3);
-			spawn(sentinelBot, checkedPosition, SentinelCreeps3);
-		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == true) {
-			LineCreepDatabase.setSentinelBotCreepsTargets(SuperSentinelCreeps3);
-			spawn(sentinelBot, checkedPosition, SuperSentinelCreeps3);
-		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == true && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == false) {
-			LineCreepDatabase.setSentinelBotCreepsTargets(SuperMeeleSentinelCreeps3);
-			spawn(sentinelBot, checkedPosition, SuperMeeleSentinelCreeps3);
-		} else if (BuildingDatabase.isDestroyedScourgeBotMeeleBarrack == false && BuildingDatabase.isDestroyedScourgeBotRangedBarrack == true) {
-			LineCreepDatabase.setSentinelBotCreepsTargets(SuperRangeSentinelCreeps3);
-			spawn(sentinelBot, checkedPosition, SuperRangeSentinelCreeps3);
+		// initialize checkedPosition
+		ArrayList<int[]> checkedPosition3 = new ArrayList<int[]>();
+		
+		if (!BuildingDatabase.isDestroyedScourgeBotMeeleBarrack) {
+			// create normal wave of sentinel meele creeps
+			LineCreepDatabase.createSentinelMeeleCreeps(botSentinelCreeps, MEELE_CREEP_NUMBER);
+		} else {
+			// create super wave of sentinel meele creeps
+			LineCreepDatabase.createSentinelSuperMeeleCreeps(botSentinelCreeps, MEELE_CREEP_NUMBER);
 		}
+		
+		if (!BuildingDatabase.isDestroyedScourgeBotRangedBarrack) {
+			// create normal wave of sentinel ranged + siege creeps
+			LineCreepDatabase.createSentinelRangedCreeps(botSentinelCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createSentinelSiegeCreeps(botSentinelCreeps, SIEGE_CREEP_NUMBER);
+			}
+		} else {
+			// create super wave of sentinel ranged + siege creeps
+			LineCreepDatabase.createSentinelSuperRangedCreeps(botSentinelCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createSentinelSuperSiegeCreeps(botSentinelCreeps, SIEGE_CREEP_NUMBER);
+			}
+		}
+		
+		// add targeted position
+		LineCreepDatabase.setSentinelBotCreepsTargets(botSentinelCreeps);
+		
+		// spawn!
+		spawn(sentinelBot, checkedPosition3, botSentinelCreeps);
+		
+		
 		
 		
 		// spawn scourge line creeps
+		
+
+		Queue <LineCreep> topScourgeCreeps = new LinkedList<LineCreep>();
 		
 		int[] scourgeTopPosition = {SCOURGE_TOP_LINE_SPAWN_X_POS, SCOURGE_TOP_LINE_SPAWN_Y_POS};
 		Queue<int[]> scourgeTop = new LinkedList<int[]>(); 
 		scourgeTop.add(scourgeTopPosition);
 		
-		if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == false) {
-			LineCreepDatabase.setScourgeTopCreepsTargets(ScourgeCreeps1);
-			spawn(scourgeTop, checkedPosition, ScourgeCreeps1);
-		} else if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == true) {
-			LineCreepDatabase.setScourgeTopCreepsTargets(SuperScourgeCreeps1);
-			spawn(scourgeTop, checkedPosition, SuperScourgeCreeps1);
-		} else if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == false) {
-			LineCreepDatabase.setScourgeTopCreepsTargets(SuperMeeleScourgeCreeps1);
-			spawn(scourgeTop, checkedPosition, SuperMeeleScourgeCreeps1);
-		} else if (BuildingDatabase.isDestroyedSentinelTopMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelTopRangedBarrack == true) {
-			LineCreepDatabase.setScourgeTopCreepsTargets(SuperRangeScourgeCreeps1);
-			spawn(scourgeTop, checkedPosition, SuperRangeScourgeCreeps1);
+		// initialize checkedPosition
+		ArrayList<int[]> checkedPosition4 = new ArrayList<int[]>();
+		
+		if (!BuildingDatabase.isDestroyedScourgeTopMeeleBarrack) {
+			// create normal wave of scourge meele creeps
+			LineCreepDatabase.createScourgeMeeleCreeps(topScourgeCreeps, MEELE_CREEP_NUMBER);
+		} else {
+			// create super wave of scourge meele creeps
+			LineCreepDatabase.createScourgeSuperMeeleCreeps(topScourgeCreeps, MEELE_CREEP_NUMBER);
 		}
 		
+		if (!BuildingDatabase.isDestroyedScourgeTopRangedBarrack) {
+			// create normal wave of scourge ranged + siege creeps
+			LineCreepDatabase.createScourgeRangedCreeps(topScourgeCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createScourgeSiegeCreeps(topScourgeCreeps, SIEGE_CREEP_NUMBER);
+			}
+		} else {
+			// create super wave of scourge ranged + siege creeps
+			LineCreepDatabase.createScourgeSuperRangedCreeps(topScourgeCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createScourgeSuperSiegeCreeps(topScourgeCreeps, SIEGE_CREEP_NUMBER);
+			}
+		}
 		
+		// add targeted position
+		LineCreepDatabase.setScourgeTopCreepsTargets(topScourgeCreeps);
+		
+		// spawn!
+		spawn(scourgeTop, checkedPosition4, topScourgeCreeps);
+		
+		
+		
+		// mid line
+
+		Queue <LineCreep> midScourgeCreeps = new LinkedList<LineCreep>();
 		
 		int[] scourgeMidPosition = {SCOURGE_MID_LINE_SPAWN_X_POS, SCOURGE_MID_LINE_SPAWN_Y_POS};
 		Queue<int[]> scourgeMid = new LinkedList<int[]>(); 
 		scourgeMid.add(scourgeMidPosition);
 		
-		if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == false) {
-			LineCreepDatabase.setScourgeMidCreepsTargets(ScourgeCreeps2);
-			spawn(scourgeMid, checkedPosition, ScourgeCreeps2);
-		} else if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == true) {
-			LineCreepDatabase.setScourgeMidCreepsTargets(SuperScourgeCreeps2);
-			spawn(scourgeMid, checkedPosition, SuperScourgeCreeps2);
-		} else if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == false) {
-			LineCreepDatabase.setScourgeMidCreepsTargets(SuperMeeleScourgeCreeps2);
-			spawn(scourgeMid, checkedPosition, SuperMeeleScourgeCreeps2);
-		} else if (BuildingDatabase.isDestroyedSentinelMidMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelMidRangedBarrack == true) {
-			LineCreepDatabase.setScourgeMidCreepsTargets(SuperRangeScourgeCreeps2);
-			spawn(scourgeMid, checkedPosition, SuperRangeScourgeCreeps2);
+		// initialize checkedPosition
+		ArrayList<int[]> checkedPosition5 = new ArrayList<int[]>();
+		
+		if (!BuildingDatabase.isDestroyedScourgeMidMeeleBarrack) {
+			// create normal wave of scourge meele creeps
+			LineCreepDatabase.createScourgeMeeleCreeps(midScourgeCreeps, MEELE_CREEP_NUMBER);
+		} else {
+			// create super wave of scourge meele creeps
+			LineCreepDatabase.createScourgeSuperMeeleCreeps(midScourgeCreeps, MEELE_CREEP_NUMBER);
 		}
+		
+		if (!BuildingDatabase.isDestroyedScourgeMidRangedBarrack) {
+			// create normal wave of scourge ranged + siege creeps
+			LineCreepDatabase.createScourgeRangedCreeps(midScourgeCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createScourgeSiegeCreeps(midScourgeCreeps, SIEGE_CREEP_NUMBER);
+			}
+		} else {
+			// create super wave of scourge ranged + siege creeps
+			LineCreepDatabase.createScourgeSuperRangedCreeps(midScourgeCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createScourgeSuperSiegeCreeps(midScourgeCreeps, SIEGE_CREEP_NUMBER);
+			}
+		}
+		
+		// add targeted position
+		LineCreepDatabase.setScourgeMidCreepsTargets(midScourgeCreeps);
+		
+		// spawn!
+		spawn(scourgeMid, checkedPosition5, midScourgeCreeps);
+		
+		
+		
+		// bottom line
+		
+		Queue <LineCreep> botScourgeCreeps = new LinkedList<LineCreep>();
 		
 		int[] scourgeBotPosition = {SCOURGE_BOT_LINE_SPAWN_X_POS, SCOURGE_BOT_LINE_SPAWN_Y_POS};
 		Queue<int[]> scourgeBot = new LinkedList<int[]>(); 
 		scourgeBot.add(scourgeBotPosition);
 		
-		if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == false) {
-			LineCreepDatabase.setScourgeBotCreepsTargets(ScourgeCreeps3);
-			spawn(scourgeBot, checkedPosition, ScourgeCreeps3);
-		} else if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == true) {
-			LineCreepDatabase.setScourgeBotCreepsTargets(SuperScourgeCreeps3);
-			spawn(scourgeBot, checkedPosition, SuperScourgeCreeps3);
-		} else if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == true && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == false) {
-			LineCreepDatabase.setScourgeBotCreepsTargets(SuperMeeleScourgeCreeps3);
-			spawn(scourgeBot, checkedPosition, SuperMeeleScourgeCreeps3);
-		} else if (BuildingDatabase.isDestroyedSentinelBotMeeleBarrack == false && BuildingDatabase.isDestroyedSentinelBotRangedBarrack == true) {
-			LineCreepDatabase.setScourgeBotCreepsTargets(SuperRangeScourgeCreeps3);
-			spawn(scourgeBot, checkedPosition, SuperRangeScourgeCreeps3);
+		// initialize checkedPosition
+		ArrayList<int[]> checkedPosition6 = new ArrayList<int[]>();
+		
+		if (!BuildingDatabase.isDestroyedScourgeBotMeeleBarrack) {
+			// create normal wave of scourge meele creeps
+			LineCreepDatabase.createScourgeMeeleCreeps(botScourgeCreeps, MEELE_CREEP_NUMBER);
+		} else {
+			// create super wave of scourge meele creeps
+			LineCreepDatabase.createScourgeSuperMeeleCreeps(botScourgeCreeps, MEELE_CREEP_NUMBER);
 		}
-				
+		
+		if (!BuildingDatabase.isDestroyedScourgeBotRangedBarrack) {
+			// create normal wave of scourge ranged + siege creeps
+			LineCreepDatabase.createScourgeRangedCreeps(botScourgeCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createScourgeSiegeCreeps(botScourgeCreeps, SIEGE_CREEP_NUMBER);
+			}
+		} else {
+			// create super wave of scourge ranged + siege creeps
+			LineCreepDatabase.createScourgeSuperRangedCreeps(botScourgeCreeps, RANGED_CREEP_NUMBER);
+			
+			// add siege creeps every 50 turns
+			if (GameFrame.turn % 50 == 0) {
+				LineCreepDatabase.createScourgeSuperSiegeCreeps(botScourgeCreeps, SIEGE_CREEP_NUMBER);
+			}
+		}
+		
+		// add targeted position
+		LineCreepDatabase.setScourgeBotCreepsTargets(botScourgeCreeps);
+		
+		// spawn!
+		spawn(scourgeBot, checkedPosition6, botScourgeCreeps);
+		
+		
 	}
 	
 
