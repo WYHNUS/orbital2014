@@ -98,7 +98,7 @@ Sell an equiped item for half of the original price
 
 3.3 Move
 Hero can move through the movable game grid frame and each movement event consumes AP
-Consume AP = MIN_MOVEMENT_CONSUME_ + (1 - movementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP
+Consume AP = MIN_MOVEMENT_CONSUME_AP + (1 - movementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP
 
 
 3.4 Physocal Attack

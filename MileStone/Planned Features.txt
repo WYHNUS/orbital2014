@@ -109,6 +109,15 @@ Allow player to game with AI. (one on one) (both in PC and in Android)
 Feature 14:
 Design help menu to show game features and how to play the game. (both in PC and in Android)
 
+Feature 15:
+More advanced line creep AI. (both in PC and in Android)
+
+Feature 16:
+Design and add neutral creeps. (both in PC and in Android)
+
+Feature 17:
+Design neutral creeps AI. (both in PC and in Android)
+
 
 In Addition :
 Port all existing Game Logic in PC to Android
@@ -120,17 +129,8 @@ Port all existing Game Logic in PC to Android
 
 Be-A-Real-Game Features (to be done before splash-down):
 
-Feature 15:
-Allow player to game with AI. (team fight) (both in PC and in Android)
-
-Feature 16:
-Design and add neutral creeps. (both in PC and in Android)
-
-Feature 17:
-Design neutral creeps AI. (both in PC and in Android)
-
 Feature 18:
-More advanced line creep AI. (team fight) (both in PC and in Android)
+Allow player to game with AI. (team fight) (both in PC and in Android)
 
 Feature 19:
 More advanced hero AI. (team fight) (both in PC and in Android)
