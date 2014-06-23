@@ -12,7 +12,7 @@
 #include <exception>
 #include <GLES2/gl2.h>
 
-void readPNG(zip_file *zf, const int textureHandler) {
+void readPNG(zip_file *zf, const int textureHandler, unsigned int &textureWidth, unsigned int &textureHeight) {
 	png_byte header[8];
 	// read header
 	zip_fread(zf, header, 8);
@@ -40,6 +40,8 @@ void readPNG(zip_file *zf, const int textureHandler) {
 	png_uint_32 width, height;
 	png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type, NULL, NULL, NULL);
 	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Width %d, Height %d, BitDepth %d", width, height, bit_depth);
+	textureWidth = width;
+	textureHeight = height;
 	// adjust image
 	// transparency -> alpha
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
@@ -199,7 +201,6 @@ void readOBJ(zip_file *zf, size_t fileSize, GLuint bufferHandler, unsigned int &
 		vAttribute = new float[faces->size() * 30];
 		for (int i = 0; i < faces->size(); i++)
 			for (int j = 0; j < 3; j++) {
-//				__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Face %d %d/%d/%d", i, faces->at(i)[j * 3], faces->at(i)[j * 3 + 1], faces->at(i)[j * 3 + 2]);
 				// vertex
 				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j * 3] - 1)[0];
 				vAttribute[offset++] = vertexPosition->at(faces->at(i)[j * 3] - 1)[1];
@@ -308,7 +309,7 @@ ResourceManager::ResourceManager(const char * const pathToPkg) {
 					glGenTextures(1, tex);
 					textureHandlers[textureName] = tex[0];
 					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Texture GLuint: %d", textureHandlers[textureName]);
-					readPNG(zf, textureHandlers[textureName]);
+					readPNG(zf, textureHandlers[textureName], textureWidths[textureName], textureHeights[textureName]);
 				} else
 					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", textureFile.c_str());
 			}
@@ -335,7 +336,7 @@ ResourceManager::~ResourceManager() {
 	delete[] buf;
 }
 
-GLuint ResourceManager::getTextureHandler(const std::string& name) {
+GLuint ResourceManager::getTextureHandler(const std::string &name) {
 	const auto &itr = textureHandlers.find(name);
 	if (itr != textureHandlers.end())
 		return itr->second;
@@ -343,7 +344,23 @@ GLuint ResourceManager::getTextureHandler(const std::string& name) {
 		return 0;
 }
 
-GLuint ResourceManager::getModelHandler(const std::string& name) {
+unsigned int ResourceManager::getTextureWidth(const std::string &name) {
+	const auto &itr = textureWidths.find(name);
+	if (itr != textureWidths.end())
+		return itr->second;
+	else
+		return 0;
+}
+
+unsigned int ResourceManager::getTextureHeight(const std::string &name) {
+	const auto &itr = textureHeights.find(name);
+	if (itr != textureHeights.end())
+		return itr->second;
+	else
+		return 0;
+}
+
+GLuint ResourceManager::getModelHandler(const std::string &name) {
 	const auto &itr = modelHandlers.find(name);
 	if (itr != modelHandlers.end())
 		return itr->second;
@@ -351,7 +368,7 @@ GLuint ResourceManager::getModelHandler(const std::string& name) {
 		return 0;
 }
 
-unsigned int ResourceManager::getModelSize(const std::string& name) {
+unsigned int ResourceManager::getModelSize(const std::string &name) {
 	const auto &itr = modelSizes.find(name);
 	if (itr != modelSizes.end())
 		return itr->second;

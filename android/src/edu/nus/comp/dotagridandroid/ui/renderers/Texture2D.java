@@ -21,8 +21,10 @@ public class Texture2D implements Closeable {
 		GLUtils.texImage2D(GL_TEXTURE_2D, 0, image, 0);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
-	public Texture2D(int textureHandler) {
+	public Texture2D(int textureHandler, int width, int height) {
 		this.textureHandler = textureHandler;
+		this.width = width;
+		this.height = height;
 		this.managed = true;
 	}
 	public int getWidth() {return width;}

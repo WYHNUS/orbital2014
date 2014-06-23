@@ -82,10 +82,6 @@ public class GridRenderer implements Renderer {
 	private final Map<String, Integer> shadowMaps = new ConcurrentHashMap<>();
 	private final float[] lightProjection;
 	// drawables
-//	private final Map<String, FloatBuffer>
-//		drawableVertex = new ConcurrentHashMap<>(),
-//		drawableTextureCoord = new ConcurrentHashMap<>(),
-//		drawableNormal = new ConcurrentHashMap<>();
 	private final Map<String, Integer> drawableModelHandlers = new ConcurrentHashMap<>();
 	private final Map<String, Integer> drawableModelSizes = new ConcurrentHashMap<>();
 	private final Map<String, String> drawableTexture = new ConcurrentHashMap<>();
@@ -137,7 +133,7 @@ public class GridRenderer implements Renderer {
 			lightRadius = BASE_ZOOM_FACTOR * LIGHT_MAX_RADIUS * 2 / columns;
 		else
 			lightRadius = BASE_ZOOM_FACTOR * LIGHT_MAX_RADIUS * 2 / rows;
-		lightProjection = FlatPerspectiveMatrix4x4(BOARD_Z_COORD * .5f, 2, -lightRadius, lightRadius, lightRadius, -lightRadius);
+		lightProjection = FlatPerspectiveMatrix4x4(.01f, 2, -lightRadius, lightRadius, lightRadius, -lightRadius);
 		int[] buf = new int[1];
 		glGenBuffers(1, buf, 0);
 		mapVBO = buf[0];
@@ -243,9 +239,9 @@ public class GridRenderer implements Renderer {
 						mapTerrain[4 * (cellOffset + arrWidth * s + t)] = (j + t / (float) resolution + .5f) / columns * 2 - 1;
 						mapTerrain[4 * (cellOffset + arrWidth * s + t) + 1] = (i + s / (float) resolution + .5f) / rows * 2 - 1;
 						mapTerrain[4 * (cellOffset + arrWidth * s + t) + 2]
-								= (bicubic(terrain[i * columns + j], terrain[i * columns + j + 1],
+								= bicubic(terrain[i * columns + j], terrain[i * columns + j + 1],
 										terrain[(i + 1) * columns + j], terrain[(i + 1) * columns + j + 1],
-										t / (float) resolution, s / (float) resolution));// - 1) * BOARD_Z_COORD;
+										t / (float) resolution, s / (float) resolution);
 						mapTerrain[4 * (cellOffset + arrWidth * s + t) + 3] = 1;
 					}
 			}
@@ -257,7 +253,7 @@ public class GridRenderer implements Renderer {
 				// bottom left
 				mapTerrain[4 * offset] = t / (float) resolution / columns * 2 - 1;
 				mapTerrain[4 * offset + 1] = s / (float) resolution / rows * 2 - 1;
-				mapTerrain[4 * offset + 2] = (terrain[0]);// - 1);// * BOARD_Z_COORD;
+				mapTerrain[4 * offset + 2] = terrain[0];
 				mapTerrain[4 * offset + 3] = 1;
 				// bottom right
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2)]
@@ -265,14 +261,14 @@ public class GridRenderer implements Renderer {
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2) + 1]
 						= s / (float) resolution / rows * 2 - 1;
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2) + 2]
-						= (terrain[columns - 1]);// - 1);// * BOARD_Z_COORD;
+						= terrain[columns - 1];
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2) + 3]
 						= 1;
 				//top left
 				offset += (rows - 1) * arrWidth * resolution + resolution / 2 * arrWidth;
 				mapTerrain[4 * offset] = t / (float) resolution / columns * 2 - 1;
 				mapTerrain[4 * offset + 1] = (rows - 1 + .5f + s / (float) resolution) / rows * 2 - 1;
-				mapTerrain[4 * offset + 2] = (terrain[(rows - 1) * columns]);// - 1);// * BOARD_Z_COORD;
+				mapTerrain[4 * offset + 2] = terrain[(rows - 1) * columns];
 				mapTerrain[4 * offset + 3] = 1;
 				// top right
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2)]
@@ -280,7 +276,7 @@ public class GridRenderer implements Renderer {
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2) + 1]
 						= (rows - 1 + .5f + s / (float) resolution) / rows * 2 - 1;
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2) + 2]
-						= (terrain[rows * columns - 1]);// - 1);// * BOARD_Z_COORD;
+						= terrain[rows * columns - 1];
 				mapTerrain[4 * (offset + (columns - 1) * resolution + resolution / 2) + 3]
 						= 1;
 			}
@@ -293,9 +289,9 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * cellOffset] = t / (float) resolution / columns * 2 - 1;
 					mapTerrain[4 * cellOffset + 1] = (i + .5f + s / (float) resolution) / rows * 2 - 1;
 					mapTerrain[4 * cellOffset + 2]
-							= (bicubic(terrain[i * columns], terrain[i * columns],
+							= bicubic(terrain[i * columns], terrain[i * columns],
 									terrain[(i + 1) * columns], terrain[(i + 1) * columns],
-									0, s / (float) resolution));// - 1);// * BOARD_Z_COORD;
+									0, s / (float) resolution);
 					mapTerrain[4 * cellOffset + 3] = 1;
 					// right side
 					mapTerrain[4 * (cellOffset + (columns - 1) * resolution + resolution / 2)]
@@ -303,9 +299,9 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * (cellOffset + (columns - 1) * resolution + resolution / 2) + 1]
 							= (i + .5f + s / (float) resolution) / rows * 2 - 1;
 					mapTerrain[4 * (cellOffset + (columns - 1) * resolution + resolution / 2) + 2]
-							= (bicubic (terrain[(i + 1) * columns - 1], terrain[(i + 1) * columns - 1],
+							= bicubic (terrain[(i + 1) * columns - 1], terrain[(i + 1) * columns - 1],
 									terrain[(i + 2) * columns - 1], terrain[(i + 2) * columns - 1],
-									0, s / (float) resolution));// - 1);// * BOARD_Z_COORD;
+									0, s / (float) resolution);
 					mapTerrain[4 * (cellOffset + (columns - 1) * resolution + resolution / 2) + 3]
 							= 1;
 				}
@@ -319,8 +315,8 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * cellOffset] = (i + .5f + t / (float) resolution) / columns * 2 - 1;
 					mapTerrain[4 * cellOffset + 1] = s / (float) resolution / rows * 2 - 1;
 					mapTerrain[4 * cellOffset + 2]
-							= (bicubic (terrain[i], terrain[i + 1], terrain[i], terrain[i + 1],
-									t / (float) resolution, 0));// - 1);// * BOARD_Z_COORD;
+							= bicubic (terrain[i], terrain[i + 1], terrain[i], terrain[i + 1],
+									t / (float) resolution, 0);
 					mapTerrain[4 * cellOffset + 3] = 1;
 					// top side
 					mapTerrain[4 * (cellOffset + (rows - 1) * resolution * arrWidth + resolution * arrWidth / 2)]
@@ -328,9 +324,9 @@ public class GridRenderer implements Renderer {
 					mapTerrain[4 * (cellOffset + (rows - 1) * resolution * arrWidth + resolution * arrWidth / 2) + 1]
 							= (rows - 1 + .5f + s / (float) resolution) / rows * 2 - 1;
 					mapTerrain[4 * (cellOffset + (rows - 1) * resolution * arrWidth + resolution * arrWidth / 2) + 2]
-							= (bicubic (terrain[(rows - 1) * columns + i], terrain[(rows - 1) * columns + i + 1],
+							= bicubic (terrain[(rows - 1) * columns + i], terrain[(rows - 1) * columns + i + 1],
 									terrain[(rows - 1) * columns + i], terrain[(rows - 1) * columns + i + 1],
-									t / (float) resolution, 0));// - 1);// * BOARD_Z_COORD;
+									t / (float) resolution, 0);
 					mapTerrain[4 * (cellOffset + (rows - 1) * resolution * arrWidth + resolution * arrWidth / 2) + 3]
 							= 1;
 				}
@@ -351,7 +347,6 @@ public class GridRenderer implements Renderer {
 					}
 		c = 0;
 		mapBuf = BufferUtils.createFloatBuffer(8 * rows * resolution * arrWidth * 2);
-//		mapIndex = new int[rows * RESOLUTION * arrWidth * 2];
 		for (int i = 0; i < rows * resolution; i++) {
 			if ((i & 0x1) > 0)	// odd
 				for (int j = columns * resolution; j >= 0; j--) {
@@ -384,11 +379,7 @@ public class GridRenderer implements Renderer {
 		// for now, just draw everything
 		for (String name : chars.keySet()) {
 			final String charModelName = chars.get(name).getCharacterImage();
-//			final FloatBuffer[] charModel = manager.getCurrentGameState().getCharacterModel(charModelName);
 			final int[] pos = charPositions.get(name);
-//			drawableVertex.put(name, charModel[0]);
-//			drawableTextureCoord.put(name, charModel[1]);
-//			drawableNormal.put(name, charModel[2]);
 			drawableModelHandlers.put(name, manager.getCurrentGameState().getCharacterModel(charModelName));
 			drawableModelSizes.put(name, manager.getCurrentGameState().getCharacterModelSize(charModelName));
 			drawableTexture.put(name, charModelName);
@@ -426,7 +417,7 @@ public class GridRenderer implements Renderer {
 		textRender.setRenderReady();
 		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
 		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-1, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
-		mapTexture = textures.get("GridMapBackground");
+		mapTexture = manager.getCurrentGameState().getModelTexture("GridMapBackground");
 		normalGen = new NormalGenerator(columns, rows, resolution, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
 		normalGen.setRenderReady();
 		mapTerrain = mapNormalCoord = mapTextureCoord = null;
@@ -502,7 +493,8 @@ public class GridRenderer implements Renderer {
 			specular = glGetUniformLocation(mapProgram.getProgramId(), "light.specular"),
 			attenuation = glGetUniformLocation(mapProgram.getProgramId(), "light.attenuation"),
 			mLight = glGetUniformLocation(mapProgram.getProgramId(), "lightTransform");
-		glBlendFunc(GL_ONE, GL_ONE);
+		boolean firstTime = true;
+//		glBlendFunc(GL_ONE, GL_ONE);
 		glUseProgram(mapProgram.getProgramId());
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, view, 0);
@@ -559,15 +551,10 @@ public class GridRenderer implements Renderer {
 		mLight = glGetUniformLocation(shadowObjProgram.getProgramId(), "lightTransform");
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
-//		for (String key : drawableVertex.keySet()) {
 		for (String key : drawableModelHandlers.keySet()) {
 			if (!drawableVisible.get(key))
 				continue;
 			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
-//			final FloatBuffer fBuf = drawableVertex.get(key);
-//			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
-//			glVertexAttribPointer(vNormal, 4, GL_FLOAT, false, 0, drawableNormal.get(key).position(0));
-//			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, drawableTextureCoord.get(key).position(0));
 			glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
 			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
 			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 4);
@@ -590,7 +577,6 @@ public class GridRenderer implements Renderer {
 					glUniform3f(color, config[3], config[4], config[5]);
 					glUniform1f(specular, config[6]);
 					glUniform1f(attenuation, config[7]);
-//					glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
 					glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
 				}
 			glDisableVertexAttribArray(vPosition);
@@ -680,8 +666,6 @@ public class GridRenderer implements Renderer {
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, lightView, 0);
 		glUniformMatrix4fv(mProjection, 1, false, lightProjection, 0);
-//		glBindBuffer(GL_ARRAY_BUFFER, 0);
-//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, mapTerrainBuf.position(0));
 		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
 		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 8, 0);
 		glEnableVertexAttribArray(vPosition);
@@ -690,15 +674,11 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		// drawables
-//		for (String key : drawableVertex.keySet()) {
 		for (String key : drawableModelHandlers.keySet()) {
 			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
-//			final FloatBuffer fBuf = drawableVertex.get(key);
-//			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, fBuf.position(0));
 			glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
 			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
 			glEnableVertexAttribArray(vPosition);
-//			glDrawArrays(GL_TRIANGLES, 0, fBuf.capacity() / 4);
 			glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
 			glDisableVertexAttribArray(vPosition);
 		}

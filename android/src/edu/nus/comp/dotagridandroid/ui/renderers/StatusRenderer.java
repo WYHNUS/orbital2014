@@ -227,7 +227,7 @@ public class StatusRenderer implements Renderer {
 		glEnableVertexAttribArray(vPosition);
 		glEnableVertexAttribArray(textureCoord);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures.get("StatusControlBackground").getTexture());
+		glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture("GridMapBackground").getTexture());//textures.get("StatusControlBackground").getTexture());
 		glUniform1i(texture, 0);
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, identity, 0);

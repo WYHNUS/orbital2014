@@ -14,13 +14,15 @@
 #include <GLES2/gl2.h>
 class ResourceManager {
 	std::map<std::string, GLuint> textureHandlers, modelHandlers;
-	std::map<std::string, unsigned int> modelSizes;
+	std::map<std::string, unsigned int> modelSizes, textureWidths, textureHeights;
 public:
 	explicit ResourceManager(const char * const path = "/sdcard/dotagrid/default.zip");
 	virtual ~ResourceManager();
 	GLuint getTextureHandler(const std::string&);
 	GLuint getModelHandler(const std::string&);
 	GLuint getModelSize(const std::string&);
+	unsigned int getTextureWidth(const std::string&);
+	unsigned int getTextureHeight(const std::string&);
 };
 
 #endif /* RESOURCEMANAGER_H_ */

@@ -188,6 +188,24 @@ Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getTextureHandler(J
 }
 
 JNIEXPORT jlong JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getTextureWidth(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
+	const char *textureName = env->GetStringUTFChars(name, 0);
+	ResourceManager *man = (ResourceManager*)ptr;
+	jlong ret = man->getTextureWidth(std::string(textureName));
+	env->ReleaseStringUTFChars(name, textureName);
+	return ret;
+}
+
+JNIEXPORT jlong JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getTextureHeight(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
+	const char *textureName = env->GetStringUTFChars(name, 0);
+	ResourceManager *man = (ResourceManager*)ptr;
+	jlong ret = man->getTextureHeight(std::string(textureName));
+	env->ReleaseStringUTFChars(name, textureName);
+	return ret;
+}
+
+JNIEXPORT jlong JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getModelHandler(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
 	const char *textureName = env->GetStringUTFChars(name, 0);
 	ResourceManager *man = (ResourceManager*)ptr;

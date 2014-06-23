@@ -6,14 +6,15 @@ public class GameMaster {
 	public void applyRule(GameState stateMachine, String actionName, Map<String, Object> options) {
 		final String playerCharName = stateMachine.getPlayerCharacterName(); 
 		final Character playerChar = stateMachine.getCharacters().get(playerCharName);
-		final int[] prevPos = stateMachine.getCharacterPositions().get(stateMachine.getPlayerCharacterName());
+		final int[]
+				prevPos = stateMachine.getCharacterPositions().get(stateMachine.getPlayerCharacterName()),
+				reqPos = stateMachine.getChosenGrid();
 		switch (actionName) {
 		case "ChooseGrid": {
 			stateMachine.notifyUpdate(Collections.singletonMap("ChosenGrid", options.get("Coordinate")));
 			break;
 		}
 		case "RequestAttackArea": {
-			Map<String, Object> updates = new HashMap<>();
 			// TODO: calculate attack area
 			List<List<Integer>> allowed = new ArrayList<>();
 			final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
@@ -22,12 +23,26 @@ public class GameMaster {
 				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
 					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
 						allowed.add(Arrays.asList(prevPos[0] + i, prevPos[1] + j));
-			updates.put("HighlightGrid", Collections.unmodifiableList(allowed));
-			stateMachine.notifyUpdate(Collections.unmodifiableMap(updates));
+			stateMachine.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
 			return;
 		}
 		case "RequestMoveArea": {
 			System.out.println("Requesting move area");
+			List<List<Integer>> allowed = new ArrayList<>();
+			if (reqPos[0] >= 0 && reqPos[0] < stateMachine.getGridWidth() && reqPos[1] >= 0 && reqPos[1] < stateMachine.getGridHeight()) {
+				final double[] APmap = getLowestMoveAPConsumptionMap(
+						prevPos, null, stateMachine.getTerrain(), stateMachine.getGridWidth(), stateMachine.getGridHeight(), playerChar);
+				int column = 0, row = 0;
+				for (int i = 0; i < stateMachine.getGridWidth() * stateMachine.getGridHeight(); i++) {
+					column++;
+					if (column == stateMachine.getGridWidth()) {
+						column = 0; row++;
+					}
+					if (APmap[i] <= playerChar.getCurrentActionPoint())
+						allowed.add(Arrays.asList(column, row));
+				}
+				stateMachine.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
+			}
 			return;
 		}
 		case "RequestItemShop": {
@@ -47,7 +62,6 @@ public class GameMaster {
 					return;
 				case "Move": {
 					System.out.println("Game action is move");
-					final int[] reqPos = stateMachine.getChosenGrid();
 //					// calculate AP
 					final double actionPointUsed = playerChar.APUsedInMovingOneGrid() * (Math.abs(reqPos[0] - prevPos[0]) + Math.abs(reqPos[1] - prevPos[1]));
 					final double currentActionPoint = playerChar.getCurrentActionPoint() - actionPointUsed;
@@ -103,7 +117,7 @@ public class GameMaster {
 		return true;
 	}
 	
-	private double findLowestMoveAPConsumption (int[] start, int[] end, float[] terrain, int width, int height, Character character) {
+	private double[] getLowestMoveAPConsumptionMap (int[] start, int[] end, float[] terrain, int width, int height, Character character) {
 		final int[][] dirs = new int[][] {{-1,0},{1,0},{0,-1},{0,1}};
 		final double TERRAIN_CONST = 1;	// TODO terrain factor
 		Queue<int[]> q = new LinkedList<>();
@@ -124,6 +138,6 @@ public class GameMaster {
 					}
 				}
 		}
-		return map[end[0] + end[1] * width];
+		return map;
 	}
 }

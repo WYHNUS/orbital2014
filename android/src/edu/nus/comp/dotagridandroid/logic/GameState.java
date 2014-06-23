@@ -142,9 +142,9 @@ public class GameState implements Closeable {
 //		Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
 //		Texture2D tex = new Texture2D (tempBitmap);
 //		tempBitmap.recycle();
-		objTextures.put("Terrain", new Texture2D(resMan.getTexture("GridMapBackground")));
-		objTextures.put("MyHeroModel", new Texture2D(resMan.getTexture("MyHeroModel")));;
-		objTextures.put("GridMapBackground", new Texture2D(resMan.getTexture("MyHeroModel")));
+//		objTextures.put("Terrain", new Texture2D(resMan.getTexture("GridMapBackground")));
+//		objTextures.put("MyHeroModel", new Texture2D(resMan.getTexture("MyHeroModel")));;
+//		objTextures.put("GridMapBackground", new Texture2D(resMan.getTexture("MyHeroModel")));
 		initialised = true;
 	}
 	
@@ -256,7 +256,8 @@ public class GameState implements Closeable {
 	}
 	
 	public Texture2D getModelTexture(String name) {
-		return objTextures.get(name);
+		return new Texture2D(resMan.getTexture(name), resMan.getTextureWidth(name), resMan.getTextureHeight(name));
+//		return objTextures.get(name);
 	}
 	
 	public Texture2D getModelThumbnail(String name) {
