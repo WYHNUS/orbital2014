@@ -78,7 +78,7 @@ public class GameState implements Closeable {
 				100,
 				100,
 				100,
-				2,
+				1,
 				100,
 				100,
 				100,

@@ -493,8 +493,9 @@ public class GridRenderer implements Renderer {
 			specular = glGetUniformLocation(mapProgram.getProgramId(), "light.specular"),
 			attenuation = glGetUniformLocation(mapProgram.getProgramId(), "light.attenuation"),
 			mLight = glGetUniformLocation(mapProgram.getProgramId(), "lightTransform");
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		boolean firstTime = true;
-//		glBlendFunc(GL_ONE, GL_ONE);
+		glBlendFunc(GL_ONE, GL_ONE);
 		glUseProgram(mapProgram.getProgramId());
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, view, 0);
@@ -528,6 +529,10 @@ public class GridRenderer implements Renderer {
 			glUniform1f(specular, config[6]);
 			glUniform1f(attenuation, config[7]);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * resolution * (columns * resolution + 1) * 2);
+			if (firstTime) {
+				glBlendFunc(GL_ONE, GL_ONE);
+				firstTime = false;
+			}
 		}
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
@@ -554,6 +559,9 @@ public class GridRenderer implements Renderer {
 		for (String key : drawableModelHandlers.keySet()) {
 			if (!drawableVisible.get(key))
 				continue;
+			firstTime = true;
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			
 			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
 			glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
 			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
@@ -578,6 +586,11 @@ public class GridRenderer implements Renderer {
 					glUniform1f(specular, config[6]);
 					glUniform1f(attenuation, config[7]);
 					glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
+					
+					if (firstTime) {
+						glBlendFunc(GL_ONE, GL_ONE);
+						firstTime = false;
+					}
 				}
 			glDisableVertexAttribArray(vPosition);
 			glDisableVertexAttribArray(vNormal);
