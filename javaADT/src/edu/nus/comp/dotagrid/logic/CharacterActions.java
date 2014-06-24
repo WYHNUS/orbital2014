@@ -189,6 +189,10 @@ public class CharacterActions {
 				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setMoney(
 						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getMoney() 
 						- GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
+				
+				// reset hero's HP
+				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setCurrentHP(
+						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getmaxHP());
 							
 				// check if the dead hero is player's hero
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {

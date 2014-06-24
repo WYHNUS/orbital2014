@@ -217,17 +217,17 @@ public class GridButtonActions {
 		
 		// properties that only hero possess
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {
-			Hero tempHero = new Hero(((Hero)character));
-			updateInfo(tempHero);
+			
+			// update character's information
+			((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).updateHeroAttributeInfo();
+			Hero heroCharacter = new Hero((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
+			updateInfo(heroCharacter);
 		}
 
 	}
 	
 	
 	private void updateInfo(Hero hero) {
-
-		// update character's information
-		hero.updateHeroAttributeInfo();
 		
 		GameFrame.allCharacterInfoGameButtons.get(2).setString("HP : " + hero.getCurrentHP() + " / " + hero.getmaxHP());
 		GameFrame.allCharacterInfoGameButtons.get(3).setString("MP : " + hero.getCurrentMP() + " / " + hero.getmaxMP());

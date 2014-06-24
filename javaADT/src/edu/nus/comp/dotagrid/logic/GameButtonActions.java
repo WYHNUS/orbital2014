@@ -222,9 +222,6 @@ public class GameButtonActions {
 		GameFrame.turn++;
 		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.turn);
 
-		// spawn a new wave of creeps
-		LineCreepSpawnPoint.spawnNewWave();
-		
 		// update reviveQueue
 		for (Iterator<Pair<Hero, Integer>> iterator = Hero.reviveQueue.iterator(); iterator.hasNext();) {
 			Pair<Hero, Integer> element = iterator.next();
@@ -257,7 +254,9 @@ public class GameButtonActions {
 				}
 			}
 		}
-		
+
+		// spawn a new wave of creeps
+		LineCreepSpawnPoint.spawnNewWave();
 		
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 

@@ -15,3 +15,7 @@ http://ovcharov.me/2011/01/14/android-opengl-es-ray-picking/
 
 4. stackoverflow.com
 http://www.songho.ca/opengl/gl_projectionmatrix.html
+
+
+5. recording software in PC
+http://baike.baidu.com/view/946272.htm?fr=aladdin
