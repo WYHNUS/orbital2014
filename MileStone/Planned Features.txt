@@ -81,6 +81,8 @@ Customisable Map Mesh  (both in PC and in Android)
 Feature 9.2:
 Better Graphics: Lighting  (in Android)
 
+Feature 10:
+Design rudimentary line creeps AI. (in PC)
 
 
 
@@ -94,9 +96,6 @@ Design a few usable items  (both in PC and in Android)
 
 Feature #6.8:
 Action : use usable item   (both in PC and in Android)
-
-Feature 10:
-Design rudimentary line creeps AI. (both in PC and in Android)
 
 Feature 11:
 Design a more detailed map with better graphics. (both in PC and in Android)

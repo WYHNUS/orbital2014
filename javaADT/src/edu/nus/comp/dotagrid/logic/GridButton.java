@@ -193,7 +193,13 @@ public class GridButton {
 		this.setIsMovable(true);
 		this.setIsOccupied(true);
 		this.setIsPlayer(false);
-		this.setIsHero(true);
+		
+		if (chara instanceof Hero) {
+			this.setIsHero(true);
+		} else {
+			this.setIsHero(false);
+		}
+		
 		this.setCharacter(chara);
 		this.gridButtonActions = null;
 	}

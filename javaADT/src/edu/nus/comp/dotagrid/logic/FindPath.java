@@ -13,12 +13,11 @@ public class FindPath {
 	
 	public Queue<int[]> pathQueue;
 	
-	
 	// constructors
 	public FindPath(){}
 	
-	public FindPath(int movementPoint) {
-		pathLength = 1 + movementPoint * 2;
+	public FindPath(int searchRange) {
+		pathLength = 1 + searchRange * 2;
 		path = new int[pathLength][pathLength];
 		
 		// reset the 2D array
@@ -28,8 +27,8 @@ public class FindPath {
 			}
 		}
 		
-		pathXPos = movementPoint;
-		pathYPos = movementPoint;
+		pathXPos = searchRange;
+		pathYPos = searchRange;
 		
 		// set the starting position to be 0
 		path[pathXPos][pathYPos] = 0;
@@ -91,91 +90,88 @@ public class FindPath {
 	
 	
 	// find shortest path between two points
-	public int findShortestPath(int startingXPos, int startingYPos, int XPos, int YPos, int movementPoint){
-		createShortestPath(pathXPos, pathYPos, startingXPos, startingYPos, movementPoint);
-		return path[XPos - startingXPos + movementPoint][YPos - startingYPos + movementPoint];
+	public int findShortestPath(int startingXPos, int startingYPos, int XPos, int YPos){
+		createShortestPath(pathXPos, pathYPos, startingXPos, startingYPos);
+		return path[XPos - startingXPos + (pathLength-1)/2][YPos - startingYPos + (pathLength-1)/2];
 	}
 	
 
 	// create path int-2D-array which store the shortest path to each grid
-	private void createShortestPath(int pathXPos, int pathYPos, int startingXPos, int startingYPos, int movementPoint) {
+	private void createShortestPath(int pathXPos, int pathYPos, int startingXPos, int startingYPos) {
+		// can move only if the grid is movable and not occupied
+		// and only need to calculate if the position has not been calculated before
 		
-		// base case :
-		if (movementPoint <= 0) {
-			// no need to do anything
-		} else {
-			
-			// can move only if the grid is movable and not occupied
-			// and only need to calculate if the position has not been calculated before
-
+		// cannot go beyond the 2D array size (same length for x and y)
+		if (pathXPos-1 >=0 && pathXPos-1 < path.length && pathYPos >= 0 && pathYPos < path.length) {
 			if (GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsMovable() == true 
-				&& GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsOccupied() == false
-				&& path[pathXPos-1][pathYPos] == -1) {
-				
-					// set the value for this position
-					setPathValue(pathXPos-1, pathYPos, pathLength);
+					&& GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsOccupied() == false
+					&& path[pathXPos-1][pathYPos] == -1) {
 					
-					int[] tempArray = new int[5];
-					tempArray[0] = pathXPos-1;
-					tempArray[1] = pathYPos;
-					tempArray[2] = startingXPos-1;
-					tempArray[3] = startingYPos;
-					tempArray[4] = movementPoint-1;
-					
-					pathQueue.add(tempArray);
+				// set the value for this position
+				setPathValue(pathXPos-1, pathYPos, pathLength);
+						
+				int[] tempArray = new int[5];
+				tempArray[0] = pathXPos-1;
+				tempArray[1] = pathYPos;
+				tempArray[2] = startingXPos-1;
+				tempArray[3] = startingYPos;
+						
+				pathQueue.add(tempArray);
 			}
-				
+		}
+			
+		if (pathXPos >=0 && pathXPos < path.length && pathYPos-1 >= 0 && pathYPos-1 < path.length) {
 			if (GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsMovable() == true 
-				&& GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsOccupied() == false
-				&& path[pathXPos][pathYPos-1] == -1) {
-				
-					// set the value for this position
-					setPathValue(pathXPos, pathYPos-1, pathLength);
+					&& GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsOccupied() == false
+					&& path[pathXPos][pathYPos-1] == -1) {
 					
-					int[] tempArray = new int[5];
-					tempArray[0] = pathXPos;
-					tempArray[1] = pathYPos-1;
-					tempArray[2] = startingXPos;
-					tempArray[3] = startingYPos-1;
-					tempArray[4] = movementPoint-1;
+				// set the value for this position
+				setPathValue(pathXPos, pathYPos-1, pathLength);
+						
+				int[] tempArray = new int[5];
+				tempArray[0] = pathXPos;
+				tempArray[1] = pathYPos-1;
+				tempArray[2] = startingXPos;
+				tempArray[3] = startingYPos-1;
+						
+				pathQueue.add(tempArray);
 					
-					pathQueue.add(tempArray);
-				
 			}
-			
+		}
+				
+		if (pathXPos >=0 && pathXPos < path.length && pathYPos+1 >= 0 && pathYPos+1 < path.length) {
 			if (GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsMovable() == true 
-				&& GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsOccupied() == false
-				&& path[pathXPos][pathYPos+1] == -1) {
-				
-					// set the value for this position
-					setPathValue(pathXPos, pathYPos+1, pathLength);
+					&& GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsOccupied() == false
+					&& path[pathXPos][pathYPos+1] == -1) {
 					
-					int[] tempArray = new int[5];
-					tempArray[0] = pathXPos;
-					tempArray[1] = pathYPos+1;
-					tempArray[2] = startingXPos;
-					tempArray[3] = startingYPos+1;
-					tempArray[4] = movementPoint-1;
-					
-					pathQueue.add(tempArray);
+				// set the value for this position
+				setPathValue(pathXPos, pathYPos+1, pathLength);
+						
+				int[] tempArray = new int[5];
+				tempArray[0] = pathXPos;
+				tempArray[1] = pathYPos+1;
+				tempArray[2] = startingXPos;
+				tempArray[3] = startingYPos+1;
+						
+				pathQueue.add(tempArray);
 			} 
-			
+		}
+		
+		if (pathXPos+1 >=0 && pathXPos+1 < path.length && pathYPos >= 0 && pathYPos < path.length) {
 			if (GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsMovable() == true 
-				&& GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsOccupied() == false
-				&& path[pathXPos+1][pathYPos] == -1) {
-				
-					// set the value for this position
-					setPathValue(pathXPos+1, pathYPos, pathLength);
+					&& GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsOccupied() == false
+					&& path[pathXPos+1][pathYPos] == -1) {
 					
-					int[] tempArray = new int[5];
-					tempArray[0] = pathXPos+1;
-					tempArray[1] = pathYPos;
-					tempArray[2] = startingXPos+1;
-					tempArray[3] = startingYPos;
-					tempArray[4] = movementPoint-1;
-					
-					pathQueue.add(tempArray);
+				// set the value for this position
+				setPathValue(pathXPos+1, pathYPos, pathLength);
 				
+				int[] tempArray = new int[5];
+				tempArray[0] = pathXPos+1;
+				tempArray[1] = pathYPos;
+				tempArray[2] = startingXPos+1;
+				tempArray[3] = startingYPos;
+						
+				pathQueue.add(tempArray);
 			}
 		}
 		
@@ -183,7 +179,7 @@ public class FindPath {
 			// queue is empty, no more path!
 			return;
 		} else {
-			createShortestPath(pathQueue.peek()[0], pathQueue.peek()[1], pathQueue.peek()[2], pathQueue.peek()[3], pathQueue.poll()[4]);
+			createShortestPath(pathQueue.peek()[0], pathQueue.peek()[1], pathQueue.peek()[2], pathQueue.poll()[3]);
 		}
 	}
 

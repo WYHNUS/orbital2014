@@ -154,7 +154,7 @@ public class GameButtonActions {
 			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getUnusedSkillCount() > 0) {
 				readyToUpgradeSkill = true;
 			} else {
-				JOptionPane.showMessageDialog(null, "You don't have any unused skill!");
+				JOptionPane.showMessageDialog(null, "You don't have any unused skill point!");
 			}
 		}
 	}
