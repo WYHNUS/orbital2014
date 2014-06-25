@@ -2,9 +2,7 @@ package edu.nus.comp.dotagridandroid.logic;
 import java.nio.FloatBuffer;
 import java.util.*;
 import java.util.concurrent.*;
-
-import android.content.Context;
-import android.graphics.*;
+import java.lang.reflect.*;
 import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
@@ -15,10 +13,10 @@ public class GameState implements Closeable {
 	private int gridWidth, gridHeight;
 	private String packagePath;
 	private float[] terrain;
-	private Context context;
 	private boolean initialised = false;
 	private SceneRenderer currentSceneRenderer;
-	private Map<String, Character> chars;
+	private List<String> roundOrder;
+	private Map<String, GameCharacter> chars;
 	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
@@ -28,20 +26,29 @@ public class GameState implements Closeable {
 	private ResourceManager resMan;
 	// game rule object
 	private GameMaster gameMaster;
-	private String playerCharacter;
+	private GameServer server;
+	private String playerCharacter, currentCharacter;
 	private int[] chosenGrid;
+	private boolean ownRound;
 	public GameState(String packagePath) {
 		this.packagePath = packagePath;
 	}
-	public void setContext(Context context) {
-		this.context = context;
+	public void attachServer(GameServer server) {
+		this.server = server;
+	}
+	public GameServer getServer() {
+		return server;
 	}
 	public void initialise(String playerCharacter) {
 		this.playerCharacter = playerCharacter;
-		if (initialised)
+		currentCharacter = playerCharacter;
+		if (initialised || server == null)
 			return;
-		resMan = AppNativeAPI.createResourceManager(null);
+		// TODO change this part
+		gameMaster = new GameMaster();	// TODO extended or basic?
+		resMan = AppNativeAPI.createResourceManager(packagePath);
 		chars = new ConcurrentHashMap<>();
+		roundOrder = new ArrayList<>();
 		objs = new ConcurrentHashMap<>();
 		objPositions = new ConcurrentHashMap<>();
 		objModels = new ConcurrentHashMap<>();
@@ -50,7 +57,6 @@ public class GameState implements Closeable {
 		posReverseLookup = new ConcurrentHashMap<>();
 		itemShop = new ConcurrentHashMap<>();
 		chosenGrid = new int[2];
-		gameMaster = new GameMaster();
 		// TODO load characters
 		chars.put("MyHero", new Hero("MyHero", 1, 0, "strength",
 				100,
@@ -91,35 +97,6 @@ public class GameState implements Closeable {
 		// TODO load character models
 		chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
 		chars.get("MyHero2").setCharacterImage("MyHeroModel");
-		objModels.put("MyHeroModel", new FloatBuffer[]{
-				// 0: vertex
-				BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-						-1,1,1,1, -1,-1,1,1, 1,-1,1,1, 1,-1,1,1, 1,1,1,1, -1,1,1,1,
-						1,1,1,1, 1,-1,1,1, 1,-1,-1,1, 1,-1,-1,1, 1,1,-1,1, 1,1,1,1,
-						1,1,-1,1, 1,-1,-1,1, -1,-1,-1,1, -1,-1,-1,1, -1,1,-1,1, 1,1,-1,1,
-						-1,1,-1,1, -1,-1,-1,1, -1,-1,1,1, -1,-1,1,1, -1,1,1,1, -1,1,-1,1,
-						-1,1,-1,1, -1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,-1,1, -1,1,-1,1,
-						-1,-1,1,1, -1,-1,-1,1, 1,-1,-1,1, 1,-1,-1,1, 1,-1,1,1, -1,-1,1,1
-				}),
-				// 1: texture
-				BufferUtils.createFloatBuffer(36 * 2).put(new float[]{
-						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-						0,0, 0,1, 1,1, 1,1, 1,0, 0,0,
-				}),
-				// 2: normal - vec4 - important!
-				BufferUtils.createFloatBuffer(36 * 4).put(new float[]{
-						0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0, 0,0,1,0,
-						1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0,
-						0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0, 0,0,-1,0,
-						-1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0, -1,0,0,0,
-						0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0, 0,1,0,0,
-						0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0, 0,-1,0,0
-				})
-		});
 		Item itm = new Item("TestItem", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		itm.setItemImage("DefaultButton");
 		itemShop.put("TestItem", itm);
@@ -136,15 +113,7 @@ public class GameState implements Closeable {
 		itm.setItemImage("DefaultButton");
 		itemShop.put("TestItem5", itm);
 		// end
-		chosenGrid = objPositions.get(GameState.this.playerCharacter).clone();
-		// load resources
-//		System.gc();
-//		Bitmap tempBitmap = BitmapFactory.decodeResource(context.getResources(), edu.nus.comp.dotagridandroid.R.drawable.reimu_original);
-//		Texture2D tex = new Texture2D (tempBitmap);
-//		tempBitmap.recycle();
-//		objTextures.put("Terrain", new Texture2D(resMan.getTexture("GridMapBackground")));
-//		objTextures.put("MyHeroModel", new Texture2D(resMan.getTexture("MyHeroModel")));;
-//		objTextures.put("GridMapBackground", new Texture2D(resMan.getTexture("MyHeroModel")));
+		chosenGrid = objPositions.get(playerCharacter).clone();
 		initialised = true;
 	}
 	
@@ -210,16 +179,94 @@ public class GameState implements Closeable {
 	}
 	
 	// characters
+	public String getCurrentCharacterName() {
+		return currentCharacter;
+	}
+	
 	public String getPlayerCharacterName() {
 		return playerCharacter;
 	}
 	
-	public Map<String, Character> getCharacters() {
+	public Map<String, GameCharacter> getCharacters() {
 		return Collections.unmodifiableMap(chars);
 	}
 	
 	public Map<String, int[]> getCharacterPositions() {
 		return Collections.unmodifiableMap(objPositions);
+	}
+	
+	// For Extension Engine Use
+	public Object getCharacterExtendedProperty(String type, GameCharacter character, String name) {
+		return null;
+	}
+	
+	public void setCharacterExtendedProperty(String type, GameCharacter character, String name, Object value) {
+		
+	}
+	
+	public Object getCharacterProperty(String type, GameCharacter character, String name) {
+		// call getter method through reflection
+		if (name == null || name.length() == 0)
+			return null;
+		// Method
+		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+		final Method[] methods;
+		// TODO add LineCreeps
+		if (character instanceof Hero) {
+			// Hero class
+			methods = Hero.class.getDeclaredMethods();
+		} else {
+			// Generic Character class
+			methods = GameCharacter.class.getDeclaredMethods();
+		}
+		for (Method m : methods) {
+			if (!m.getName().equals(methodName))
+				continue;
+			if (m.getGenericParameterTypes().length != 0)
+				continue;
+			try {
+				m.setAccessible(true);
+				return m.invoke(character);
+			} catch (Exception e) {
+				System.out.println("Property getter of '" + name + "' is not available.");
+				System.out.println(e.getCause().getMessage());
+			}
+		}
+		return null;
+	}
+	
+	public void setCharacterProperty(String type, GameCharacter character, String name, Object value) {
+		if (name == null || name.length() == 0 || value == null)
+			return;
+		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+		final Method[] methods;
+		// TODO add LineCreeps
+		if (character instanceof Hero) {
+			// Hero class
+			methods = Hero.class.getDeclaredMethods();
+		} else {
+			// Generic Character class
+			methods = GameCharacter.class.getDeclaredMethods();
+		}
+		for (Method m : methods) {
+			if (!m.getName().equals(methodName))
+				continue;
+			final Type[] params = m.getGenericParameterTypes();
+			if (m.getGenericReturnType() != void.class)
+				continue;
+			if (params.length != 1)
+				continue;
+			if (!value.getClass().isAssignableFrom(params[0].getClass()))
+				continue;
+			try {
+				m.setAccessible(true);
+				m.invoke(character);
+				return;
+			} catch (Exception e) {
+				System.out.println("Property getter of '" + name + "' is not available.");
+				System.out.println(e.getCause().getMessage());
+			}
+		}
 	}
 	
 	protected void setCharacterPositions(String name, int[] position) {
@@ -243,9 +290,28 @@ public class GameState implements Closeable {
 		return posReverseLookup.get(new GridPointIndex(position));
 	}
 	
-//	public Map<String, FloatBuffer[]> getCharacterModel(String name) {
-//		return objModels.get(name);
-//	}
+	public void addAutoCharacter(String name, GameCharacter character) {
+		chars.put(name, character);
+		roundOrder.add(name);
+	}
+	
+	// character actions
+	public void turnNextRound () {
+		int idx = roundOrder.indexOf(currentCharacter);
+		if (idx == roundOrder.size())
+			idx = 0;
+		else
+			idx++;
+		while (!chars.get(roundOrder.get(idx)).isAlive()) {
+			roundOrder.remove(idx);
+			if (idx == roundOrder.size())
+				idx = 0;
+		}
+		currentCharacter = roundOrder.get(idx);
+		gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
+	}
+		
+	// models and resources for rendering
 	
 	public int getCharacterModel(String name) {
 		return resMan.getModel(name);
@@ -257,7 +323,6 @@ public class GameState implements Closeable {
 	
 	public Texture2D getModelTexture(String name) {
 		return new Texture2D(resMan.getTexture(name), resMan.getTextureWidth(name), resMan.getTextureHeight(name));
-//		return objTextures.get(name);
 	}
 	
 	public Texture2D getModelThumbnail(String name) {
@@ -273,7 +338,7 @@ public class GameState implements Closeable {
 	public Map<String, Boolean> areActionPossible (Map<String, Map<String, Object>> actions) {
 		Map<String, Boolean> possible = new HashMap<>();
 		for (Map.Entry<String, Map<String,Object>> action : actions.entrySet())
-			possible.put(action.getKey(), gameMaster.requestActionPossible(this, action.getKey(), action.getValue()));
+			possible.put(action.getKey(), gameMaster.requestActionPossible(this, playerCharacter, action.getKey(), action.getValue()));
 		return Collections.unmodifiableMap(possible);
 	}
 	
@@ -296,13 +361,13 @@ public class GameState implements Closeable {
 		// interface
 		case "ChooseGrid":
 			this.chosenGrid = (int[]) e.data.extendedData.get("Coordinates");
-			gameMaster.applyRule(this, "ChooseGrid", e.data.extendedData);
+			gameMaster.applyRule(this, playerCharacter, "ChooseGrid", e.data.extendedData);
 			break;
 		case "RequestAttackArea":
-			gameMaster.applyRule(this, "RequestAttackArea", null);
+			gameMaster.applyRule(this, playerCharacter, "RequestAttackArea", null);
 			break;
 		case "RequestMoveArea":
-			gameMaster.applyRule(this, "RequestMoveArea", null);
+			gameMaster.applyRule(this, playerCharacter, "RequestMoveArea", null);
 			break;
 		case "RequestActionDetail":
 			break;
@@ -313,12 +378,12 @@ public class GameState implements Closeable {
 			break;
 		case "Cancel":
 			this.chosenGrid = new int[] {-1,-1};
-			gameMaster.applyRule(this, "Cancel", null);	// bounce back
+			gameMaster.applyRule(this, playerCharacter, "Cancel", null);	// bounce back
 			break;
 		// game action
 		case "GameAction":
 			// send to game master
-			gameMaster.applyRule(this, "GameAction", e.data.extendedData);
+			gameMaster.applyRule(this, playerCharacter, "GameAction", e.data.extendedData);
 			break;
 		case "GamePause":
 			// pause game

@@ -10,11 +10,13 @@
 #include <zip.h>
 #include <png.h>
 #include <map>
+#include <vector>
 #include <string>
 #include <GLES2/gl2.h>
 class ResourceManager {
 	std::map<std::string, GLuint> textureHandlers, modelHandlers;
 	std::map<std::string, unsigned int> modelSizes, textureWidths, textureHeights;
+	std::vector<char*> scripts;
 public:
 	explicit ResourceManager(const char * const path = "/sdcard/dotagrid/default.zip");
 	virtual ~ResourceManager();

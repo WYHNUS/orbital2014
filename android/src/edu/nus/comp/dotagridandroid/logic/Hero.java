@@ -2,7 +2,7 @@ package edu.nus.comp.dotagridandroid.logic;
 import java.util.*;
 import java.util.concurrent.*;
 
-public class Hero extends Character{
+public class Hero extends GameCharacter{
 	
 	public static ArrayList<Pair<Hero, Integer>> reviveQueue = new ArrayList<>();
 	
@@ -105,8 +105,8 @@ public class Hero extends Character{
 		this.setTotalAgility(this.getStartingAgility());
 		this.setTotalIntelligence(this.getStartingIntelligence());
 		
-		this.setBasicMainAttribute();
-		this.setTotalMainAttribute();
+		this.setBasicMainAttribute(null);
+		this.setTotalMainAttribute(null);
 		
 		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO));
 		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO));
@@ -159,8 +159,8 @@ public class Hero extends Character{
 		this.setTotalAgility(hero.getTotalAgility());
 		this.setTotalIntelligence(hero.getTotalIntelligence());
 		
-		this.setBasicMainAttribute();
-		this.setTotalMainAttribute();
+		this.setBasicMainAttribute(null);
+		this.setTotalMainAttribute(null);
 		
 		this.setmaxHP(hero.getmaxHP());
 		this.setmaxMP(hero.getmaxMP());
@@ -208,8 +208,8 @@ public class Hero extends Character{
 		this.setTotalAgility(this.getBasicAgility() + this.getTotalItemAddAgility());
 		this.setTotalIntelligence(this.getBasicIntelligence() + this.getTotalItemAddIntelligence());
 		
-		this.setBasicMainAttribute();
-		this.setTotalMainAttribute();
+		this.setBasicMainAttribute(null);
+		this.setTotalMainAttribute(null);
 		
 		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO + this.getTotalItemAddHP()));
 		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO + this.getTotalItemAddMP()));
@@ -270,7 +270,7 @@ public class Hero extends Character{
 	}
 
 
-	public void setBasicMainAttribute() {
+	public void setBasicMainAttribute(Object nothing) {	// TODO Not complying to bean rules
 		if (this.getMainAttribute().equalsIgnoreCase("strength")) {
 			this.basicMainAttribute = this.getBasicStrength();
 			
@@ -289,8 +289,8 @@ public class Hero extends Character{
 		return totalMainAttribute;
 	}
 
-
-	public void setTotalMainAttribute() {
+	// TODO not complying to bean rule
+	public void setTotalMainAttribute(Object nothing) {
 		if (this.getMainAttribute().equalsIgnoreCase("strength")) {
 			this.totalMainAttribute = this.getTotalStrength();
 			

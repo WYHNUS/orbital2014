@@ -1,6 +1,6 @@
 package edu.nus.comp.dotagridandroid.logic;
 
-public class Character extends GameObject {
+public class GameCharacter extends GameObject {
 	
 	// character compose of : LineCreeps, hero, tower and other buildings
 	
@@ -46,7 +46,7 @@ public class Character extends GameObject {
 	public static final double PHYSICAL_ATTACK_CONSUME_AP = 38.0;
 	
 	
-	public Character(String name, int bountyMoney, int startingHP, int startingMP, 
+	public GameCharacter(String name, int bountyMoney, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int actionPoint, int teamNumber)
 	{

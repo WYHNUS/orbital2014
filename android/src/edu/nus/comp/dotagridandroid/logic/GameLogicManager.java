@@ -14,6 +14,7 @@ public class GameLogicManager implements Closeable {
 	private GameState currentState;
 	private Context context;
 	private SoundEngine se;
+	private GameServer currentServer;
 
 	public GameLogicManager(Context context) {
 		this.context = context;
@@ -83,7 +84,9 @@ public class GameLogicManager implements Closeable {
 			currentState.close();
 		if (gameStates.containsKey(key)) {
 			currentState = gameStates.get(key);
-			currentState.setContext(context);
+			// TODO set up server according to saved state
+			currentServer = new GameServer(GameServer.MODE_SINGLEPLAYER);
+			currentState.attachServer(currentServer);
 		} else
 			currentState = null;
 	}

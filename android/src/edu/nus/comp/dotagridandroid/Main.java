@@ -37,7 +37,7 @@ public class Main extends Activity {
 			else if (!defaultPkg.isDirectory())
 				throw new RuntimeException("Please remove 'dotagrid' file in your external storage's root folder (REQUIRED)");
 			try {
-				InputStream in = getAssets().open("default.bin");
+				InputStream in = getAssets().open("default.obj");
 				FileOutputStream file = new FileOutputStream(pathToDefaultPkg);
 				byte[] buf = new byte[2048];
 				int count;

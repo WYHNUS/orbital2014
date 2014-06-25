@@ -8,7 +8,6 @@
 #include <cstdlib>
 #include <android/log.h>
 #include <sstream>
-#include <vector>
 #include <exception>
 #include <GLES2/gl2.h>
 
@@ -251,13 +250,38 @@ ResourceManager::ResourceManager(const char * const pathToPkg) {
 	zip_stat_init(&st);
 	zip_file *zf;
 	// index
-//	file = "modelIndex";
-//	zip_stat(z, file, 0, &st);
-//	zf = zip_fopen(z, file, 0);
-//	content = new char[st.size];
-//	zip_fread(zf, content, st.size);
-//	zip_fclose(zf);
 	// terrain data and map data
+	// script
+	file = "scriptIndex";
+	zip_stat(z, file, 0, &st);
+	content = new char[st.size + 1];
+	zf = zip_fopen(z, file, 0);
+	if (zf) {
+		zip_fread(zf, content, st.size);
+		zip_fclose(zf);
+		content[st.size] = 0;
+		contentStr = std::string(content);
+		delete[] content;
+		ss = new std::stringstream(contentStr);
+		while (!ss->eof()) {
+			std::string scriptFile;
+			*ss >> scriptFile;
+			__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load script %s", scriptFile.c_str());
+			if (scriptFile.size() > 0) {
+				zip_stat(z, scriptFile.c_str(), 0, &st);
+				zf = zip_fopen(z, scriptFile.c_str(), 0);
+				if (zf) {
+					content = new char[st.size + 1];
+					zip_fread(zf, content, st.size);
+					zip_fclose(zf);
+					scripts.push_back(content);
+				} else
+					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", scriptFile.c_str());
+			}
+		}
+		delete ss;
+	} else
+		delete[] content;
 	// model
 	file = "modelIndex";
 	zip_stat(z, file, 0, &st);
@@ -281,10 +305,12 @@ ResourceManager::ResourceManager(const char * const pathToPkg) {
 					glGenBuffers(1, buf);
 					modelHandlers[modelName] = buf[0];
 					readOBJ(zf, st.size, modelHandlers[modelName], modelSizes[modelName]);
+					zip_fclose(zf);
 				} else
 					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", modelName.c_str());
 			}
 		}
+		delete ss;
 	}
 	delete[] content;
 	// texture index
@@ -310,6 +336,7 @@ ResourceManager::ResourceManager(const char * const pathToPkg) {
 					textureHandlers[textureName] = tex[0];
 					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Texture GLuint: %d", textureHandlers[textureName]);
 					readPNG(zf, textureHandlers[textureName], textureWidths[textureName], textureHeights[textureName]);
+					zip_fclose(zf);
 				} else
 					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", textureFile.c_str());
 			}

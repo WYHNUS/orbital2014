@@ -3,11 +3,16 @@ import java.util.*;
 
 import edu.nus.comp.dotagridandroid.ui.event.*;
 public class GameMaster {
-	public void applyRule(GameState stateMachine, String actionName, Map<String, Object> options) {
-		final String playerCharName = stateMachine.getPlayerCharacterName(); 
-		final Character playerChar = stateMachine.getCharacters().get(playerCharName);
+	public void serverNotify() {
+		//
+	}
+	
+	public void applyRule(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
+		if (!character.equals(stateMachine.getCurrentCharacterName()))
+			return;
+		final GameCharacter playerChar = stateMachine.getCharacters().get(character);
 		final int[]
-				prevPos = stateMachine.getCharacterPositions().get(stateMachine.getPlayerCharacterName()),
+				prevPos = stateMachine.getCharacterPositions().get(stateMachine.getCurrentCharacterName()),
 				reqPos = stateMachine.getChosenGrid();
 		switch (actionName) {
 		case "ChooseGrid": {
@@ -50,7 +55,7 @@ public class GameMaster {
 		}
 		case "GameAction": {
 			// check if action is possible
-			if (requestActionPossible(stateMachine, actionName, options)) {
+			if (requestActionPossible(stateMachine, character, actionName, options)) {
 				Map<String, Object> updates = new HashMap<>();
 				switch ((String) options.get("Action")) {
 				case "Attack":
@@ -67,13 +72,16 @@ public class GameMaster {
 					final double currentActionPoint = playerChar.getCurrentActionPoint() - actionPointUsed;
 					playerChar.setCurrentActionPoint((int) currentActionPoint);
 					// move
-					stateMachine.setCharacterPositions(playerCharName, stateMachine.getChosenGrid());
-					List<String> characters = Collections.singletonList(playerCharName);
+					stateMachine.setCharacterPositions(character, stateMachine.getChosenGrid());
+					List<String> characters = Collections.singletonList(character);
 					updates = Collections.singletonMap("Characters", (Object) characters);
 					stateMachine.notifyUpdate(updates);
 					return;
 				}
 				case "BuyItem": {
+					break;
+				}
+				case "NextRound": {
 					break;
 				}
 				}
@@ -88,9 +96,11 @@ public class GameMaster {
 		}
 	}
 
-	public boolean requestActionPossible(GameState stateMachine, String actionName, Map<String, Object> options) {
-		final int[] targetGrid = stateMachine.getChosenGrid(), heroGrid = stateMachine.getCharacterPositions().get(stateMachine.getPlayerCharacterName());
-		final Map<String, Character> chars = stateMachine.getCharacters();
+	public boolean requestActionPossible(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
+		if (!character.equals(stateMachine.getCurrentCharacterName()))
+			return false;
+		final int[] targetGrid = stateMachine.getChosenGrid(), heroGrid = stateMachine.getCharacterPositions().get(character);
+		final Map<String, GameCharacter> chars = stateMachine.getCharacters();
 		switch (actionName) {
 		case "GameAction":
 			switch ((String) options.get("Action")) {
@@ -102,12 +112,12 @@ public class GameMaster {
 			case "Attack": {
 				if (targetGrid[0] >= stateMachine.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= stateMachine.getGridHeight() || targetGrid[1] < 0)
 					return false;
-				Hero hero = (Hero) stateMachine.getCharacters().get(stateMachine.getPlayerCharacterName());
+				Hero hero = (Hero) stateMachine.getCharacters().get(character);
 				return stateMachine.getCharacterAtPosition(targetGrid) != null &&	// has hero, linecreep or tower
 						hero.getTotalPhysicalAttackArea() + hero.getTotalItemAddPhysicalAttackArea()
 						>= Math.abs(targetGrid[0] - heroGrid[0])
 						+ Math.abs(targetGrid[1] - heroGrid[1]) &&	// within attack area
-						hero.getCurrentActionPoint() > Hero.MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - hero.getTotalPhysicalAttackSpeed() / Character.MAX_PHYSICAL_ATTACK_SPEED)
+						hero.getCurrentActionPoint() > Hero.MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - hero.getTotalPhysicalAttackSpeed() / GameCharacter.MAX_PHYSICAL_ATTACK_SPEED)
 							* Hero.PHYSICAL_ATTACK_CONSUME_AP;	// has enough action points
 			}
 			}
@@ -117,7 +127,7 @@ public class GameMaster {
 		return true;
 	}
 	
-	private double[] getLowestMoveAPConsumptionMap (int[] start, int[] end, float[] terrain, int width, int height, Character character) {
+	private double[] getLowestMoveAPConsumptionMap (int[] start, int[] end, float[] terrain, int width, int height, GameCharacter character) {
 		final int[][] dirs = new int[][] {{-1,0},{1,0},{0,-1},{0,1}};
 		final double TERRAIN_CONST = 1;	// TODO terrain factor
 		Queue<int[]> q = new LinkedList<>();

@@ -6,7 +6,7 @@ import java.util.concurrent.*;
 
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.*;
-import edu.nus.comp.dotagridandroid.logic.Character;
+import edu.nus.comp.dotagridandroid.logic.GameCharacter;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
@@ -369,8 +369,8 @@ public class GridRenderer implements Renderer {
 		}
 	}
 	private void prepareObjects() {
-		final Map<String, Character> chars = manager.getCurrentGameState().getCharacters();
-		final String mainCharacter = manager.getCurrentGameState().getPlayerCharacterName();
+		final Map<String, GameCharacter> chars = manager.getCurrentGameState().getCharacters();
+		final String mainCharacter = manager.getCurrentGameState().getCurrentCharacterName();
 		final int mainCharacterTeamNumber = chars.get(mainCharacter).getTeamNumber();
 		final Map<String, int[]> charPositions = manager.getCurrentGameState().getCharacterPositions();
 		// TODO draw character
