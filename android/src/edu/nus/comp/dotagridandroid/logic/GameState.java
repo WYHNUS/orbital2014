@@ -24,6 +24,7 @@ public class GameState implements Closeable {
 	private Map<String, Texture2D> objTextures, objThumbnail;
 	private Map<String, Item> itemShop;
 	private ResourceManager resMan;
+	private ExtensionEngine extensionEngine;
 	// game rule object
 	private GameMaster gameMaster;
 	private GameServer server;
@@ -45,8 +46,14 @@ public class GameState implements Closeable {
 		if (initialised || server == null)
 			return;
 		// TODO change this part
-		gameMaster = new GameMaster();	// TODO extended or basic?
 		resMan = AppNativeAPI.createResourceManager(packagePath);
+		if (resMan.isExtensionEnabled()) {
+			gameMaster = new ExtendedGameMaster();
+			extensionEngine = AppNativeAPI.createExtensionEngine();
+			extensionEngine.loadScript(resMan.getAllScript());
+			extensionEngine.execute();
+		} else
+			gameMaster = new GameMaster();	// TODO extended or basic?
 		chars = new ConcurrentHashMap<>();
 		roundOrder = new ArrayList<>();
 		objs = new ConcurrentHashMap<>();
@@ -204,20 +211,25 @@ public class GameState implements Closeable {
 		
 	}
 	
-	public Object getCharacterProperty(String type, GameCharacter character, String name) {
+	public ExtensionEngine getExtensionEngine() {
+		return extensionEngine;
+	}
+	
+	public Object getCharacterProperty(String type, String charName, String name) {
 		// call getter method through reflection
-		if (name == null || name.length() == 0)
+		if (name == null || name.length() == 0 || !chars.containsKey(charName))
 			return null;
 		// Method
 		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
 		final Method[] methods;
 		// TODO add LineCreeps
+		final GameCharacter character = chars.get(charName);
 		if (character instanceof Hero) {
 			// Hero class
-			methods = Hero.class.getDeclaredMethods();
+			methods = Hero.class.getMethods();
 		} else {
 			// Generic Character class
-			methods = GameCharacter.class.getDeclaredMethods();
+			methods = GameCharacter.class.getMethods();
 		}
 		for (Method m : methods) {
 			if (!m.getName().equals(methodName))
@@ -232,21 +244,24 @@ public class GameState implements Closeable {
 				System.out.println(e.getCause().getMessage());
 			}
 		}
-		return null;
+		// extended
+		return character.getExtendedProperty(name);
 	}
 	
-	public void setCharacterProperty(String type, GameCharacter character, String name, Object value) {
-		if (name == null || name.length() == 0 || value == null)
+	public void setCharacterProperty(String type, String charName, String name, Object value) {
+		if (name == null || name.length() == 0 || !chars.containsKey(charName))
 			return;
 		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
 		final Method[] methods;
+		boolean setterSuccess = false;
 		// TODO add LineCreeps
+		final GameCharacter character = chars.get(charName);
 		if (character instanceof Hero) {
 			// Hero class
-			methods = Hero.class.getDeclaredMethods();
+			methods = Hero.class.getMethods();
 		} else {
 			// Generic Character class
-			methods = GameCharacter.class.getDeclaredMethods();
+			methods = GameCharacter.class.getMethods();
 		}
 		for (Method m : methods) {
 			if (!m.getName().equals(methodName))
@@ -256,17 +271,38 @@ public class GameState implements Closeable {
 				continue;
 			if (params.length != 1)
 				continue;
-			if (!value.getClass().isAssignableFrom(params[0].getClass()))
+			Object numericValue = null;
+			if (value != null && value instanceof Number) {
+				// number is special case; casting is necessary
+				if ((Type) params[0].getClass() == double.class)
+					numericValue = ((Number) value).doubleValue();
+				else if ((Type) params[0].getClass() == float.class)
+					numericValue = ((Number) value).floatValue();
+				else if ((Type) params[0].getClass() == int.class)
+					numericValue = ((Number) value).intValue();
+				else if ((Type) params[0].getClass() == short.class)
+					numericValue = ((Number) value).shortValue();
+				else if ((Type) params[0].getClass() == byte.class)
+					numericValue = ((Number) value).byteValue();
+				else if ((Type) params[0].getClass() == long.class)
+					numericValue = ((Number) value).longValue();
+			} else if (value != null && !value.getClass().isAssignableFrom(params[0].getClass()))
 				continue;
 			try {
 				m.setAccessible(true);
 				m.invoke(character);
-				return;
+				setterSuccess = true;
+				break;
 			} catch (Exception e) {
 				System.out.println("Property getter of '" + name + "' is not available.");
 				System.out.println(e.getCause().getMessage());
+				setterSuccess = false;
+				break;
 			}
 		}
+		if (!setterSuccess)
+			// extended
+			character.setExtendedProperty(name, value);
 	}
 	
 	protected void setCharacterPositions(String name, int[] position) {

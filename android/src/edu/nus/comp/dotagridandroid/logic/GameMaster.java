@@ -23,7 +23,9 @@ public class GameMaster {
 			// TODO: calculate attack area
 			List<List<Integer>> allowed = new ArrayList<>();
 			final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
-			final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
+//			final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
+			final int totalAttackArea = ((Number) stateMachine.getCharacterProperty("hero", character, "totalPhysicalAttackArea")).intValue()
+					+ ((Number) stateMachine.getCharacterProperty("hero", character, "totalItemAddPhysicalAttackArea")).intValue();
 			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
 				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
 					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)

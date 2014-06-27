@@ -48,9 +48,8 @@ public class GameCharacter extends GameObject {
 	
 	public GameCharacter(String name, int bountyMoney, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
-					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int actionPoint, int teamNumber)
+					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int maxActionPoint, int teamNumber)
 	{
-		
 		this.setName(name);
 		this.setBountyMoney(bountyMoney);
 		this.setTeamNumber(teamNumber);
@@ -82,7 +81,46 @@ public class GameCharacter extends GameObject {
 		this.setStartingMovementSpeed(startingMovementSpeed);
 		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
 		
-		this.setMaxActionPoint(actionPoint);
+		this.setMaxActionPoint(maxActionPoint);
+		this.setCurrentActionPoint(this.getMaxActionPoint());
+		
+		this.setAlive(true);
+	}
+	
+	public GameCharacter (GameCharacter that) {
+		super(that);
+		this.setName(that.name);
+		this.setBountyMoney(that.bountyMoney);
+		this.setTeamNumber(that.teamNumber);
+		
+		this.setStartingHP(that.startingHP);
+		this.setStartingMP(that.startingMP);
+		this.setmaxHP(this.getStartingHP());
+		this.setmaxMP(this.getStartingMP());
+		this.setCurrentHP(this.getmaxHP());
+		this.setCurrentMP(this.getmaxMP());
+		
+		this.setStartingPhysicalAttack(that.startingPhysicalAttack);
+		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
+		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
+		
+		this.setStartingPhysicalAttackArea(that.startingPhysicalAttackArea);
+		this.setTotalPhysicalAttackArea(this.getStartingPhysicalAttackArea());
+		
+		this.setStartingPhysicalAttackSpeed(that.startingPhysicalAttackSpeed);
+		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed());
+		
+		this.setStartingPhysicalDefence(that.startingPhysicalDefence);
+		this.setBasicPhysicalDefence(this.getStartingPhysicalDefence());
+		this.setTotalPhysicalDefence(this.getStartingPhysicalDefence());
+		
+		this.setStartingMagicResistance(that.startingMagicResistance);
+		this.setTotalMagicResistance(this.getStartingMagicResistance());
+		
+		this.setStartingMovementSpeed(that.startingMovementSpeed);
+		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
+		
+		this.setMaxActionPoint(that.maxActionPoint);
 		this.setCurrentActionPoint(this.getMaxActionPoint());
 		
 		this.setAlive(true);

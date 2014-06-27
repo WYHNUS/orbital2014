@@ -42,7 +42,6 @@ public class Hero extends GameCharacter{
 	private int totalItemAddPhysicalAttackArea;
 	private int totalItemAddMovementSpeed;
 	
-
 	private int kill, death, assist;
 	private int money;
 	
@@ -62,7 +61,6 @@ public class Hero extends GameCharacter{
 
 	public static final int MAX_ITEM_NUMBER = 6;
 	public static final int MAX_SKILL_NUMBER = 8;
-	
 	
 	// constructor
 	public Hero(String heroName, int bountyMoney, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
@@ -125,77 +123,79 @@ public class Hero extends GameCharacter{
 	
 
 
-	public Hero(Hero hero) {
-		super(hero.getName(), hero.getBountyMoney(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
-				hero.getStartingPhysicalAttackSpeed(), hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
-				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());
+	public Hero(Hero that) {
+//		super(hero.getName(), hero.getBountyMoney(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 
+//				hero.getStartingPhysicalAttackSpeed(), hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
+//				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());
+		super(that);
 		
-		this.setMainAttribute(hero.getMainAttribute());
+		this.setMainAttribute(that.getMainAttribute());
 		
-		this.setLevel(hero.getLevel());
-		this.setExperience(hero.getExperience());
+		this.setLevel(that.getLevel());
+		this.setExperience(that.getExperience());
 		
-		this.setMoney(hero.getMoney());
-		this.setKill(hero.getKill());
-		this.setAssist(hero.getAssist());
-		this.setDeath(hero.getDeath());
+		this.setMoney(that.getMoney());
+		this.setKill(that.getKill());
+		this.setAssist(that.getAssist());
+		this.setDeath(that.getDeath());
 
-		this.setStrengthGrowth(hero.getStrengthGrowth());
-		this.setAgilityGrowth(hero.getAgilityGrowth());
-		this.setIntelligenceGrowth(hero.getIntelligenceGrowth());	
+		this.setStrengthGrowth(that.getStrengthGrowth());
+		this.setAgilityGrowth(that.getAgilityGrowth());
+		this.setIntelligenceGrowth(that.getIntelligenceGrowth());	
 			
-		this.setStartingStrength(hero.getStartingStrength());
-		this.setStartingAgility(hero.getStartingAgility());
-		this.setStartingIntelligence(hero.getStartingIntelligence());
+		this.setStartingStrength(that.getStartingStrength());
+		this.setStartingAgility(that.getStartingAgility());
+		this.setStartingIntelligence(that.getStartingIntelligence());
 	
-		this.setStartingHP(hero.getStartingHP());
-		this.setStartingMP(hero.getStartingMP());
+		this.setStartingHP(that.getStartingHP());
+		this.setStartingMP(that.getStartingMP());
 		
-		this.setBasicStrength(hero.getBasicStrength());
-		this.setBasicAgility(hero.getBasicAgility());
-		this.setBasicIntelligence(hero.getBasicIntelligence());
+		this.setBasicStrength(that.getBasicStrength());
+		this.setBasicAgility(that.getBasicAgility());
+		this.setBasicIntelligence(that.getBasicIntelligence());
 		
-		this.setTotalStrength(hero.getTotalStrength());
-		this.setTotalAgility(hero.getTotalAgility());
-		this.setTotalIntelligence(hero.getTotalIntelligence());
+		this.setTotalStrength(that.getTotalStrength());
+		this.setTotalAgility(that.getTotalAgility());
+		this.setTotalIntelligence(that.getTotalIntelligence());
 		
 		this.setBasicMainAttribute(null);
 		this.setTotalMainAttribute(null);
 		
-		this.setmaxHP(hero.getmaxHP());
-		this.setmaxMP(hero.getmaxMP());
-		this.setCurrentHP(hero.getCurrentHP());
-		this.setCurrentMP(hero.getCurrentMP());
+		this.setmaxHP(that.getmaxHP());
+		this.setmaxMP(that.getmaxMP());
+		this.setCurrentHP(that.getCurrentHP());
+		this.setCurrentMP(that.getCurrentMP());
 		
-		this.setHPGainPerRound(hero.getHPGainPerRound());
-		this.setMPGainPerRound(hero.getMPGainPerRound());
+		this.setHPGainPerRound(that.getHPGainPerRound());
+		this.setMPGainPerRound(that.getMPGainPerRound());
 		
-		this.setBasicPhysicalDefence(hero.getBasicPhysicalDefence());
-		this.setTotalPhysicalDefence(hero.getTotalPhysicalDefence());		
-		this.setTotalPhysicalAttackSpeed(hero.getTotalPhysicalAttackSpeed());
+		this.setBasicPhysicalDefence(that.getBasicPhysicalDefence());
+		this.setTotalPhysicalDefence(that.getTotalPhysicalDefence());		
+		this.setTotalPhysicalAttackSpeed(that.getTotalPhysicalAttackSpeed());
 		
-		this.setBasicPhysicalAttack(hero.getBasicPhysicalAttack());
-		this.setTotalPhysicalAttack(hero.getTotalPhysicalAttack());
+		this.setBasicPhysicalAttack(that.getBasicPhysicalAttack());
+		this.setTotalPhysicalAttack(that.getTotalPhysicalAttack());
 		
-		this.setLevel(hero.getLevel());
-		this.setExperience(hero.getExperience());
+		this.setLevel(that.getLevel());
+		this.setExperience(that.getExperience());
 		
-		this.setUnusedSkillCount(hero.getUnusedSkillCount());
+		this.setUnusedSkillCount(that.getUnusedSkillCount());
 		
 		this.setBountyExp(CalculateLevelInfo.calculateBountyExp(this.getLevel()));
 		
-		this.setMoney(hero.getMoney());
+		this.setMoney(that.getMoney());
 		
-		this.setCurrentActionPoint(hero.getCurrentActionPoint());
+		this.setCurrentActionPoint(that.getCurrentActionPoint());
 
-		this.setHeroSpawningXPos(hero.getHeroSpawningXPos());
-		this.setHeroSpawningYPos(hero.getHeroSpawningYPos());
+		this.setHeroSpawningXPos(that.getHeroSpawningXPos());
+		this.setHeroSpawningYPos(that.getHeroSpawningYPos());
 		
-		for (Map.Entry<String, Item> entry : hero.items.entrySet())
+		for (Map.Entry<String, Item> entry : that.items.entrySet())
 			this.items.put(entry.getKey(), new Item(entry.getValue()));
 		
-		for (Map.Entry<String, Skill> entry : hero.skills.entrySet())
+		for (Map.Entry<String, Skill> entry : that.skills.entrySet())
 			this.skills.put(entry.getKey(), new Skill(entry.getValue()));
+		
 	}
 
 

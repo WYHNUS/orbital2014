@@ -27,4 +27,8 @@ public class AppNativeAPI {
 	public static SoundEngine createSoundEngine(Context context) {
 		return new SoundEngine(initiateSoundEngine(), context.getAssets());
 	}
+	
+	public static ExtensionEngine createExtensionEngine() {
+		return new ExtensionEngine(initiateExtensionEngine());
+	}
 }

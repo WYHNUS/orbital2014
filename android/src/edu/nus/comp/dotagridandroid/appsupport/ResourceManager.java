@@ -11,6 +11,8 @@ public class ResourceManager implements Closeable{
 	private static native long getModelSize(long ptr, String name);
 	private static native long getTextureWidth(long ptr, String name);
 	private static native long getTextureHeight(long ptr, String name);
+	private static native String getAllScript(long ptr);
+	private static native boolean isExtensionEnabled(long ptr);
 	// java
 	private long ptr;
 	protected ResourceManager(long ptr) {
@@ -39,5 +41,13 @@ public class ResourceManager implements Closeable{
 	
 	public int getModelSize(String name) {
 		return (int) getModelSize(ptr, name);
+	}
+	
+	public String getAllScript() {
+		return getAllScript(ptr);
+	}
+	
+	public boolean isExtensionEnabled() {
+		return isExtensionEnabled(ptr);
 	}
 }

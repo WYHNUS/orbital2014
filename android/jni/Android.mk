@@ -20,7 +20,5 @@ LOCAL_LDLIBS += $(LOCAL_PATH)/v8/libv8_libbase.arm.a
 LOCAL_LDLIBS += $(LOCAL_PATH)/v8/libicui18n.a
 LOCAL_LDLIBS += $(LOCAL_PATH)/v8/libicuuc.a
 LOCAL_LDLIBS += $(LOCAL_PATH)/v8/libicudata.a
-#LOCAL_LDLIBS += $(LOCAL_PATH)/libgnustl_static.a
-#LOCAL_LDLIBS += $(LOCAL_PATH)/libsupc++.a
 
 include $(BUILD_SHARED_LIBRARY)

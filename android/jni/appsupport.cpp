@@ -65,6 +65,8 @@ Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testJS(JNIEnv *env, jo
 	testExtensionEngine();
 }
 
+// ExtensionEngine
+
 JNIEXPORT jlong JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_createExtensionEngine(JNIEnv *env, jobject obj) {
 	return (jlong) ExtensionEngine::Create();
@@ -74,6 +76,22 @@ JNIEXPORT void JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroyExtensionEngine(JNIEnv *env, jobject obj, jlong ptr) {
 	ExtensionEngine::Destroy((ExtensionEngine*) ptr);
 }
+
+JNIEXPORT void JNICALL
+Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_loadScript(JNIEnv *env, jobject obj, jlong ptr, jstring script) {
+	ExtensionEngine *ee = (ExtensionEngine*) ptr;
+	const char *theScript = env->GetStringUTFChars(script, 0);
+	ee->loadScript(std::string(theScript));
+	env->ReleaseStringUTFChars(script, theScript);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_execute(JNIEnv *env, jobject obj, jlong ptr) {
+	ExtensionEngine *ee = (ExtensionEngine*) ptr;
+	ee->execute();
+}
+
+// SoundEngine
 
 JNIEXPORT jlong JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_initiateSoundEngine(JNIEnv *env, jobject obj) {
@@ -158,6 +176,8 @@ Java_edu_nus_comp_dotagridandroid_appsupport_SoundEngine_setAssetPlayerSeek(JNIE
 	}
 }
 
+// ResourceManager
+
 JNIEXPORT jlong JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_initiateResourceManager(JNIEnv *env, jobject obj, jstring path) {
 	ResourceManager *man;
@@ -221,6 +241,17 @@ Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getModelSize(JNIEnv
 	jlong ret = man->getModelSize(std::string(textureName));
 	env->ReleaseStringUTFChars(name, textureName);
 	return ret;
+}
+
+JNIEXPORT jboolean JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_isExtensionEnabled(JNIEnv *env, jobject obj, jlong ptr) {
+	ResourceManager *man = (ResourceManager*)ptr;
+	return man->isExtensionEnabled();
+}
+
+JNIEXPORT jstring JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getAllScript(JNIEnv *env, jobject obj, jlong ptr) {
+	return env->NewStringUTF(((ResourceManager*)ptr)->getAllScript().c_str());
 }
 
 }

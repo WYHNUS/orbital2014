@@ -234,7 +234,7 @@ void readOBJ(zip_file *zf, size_t fileSize, GLuint bufferHandler, unsigned int &
 	delete vertexPosition, texturePosition, normalVector, faces;
 }
 
-ResourceManager::ResourceManager(const char * const pathToPkg) {
+ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEngine(false) {
 	__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "read from package located @ %s", pathToPkg);
 	int err = 0;
 	zip *z = zip_open(pathToPkg, 0, &err);
@@ -274,7 +274,8 @@ ResourceManager::ResourceManager(const char * const pathToPkg) {
 					content = new char[st.size + 1];
 					zip_fread(zf, content, st.size);
 					zip_fclose(zf);
-					scripts.push_back(content);
+					scripts.push_back(std::unique_ptr<char[]>(content));
+					useExtensionEngine = true;
 				} else
 					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", scriptFile.c_str());
 			}
@@ -401,4 +402,15 @@ unsigned int ResourceManager::getModelSize(const std::string &name) {
 		return itr->second;
 	else
 		return 0;
+}
+
+std::string ResourceManager::getAllScript() {
+	std::string ret;
+	for (auto& script_ptr : scripts)
+		ret += script_ptr.get();
+	return ret;
+}
+
+bool ResourceManager::isExtensionEnabled() {
+	return useExtensionEngine;
 }
