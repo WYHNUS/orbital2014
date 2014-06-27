@@ -271,10 +271,38 @@ public class AICharacter {
 					startingXPos = movetoPos[0];
 					startingYPos = movetoPos[1];
 				}
+				
 			} else {
 				// if such a path does not exist, check if there are any other enemies in sight
-				if (!inSightEnemyPos.isEmpty()) {
+				if (inSightEnemyPos.size() <= 1) {
 					// no other enemy in sight! move towards the enemy and wait for chance to attack
+					Queue<int[]> uncheckedPosition = new LinkedList<int[]>();
+					int[] startingPos = {enemyXPos, enemyYPos};
+					uncheckedPosition.add(startingPos);
+					
+					ArrayList<int[]> checkedPos = new ArrayList<int[]>();
+					
+					int[] movetoPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPos);
+					
+					// check if the AI can move to the wait position
+					if (tempPathMap[movetoPos[0]][movetoPos[1]] > movement) {
+						// backtrack and move...
+						
+						// move towards the enemy!
+						movetoPos = backTrackMove(tempPathMap, movetoPos[0], movetoPos[1], movement, tempPathMap.length);
+					}
+					
+					// reset target position in world map frame
+					movetoPos[0] += (startingXPos - sight);
+					movetoPos[1] += (startingYPos - sight);
+						
+					// move the AI!
+					new CharacterActions(1, startingXPos, startingYPos, movetoPos[0], movetoPos[1]);
+						
+					// reset AI's position
+					startingXPos = movetoPos[0];
+					startingYPos = movetoPos[1];
+					
 					System.out.println("wait for chance");
 					endRound = true;
 				} else {
@@ -289,6 +317,76 @@ public class AICharacter {
 		}
 		
 	}
+
+
+	private int[] findNearestReachableGrid(int[][] tempPathMap, Queue<int[]> uncheckedPosition,
+			ArrayList<int[]> checkedPosition) {
+		// starting from position X and Y, search for nearest reachable grid
+		
+		// add surrounding grids into position
+		int mapRange = tempPathMap.length;
+		
+		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1], mapRange)){
+			int[] newPos = {uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1]};
+			uncheckedPosition.add(newPos);
+		}
+						
+		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1, mapRange)){
+			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1};
+			uncheckedPosition.add(newPos);
+		}
+						
+		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1], mapRange)){
+			int[] newPos = {uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1]};
+			uncheckedPosition.add(newPos);
+		}
+						
+		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1, mapRange)){
+			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1};
+			uncheckedPosition.add(newPos);
+		}
+						
+		// add the current position into checked queue
+		checkedPosition.add(uncheckedPosition.peek());
+			
+
+		// terminating condition :
+		if (tempPathMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]] >= 1) {
+			// first element in the unchecked queue satisfy the searching condition
+			int[] result = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]};
+			return result;
+		} else {	
+			uncheckedPosition.poll();
+			// recursive call!
+			int[] result = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition);
+			return result;
+		}
+	}
+
+
+
+	private boolean canBeAdded(ArrayList<int[]> checkedPosition, int XPos, int YPos, int mapRange) {
+		// each int[] in checkedPosition stores a pair of xpos and ypos
+		boolean isChecked = false;
+				
+		// XPos and YPos need to be within range
+		if (XPos >= 0 && XPos <mapRange 
+				&& YPos >= 0 && YPos <mapRange){
+			// check if the position has been visited before
+			for (int[] element : checkedPosition){
+				if (element[0] == XPos && element[1] == YPos){
+					isChecked = true;
+					break;
+				}
+			}
+		} else{
+			// not within range! unable to visit!
+			isChecked = true;
+		}
+						
+		return isChecked;
+	}
+
 
 
 	private int[] backTrackMove(int[][] map, int xPos, int yPos, int searchNumber, int mapRange) {
