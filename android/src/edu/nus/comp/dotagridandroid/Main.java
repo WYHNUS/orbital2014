@@ -89,6 +89,8 @@ public class Main extends Activity {
 	@Override
 	public void onResume() {
 		super.onResume();
+		logicManager = new GameLogicManager(this);
+		logicManager.initiateSoundEngine();
 	}
 	
 	@Override
@@ -105,6 +107,7 @@ public class Main extends Activity {
 	@Override
 	public void onPause() {
 		super.onPause();
+		logicManager.close();
 	}
 	
 	@Override

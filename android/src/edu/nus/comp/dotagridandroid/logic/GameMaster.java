@@ -77,7 +77,7 @@ public class GameMaster {
 //					playerChar.setCurrentActionPoint(currentActionPoint);
 					stateMachine.setCharacterProperty(character, "currentActionPoint", newActionPoint);
 					// move
-					stateMachine.setCharacterPositions(character, stateMachine.getChosenGrid());
+					stateMachine.setCharacterPosition(character, stateMachine.getChosenGrid());
 					List<String> characters = Collections.singletonList(character);
 					updates = Collections.singletonMap("Characters", (Object) characters);
 					stateMachine.notifyUpdate(updates);

@@ -2,7 +2,7 @@ package edu.nus.comp.dotagridandroid.appsupport;
 import java.util.*;
 
 import org.json.*;
-public final class MapJsonConverter {
+public final class JsonConverter {
 	public static JSONObject MapToJson (Map map) throws JSONException {
 		if (map == null)
 			return null;
@@ -11,7 +11,7 @@ public final class MapJsonConverter {
 			if (key instanceof String) {
 				Object value = map.get(key);
 				if (value == null)
-					continue;
+					obj.put((String) key, null);
 				else if (value instanceof Map)
 					obj.put((String) key, MapToJson((Map) value));
 				
@@ -33,6 +33,10 @@ public final class MapJsonConverter {
 					obj.put((String) key, ArrayToJson((long[]) value));
 				else if (value instanceof boolean[])
 					obj.put((String) key, ArrayToJson((boolean[]) value));
+				else if (value instanceof float[])
+					obj.put((String) key, ArrayToJson((float[]) value));
+				else if (value instanceof double[])
+					obj.put((String) key, ArrayToJson((double[]) value));
 				
 				else if (value instanceof Integer)
 					obj.put((String) key, (Integer) value);
@@ -197,37 +201,44 @@ public final class MapJsonConverter {
 	public static JSONArray ArrayToJson (short[] list) {
 		JSONArray arr = new JSONArray();
 		for (short value : list)
-			arr.put(value);
+			arr.put((int) value);
 		return arr;
-		
 	}
 	public static JSONArray ArrayToJson (long[] list) {
 		JSONArray arr = new JSONArray();
 		for (long value : list)
 			arr.put(value);
 		return arr;
-		
 	}
 	public static JSONArray ArrayToJson (boolean[] list) {
 		JSONArray arr = new JSONArray();
 		for (boolean value : list)
 			arr.put(value);
 		return arr;
-		
 	}
 	public static JSONArray ArrayToJson (byte[] list) {
 		JSONArray arr = new JSONArray();
 		for (byte value : list)
-			arr.put(value);
+			arr.put((int) value);
 		return arr;
-		
 	}
 	public static JSONArray ArrayToJson (char[] list) {
 		JSONArray arr = new JSONArray();
 		for (char value : list)
-			arr.put(value);
+			arr.put((int) value);
 		return arr;
-		
+	}
+	public static JSONArray ArrayToJson (float[] list) {
+		JSONArray arr = new JSONArray();
+		for (float value : list)
+			arr.put((Double) (double) value);
+		return arr;
+	}
+	public static JSONArray ArrayToJson (double[] list) {
+		JSONArray arr = new JSONArray();
+		for (double value : list)
+			arr.put((Double) value);
+		return arr;
 	}
 	
 	// json to java

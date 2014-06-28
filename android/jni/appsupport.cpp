@@ -14,7 +14,8 @@ void testExtensionEngine() {
 	ExtensionEngine* engine = ExtensionEngine::Create();
 	engine->loadScript(std::string("var a = new ExtensionInterface();a.gameDelegate=function(a,b){return 1;};a.gameDelegate();"));
 	engine->execute();
-	engine->applyRule(std::string(), std::string("{\"Action\":\"Play\"}"), [](const std::string&){});
+	engine->notifyUpdateCallback = [](const std::string&){};
+	engine->applyRule(std::string(), std::string(), std::string("{\"Action\":\"Play\"}"));
 	ExtensionEngine::Destroy(engine);
 }
 
@@ -68,7 +69,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testJS(JNIEnv *env, jo
 // ExtensionEngine
 
 JNIEXPORT jlong JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_createExtensionEngine(JNIEnv *env, jobject obj) {
+Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_initiateExtensionEngine(JNIEnv *env, jobject obj) {
 	return (jlong) ExtensionEngine::Create();
 }
 
@@ -78,7 +79,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_destroyExtensionEngine
 }
 
 JNIEXPORT void JNICALL
-Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_loadScript(JNIEnv *env, jobject obj, jlong ptr, jstring script) {
+Java_edu_nus_comp_dotagridandroid_appsupport_ExtensionEngine_loadScript(JNIEnv *env, jobject obj, jlong ptr, jstring script) {
 	ExtensionEngine *ee = (ExtensionEngine*) ptr;
 	const char *theScript = env->GetStringUTFChars(script, 0);
 	ee->loadScript(std::string(theScript));
@@ -86,21 +87,57 @@ Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_loadScript(JNIEnv *env, 
 }
 
 JNIEXPORT void JNICALL
-Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_execute(JNIEnv *env, jobject obj, jlong ptr) {
+Java_edu_nus_comp_dotagridandroid_appsupport_ExtensionEngine_execute(JNIEnv *env, jobject obj, jlong ptr) {
 	ExtensionEngine *ee = (ExtensionEngine*) ptr;
 	ee->execute();
 }
 
 JNIEXPORT void JNICALL
-Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_applyRule(JNIEnv *env, jobject obj, jlong ptr, jstring name, jstring optionsJSON) {
+Java_edu_nus_comp_dotagridandroid_appsupport_ExtensionEngine_applyRule(JNIEnv *env, jobject obj, jlong ptr, jstring character, jstring action, jstring optionsJSON) {
 	ExtensionEngine *ee = (ExtensionEngine*) ptr;
-	const char *nameParam = env->GetStringUTFChars(name, 0);
+	const char *characterParam = env->GetStringUTFChars(character, 0);
+	const char *actionParam = env->GetStringUTFChars(action, 0);
 	const char *optionParam = env->GetStringUTFChars(optionsJSON, 0);
-	ee->applyRule(std::string(nameParam), std::string(optionParam), [&](const std::string &update) {
-		jclass clazz = env->FindClass("edu/nus/dotagridandroid/appsupport/ExtensionEngine");
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "JNIEnv=%p", env);
+	ee->notifyUpdateCallback = [&](const std::string &update) {
+		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");
 		jmethodID method = env->GetMethodID(clazz, "notifyUpdate", "(Ljava/lang/String;)V");
-		env->CallObjectMethod(obj, method, env->NewStringUTF(update.c_str()));
-	});
+		env->CallVoidMethod(obj, method, env->NewStringUTF(update.c_str()));
+	};
+	ee->turnNextRoundCallback = [&]() {
+		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");
+		jmethodID method = env->GetMethodID(clazz, "turnNextRound", "()V");
+		env->CallVoidMethod(obj, method);
+	};
+	ee->getSelectedGridCallback = [&]() -> const std::string {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "getSelectedGridCallback called");
+		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");
+		jmethodID method = env->GetMethodID(clazz, "getSelectedGrid", "()Ljava/lang/String;");
+		jstring result = (jstring) env->CallObjectMethod(obj, method);
+		const char *grid = env->GetStringUTFChars(result, 0);
+		std::string ret(grid);
+		env->ReleaseStringUTFChars(result, grid);
+		return ret;
+	};
+	ee->getCharacterPositionCallback = [&](const std::string &chars) -> const std::string {
+		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");
+		jmethodID method = env->GetMethodID(clazz, "getSelectedGrid", "()Ljava/lang/String;");
+		jstring result = (jstring) env->CallObjectMethod(obj, method, env->NewStringUTF(chars.c_str()));
+		const char *pos = env->GetStringUTFChars(result, 0);
+		std::string ret(pos);
+		env->ReleaseStringUTFChars(result, pos);
+		return ret;
+	};
+	ee->setCharacterPositionCallback = [&](const std::string &character, const std::string &position) {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "setCharacterPositionCallback called");
+		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");
+		jmethodID method = env->GetMethodID(clazz, "setCharacterPosition", "(Ljava/lang/String;Ljava/lang/String;)V");
+		env->CallVoidMethod(obj, method, env->NewStringUTF(character.c_str()), env->NewStringUTF(position.c_str()));
+	};
+	ee->applyRule(std::string(characterParam), std::string(actionParam), std::string(optionParam));
+	env->ReleaseStringUTFChars(character, characterParam);
+	env->ReleaseStringUTFChars(action, actionParam);
+	env->ReleaseStringUTFChars(optionsJSON, optionParam);
 }
 
 // SoundEngine

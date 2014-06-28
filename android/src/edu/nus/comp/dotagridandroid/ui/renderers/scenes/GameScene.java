@@ -111,6 +111,11 @@ public class GameScene implements SceneRenderer {
 		switch (dialogType) {
 		case "Message": {
 			// display message
+			if (landscape) {
+				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.5f, .9f, 1));
+			} else {
+				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.9f, .5f, 1));
+			}
 			String[] lines = ((String) options.get("Message")).split("\n");
 			List<String> brokenLines = new ArrayList<>();
 			for (String line : lines) {

@@ -108,11 +108,6 @@ public class GameLogicManager implements Closeable {
 			se.close();
 	}
 
-	public static class GameStateUpdateDelegate {
-		public void updateState() {
-		}
-	}
-
 	public void processEvent(ControlEvent e) {
 		if ((e.type & ControlEvent.TYPE_INTERPRETED) == 0)
 			return;

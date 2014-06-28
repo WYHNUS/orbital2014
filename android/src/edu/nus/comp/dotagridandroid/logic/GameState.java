@@ -52,6 +52,7 @@ public class GameState implements Closeable {
 			extensionEngine = AppNativeAPI.createExtensionEngine();
 			extensionEngine.loadScript(resMan.getAllScript());
 			extensionEngine.execute();
+			extensionEngine.attachGameState(this);
 		} else
 			gameMaster = new GameMaster();	// TODO extended or basic?
 		chars = new ConcurrentHashMap<>();
@@ -99,8 +100,8 @@ public class GameState implements Closeable {
 				100,
 				100,
 				100));
-		setCharacterPositions("MyHero", new int[]{0, 0});
-		setCharacterPositions("MyHero2", new int[]{19,19});
+		setCharacterPosition("MyHero", new int[]{0, 0});
+		setCharacterPosition("MyHero2", new int[]{19,19});
 		// TODO load character models
 		chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
 		chars.get("MyHero2").setCharacterImage("MyHeroModel");
@@ -130,6 +131,7 @@ public class GameState implements Closeable {
 			return;
 		// release resources
 		resMan.close();
+		extensionEngine.close();
 		gameMaster = null;
 		chars = null;
 		objs = null;
@@ -338,9 +340,11 @@ public class GameState implements Closeable {
 		}
 	}
 	
-	protected void setCharacterPositions(String name, int[] position) {
+	public void setCharacterPosition(String name, int[] position) {
 		if (chars.containsKey(name)) {
 			if (position != null && position.length == 2) {
+				if (position[0] >= getGridWidth() || position[0] < 0 || position[1] >= getGridHeight() || position[1] < 0)
+					return;	// failed
 				final GridPointIndex key = new GridPointIndex(position);
 				if (posReverseLookup.containsKey(key))
 					return;	// failed
@@ -411,7 +415,7 @@ public class GameState implements Closeable {
 		return Collections.unmodifiableMap(possible);
 	}
 	
-	protected int[] getChosenGrid () {
+	public int[] getChosenGrid () {
 		return chosenGrid.clone();
 	}
 	
