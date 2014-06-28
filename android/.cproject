@@ -26,10 +26,10 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="com.android.toolchain.gcc.963400100.350786676" name="/" resourcePath="jni">
-						<toolChain id="com.android.toolchain.gcc.1854191119" name="Android GCC" superClass="com.android.toolchain.gcc" unusedChildren="">
-							<tool id="com.android.gcc.compiler.1789800848" name="Android GCC Compiler" superClass="com.android.gcc.compiler.1921326995">
-								<inputType id="com.android.gcc.inputType.2009819673" superClass="com.android.gcc.inputType"/>
+					<folderInfo id="com.android.toolchain.gcc.963400100.1262687836" name="/" resourcePath="jni">
+						<toolChain id="com.android.toolchain.gcc.2000895692" name="Android GCC" superClass="com.android.toolchain.gcc" unusedChildren="">
+							<tool id="com.android.gcc.compiler.59594143" name="Android GCC Compiler" superClass="com.android.gcc.compiler.1921326995">
+								<inputType id="com.android.gcc.inputType.1742093616" superClass="com.android.gcc.inputType"/>
 							</tool>
 						</toolChain>
 					</folderInfo>

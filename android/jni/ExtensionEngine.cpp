@@ -78,8 +78,8 @@ ExtensionEngine::ExtensionEngine() {
 							} else if (args[0]->IsObject()) {
 								v8::Handle<v8::Value> obj = args[0];
 								v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
-								v8::Handle<v8::Function> stringify = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")));
-								v8::Handle<v8::Value> result = stringify->CallAsFunction(json, 1, &obj);
+								v8::Handle<v8::Value> result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
+										->CallAsFunction(json, 1, &obj);
 								v8::String::Utf8Value jsonUpdate (result);
 								itf->engine->notifyUpdate(*jsonUpdate);
 							}
@@ -88,8 +88,10 @@ ExtensionEngine::ExtensionEngine() {
 			});
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate Registered");
 	interfaceTemplate.Reset(iso, newInterfaceTemplate);
+	v8::Context::Scope context_scope(newContext);
 	v8::Handle<v8::Object> json = v8::Local<v8::Object>::Cast(newContext->Global()->Get(v8::String::NewFromUtf8(iso, "JSON")));
 	jsonUtil.Reset(iso, json);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "JSON Stored");
 	DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso] = this;
 	currentInterface = new ExtensionInterface(this);
 }
@@ -145,20 +147,34 @@ void ExtensionEngine::execute() {
 }
 
 void ExtensionEngine::applyRule(const std::string& name, const std::string& options, const std::function<void(const std::string&)> &callback) {
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Applying rule: name=%s, options=%s", name.c_str(), options.c_str());
 	this->callback = callback;
 	v8::Isolate::Scope iso_scope(iso);
 	v8::Locker locker (iso);
 	v8::HandleScope scope (iso);
 	v8::Handle<v8::Context> context = v8::Local<v8::Context>::New(iso, this->context);
 	v8::Handle<v8::Function> gameDelegate = v8::Local<v8::Function>::Cast(v8::Local<v8::Value>::New(iso, this->currentInterface->gameDelegate));
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Loading JSON");
 	v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, jsonUtil);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Entering context scope");
 	v8::Context::Scope context_scope(context);
 	v8::TryCatch tryCatch;
 	v8::Handle<v8::Value> params[2];
 	params[0] = v8::String::NewFromUtf8(iso, options.c_str());
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Parsing JSON");
 	params[1] = v8::Handle<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))->CallAsFunction(json, 1, params);
+	if (params[1].IsEmpty())
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "JSON error:\n%s", *v8::String::Utf8Value(tryCatch.Exception()));
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Parsing complete");
 	params[0] = v8::String::NewFromUtf8(iso, name.c_str());
-	v8::Handle<v8::Value> result = gameDelegate->CallAsFunction(context->Global(), 2, params);
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Preparing to call game delegate\nParameters:");
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "1. %s", *v8::String::Utf8Value(params[0]));
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "2. %s", *v8::String::Utf8Value(params[1]));
+	v8::Handle<v8::Value> result;
+	if (params[1].IsEmpty())
+		result = gameDelegate->CallAsFunction(context->Global(), 1, params);
+	else
+		result = gameDelegate->CallAsFunction(context->Global(), 2, params);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Apply Rule Success");
 	if (result.IsEmpty() || result->IsUndefined() || result->IsNull()) {
 		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Action is dropped by the script");

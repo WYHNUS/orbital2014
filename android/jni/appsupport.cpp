@@ -12,9 +12,9 @@
 
 void testExtensionEngine() {
 	ExtensionEngine* engine = ExtensionEngine::Create();
-	engine->loadScript(std::string("var a = new ExtensionInterface();a.gameDelegate=function(){return 1;};a.gameDelegate();"));
+	engine->loadScript(std::string("var a = new ExtensionInterface();a.gameDelegate=function(a,b){return 1;};a.gameDelegate();"));
 	engine->execute();
-	engine->applyRule(std::string(), std::string(), [](const std::string&){});
+	engine->applyRule(std::string(), std::string("{\"Action\":\"Play\"}"), [](const std::string&){});
 	ExtensionEngine::Destroy(engine);
 }
 
