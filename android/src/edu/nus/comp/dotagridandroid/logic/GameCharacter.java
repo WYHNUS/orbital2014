@@ -464,14 +464,14 @@ public class GameCharacter extends GameObject {
 	}
 	
 	public int getNumberOfMovableGrid(){
-		return (int) (currentActionPoint / APUsedInMovingOneGrid());
+		return (int) (currentActionPoint / getAPUsedInMovingOneGrid());
 	}
 	
-	public double APUsedInMovingOneGrid(){
+	public double getAPUsedInMovingOneGrid(){
 		return MIN_MOVEMENT_CONSUME_AP + (1 - 1.0 * totalMovementSpeed / MAX_MOVEMENT_SPEED) * MOVEMENT_CONSUME_AP;
 	}
 	
-	public double APUsedWhenAttack(){
+	public double getAPUsedWhenAttack(){
 		return MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - 1.0 * totalPhysicalAttackSpeed / MAX_PHYSICAL_ATTACK_SPEED) * PHYSICAL_ATTACK_CONSUME_AP;
 	}
 

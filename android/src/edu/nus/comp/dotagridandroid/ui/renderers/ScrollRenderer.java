@@ -75,9 +75,9 @@ public class ScrollRenderer implements Renderer {
 		if (scrollMinY != null)
 			this.scrollMinY = scrollMinY;
 		if (scrollMaxX != null)
-			this.scrollMaxX = scrollMaxX;
+			this.scrollMaxX = Math.max(this.scrollMinX, scrollMaxX);
 		if (scrollMaxY != null)
-			this.scrollMaxY = scrollMaxY;
+			this.scrollMaxY = Math.max(this.scrollMinY, scrollMaxY);
 	}
 	
 	public void setScrollPosition(Float scrollPositionX, Float scrollPositionY) {

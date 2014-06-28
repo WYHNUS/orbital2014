@@ -14,7 +14,7 @@ void testExtensionEngine() {
 	ExtensionEngine* engine = ExtensionEngine::Create();
 	engine->loadScript(std::string("var a = new ExtensionInterface();a.gameDelegate=function(){return 1;};a.gameDelegate();"));
 	engine->execute();
-	engine->applyRule();
+	engine->applyRule(std::string(), std::string(), [](const std::string&){});
 	ExtensionEngine::Destroy(engine);
 }
 
@@ -89,6 +89,18 @@ JNIEXPORT void JNICALL
 Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_execute(JNIEnv *env, jobject obj, jlong ptr) {
 	ExtensionEngine *ee = (ExtensionEngine*) ptr;
 	ee->execute();
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_dotagridandroid_appsupport_ExtensionEngine_applyRule(JNIEnv *env, jobject obj, jlong ptr, jstring name, jstring optionsJSON) {
+	ExtensionEngine *ee = (ExtensionEngine*) ptr;
+	const char *nameParam = env->GetStringUTFChars(name, 0);
+	const char *optionParam = env->GetStringUTFChars(optionsJSON, 0);
+	ee->applyRule(std::string(nameParam), std::string(optionParam), [&](const std::string &update) {
+		jclass clazz = env->FindClass("edu/nus/dotagridandroid/appsupport/ExtensionEngine");
+		jmethodID method = env->GetMethodID(clazz, "notifyUpdate", "(Ljava/lang/String;)V");
+		env->CallObjectMethod(obj, method, env->NewStringUTF(update.c_str()));
+	});
 }
 
 // SoundEngine

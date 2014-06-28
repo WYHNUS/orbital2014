@@ -13,6 +13,8 @@ public class GameScene implements SceneRenderer {
 	private static final int CELLS_PER_ROW = 3;
 	private static final float CELL_MARGIN = .1f;
 	
+	private static final int MESSAGE_CHAR_PER_ROW = 20;
+	
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
 	private GameState state;
@@ -96,17 +98,80 @@ public class GameScene implements SceneRenderer {
 	public void notifyUpdate(Map<String, Object> updates) {
 		hasDialog = false;
 		if (updates.containsKey("Dialog"))
-			prepareDialog((String) updates.get("Dialog"));
+			prepareDialog((String) updates.get("Dialog"), updates);
 		grid.notifyUpdate(updates);
 		status.notifyUpdate(updates);
 	}
 	
-	private void prepareDialog(String dialogType) {
+	private void prepareDialog(String dialogType, Map<String, Object> options) {
 		hasDialog = false;
 		for (Renderer r : dialogControl.values())
 			r.close();
 		dialogControl.clear();
 		switch (dialogType) {
+		case "Message": {
+			// display message
+			String[] lines = ((String) options.get("Message")).split("\n");
+			List<String> brokenLines = new ArrayList<>();
+			for (String line : lines) {
+				String brokenLine = line;
+				while (brokenLine.length() > MESSAGE_CHAR_PER_ROW) {
+					brokenLines.add(brokenLine.substring(0, MESSAGE_CHAR_PER_ROW));
+					brokenLine = brokenLine.substring(MESSAGE_CHAR_PER_ROW);
+				}
+				if (brokenLine.length() > 0)
+					brokenLines.add(brokenLine);
+			}
+			ScrollRenderer scroll = new ScrollRenderer();
+			scroll.setGLResourceManager(vBufMan);
+			scroll.setGameLogicManager(manager);
+			scroll.setTexture2D(textures);
+			scroll.setGraphicsResponder(responder);
+			scroll.setMVP(FlatMatrix4x4Multiplication(dialogMat,FlatTranslationMatrix4x4(0, .1f, 0),FlatScalingMatrix4x4(1, .9f, 1)), null, null);
+			TextRenderer t = new TextRenderer();
+			t.setTexture2D(textures);
+			t.setGLResourceManager(vBufMan);
+			t.setAspectRatio(ratio);
+			t.setGraphicsResponder(responder);
+			t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+			t.setTextColour(new float[]{-1,-1,1,0});
+			t.setRenderReady();
+			t.setTexts(brokenLines.toArray(new String[brokenLines.size()]));
+			scroll.setRenderer("Message", t, FlatMatrix4x4Multiplication(
+					FlatTranslationMatrix4x4(-1, 1, 0),
+					FlatScalingMatrix4x4(2f / MESSAGE_CHAR_PER_ROW, 2f / MESSAGE_CHAR_PER_ROW, 1)));
+			scroll.setScrollLimit(0f, 0f, 0f, 2 * t.getYExtreme() / MESSAGE_CHAR_PER_ROW - 1);
+			dialogControl.put("Scroll", scroll);
+			// ok button
+			ButtonRenderer r = new ButtonRenderer();
+			r.setTexture2D(textures);
+			r.setGameLogicManager(manager);
+			r.setAspectRatio(ratio);
+			r.setGLResourceManager(vBufMan);
+			r.setMVP(FlatMatrix4x4Multiplication(
+					dialogMat,
+					FlatTranslationMatrix4x4(0, -.9f, 0),
+					FlatScalingMatrix4x4(.5f, .1f, 1)), null, null);
+			r.setRenderReady();
+			r.setTapEnabled(true);
+			r.setTapRespondName("Cancel");
+			t = new TextRenderer();
+			t.setGLResourceManager(vBufMan);
+			t.setAspectRatio(ratio);
+			t.setGraphicsResponder(responder);
+			t.setTextColour(new float[]{0,0,0,0});
+			t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+			t.setRenderReady();
+			t.setMVP(FlatMatrix4x4Multiplication(
+					dialogMat,
+					FlatTranslationMatrix4x4(-.25f, -.8f, 0),
+					FlatScalingMatrix4x4(.5f / 5, .5f / 5, 1)), null, null);
+			t.setText("  OK  ");
+			dialogControl.put("OK", r);
+			dialogControl.put("OKLabel", t);
+			hasDialog = true;
+			break;
+		}
 		case "ChooseSkill": {
 			// display skill panel
 			break;

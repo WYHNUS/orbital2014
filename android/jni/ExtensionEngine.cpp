@@ -36,7 +36,7 @@ ExtensionEngine::ExtensionEngine() {
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Constructor Registered");
 	newInterfaceTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 	newInterfaceTemplate->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(iso, "gameDelegate"),
-			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value> &info) {
 				v8::Isolate* iso = info.GetIsolate();
 				v8::Isolate::Scope iso_scope(iso);
 				v8::Locker locker(iso);
@@ -61,18 +61,35 @@ ExtensionEngine::ExtensionEngine() {
 			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
 				v8::Isolate* iso = info.GetIsolate();
 				v8::Isolate::Scope iso_scope(iso);
+				v8::HandleScope scope (iso);
 				v8::Locker locker(iso);
 				v8::Handle<v8::FunctionTemplate> func = v8::FunctionTemplate::New(iso,
 						[] (const v8::FunctionCallbackInfo<v8::Value> &args) {
 							v8::Isolate* iso = args.GetIsolate();
 							v8::Isolate::Scope iso_scope(iso);
+							v8::HandleScope scope(iso);
 							v8::Locker locker(iso);
 							ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(args.Holder()->GetInternalField(0))->Value());
+							if (args[0].IsEmpty())
+								return;
+							if (args[0]->IsString()) {
+								v8::String::Utf8Value jsonUpdate (args[0]);
+								itf->engine->notifyUpdate(*jsonUpdate);
+							} else if (args[0]->IsObject()) {
+								v8::Handle<v8::Value> obj = args[0];
+								v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
+								v8::Handle<v8::Function> stringify = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")));
+								v8::Handle<v8::Value> result = stringify->CallAsFunction(json, 1, &obj);
+								v8::String::Utf8Value jsonUpdate (result);
+								itf->engine->notifyUpdate(*jsonUpdate);
+							}
 						});
 				info.GetReturnValue().Set(func->GetFunction());
 			});
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate Registered");
 	interfaceTemplate.Reset(iso, newInterfaceTemplate);
+	v8::Handle<v8::Object> json = v8::Local<v8::Object>::Cast(newContext->Global()->Get(v8::String::NewFromUtf8(iso, "JSON")));
+	jsonUtil.Reset(iso, json);
 	DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso] = this;
 	currentInterface = new ExtensionInterface(this);
 }
@@ -127,22 +144,32 @@ void ExtensionEngine::execute() {
 	}
 }
 
-void ExtensionEngine::applyRule() {
+void ExtensionEngine::applyRule(const std::string& name, const std::string& options, const std::function<void(const std::string&)> &callback) {
+	this->callback = callback;
 	v8::Isolate::Scope iso_scope(iso);
 	v8::Locker locker (iso);
 	v8::HandleScope scope (iso);
 	v8::Handle<v8::Context> context = v8::Local<v8::Context>::New(iso, this->context);
 	v8::Handle<v8::Function> gameDelegate = v8::Local<v8::Function>::Cast(v8::Local<v8::Value>::New(iso, this->currentInterface->gameDelegate));
+	v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, jsonUtil);
 	v8::Context::Scope context_scope(context);
 	v8::TryCatch tryCatch;
-	v8::Handle<v8::Value> result = gameDelegate->CallAsFunction(context->Global(), 0, 0);
+	v8::Handle<v8::Value> params[2];
+	params[0] = v8::String::NewFromUtf8(iso, options.c_str());
+	params[1] = v8::Handle<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))->CallAsFunction(json, 1, params);
+	params[0] = v8::String::NewFromUtf8(iso, name.c_str());
+	v8::Handle<v8::Value> result = gameDelegate->CallAsFunction(context->Global(), 2, params);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Apply Rule Success");
-	if (result.IsEmpty() || result->IsUndefined()) {
+	if (result.IsEmpty() || result->IsUndefined() || result->IsNull()) {
 		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Action is dropped by the script");
 	} else {
 		v8::String::Utf8Value str (result);
 		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Result: %s", *str);
 	}
+}
+
+void ExtensionEngine::notifyUpdate(const char *update) {
+	callback(update);
 }
 
 ExtensionEngine* ExtensionEngine::Create() {

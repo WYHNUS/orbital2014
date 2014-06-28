@@ -10,7 +10,7 @@ public class GameMaster {
 	public void applyRule(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
 		if (!character.equals(stateMachine.getCurrentCharacterName()))
 			return;
-		final GameCharacter playerChar = stateMachine.getCharacters().get(character);
+//		final GameCharacter playerChar = stateMachine.getCharacters().get(character);
 		final int[]
 				prevPos = stateMachine.getCharacterPositions().get(stateMachine.getCurrentCharacterName()),
 				reqPos = stateMachine.getChosenGrid();
@@ -24,8 +24,8 @@ public class GameMaster {
 			List<List<Integer>> allowed = new ArrayList<>();
 			final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
 //			final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
-			final int totalAttackArea = ((Number) stateMachine.getCharacterProperty("hero", character, "totalPhysicalAttackArea")).intValue()
-					+ ((Number) stateMachine.getCharacterProperty("hero", character, "totalItemAddPhysicalAttackArea")).intValue();
+			final int totalAttackArea = (Integer) stateMachine.getCharacterProperty(character, "totalPhysicalAttackArea")
+					+ (Integer) stateMachine.getCharacterProperty(character, "totalItemAddPhysicalAttackArea");
 			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
 				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
 					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
@@ -37,15 +37,15 @@ public class GameMaster {
 			System.out.println("Requesting move area");
 			List<List<Integer>> allowed = new ArrayList<>();
 			if (reqPos[0] >= 0 && reqPos[0] < stateMachine.getGridWidth() && reqPos[1] >= 0 && reqPos[1] < stateMachine.getGridHeight()) {
-				final double[] APmap = getLowestMoveAPConsumptionMap(
-						prevPos, null, stateMachine.getTerrain(), stateMachine.getGridWidth(), stateMachine.getGridHeight(), playerChar);
+				final double[] APmap = getLowestMoveAPConsumptionMap(stateMachine, prevPos, reqPos, character);
+				final int currentActionPoint = (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint");
 				int column = 0, row = 0;
 				for (int i = 0; i < stateMachine.getGridWidth() * stateMachine.getGridHeight(); i++) {
 					column++;
 					if (column == stateMachine.getGridWidth()) {
 						column = 0; row++;
 					}
-					if (APmap[i] <= playerChar.getCurrentActionPoint())
+					if (APmap[i] <= currentActionPoint)
 						allowed.add(Arrays.asList(column, row));
 				}
 				stateMachine.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
@@ -69,10 +69,13 @@ public class GameMaster {
 					return;
 				case "Move": {
 					System.out.println("Game action is move");
-//					// calculate AP
-					final double actionPointUsed = playerChar.APUsedInMovingOneGrid() * (Math.abs(reqPos[0] - prevPos[0]) + Math.abs(reqPos[1] - prevPos[1]));
-					final double currentActionPoint = playerChar.getCurrentActionPoint() - actionPointUsed;
-					playerChar.setCurrentActionPoint((int) currentActionPoint);
+					// calculate AP
+					final double actionPointUsed = (double) stateMachine.getCharacterProperty(character, "APUsedInMovingOneGrid")
+							/*playerChar.getAPUsedInMovingOneGrid()*/ * (Math.abs(reqPos[0] - prevPos[0]) + Math.abs(reqPos[1] - prevPos[1]));
+					final int currentActionPoint = (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint");
+					final int newActionPoint = (int) (currentActionPoint - actionPointUsed);
+//					playerChar.setCurrentActionPoint(currentActionPoint);
+					stateMachine.setCharacterProperty(character, "currentActionPoint", newActionPoint);
 					// move
 					stateMachine.setCharacterPositions(character, stateMachine.getChosenGrid());
 					List<String> characters = Collections.singletonList(character);
@@ -129,12 +132,16 @@ public class GameMaster {
 		return true;
 	}
 	
-	private double[] getLowestMoveAPConsumptionMap (int[] start, int[] end, float[] terrain, int width, int height, GameCharacter character) {
+	private double[] getLowestMoveAPConsumptionMap (GameState stateMachine, int[] start, int[] end, String character) {
+		final float[] terrain = stateMachine.getTerrain();
+		final int width = stateMachine.getGridWidth(), height = stateMachine.getGridHeight();
 		final int[][] dirs = new int[][] {{-1,0},{1,0},{0,-1},{0,1}};
 		final double TERRAIN_CONST = 1;	// TODO terrain factor
 		Queue<int[]> q = new LinkedList<>();
 		double[] map = new double[width * height];
-		Arrays.fill(map, character.getMaxActionPoint() + 1);
+//		Arrays.fill(map, character.getMaxActionPoint() + 1);
+		Arrays.fill(map, (Integer) stateMachine.getCharacterProperty(character, "maxActionPoint") + 1);
+		final int APConsumptionPerGrid = (Integer) stateMachine.getCharacterProperty(character, "APUsedInMovingOneGrid");
 		map[start[0] + start[1] * width] = 0;
 		q.add(start);
 		while (!q.isEmpty()) {
@@ -142,7 +149,7 @@ public class GameMaster {
 			for (byte i = 0; i < 4; i++) 
 				if (prevPos[0] + dirs[i][0] < width && prevPos[0] + dirs[i][0] >= 0 &&
 						prevPos[1] + dirs[i][1] < height && prevPos[1] + dirs[i][1] >= 0) {
-					final double APconsumed = character.APUsedInMovingOneGrid() +
+					final double APconsumed = APConsumptionPerGrid/*character.getAPUsedInMovingOneGrid()*/ +
 							Math.max(0, terrain[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width] - terrain[prevPos[0] + prevPos[1] * width]) * TERRAIN_CONST;
 					if (APconsumed < map[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width]) {
 						map[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width] = APconsumed;

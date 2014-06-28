@@ -215,12 +215,13 @@ public class GameState implements Closeable {
 		return extensionEngine;
 	}
 	
-	public Object getCharacterProperty(String type, String charName, String name) {
+	public Object getCharacterProperty(String charName, String name) {
 		// call getter method through reflection
 		if (name == null || name.length() == 0 || !chars.containsKey(charName))
 			return null;
 		// Method
 		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+		final String booleanMethodName = "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
 		final Method[] methods;
 		// TODO add LineCreeps
 		final GameCharacter character = chars.get(charName);
@@ -232,10 +233,22 @@ public class GameState implements Closeable {
 			methods = GameCharacter.class.getMethods();
 		}
 		for (Method m : methods) {
-			if (!m.getName().equals(methodName))
+			if (!methodName.equals(m.getName()))
 				continue;
 			if (m.getGenericParameterTypes().length != 0)
 				continue;
+			try {
+				m.setAccessible(true);
+				return m.invoke(character);
+			} catch (Exception e) {
+				System.out.println("Property getter of '" + name + "' is not available.");
+				System.out.println(e.getCause().getMessage());
+			}
+			if (!booleanMethodName.equals(m.getName()))
+				continue;
+			if (m.getReturnType() != boolean.class)
+				continue;
+			// is boolean method
 			try {
 				m.setAccessible(true);
 				return m.invoke(character);
@@ -248,10 +261,10 @@ public class GameState implements Closeable {
 		return character.getExtendedProperty(name);
 	}
 	
-	public void setCharacterProperty(String type, String charName, String name, Object value) {
-		if (name == null || name.length() == 0 || !chars.containsKey(charName))
+	public void setCharacterProperty(String charName, String name, Object value) {
+		if (name == null || name.length() == 0 || !chars.containsKey(charName) || value == null)
 			return;
-		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
+		final String methodName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
 		final Method[] methods;
 		boolean setterSuccess = false;
 		// TODO add LineCreeps
@@ -264,45 +277,65 @@ public class GameState implements Closeable {
 			methods = GameCharacter.class.getMethods();
 		}
 		for (Method m : methods) {
-			if (!m.getName().equals(methodName))
+			if (!methodName.equals(m.getName()))
 				continue;
-			final Type[] params = m.getGenericParameterTypes();
 			if (m.getGenericReturnType() != void.class)
 				continue;
-			if (params.length != 1)
-				continue;
-			Object numericValue = null;
-			if (value != null && value instanceof Number) {
-				// number is special case; casting is necessary
-				if ((Type) params[0].getClass() == double.class)
-					numericValue = ((Number) value).doubleValue();
-				else if ((Type) params[0].getClass() == float.class)
-					numericValue = ((Number) value).floatValue();
-				else if ((Type) params[0].getClass() == int.class)
-					numericValue = ((Number) value).intValue();
-				else if ((Type) params[0].getClass() == short.class)
-					numericValue = ((Number) value).shortValue();
-				else if ((Type) params[0].getClass() == byte.class)
-					numericValue = ((Number) value).byteValue();
-				else if ((Type) params[0].getClass() == long.class)
-					numericValue = ((Number) value).longValue();
-			} else if (value != null && !value.getClass().isAssignableFrom(params[0].getClass()))
+			final Type[] params = m.getGenericParameterTypes();
+			if (!value.getClass().isAssignableFrom(params[0].getClass()))
 				continue;
 			try {
 				m.setAccessible(true);
-				m.invoke(character);
+				m.invoke(character, value);
 				setterSuccess = true;
 				break;
 			} catch (Exception e) {
 				System.out.println("Property getter of '" + name + "' is not available.");
 				System.out.println(e.getCause().getMessage());
-				setterSuccess = false;
 				break;
 			}
 		}
-		if (!setterSuccess)
+		if (!setterSuccess && value instanceof Number)
+			for (Method m : methods) {
+				if (!methodName.equals(m.getName()))
+					continue;
+				if (m.getGenericReturnType() != void.class)
+					continue;
+				final Type[] params = m.getGenericParameterTypes();
+				if (params.length != 1)
+					continue;
+				Object numericValue;
+				if (params[0] == double.class || params[0] == Double.class)
+					numericValue = ((Number) value).doubleValue();
+				else if (params[0] == float.class || params[0] == Float.class)
+					numericValue = ((Number) value).floatValue();
+				else if (params[0] == int.class || params[0] == Integer.class)
+					numericValue = ((Number) value).intValue();
+				else if (params[0] == short.class || params[0] == Short.class)
+					numericValue = ((Number) value).shortValue();
+				else if (params[0] == byte.class || params[0] == Byte.class)
+					numericValue = ((Number) value).byteValue();
+				else if (params[0] == long.class || params[0] == Long.class)
+					numericValue = ((Number) value).longValue();
+				else
+					continue;
+				try {
+					m.setAccessible(true);
+					m.invoke(character, numericValue);
+					setterSuccess = true;
+					break;
+				} catch (Exception e) {
+					System.out.println("Property getter of '" + name + "' is not available.");
+					System.out.println(e.getCause().getMessage());
+					break;
+				}
+			}
+		if (!setterSuccess) {
 			// extended
 			character.setExtendedProperty(name, value);
+			if (!resMan.isExtensionEnabled())
+				System.out.println("Property '" + name + "' is unknown. Looks like you are writing a custom property. Are you sure?");
+		}
 	}
 	
 	protected void setCharacterPositions(String name, int[] position) {

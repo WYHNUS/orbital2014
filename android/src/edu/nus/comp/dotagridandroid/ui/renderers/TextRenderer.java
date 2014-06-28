@@ -23,6 +23,7 @@ public class TextRenderer implements Renderer {
 	private List<String> text = Collections.emptyList();
 	private float[] textColour = {1,-1,-1,0};
 	private boolean yAligned = false;
+	private float xExtreme, yExtreme;
 	public TextRenderer () {
 	}
 	
@@ -41,18 +42,45 @@ public class TextRenderer implements Renderer {
 	}
 	
 	public void setText (String text) {
+		xExtreme = yExtreme = 0;
 		if (text != null && text.length() > 0) {
 			this.text = Collections.singletonList(text);
 			responder.updateGraphics();
+			if (yAligned) {
+				xExtreme = text.length() * font.getCharacterSizeRatio();
+				yExtreme = 1;
+			} else {
+				xExtreme = text.length();
+				yExtreme = 1 / font.getCharacterSizeRatio();
+			}
 		}
 	}
 	public void setTexts (String... text) {
+		xExtreme = yExtreme = 0;
 		this.text = Arrays.asList(text);
+		int c = 0;
+		if (yAligned) {
+			for (String line : text)
+				if (line != null) {
+					xExtreme = Math.max(xExtreme, line.length() * font.getCharacterSizeRatio());
+					c++;
+				}
+			yExtreme = c;
+		} else {
+			for (String line : text)
+				if (line != null) {
+					xExtreme = Math.max(xExtreme, line.length());
+					c++;
+				}
+			yExtreme = c / font.getCharacterSizeRatio();
+		}
 		responder.updateGraphics();
 	}
 	public void setTextColour (float[] colour) {textColour = colour;}
 	public void setTextFont (TextFont font) {this.font = font;}
 	public void setYAligned (boolean value) {this.yAligned = value;}
+	public float getXExtreme () {return xExtreme;}
+	public float getYExtreme () {return yExtreme;}
 
 	@Override
 	public void draw() {
