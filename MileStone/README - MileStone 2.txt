@@ -19,7 +19,7 @@ Feature 2:
 Hero modeling in renders. (in Android)
 
 Feature 3:
-Implement round feature. (in PC)
+Implement round feature. (both in PC and in Android)
 
 Feature 4:
 Allow hero to move around in the game map. (both in PC and in Android)
@@ -38,7 +38,7 @@ Feature 8:
 Allow hero to perform various actions. (both in PC and in Android)
 
 Feature 8.1:
-Action : buy item  (in PC)
+Action : buy item  (both in PC and in Android)
 
 Feature 8.2:
 Action : sell item  (in PC)
