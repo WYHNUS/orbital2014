@@ -204,7 +204,7 @@ The hero will respawn after a certain round (depending on hero's level) from the
 
 6 LineCreep
 
-6.1 Infomathion:  (starting attributes)
+6.1 Infomation:  (starting attributes)
 	there are three types of LineCreeps:
 			BountyMoney / BountyExp / HP / MP / PhysicalAttack / Range / AttackSpeed / PhysicalDefence / MagicResis / MovementSpeed 
 

@@ -284,7 +284,17 @@ public class GameState implements Closeable {
 			if (m.getGenericReturnType() != void.class)
 				continue;
 			final Type[] params = m.getGenericParameterTypes();
-			if (!value.getClass().isAssignableFrom(params[0].getClass()))
+			if (value instanceof Integer && params[0] == Integer.TYPE)
+				;
+			else if (value instanceof Double && params[0] == Double.TYPE)
+				;
+			else if (value instanceof Float && params[0] == Float.TYPE)
+				;
+			else if (value instanceof Long && params[0] == Long.TYPE)
+				;
+			else if (value instanceof Short && params[0] == Short.TYPE)
+				;
+			else if (!params[0].getClass().isAssignableFrom(value.getClass()))
 				continue;
 			try {
 				m.setAccessible(true);
