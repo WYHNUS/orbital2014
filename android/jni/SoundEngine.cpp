@@ -45,7 +45,7 @@ void SoundEngine::prepareBufferQueuePlayer() {
 		return;
 	bufferQueueEnabled = true;
 	masterBuffer = new short[SoundEngine::BUFFER_SIZE * SoundEngine::BUFFER_COUNT];
-	memset(masterBuffer, 0, SoundEngine::BUFFER_SIZE * SoundEngine::BUFFER_COUNT);
+	memset(masterBuffer, 0, SoundEngine::BUFFER_SIZE * SoundEngine::BUFFER_COUNT * sizeof (short));
 	bqHead = bqTail = 0;
 	SLDataLocator_AndroidSimpleBufferQueue bufferQueue = {SL_DATALOCATOR_ANDROIDSIMPLEBUFFERQUEUE, SoundEngine::BUFFER_COUNT};
 	SLDataFormat_PCM formatPCM = {
@@ -100,6 +100,7 @@ void SoundEngine::bufferQueuePlayerCallBack (SLAndroidSimpleBufferQueueItf buffe
 	__android_log_print(ANDROID_LOG_DEBUG, "SE", "Test=%d", se->test);
 	se->test++;
 	if (se->bqHead != se->bqTail) {
+		__android_log_print(ANDROID_LOG_DEBUG, "SE", "Enqueue Buffer");
 		(*se->bufferQueuePlayerBufferQueue)->Enqueue(se->bufferQueuePlayerBufferQueue, se->masterBuffer + se->bqHead * SoundEngine::BUFFER_SIZE, SoundEngine::BUFFER_SIZE);
 		se->bufferQueuePop();
 	}

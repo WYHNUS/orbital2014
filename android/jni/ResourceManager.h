@@ -9,7 +9,6 @@
 #define RESOURCEMANAGER_H_
 #include <zip.h>
 #include <png.h>
-#include <memory>
 #include <map>
 #include <vector>
 #include <string>
@@ -17,7 +16,7 @@
 class ResourceManager {
 	std::map<std::string, GLuint> textureHandlers, modelHandlers;
 	std::map<std::string, unsigned int> modelSizes, textureWidths, textureHeights;
-	std::vector<std::unique_ptr<char[]>> scripts;
+	std::vector<std::string> scripts;
 	bool useExtensionEngine;
 public:
 	explicit ResourceManager(const char * const path = "/sdcard/dotagrid/default.zip");

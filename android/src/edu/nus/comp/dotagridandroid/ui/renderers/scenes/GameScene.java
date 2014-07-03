@@ -367,8 +367,8 @@ public class GameScene implements SceneRenderer {
 			grid.close();
 		if (status != null)
 			status.close();
-		if (manager != null)
-			manager.getCurrentGameState().close();
+//		if (manager != null)
+//			manager.getCurrentGameState().close();
 		dialogProgram.close();
 	}
 

@@ -274,7 +274,9 @@ ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEng
 					content = new char[st.size + 1];
 					zip_fread(zf, content, st.size);
 					zip_fclose(zf);
-					scripts.push_back(std::unique_ptr<char[]>(content));
+					content[st.size] = 0;
+					scripts.push_back(std::string(content));
+					delete[] content;
 					useExtensionEngine = true;
 				} else
 					__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Load %s failed", scriptFile.c_str());
@@ -406,8 +408,8 @@ unsigned int ResourceManager::getModelSize(const std::string &name) {
 
 std::string ResourceManager::getAllScript() {
 	std::string ret;
-	for (auto& script_ptr : scripts)
-		ret += script_ptr.get();
+	for (auto& script : scripts)
+		ret += script;
 	return ret;
 }
 

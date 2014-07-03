@@ -173,12 +173,12 @@ v8::Handle<v8::Object> ExtensionEngine::wrapInterface() {
 }
 
 ExtensionEngine::~ExtensionEngine() {
+	delete currentInterface;
 	DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP.erase(iso);
 	interfaceTemplate.Reset();
 	jsonUtil.Reset();
 	context.Reset();
 	iso->Dispose();
-	delete currentInterface;
 }
 
 void ExtensionEngine::loadScript(const std::string& src) {
@@ -205,7 +205,7 @@ void ExtensionEngine::execute() {
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Expose ExtensionInterface");
 	v8::Handle<v8::Script> script = v8::Script::Compile(source);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Compile");
-	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Script=\n%s,", src.c_str());
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Script=\n%s", src.c_str());
 	v8::TryCatch tryCatch;
 	v8::Handle<v8::Value> result = script->Run();
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Script Exception:\n%s", *v8::String::Utf8Value(tryCatch.Exception()));
@@ -272,7 +272,7 @@ void ExtensionEngine::notifyUpdate(const char *update) {
 }
 
 const std::string ExtensionEngine::getCharacterPositions(const char *chars) {
-	getCharacterPositionCallback(std::string(chars));
+	return getCharacterPositionCallback(std::string(chars));
 }
 
 void ExtensionEngine::setCharacterPosition(const char * character, const char * position) {
@@ -288,5 +288,6 @@ ExtensionEngine* ExtensionEngine::Create() {
 }
 
 void ExtensionEngine::Destroy(const ExtensionEngine* ee) {
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "ExtensionEngine cleaning up");
 	delete ee;
 }
