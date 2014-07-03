@@ -56,8 +56,8 @@ public class GameCharacter extends GameObject {
 		
 		this.setStartingHP(startingHP);
 		this.setStartingMP(startingMP);
-		this.setmaxHP(this.getStartingHP());
-		this.setmaxMP(this.getStartingMP());
+		this.setMaxHP(this.getStartingHP());
+		this.setMaxMP(this.getStartingMP());
 		this.setCurrentHP(this.getmaxHP());
 		this.setCurrentMP(this.getmaxMP());
 		
@@ -95,8 +95,8 @@ public class GameCharacter extends GameObject {
 		
 		this.setStartingHP(that.startingHP);
 		this.setStartingMP(that.startingMP);
-		this.setmaxHP(this.getStartingHP());
-		this.setmaxMP(this.getStartingMP());
+		this.setMaxHP(this.getStartingHP());
+		this.setMaxMP(this.getStartingMP());
 		this.setCurrentHP(this.getmaxHP());
 		this.setCurrentMP(this.getmaxMP());
 		
@@ -209,7 +209,7 @@ public class GameCharacter extends GameObject {
 	}
 
 
-	public void setmaxHP(int maxHP) {
+	public void setMaxHP(int maxHP) {
 		// maxHP cannot goes below startingHP
 		if (maxHP <= startingHP) {
 			this.maxHP = startingHP;
@@ -224,7 +224,7 @@ public class GameCharacter extends GameObject {
 	}
 
 
-	public void setmaxMP(int maxMP) {
+	public void setMaxMP(int maxMP) {
 		// minimum maxMP is startingMP 
 		if (maxMP <= startingMP) {
 			this.maxMP = startingMP;

@@ -106,8 +106,8 @@ public class Hero extends GameCharacter{
 		this.setBasicMainAttribute(null);
 		this.setTotalMainAttribute(null);
 		
-		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO));
-		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO));
+		this.setMaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO));
+		this.setMaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO));
 		this.setCurrentHP(this.getmaxHP());
 		this.setCurrentMP(this.getmaxMP());
 
@@ -161,8 +161,8 @@ public class Hero extends GameCharacter{
 		this.setBasicMainAttribute(null);
 		this.setTotalMainAttribute(null);
 		
-		this.setmaxHP(that.getmaxHP());
-		this.setmaxMP(that.getmaxMP());
+		this.setMaxHP(that.getmaxHP());
+		this.setMaxMP(that.getmaxMP());
 		this.setCurrentHP(that.getCurrentHP());
 		this.setCurrentMP(that.getCurrentMP());
 		
@@ -211,8 +211,8 @@ public class Hero extends GameCharacter{
 		this.setBasicMainAttribute(null);
 		this.setTotalMainAttribute(null);
 		
-		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO + this.getTotalItemAddHP()));
-		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO + this.getTotalItemAddMP()));
+		this.setMaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO + this.getTotalItemAddHP()));
+		this.setMaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO + this.getTotalItemAddMP()));
 
 		this.setHPGainPerRound(HeroHPGainPerRound + this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + this.getTotalItemAddHPGainPerRound());
 		this.setMPGainPerRound(HeroMPGainPerRound + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + this.getTotalItemAddMPGainPerRound());
