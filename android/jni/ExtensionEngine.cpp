@@ -205,6 +205,7 @@ void ExtensionEngine::execute() {
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Expose ExtensionInterface");
 	v8::Handle<v8::Script> script = v8::Script::Compile(source);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Compile");
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Script=\n%s,", src.c_str());
 	v8::TryCatch tryCatch;
 	v8::Handle<v8::Value> result = script->Run();
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Script Exception:\n%s", *v8::String::Utf8Value(tryCatch.Exception()));
@@ -247,6 +248,10 @@ void ExtensionEngine::applyRule(const std::string& character, const std::string&
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Preparing to call game delegate\nParameters:");
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "1. %s", *v8::String::Utf8Value(params[0]));
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "2. %s", *v8::String::Utf8Value(params[1]));
+	if (currentInterface->gameDelegate.IsEmpty()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Game delegate is still empty!");
+		return;
+	}
 	v8::Handle<v8::Value> result;
 	if (params[2].IsEmpty())
 		result = gameDelegate->CallAsFunction(context->Global(), 2, params);
