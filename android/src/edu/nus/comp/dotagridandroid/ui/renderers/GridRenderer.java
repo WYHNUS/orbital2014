@@ -74,7 +74,7 @@ public class GridRenderer implements Renderer {
 	// light sources
 	public final int MAX_LIGHT_SOURCES = CommonShaders.MAX_LIGHT_SOURCE;
 	private final float[] lightObserver = {0,0,BOARD_Z_COORD};
-	// light config - 0: source.x, 1: source.y, 2: source.z, 3: color.r, 4: color.g, 5: color.b, 6: specular, 7: attenuation
+	// light config - 0: source.x, 1: source.y, 2: source.z, 3: color.r, 4: color.g, 5: color.b, 6: specular, 7: attenuation, 8: sight
 	private final Map<String, float[]> lightSrc = new ConcurrentHashMap<>(), lightViews = new ConcurrentHashMap<>();
 	private final Map<String, Boolean> lightDirty = new ConcurrentHashMap<>(), lightOn = new ConcurrentHashMap<>();
 	// light - shadowMaps
@@ -399,8 +399,8 @@ public class GridRenderer implements Renderer {
 			if (chars.get(name).getTeamNumber() == mainCharacterTeamNumber) {
 				lightSrc.put(name, new float[]{
 						lightPos[0], lightPos[1], lightPos[2],
-						1, 1, 1,	// TODO change to hero's color
-						5, 2});
+						1, 1, 1,	// TODO change to hero's color and sight
+						5, 2, .2f});
 				lightOn.put(name, chars.get(name).isAlive());
 			}
 		}
@@ -492,6 +492,7 @@ public class GridRenderer implements Renderer {
 			color = glGetUniformLocation(mapProgram.getProgramId(), "light.color"),
 			specular = glGetUniformLocation(mapProgram.getProgramId(), "light.specular"),
 			attenuation = glGetUniformLocation(mapProgram.getProgramId(), "light.attenuation"),
+			sight = glGetUniformLocation(mapProgram.getProgramId(), "light.sight"),
 			mLight = glGetUniformLocation(mapProgram.getProgramId(), "lightTransform");
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		boolean firstTime = true;
@@ -528,6 +529,7 @@ public class GridRenderer implements Renderer {
 			glUniform3f(color, config[3], config[4], config[5]);
 			glUniform1f(specular, config[6]);
 			glUniform1f(attenuation, config[7]);
+			glUniform1f(sight, config[8]);
 			glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * resolution * (columns * resolution + 1) * 2);
 			if (firstTime) {
 				glBlendFunc(GL_ONE, GL_ONE);
@@ -553,6 +555,7 @@ public class GridRenderer implements Renderer {
 		color = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.color");
 		specular = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.specular");
 		attenuation = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.attenuation");
+		sight = glGetUniformLocation(shadowObjProgram.getProgramId(), "light.sight");
 		mLight = glGetUniformLocation(shadowObjProgram.getProgramId(), "lightTransform");
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
@@ -585,8 +588,8 @@ public class GridRenderer implements Renderer {
 					glUniform3f(color, config[3], config[4], config[5]);
 					glUniform1f(specular, config[6]);
 					glUniform1f(attenuation, config[7]);
+					glUniform1f(sight, config[8]);
 					glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
-					
 					if (firstTime) {
 						glBlendFunc(GL_ONE, GL_ONE);
 						firstTime = false;

@@ -117,7 +117,7 @@ public class CommonShaders {
 		+ "uniform sampler2D texture, normal, shadow;"
 		+ "struct lightsrc {"
 			+ "vec3 source, color;"
-			+ "float specular, attenuation;"
+			+ "float specular, attenuation, sight;"
 		+ "};"
 		+ "uniform lightsrc light;"
 		+ "uniform vec3 camera;"
@@ -125,6 +125,7 @@ public class CommonShaders {
 		+ "varying vec3 position;"
 		+ "varying float actualDepth;"
 		+ "const float shadowDecay = 20.0;"	// shadow decay factor
+		+ "const float lightDecay = 30.0;"
 		+ "void main () {"
 			+ "vec4 materialColor = texture2D (texture, autoTextureCoord);"
 			+ "vec3 normalVec = normalize (texture2D (normal, autoNormalCoord).rgb * 2.0 - 1.0);"
@@ -135,7 +136,7 @@ public class CommonShaders {
 			+ "float lightDistance = length (position - light.source);"
 			+ "vec3 outbound = inbound - 2.0 * dot (inbound, normalVec) * normalVec;"
 			+ "float atn = max(0.0, dot(normalVec, -inbound)) / (1.0 + light.attenuation * pow (observerDistance + lightDistance, 2.0));"
-			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular));"
+			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular)) * exp(lightDecay * min(light.sight - observerDistance - lightDistance, 0.0));"
 			+ "vec3 finalColor = lightColor * materialColor.rgb;"
 			// shadow map
 			+ "vec3 shadowValue = texture2D (shadow, autoShadowCoord).xyz;"
@@ -148,7 +149,7 @@ public class CommonShaders {
 		+ "uniform sampler2D texture, shadow;"
 		+ "struct lightsrc {"
 			+ "vec3 source, color;"
-			+ "float specular, attenuation;"
+			+ "float specular, attenuation, sight;"
 		+ "};"
 		+ "uniform lightsrc light;"
 		+ "uniform vec3 camera;"
@@ -157,6 +158,7 @@ public class CommonShaders {
 		+ "varying vec4 autoNormal;"
 		+ "varying float actualDepth;"
 		+ "const float shadowDecay = 20.0;"	// shadow decay factor
+		+ "const float lightDecay = 30.0;"
 		+ "void main () {"
 			+ "vec4 materialColor = texture2D (texture, autoTextureCoord);"
 			+ "vec3 normalVec = normalize (autoNormal.xyz);"
@@ -167,7 +169,7 @@ public class CommonShaders {
 			+ "float lightDistance = length (position - light.source);"
 			+ "vec3 outbound = inbound - 2.0 * dot (inbound, normalVec) * normalVec;"
 			+ "float atn = max(0.0, dot(normalVec, -inbound)) / (1.0 + light.attenuation * pow (observerDistance + lightDistance, 2.0));"
-			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular));"
+			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular)) * exp(lightDecay * min(light.sight - observerDistance - lightDistance, 0.0));"
 			+ "vec3 finalColor = lightColor * materialColor.rgb;"
 			// shadow map
 			+ "vec3 shadowValue = texture2D (shadow, autoShadowCoord).xyz;"
