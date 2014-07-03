@@ -69,9 +69,9 @@ public class Hero extends GameCharacter{
 			int startingStrength, int startingAgility, int startingIntelligence, 
 			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) 
 	{
-		
 		super(heroName, bountyMoney, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, teamNumber);
+		setObjectType(GAMEOBJECT_TYPE_HERO);
 		
 		// initialize attributes specific to heros
 		this.setMainAttribute(mainAttribute);

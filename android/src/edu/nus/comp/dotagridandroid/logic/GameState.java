@@ -130,8 +130,11 @@ public class GameState implements Closeable {
 		if (!initialised)
 			return;
 		// release resources
+		if (resMan.isExtensionEnabled() && extensionEngine != null)
+			extensionEngine.close();
 		resMan.close();
-		extensionEngine.close();
+		resMan = null;
+		extensionEngine = null;
 		gameMaster = null;
 		chars = null;
 		objs = null;
@@ -202,15 +205,6 @@ public class GameState implements Closeable {
 	
 	public Map<String, int[]> getCharacterPositions() {
 		return Collections.unmodifiableMap(objPositions);
-	}
-	
-	// For Extension Engine Use
-	public Object getCharacterExtendedProperty(String type, GameCharacter character, String name) {
-		return null;
-	}
-	
-	public void setCharacterExtendedProperty(String type, GameCharacter character, String name, Object value) {
-		
 	}
 	
 	public ExtensionEngine getExtensionEngine() {
@@ -350,6 +344,10 @@ public class GameState implements Closeable {
 		}
 	}
 	
+	public int[] getCharacterPosition(String name) {
+		return objPositions.get(name);
+	}
+	
 	public void setCharacterPosition(String name, int[] position) {
 		if (chars.containsKey(name)) {
 			if (position != null && position.length == 2) {
@@ -376,6 +374,10 @@ public class GameState implements Closeable {
 	public void addAutoCharacter(String name, GameCharacter character) {
 		chars.put(name, character);
 		roundOrder.add(name);
+	}
+	
+	public int getCharacterType (String name) {
+		return chars.get(name).getObjectType();
 	}
 	
 	// character actions

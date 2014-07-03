@@ -50,6 +50,7 @@ public class GameCharacter extends GameObject {
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int maxActionPoint, int teamNumber)
 	{
+		super(GAMEOBJECT_TYPE_CHARACTER);
 		this.setName(name);
 		this.setBountyMoney(bountyMoney);
 		this.setTeamNumber(teamNumber);
