@@ -18,4 +18,7 @@ public class HeroRulebook {
 		}
 		}
 	}
+	public static void attack(GameState stateMachine, String character, int[] target) {
+		
+	}
 }
