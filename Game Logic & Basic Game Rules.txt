@@ -275,16 +275,26 @@ The hero will respawn after a certain round (depending on hero's level) from the
 
 
 7.2 LineCreep AI
-	 find nearest enemy in sight
-		if find, 
-			calculate the shortest path towards the nearest position around the target
-				then, move towards the enemy until 
-					1. AI has no more action point
-					2. Enemy is within attack range
-						1. Attack until AI has no more ActionPoint -> end this LineCreep AI round
-						2. target enmey is dead -> recursive call!
-		if not find,
-			calculate the shortest path towards targeted positions (stored in LineCreep AI's attribute)
+	 1.0 find nearest enemy in sight
+		2.0 if find, 
+			2.1 check if the enemy is within attack range
+				if within attack range
+					return and attack (2.3)
+
+			2.2 calculate the shortest path towards the nearest position around the target
+				2.2.1 if exist a path towards enemy
+					then, move towards the enemy until 
+						1. AI has no more action point
+						2. Enemy is within attack range
+
+			2.3 attack enemy until
+				1. AI has no more ActionPoint -> end this LineCreep AI round
+				2. target enmey is dead -> recursive call!
+
+		3.0 if not find,
+			3.1 calculate the shortest path towards targeted positions (stored in LineCreep AI's attribute)
+			3.2 move towards targeted positions
+			3.3 check if within range of target position
 
 
 

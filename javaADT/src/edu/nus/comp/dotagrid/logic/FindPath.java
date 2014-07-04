@@ -11,6 +11,8 @@ public class FindPath {
 	
 	private int pathXPos, pathYPos;
 	
+	private int searchRange;
+	
 	public Queue<int[]> pathQueue;
 	
 	// constructors
@@ -91,6 +93,9 @@ public class FindPath {
 	
 	// find shortest path between two points
 	public int findShortestPath(int startingXPos, int startingYPos, int XPos, int YPos){
+		searchRange = Math.max(GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getNumberOfMovableGrid(),
+				GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getSight());
+		
 		createShortestPath(pathXPos, pathYPos, startingXPos, startingYPos);
 		return path[XPos - startingXPos + (pathLength-1)/2][YPos - startingYPos + (pathLength-1)/2];
 	}
@@ -101,79 +106,12 @@ public class FindPath {
 		// can move only if the grid is movable and not occupied
 		// and only need to calculate if the position has not been calculated before
 		
-		// cannot go beyond the 2D array size (same length for x and y)
-		if (pathXPos-1 >=0 && pathXPos-1 < path.length && pathYPos >= 0 && pathYPos < path.length) {
-			if (GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsOccupied() == false
-					&& path[pathXPos-1][pathYPos] == -1) {
-					
-				// set the value for this position
-				setPathValue(pathXPos-1, pathYPos, pathLength);
-						
-				int[] tempArray = new int[5];
-				tempArray[0] = pathXPos-1;
-				tempArray[1] = pathYPos;
-				tempArray[2] = startingXPos-1;
-				tempArray[3] = startingYPos;
-						
-				pathQueue.add(tempArray);
-			}
-		}
-			
-		if (pathXPos >=0 && pathXPos < path.length && pathYPos-1 >= 0 && pathYPos-1 < path.length) {
-			if (GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsOccupied() == false
-					&& path[pathXPos][pathYPos-1] == -1) {
-					
-				// set the value for this position
-				setPathValue(pathXPos, pathYPos-1, pathLength);
-						
-				int[] tempArray = new int[5];
-				tempArray[0] = pathXPos;
-				tempArray[1] = pathYPos-1;
-				tempArray[2] = startingXPos;
-				tempArray[3] = startingYPos-1;
-						
-				pathQueue.add(tempArray);
-					
-			}
-		}
-				
-		if (pathXPos >=0 && pathXPos < path.length && pathYPos+1 >= 0 && pathYPos+1 < path.length) {
-			if (GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsOccupied() == false
-					&& path[pathXPos][pathYPos+1] == -1) {
-					
-				// set the value for this position
-				setPathValue(pathXPos, pathYPos+1, pathLength);
-						
-				int[] tempArray = new int[5];
-				tempArray[0] = pathXPos;
-				tempArray[1] = pathYPos+1;
-				tempArray[2] = startingXPos;
-				tempArray[3] = startingYPos+1;
-						
-				pathQueue.add(tempArray);
-			} 
-		}
+		// treat all grids that are not within searchRange as non-occupied
 		
-		if (pathXPos+1 >=0 && pathXPos+1 < path.length && pathYPos >= 0 && pathYPos < path.length) {
-			if (GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsOccupied() == false
-					&& path[pathXPos+1][pathYPos] == -1) {
-					
-				// set the value for this position
-				setPathValue(pathXPos+1, pathYPos, pathLength);
-				
-				int[] tempArray = new int[5];
-				tempArray[0] = pathXPos+1;
-				tempArray[1] = pathYPos;
-				tempArray[2] = startingXPos+1;
-				tempArray[3] = startingYPos;
-						
-				pathQueue.add(tempArray);
-			}
-		}
+		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, -1, 0);
+		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, 1, 0);
+		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, 0, -1);
+		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, 0, 1);
 		
 		if (pathQueue.isEmpty() == true) {
 			// queue is empty, no more path!
@@ -184,6 +122,52 @@ public class FindPath {
 	}
 
 	
+	private void checkPathPos(int pathXPos, int pathYPos, int startingXPos,	int startingYPos, int xIncrease, int yIncrease) {
+		// check and manipulate pathQueue
+		
+		// cannot go beyond the 2D array size (same length for x and y)
+		if (pathXPos+xIncrease >=0 && pathXPos+xIncrease < path.length && pathYPos+yIncrease >= 0 && pathYPos+yIncrease < path.length) {
+			// the position is movable and has not been calculated before
+			if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsMovable() == true 
+					&& path[pathXPos+xIncrease][pathYPos+yIncrease] == -1) {
+				// check if within search range
+				if (isWithinSearchRange(pathXPos+xIncrease, pathYPos+yIncrease)) {
+					// if within range, position cannot be occupied
+					if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsOccupied() == false) {
+						// set the value for this position
+						setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
+								
+						int[] tempArray = new int[5];
+						tempArray[0] = pathXPos+xIncrease;
+						tempArray[1] = pathYPos+yIncrease;
+						tempArray[2] = startingXPos+xIncrease;
+						tempArray[3] = startingYPos+yIncrease;
+								
+						pathQueue.add(tempArray);
+					}
+				} else {
+					// not within range, treat as non-occupied grids
+					
+					// set the value for this position 
+					setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
+					
+					int[] tempArray = new int[5];
+					tempArray[0] = pathXPos+xIncrease;
+					tempArray[1] = pathYPos+yIncrease;
+					tempArray[2] = startingXPos+xIncrease;
+					tempArray[3] = startingYPos+yIncrease;
+							
+					pathQueue.add(tempArray);
+				}
+			}
+		}
+	}
+
+	private boolean isWithinSearchRange(int xPos, int yPos) {
+		// check if the given position is within search range
+		return (Math.abs(this.pathXPos - xPos) + Math.abs(this.pathYPos - yPos) <= this.searchRange);
+	}
+
 	private void setPathValue(int startingXPos, int startingYPos, int pathLength) {
 		// set the path steps for the grid
 		int smallestValue = Integer.MAX_VALUE;
