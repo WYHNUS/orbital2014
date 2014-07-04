@@ -12,7 +12,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 	$(LOCAL_PATH)/libzip \
 	$(LOCAL_PATH)/v8
 LOCAL_SRC_FILES := appsupport.cpp SoundEngine.cpp ExtensionEngine.cpp ResourceManager.cpp
-LOCAL_STATIC_LIBRARIES := libzip libpng jsoncpp
+LOCAL_STATIC_LIBRARIES := libzip libpng jsoncpp libwebsockets
 LOCAL_LDLIBS := -llog -lstdc++ -lOpenSLES -lGLESv2 -ljnigraphics -lz -landroid
 LOCAL_LDLIBS += $(LOCAL_PATH)/v8/libv8_base.a
 LOCAL_LDLIBS += $(LOCAL_PATH)/v8/libv8_snapshot.a
