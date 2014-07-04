@@ -97,108 +97,42 @@ public class AICharacter {
 
 
 	private void moveTowardsNextTarget() {
-		// find nearest non-occupied grid around targeted position x,y
+		// draw 2D map from current position
 		int[] targetPos = ((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
+		int distance = Math.abs(targetPos[0] - startingXPos) + Math.abs(targetPos[1] - startingYPos);
+		
+		FindPath tempPath = new FindPath(distance);
+		tempPath.findShortestPath(startingXPos, startingYPos, targetPos[0], targetPos[1]);
+		int[][] tempPathMap = tempPath.getPath();
+		
+		// backtrack from targeted position to search for nearest reachable position
 		Queue<int[]> uncheckedPosition = new LinkedList<int[]>();
-		uncheckedPosition.add(targetPos);
+		
+		// reset targetPos in tempMap coordinates
+		int[] startingUncheckedPos = {targetPos[0] + distance - startingXPos, targetPos[1] + distance - startingYPos};
+		uncheckedPosition.add(startingUncheckedPos);
 		
 		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
 		
-		int[] nearestNonOccupiedTargetPos = new int[2];
-		boolean findTarget = false;
+		int[] nearestNonOccupiedTargetPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition); 
 		
-		// keep selecting targeted position until a reachable targeted position is chosen
-		while (!findTarget) {
-
-			findNearestNonOccupiedPos(uncheckedPosition, checkedPosition);
-			
-			// store the nearest non-occupied grid's position
-			int targetXPos = uncheckedPosition.peek()[0];
-			int targetYPos = uncheckedPosition.peek()[1];
-			
-			// discard the position
-			uncheckedPosition.poll();
-			
-			// find the path moving the AI character from (startingXPos, startingYPos) to (targetXPos, targetYPos)
-			
-			// store the distance between the two positions
-			int distance = Math.abs(targetXPos - startingXPos) + Math.abs(targetYPos - startingYPos);
-			
-			FindPath tempPath = new FindPath(distance);
-			tempPath.findShortestPath(startingXPos, startingYPos, targetXPos, targetYPos);
-			
-			// store path map into tempPathMap
-			int[][] tempPathMap = tempPath.getPath();
-			
-			// store target's coordinates' positions in tempPathMap
-			int targetMapXPos = distance + targetXPos - startingXPos;
-			int targetMapYPos = distance + targetYPos - startingYPos;
-			
-					
-			if (tempPathMap[targetMapXPos][targetMapYPos] == -1) {
-				// not reachable target, do nothing
-			} else {
-				// find a reachable target!
-				findTarget = true;
-				nearestNonOccupiedTargetPos = backTrackMove(tempPathMap, targetMapXPos, targetMapYPos, movement, tempPathMap.length);
-				
-				// reset targeted position
-				nearestNonOccupiedTargetPos[0] += (startingXPos - distance);
-				nearestNonOccupiedTargetPos[1] += (startingYPos - distance);
-			}
+		// check if the AI can move to the wait position
+		if (tempPathMap[nearestNonOccupiedTargetPos[0]][nearestNonOccupiedTargetPos[1]] > movement) {
+			// backtrack and move!
+			// move towards the enemy!
+			nearestNonOccupiedTargetPos = backTrackMove(tempPathMap, nearestNonOccupiedTargetPos[0], nearestNonOccupiedTargetPos[1], movement, tempPathMap.length);
 		}
 		
-		// now, the number of grids moved from (startingXPos, startingYPos) to (targetXPos, targetYPos) <= movement
-		// and the grid position of (targetXPos, targetYPos) is on the path to targeted position
+		// reset target position in world map frame
+		nearestNonOccupiedTargetPos[0] += (startingXPos - distance);
+		nearestNonOccupiedTargetPos[1] += (startingYPos - distance);
+			
+		// move the AI!
 		new CharacterActions(1, startingXPos, startingYPos, nearestNonOccupiedTargetPos[0], nearestNonOccupiedTargetPos[1]);
-		
-		// reset starting position for AI
+			
+		// reset AI's position
 		startingXPos = nearestNonOccupiedTargetPos[0];
 		startingYPos = nearestNonOccupiedTargetPos[1];
-	}
-
-
-	private void findNearestNonOccupiedPos(Queue<int[]> uncheckedPosition,
-			ArrayList<int[]> checkedPosition) {
-		// check nearest non-occupied position starting from the first element from the unchecked queue
-		
-		// add surrounding grids into position
-		
-		if (!isChecked(checkedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1])){
-			int[] newPos = {uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1]};
-			uncheckedPosition.add(newPos);
-		}
-						
-		if (!isChecked(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1)){
-			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1};
-			uncheckedPosition.add(newPos);
-		}
-						
-		if (!isChecked(checkedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1])){
-			int[] newPos = {uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1]};
-			uncheckedPosition.add(newPos);
-		}
-						
-		if (!isChecked(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1)){
-			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1};
-			uncheckedPosition.add(newPos);
-		}
-						
-		// add the current position into checked queue
-		checkedPosition.add(uncheckedPosition.peek());
-			
-
-		// terminating condition :
-		if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getIsMovable() == true
-				&& GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getIsOccupied() == false) {
-			// first element in the unchecked queue satisfy the searching condition
-			return;
-		} else {	
-			uncheckedPosition.poll();
-			// recursive call!
-			findNearestNonOccupiedPos(uncheckedPosition, checkedPosition);
-		}
-		
 	}
 
 
@@ -374,7 +308,7 @@ public class AICharacter {
 			
 
 		// terminating condition :
-		if (tempPathMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]] >= 1) {
+		if (tempPathMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]] >= 0) {
 			// first element in the unchecked queue satisfy the searching condition
 			int[] result = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]};
 			return result;
