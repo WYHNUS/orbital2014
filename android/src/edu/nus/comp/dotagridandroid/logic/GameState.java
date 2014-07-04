@@ -20,7 +20,6 @@ public class GameState implements Closeable {
 	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
-	private Map<String, FloatBuffer[]> objModels;
 	private Map<String, Texture2D> objTextures, objThumbnail;
 	private Map<String, Item> itemShop;
 	private ResourceManager resMan;
@@ -59,7 +58,6 @@ public class GameState implements Closeable {
 		roundOrder = new ArrayList<>();
 		objs = new ConcurrentHashMap<>();
 		objPositions = new ConcurrentHashMap<>();
-		objModels = new ConcurrentHashMap<>();
 		objTextures = new ConcurrentHashMap<>();
 		objThumbnail = new ConcurrentHashMap<>();
 		posReverseLookup = new ConcurrentHashMap<>();
@@ -139,7 +137,6 @@ public class GameState implements Closeable {
 		chars = null;
 		objs = null;
 		objPositions = null;
-		objModels = null;
 		for (Texture2D tex : objTextures.values())
 			tex.close();
 		for (Texture2D tex : objThumbnail.values())
@@ -147,21 +144,6 @@ public class GameState implements Closeable {
 		objThumbnail = objTextures = null;
 		itemShop = null;
 		initialised = false;
-	}
-	
-	public void startTimer() {
-		if (!initialised)
-			return;
-	}
-	
-	public void stopTimer() {
-		if (!initialised)
-			return;
-	}
-	
-	public void resetTimer() {
-		if (!initialised)
-			return;
 	}
 
 	//terrain

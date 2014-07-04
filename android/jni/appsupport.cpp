@@ -303,4 +303,9 @@ Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getAllScript(JNIEnv
 	return env->NewStringUTF(((ResourceManager*)ptr)->getAllScript().c_str());
 }
 
+JNIEXPORT jstring JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getTerrainConfiguration(JNIEnv *env, jobject obj, jlong ptr) {
+	return env->NewStringUTF(((ResourceManager*)ptr)->getTerrainConfiguration().c_str());
+}
+
 }

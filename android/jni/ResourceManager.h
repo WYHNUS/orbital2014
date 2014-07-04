@@ -17,17 +17,22 @@ class ResourceManager {
 	std::map<std::string, GLuint> textureHandlers, modelHandlers;
 	std::map<std::string, unsigned int> modelSizes, textureWidths, textureHeights;
 	std::vector<std::string> scripts;
+	std::string terrainJSON;
 	bool useExtensionEngine;
 public:
 	explicit ResourceManager(const char * const path = "/sdcard/dotagrid/default.zip");
 	virtual ~ResourceManager();
+
 	GLuint getTextureHandler(const std::string&);
 	GLuint getModelHandler(const std::string&);
 	GLuint getModelSize(const std::string&);
 	unsigned int getTextureWidth(const std::string&);
 	unsigned int getTextureHeight(const std::string&);
+
 	std::string getAllScript();
 	bool isExtensionEnabled();
+
+	std::string getTerrainConfiguration();
 };
 
 #endif /* RESOURCEMANAGER_H_ */

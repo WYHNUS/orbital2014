@@ -4,7 +4,7 @@
  *  Created on: 16 Jun, 2014
  *      Author: apple
  */
-#include "ResourceManager.h"
+#include <ResourceManager.h>
 #include <cstdlib>
 #include <android/log.h>
 #include <sstream>
@@ -251,16 +251,26 @@ ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEng
 	zip_file *zf;
 	// index
 	// terrain data and map data
-	// script
-	file = "scriptIndex";
+	file = "terrainConfiguration";
 	zip_stat(z, file, 0, &st);
-	content = new char[st.size + 1];
 	zf = zip_fopen(z, file, 0);
 	if (zf) {
+		content = new char[st.size + 1];
 		zip_fread(zf, content, st.size);
 		zip_fclose(zf);
 		content[st.size] = 0;
-		contentStr = std::string(content);
+		terrainJSON = content;
+	}
+	// script
+	file = "scriptIndex";
+	zip_stat(z, file, 0, &st);
+	zf = zip_fopen(z, file, 0);
+	if (zf) {
+		content = new char[st.size + 1];
+		zip_fread(zf, content, st.size);
+		zip_fclose(zf);
+		content[st.size] = 0;
+		contentStr = content;
 		delete[] content;
 		ss = new std::stringstream(contentStr);
 		while (!ss->eof()) {
@@ -275,7 +285,7 @@ ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEng
 					zip_fread(zf, content, st.size);
 					zip_fclose(zf);
 					content[st.size] = 0;
-					scripts.push_back(std::string(content));
+					scripts.push_back(std::move(std::string(content)));
 					delete[] content;
 					useExtensionEngine = true;
 				} else
@@ -283,18 +293,18 @@ ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEng
 			}
 		}
 		delete ss;
-	} else
-		delete[] content;
+	}
 	// model
 	file = "modelIndex";
 	zip_stat(z, file, 0, &st);
-	content = new char[st.size + 1];
 	zf = zip_fopen(z, file, 0);
 	if (zf) {
+		content = new char[st.size + 1];
 		zip_fread(zf, content, st.size);
 		zip_fclose(zf);
 		content[st.size] = 0;
-		contentStr = std::string(content);
+		contentStr = content;
+		delete[] content;
 		ss = new std::stringstream(contentStr);
 		while (!ss->eof()) {
 			std::string modelName, modelFile;
@@ -315,17 +325,17 @@ ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEng
 		}
 		delete ss;
 	}
-	delete[] content;
 	// texture index
 	file = "textureIndex";
 	zip_stat(z, file, 0, &st);
-	content = new char[st.size + 1];
 	zf = zip_fopen(z, file, 0);
 	if (zf) {
+		content = new char[st.size + 1];
 		zip_fread(zf, content, st.size);
 		zip_fclose(zf);
 		content[st.size] = 0;	// null terminate
-		contentStr = std::string(content);
+		contentStr = content;
+		delete[] content;
 		ss = new std::stringstream(contentStr);
 		while (!ss->eof()) {
 			std::string textureName, textureFile;
@@ -346,7 +356,6 @@ ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEng
 		}
 		delete ss;
 	}
-	delete[] content;
 	// close zip
 	zip_close(z);
 }
@@ -415,4 +424,8 @@ std::string ResourceManager::getAllScript() {
 
 bool ResourceManager::isExtensionEnabled() {
 	return useExtensionEngine;
+}
+
+std::string ResourceManager::getTerrainConfiguration() {
+	return terrainJSON;
 }
