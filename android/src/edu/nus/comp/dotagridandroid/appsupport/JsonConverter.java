@@ -259,7 +259,7 @@ public final class JsonConverter {
 			else
 				map.put(key, value);
 		}
-		return map;
+		return Collections.unmodifiableMap(map);
 	}
 	public static List<Object> JsonToArray (JSONArray arr) throws JSONException {
 		if (arr == null)
@@ -276,6 +276,6 @@ public final class JsonConverter {
 			else
 				list.add(value);
 		}
-		return list;
+		return Collections.unmodifiableList(list);
 	}
 }

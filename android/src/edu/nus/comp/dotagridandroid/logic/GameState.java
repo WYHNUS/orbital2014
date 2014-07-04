@@ -1,8 +1,11 @@
 package edu.nus.comp.dotagridandroid.logic;
-import java.nio.FloatBuffer;
+
 import java.util.*;
 import java.util.concurrent.*;
 import java.lang.reflect.*;
+
+import org.json.*;
+
 import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
@@ -118,6 +121,36 @@ public class GameState implements Closeable {
 		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		itm.setItemImage("DefaultButton");
 		itemShop.put("TestItem5", itm);
+		// terrain
+		try {
+			Map<String, Object> terrainConfig = JsonConverter.JsonToMap(new JSONObject(resMan.getTerrainConfiguration()));
+			Map<String, Object> terrain = (Map<String, Object>) terrainConfig.get("terrain");
+			gridWidth = ((Number) terrainConfig.get("width")).intValue();
+			gridHeight = ((Number) terrainConfig.get("height")).intValue();
+			switch ((String) terrain.get("type")) {
+			case "fixed": {
+				int c = 0;
+				this.terrain = new float[gridWidth * gridHeight];
+				for (Number val : (List<Number>) terrain.get("heights"))
+					if (c < this.terrain.length)
+						this.terrain[c++] = val.floatValue();
+					else
+						break;
+				break;
+			}
+			case "random": {
+				Random r = new Random();
+				gridWidth = r.nextInt(300);
+				gridHeight = r.nextInt(300);
+				this.terrain = new float[gridWidth * gridHeight];
+				for (int i = 0; i < gridWidth * gridHeight; i++)
+					this.terrain[i] = r.nextFloat();
+				break;
+			}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 		// end
 		chosenGrid = objPositions.get(playerCharacter).clone();
 		initialised = true;

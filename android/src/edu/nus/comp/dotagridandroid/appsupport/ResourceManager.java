@@ -13,7 +13,7 @@ public class ResourceManager implements Closeable{
 	private static native long getTextureHeight(long ptr, String name);
 	private static native String getAllScript(long ptr);
 	private static native boolean isExtensionEnabled(long ptr);
-	private static native String getTerrainConfiguartion(long ptr);
+	private static native String getTerrainConfiguration(long ptr);
 	// java
 	private long ptr;
 	protected ResourceManager(long ptr) {
@@ -53,6 +53,6 @@ public class ResourceManager implements Closeable{
 	}
 	
 	public String getTerrainConfiguration() {
-		return getTerrainConfiguartion(ptr);
+		return getTerrainConfiguration(ptr);
 	}
 }
