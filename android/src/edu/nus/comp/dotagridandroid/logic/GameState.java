@@ -19,6 +19,7 @@ public class GameState implements Closeable {
 	private boolean initialised = false;
 	private SceneRenderer currentSceneRenderer;
 	private List<String> roundOrder;
+	private int roundCount = 0;
 	private Map<String, GameCharacter> chars;
 	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
@@ -32,7 +33,6 @@ public class GameState implements Closeable {
 	private GameServer server;
 	private String playerCharacter, currentCharacter;
 	private int[] chosenGrid;
-	private boolean ownRound;
 	public GameState(String packagePath) {
 		this.packagePath = packagePath;
 	}
@@ -408,9 +408,23 @@ public class GameState implements Closeable {
 				idx = 0;
 		}
 		currentCharacter = roundOrder.get(idx);
-		gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
+//		gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
+		roundCount++;
+		// if (isPlayer)
+		new Thread() {
+			@Override
+			public void run() {
+				GameState stateMachine = GameState.this;
+				stateMachine.gameMaster.applyRule(stateMachine, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
+				GameCharacterAutomaton auto;
+			}
+		}.start();
 	}
 		
+	public int getRoundCount() {
+		return roundCount;
+	}
+	
 	// models and resources for rendering
 	
 	public int getCharacterModel(String name) {

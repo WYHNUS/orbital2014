@@ -10,7 +10,6 @@ public class GameMaster {
 	public void applyRule(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
 		if (!character.equals(stateMachine.getCurrentCharacterName()))
 			return;
-//		final GameCharacter playerChar = stateMachine.getCharacters().get(character);
 		final int[]
 				prevPos = stateMachine.getCharacterPositions().get(stateMachine.getCurrentCharacterName()),
 				reqPos = stateMachine.getChosenGrid();
@@ -23,7 +22,6 @@ public class GameMaster {
 			// TODO: calculate attack area
 			List<List<Integer>> allowed = new ArrayList<>();
 			final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
-//			final int totalAttackArea = playerChar.getTotalPhysicalAttackArea() + ((Hero) playerChar).getTotalItemAddPhysicalAttackArea();
 			final int totalAttackArea = (Integer) stateMachine.getCharacterProperty(character, "totalPhysicalAttackArea")
 					+ (Integer) stateMachine.getCharacterProperty(character, "totalItemAddPhysicalAttackArea");
 			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
@@ -71,10 +69,9 @@ public class GameMaster {
 					System.out.println("Game action is move");
 					// calculate AP
 					final double actionPointUsed = (double) stateMachine.getCharacterProperty(character, "APUsedInMovingOneGrid")
-							/*playerChar.getAPUsedInMovingOneGrid()*/ * (Math.abs(reqPos[0] - prevPos[0]) + Math.abs(reqPos[1] - prevPos[1]));
+							* (Math.abs(reqPos[0] - prevPos[0]) + Math.abs(reqPos[1] - prevPos[1]));
 					final int currentActionPoint = (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint");
 					final int newActionPoint = (int) (currentActionPoint - actionPointUsed);
-//					playerChar.setCurrentActionPoint(currentActionPoint);
 					stateMachine.setCharacterProperty(character, "currentActionPoint", newActionPoint);
 					// move
 					stateMachine.setCharacterPosition(character, stateMachine.getChosenGrid());
