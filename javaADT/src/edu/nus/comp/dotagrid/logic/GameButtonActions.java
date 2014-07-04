@@ -222,6 +222,9 @@ public class GameButtonActions {
 		GameFrame.turn++;
 		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.turn);
 
+		System.out.println();
+		System.out.println("Turn Number :  " + GameFrame.turn);
+		
 		// update reviveQueue
 		for (Iterator<Pair<Hero, Integer>> iterator = Hero.reviveQueue.iterator(); iterator.hasNext();) {
 			Pair<Hero, Integer> element = iterator.next();

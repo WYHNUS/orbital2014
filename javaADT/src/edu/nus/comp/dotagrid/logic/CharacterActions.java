@@ -145,6 +145,8 @@ public class CharacterActions {
 	}
 
 	private void attack() {
+		System.out.println("attack!");
+		
 		// get the AP required for one physical attack
 		int usedAP = calculateAttackUsedAP();
 				
@@ -226,7 +228,7 @@ public class CharacterActions {
 			
 				// can only move if character has enough AP
 				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
-								
+					System.out.println("move!");
 					// perform move action
 					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
 					GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
@@ -242,9 +244,13 @@ public class CharacterActions {
 						Screen.user.player.setYPos(toYPos);
 					}
 								
-				}
+				} else {
+					System.out.println("Not enough AP!");
+				}	
 				
-		}			
+		} else {
+			System.out.println("Non-movable or already occupied grid!");
+		}		
 		
 		// move action ended
 		GameButtonActions.readyToMove = false;

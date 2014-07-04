@@ -33,28 +33,40 @@ public class AICharacter {
 		isAttack = false;
 		
 		if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof LineCreep){
-			boolean prepareForAttack = false;
+			System.out.println("LineCreep AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
+			System.out.println("XPos = " + startingXPos + "     YPos = " + startingYPos);
 			
-			// line creep AI
-			searchForInSightEnemies();
-			
-			// check if there is any enemy within sight
-			while (!inSightEnemyPos.isEmpty() && !endRound) {
-				prepareForAttack = true;
+			// check if AI has enough AP to perform any actions
+			if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getCurrentActionPoint() >= 
+					GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().APUsedInMovingOneGrid()){
 				
-				// if yes, move towards the enemy until it's within the attack range
-				moveTowardsEnemy();
-				// then attack!
-				AIAttack();
-			} 
-			
-			// if AI is not ready for attack
-			if (!prepareForAttack) {
-				// move to next targeted position
-				moveTowardsNextTarget();
-				checkReachTargetPosition();
+				boolean prepareForAttack = false;
+				// line creep AI
+				searchForInSightEnemies();
+				
+				// check if there is any enemy within sight
+				while (!inSightEnemyPos.isEmpty() && !endRound) {
+					prepareForAttack = true;
+					System.out.println("move to attack");
+					// if yes, move towards the enemy until it's within the attack range
+					moveTowardsEnemy();
+					// then attack!
+					AIAttack();
+				} 
+				
+				// if AI is not ready for attack
+				if (!prepareForAttack) {
+					// move to next targeted position
+					System.out.println("move to target positions");
+					moveTowardsNextTarget();
+					checkReachTargetPosition();
+				}
+			} else {
+				System.out.println("no more AP to perform any actions!");
 			}
 			
+			System.out.println("end AI round");
+			System.out.println();
 		}
 		
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof Tower){
@@ -77,6 +89,7 @@ public class AICharacter {
 		int[] targetPos = ((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
 		
 		if (Math.abs(targetPos[0] - startingXPos) + Math.abs(targetPos[1] - startingYPos) <= targetRange) {
+			System.out.println("reach target position");
 			// within target range, discard current target position and search for next target
 			((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().remove(0);
 		}
@@ -197,6 +210,7 @@ public class AICharacter {
 		// check if the enemy is within attack range
 		if ((Math.abs(nearestEnemyPos[0] - startingXPos) + Math.abs(nearestEnemyPos[1] - startingYPos)) <= attackRange) {
 			// within attack range, no need to move
+			System.out.println("within attack range!");
 			return;
 		} else {
 			// find nearest path in order to attack
@@ -208,14 +222,11 @@ public class AICharacter {
 			// check each of the outer-most grid within attack range of the AI character, search for the least amount used in order to attack the enemy
 			int enemyXPos = sight + nearestEnemyPos[0] - startingXPos;
 			int enemyYPos = sight + nearestEnemyPos[1] - startingYPos;
-			
-			int shortestPathLength = movement + 1;
+
+			// store the position for any existing path's position
+			int shortestPathLength = Integer.MAX_VALUE;
 			int shortestPathXPos = -1; 
 			int shortestPathYPos = -1;
-			
-			// store the position for any existing path's position
-			int existingPathXPos = -1; 
-			int existingPathYPos = -1;
 			boolean havePath = false;
 			
 			for (int x=-attackRange; x<=attackRange; x++) {
@@ -227,8 +238,7 @@ public class AICharacter {
 							// reachable
 							if (tempPathMap[enemyXPos+x][enemyYPos+y] != -1) {
 								havePath = true;
-								existingPathXPos = enemyXPos + x;
-								existingPathYPos = enemyYPos + y;
+								
 								// check if the path is the shortest path
 								if (tempPathMap[enemyXPos+x][enemyYPos+y] < shortestPathLength) {
 									shortestPathLength = tempPathMap[enemyXPos+x][enemyYPos+y];
@@ -243,8 +253,10 @@ public class AICharacter {
 			
 			// check if there is a existing path towards the target enemy
 			if (havePath) {
-				// check if AI can move to the position which enemy is within attack range
+				System.out.println("have path");
+				// check if AI can move to the position which enemy is within attack range in current round
 				if (shortestPathLength <= movement) {
+					System.out.println("can be reached in this round!");
 					// if yes, set the position
 					shortestPathXPos += (startingXPos - sight);
 					shortestPathYPos += (startingYPos - sight);
@@ -256,13 +268,20 @@ public class AICharacter {
 					startingXPos = shortestPathXPos;
 					startingYPos = shortestPathYPos;
 					
+					movement = GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getNumberOfMovableGrid();
+					
 				} else {
+					System.out.println("not reachable in this round, but still move towards enemy!");
+					
 					// move towards the enemy!
-					int[] movetoPos = backTrackMove(tempPathMap, existingPathXPos, existingPathYPos, movement, tempPathMap.length);
+					int[] movetoPos = backTrackMove(tempPathMap, shortestPathXPos, shortestPathYPos, movement, tempPathMap.length);
 					
 					// reset target position in world map frame
 					movetoPos[0] += (startingXPos - sight);
 					movetoPos[1] += (startingYPos - sight);
+					
+					System.out.println("is movable :  " + GridFrame.gridButtonMap[movetoPos[0]][movetoPos[1]].getIsMovable());
+					System.out.println("is occupied :  " + GridFrame.gridButtonMap[movetoPos[0]][movetoPos[1]].getIsOccupied());
 					
 					// move the AI!
 					new CharacterActions(1, startingXPos, startingYPos, movetoPos[0], movetoPos[1]);
@@ -270,9 +289,13 @@ public class AICharacter {
 					// reset AI's position
 					startingXPos = movetoPos[0];
 					startingYPos = movetoPos[1];
+					
+					// since no more action point
+					endRound = true;
 				}
 				
 			} else {
+				System.out.println("no existing path -...-");
 				// if such a path does not exist, check if there are any other enemies in sight
 				if (inSightEnemyPos.size() <= 1) {
 					// no other enemy in sight! move towards the enemy and wait for chance to attack
@@ -429,6 +452,7 @@ public class AICharacter {
 	
 	private void AIAttack(){
 		// attack method : attack any enemy within attack range
+		boolean hasAttack = false;
 		
 		// find the coordinates for nearest enemy within attack range, store its coordinates in an int[]
 		int[] pos = {startingXPos, startingYPos};
@@ -444,6 +468,7 @@ public class AICharacter {
 		if (!enemyList.isEmpty()) {
 			// if yes, attack ENEMY UNTIL LAST BULLET!
 			do {
+				hasAttack = true;
 				isAttack = true;
 				new CharacterActions(2, startingXPos, startingYPos, enemyList.get(0)[0], enemyList.get(0)[1]);
 			} while ((GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getCurrentActionPoint() -
@@ -451,7 +476,7 @@ public class AICharacter {
 					&& (isAttack == true));
 		}
 		
-		endRound = true;
+		if (hasAttack)	endRound = true;
 	}
 
 	
