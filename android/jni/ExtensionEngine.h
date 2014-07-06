@@ -11,6 +11,7 @@ private:
 	public:
 		ExtensionEngine* engine;
 		v8::Persistent<v8::Value> gameDelegate;
+		v8::Persistent<v8::Value> autoDelegate;
 		ExtensionInterface(ExtensionEngine* engine) : engine(engine) {}
 	};
 
@@ -28,6 +29,7 @@ private:
 
 	ExtensionInterface* currentInterface;
 
+	void notifyUpdate(const char *);
 public:
 
 	std::function<void(void)> turnNextRoundCallback;
@@ -41,7 +43,7 @@ public:
 	void loadScript (const std::string&);
 	void execute();
 	void applyRule(const std::string&, const std::string&, const std::string&);
-	void notifyUpdate(const char *);
+	void automate(const std::string&);
 	void setCharacterProperty(const char *, const char *);
 	void setCharacterPosition(const char *, const char *);
 	const std::string getCharacterPositions(const char *);

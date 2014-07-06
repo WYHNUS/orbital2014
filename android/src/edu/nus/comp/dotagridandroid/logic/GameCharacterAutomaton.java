@@ -15,11 +15,18 @@ public class GameCharacterAutomaton {
 		}
 	}
 	
+	// game state:
+	// getCharacterAtPosition(int[] {x, y}) returns character name (String)
+	// setCharacterPosition(String character, int[] pos {x, y}
+	// get/setCharacterProperty(String character, String property[, Object value])
+	
 	// put game character shared auto routine below
 	
 	// TODO
 	
 	// put specialised auto routine below
+	
+	// calculate greatest benefit, attacking tower is highest, then hero, and the least linecreeps
 	
 	private static void autoActionHero(GameState stateMachine, String character) {
 		// Hero AI here

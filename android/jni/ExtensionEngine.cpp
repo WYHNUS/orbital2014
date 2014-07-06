@@ -37,13 +37,13 @@ ExtensionEngine::ExtensionEngine() {
 	newInterfaceTemplate->InstanceTemplate()->SetInternalFieldCount(1);
 	newInterfaceTemplate->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(iso, "gameDelegate"),
 			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value> &info) {
-				v8::Isolate* iso = info.GetIsolate();
+				v8::Isolate *iso = info.GetIsolate();
 				v8::Isolate::Scope iso_scope(iso);
 				v8::Locker locker(iso);
 				__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate getter");
 				v8::HandleScope scope (iso);
 				ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(info.Holder()->GetInternalField(0))->Value());
-				ExtensionEngine *eng = itf->engine;
+//				ExtensionEngine *eng = itf->engine;
 				info.GetReturnValue().Set(v8::Local<v8::Value>::New(iso, itf->gameDelegate));
 			},
 			[] (v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
@@ -51,11 +51,28 @@ ExtensionEngine::ExtensionEngine() {
 				v8::Isolate::Scope iso_scope(iso);
 				v8::Locker locker(iso);
 				__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate setter");
-				v8::HandleScope scope (info.GetIsolate());
+				v8::HandleScope scope (iso);
 				ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(info.Holder()->GetInternalField(0))->Value());
 				ExtensionEngine *eng = itf->engine;
 				itf->gameDelegate.Reset(iso, value);
 				__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate settle down");
+			});
+	newInterfaceTemplate->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(iso, "autoDelegate"),
+			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value> &info) {
+				v8::Isolate *iso = info.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::Locker locker(iso);
+				v8::HandleScope scope(iso);
+				ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(info.Holder()->GetInternalField(0))->Value());
+				info.GetReturnValue().Set(v8::Local<v8::Value>::New(iso, itf->autoDelegate));
+			},
+			[] (v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
+				v8::Isolate *iso = info.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::Locker locker(iso);
+				v8::HandleScope scope (iso);
+				ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(info.Holder()->GetInternalField(0))->Value());
+				itf->autoDelegate.Reset(iso, value);
 			});
 	newInterfaceTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(iso, "notifyUpdate"),
 			v8::FunctionTemplate::New(iso, [] (const v8::FunctionCallbackInfo<v8::Value> &args) {
@@ -74,6 +91,15 @@ ExtensionEngine::ExtensionEngine() {
 																->CallAsFunction(json, 1, &obj);
 					itf->engine->notifyUpdate(*v8::String::Utf8Value(result));
 				}
+			}));
+	newInterfaceTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(iso, "turnNextRound"),
+			v8::FunctionTemplate::New(iso, [] (const v8::FunctionCallbackInfo<v8::Value> &args) {
+				v8::Isolate *iso = args.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::HandleScope scope(iso);
+				v8::Locker locker(iso);
+				ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(args.Holder()->GetInternalField(0))->Value());
+				itf->engine->turnNextRoundCallback();
 			}));
 	newInterfaceTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(iso, "getCharacterPosition"),
 			v8::FunctionTemplate::New(iso, [] (const v8::FunctionCallbackInfo<v8::Value> &args) {
@@ -259,12 +285,30 @@ void ExtensionEngine::applyRule(const std::string& character, const std::string&
 		result = gameDelegate->CallAsFunction(context->Global(), 3, params);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Apply Rule Success");
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Script Exception:\n%s", *v8::String::Utf8Value(tryCatch.Exception()));
-	if (result.IsEmpty() || result->IsUndefined() || result->IsNull()) {
+	if (result.IsEmpty() || result->IsUndefined() || result->IsNull())
 		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Action is dropped by the script");
-	} else {
-		v8::String::Utf8Value str (result);
-		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Result: %s", *str);
+	else
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Result: %s", *v8::String::Utf8Value(result));
+}
+
+void ExtensionEngine::automate(const std::string& character) {
+	v8::Isolate::Scope iso_scope(iso);
+	v8::Locker locker (iso);
+	v8::HandleScope scope (iso);
+	v8::Handle<v8::Context> context = v8::Local<v8::Context>::New(iso, this->context);
+	v8::Handle<v8::Function> autoDelegate = v8::Local<v8::Function>::Cast(v8::Local<v8::Value>::New(iso, currentInterface->autoDelegate));
+	v8::Context::Scope context_scope(context);
+	v8::TryCatch tryCatch;
+	v8::Handle<v8::Value> param = v8::String::NewFromUtf8(iso, character.c_str());
+	if (autoDelegate.IsEmpty()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Auto delegate is still empty!");
+		return;
 	}
+	v8::Handle<v8::Value> result = autoDelegate->CallAsFunction(context->Global(), 1, &param);
+	if (result.IsEmpty() || result->IsUndefined() || result->IsNull())
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Automation is dropped by the script");
+	else
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "Result: %s", *v8::String::Utf8Value(result));
 }
 
 void ExtensionEngine::notifyUpdate(const char *update) {
