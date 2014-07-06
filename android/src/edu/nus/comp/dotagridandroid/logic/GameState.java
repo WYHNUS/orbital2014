@@ -408,17 +408,22 @@ public class GameState implements Closeable {
 				idx = 0;
 		}
 		currentCharacter = roundOrder.get(idx);
-//		gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
 		roundCount++;
 		// if (isPlayer)
 		new Thread() {
 			@Override
 			public void run() {
 				GameState stateMachine = GameState.this;
-				stateMachine.gameMaster.applyRule(stateMachine, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
-				GameCharacterAutomaton auto;
+				gameMaster.applyRule(stateMachine, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
+				String character = currentCharacter;
+				GameCharacterAutomaton.autoAction(stateMachine, currentCharacter);
+				// force nextRound
+				if (character.equals(currentCharacter))
+					turnNextRound();
 			}
 		}.start();
+		// else
+//		gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
 	}
 		
 	public int getRoundCount() {
