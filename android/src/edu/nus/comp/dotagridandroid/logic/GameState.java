@@ -13,9 +13,15 @@ import edu.nus.comp.dotagridandroid.ui.event.*;
 import edu.nus.comp.dotagridandroid.appsupport.*;
 
 public class GameState implements Closeable {
+	public static final int TERRAIN_TYPE_FLAT = 0;
+	public static final int TERRAIN_TYPE_MOUNTAIN = 1;
+	public static final int TERRAIN_TYPE_BARRIER = 2;
+	public static final int TERRAIN_TYPE_FOREST = 3;
+	
 	private int gridWidth, gridHeight;
 	private String packagePath;
 	private float[] terrain;
+	private int[] terrainType;
 	private boolean initialised = false;
 	private SceneRenderer currentSceneRenderer;
 	private List<String> roundOrder;
@@ -131,9 +137,16 @@ public class GameState implements Closeable {
 			case "fixed": {
 				int c = 0;
 				this.terrain = new float[gridWidth * gridHeight];
+				this.terrainType = new int[gridWidth * gridHeight];
 				for (Number val : (List<Number>) terrain.get("heights"))
 					if (c < this.terrain.length)
 						this.terrain[c++] = val.floatValue();
+					else
+						break;
+				c = 0;
+				for (Number val : (List<Number>) terrain.get("types"))
+					if (c < this.terrainType.length)
+						this.terrainType[c++] = val.intValue();
 					else
 						break;
 				break;
@@ -143,13 +156,18 @@ public class GameState implements Closeable {
 				gridWidth = r.nextInt(300);
 				gridHeight = r.nextInt(300);
 				this.terrain = new float[gridWidth * gridHeight];
+				this.terrainType = new int[gridWidth * gridHeight];
 				for (int i = 0; i < gridWidth * gridHeight; i++)
 					this.terrain[i] = r.nextFloat();
+				Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
 				break;
 			}
 			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			terrain = new float[gridWidth * gridHeight];
+			terrainType = new int[gridWidth * gridHeight];
+			Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
 		}
 		// end
 		chosenGrid = objPositions.get(playerCharacter).clone();
@@ -199,6 +217,14 @@ public class GameState implements Closeable {
 
 	public float[] getTerrain() {
 		return terrain;
+	}
+	
+	public float getTerrainHeight(int... pos) {
+		return terrain[pos[0] + pos[1] * gridWidth];
+	}
+	
+	public int getTerrainType(int... pos) {
+		return terrainType[pos[0] + pos[1] * gridWidth];
 	}
 
 	public void setTerrain(float[] terrain) {
