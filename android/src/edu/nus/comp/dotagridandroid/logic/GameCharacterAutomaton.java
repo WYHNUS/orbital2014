@@ -2,17 +2,20 @@ package edu.nus.comp.dotagridandroid.logic;
 
 public class GameCharacterAutomaton {
 	public static void autoAction(GameState stateMachine, String character) {
-		switch (stateMachine.getCharacterType(character)) {
-		case GameObject.GAMEOBJECT_TYPE_HERO:
-			autoActionHero(stateMachine, character);
-			break;
-		case GameObject.GAMEOBJECT_TYPE_LINECREEP:
-			autoActionLinecreep(stateMachine, character);
-			break;
-		case GameObject.GAMEOBJECT_TYPE_TOWER:
-			autoActionTower(stateMachine, character);
-			break;
-		}
+		if (stateMachine.isExtensionEnabled())
+			stateMachine.getExtensionEngine();
+		else
+			switch (stateMachine.getCharacterType(character)) {
+			case GameObject.GAMEOBJECT_TYPE_HERO:
+				autoActionHero(stateMachine, character);
+				break;
+			case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+				autoActionLinecreep(stateMachine, character);
+				break;
+			case GameObject.GAMEOBJECT_TYPE_TOWER:
+				autoActionTower(stateMachine, character);
+				break;
+			}
 	}
 	
 	// game state:

@@ -34,9 +34,11 @@ public:
 
 	std::function<void(void)> turnNextRoundCallback;
 	std::function<void(const std::string&)> notifyUpdateCallback;
-	std::function<void(const std::string&, const std::string&)> setCharacterPropertyCallback, setCharacterPositionCallback;
-	std::function<const std::string(const std::string&)> getCharacterPropertyCallback, getCharacterPositionCallback, getCharacterListCallback;
-	std::function<const std::string(void)> getSelectedGridCallback;
+	std::function<void(const std::string&, const std::string&)> setCharacterPositionCallback;
+	std::function<const std::string(const std::string&)> getCharacterPositionCallback;
+	std::function<const std::string(void)> getSelectedGridCallback, getCharacterListCallback;
+	std::function<const std::string(const std::string&, const std::string&)> getCharacterPropertyCallback;
+	std::function<void(const std::string&, const std::string&, const std::string&)> setCharacterPropertyCallback;
 
 	static ExtensionEngine* Create();
 	static void Destroy(const ExtensionEngine*);

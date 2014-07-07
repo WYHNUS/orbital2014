@@ -39,6 +39,7 @@ public class GameState implements Closeable {
 	private GameServer server;
 	private String playerCharacter, currentCharacter;
 	private int[] chosenGrid;
+	private Thread automatonThread = null;
 	public GameState(String packagePath) {
 		this.packagePath = packagePath;
 	}
@@ -144,11 +145,14 @@ public class GameState implements Closeable {
 					else
 						break;
 				c = 0;
-				for (Number val : (List<Number>) terrain.get("types"))
-					if (c < this.terrainType.length)
-						this.terrainType[c++] = val.intValue();
-					else
-						break;
+				if (terrain.get("types") == null || "plain".equals(terrain.get("types")))
+					Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
+				else
+					for (Number val : (List<Number>) terrain.get("types"))
+						if (c < this.terrainType.length)
+							this.terrainType[c++] = val.intValue();
+						else
+							break;
 				break;
 			}
 			case "random": {
@@ -178,6 +182,8 @@ public class GameState implements Closeable {
 	public void close() {
 		if (!initialised)
 			return;
+		while (automatonThread != null && automatonThread.isAlive())
+			;
 		// release resources
 		if (resMan.isExtensionEnabled() && extensionEngine != null)
 			extensionEngine.close();
@@ -195,6 +201,10 @@ public class GameState implements Closeable {
 		objThumbnail = objTextures = null;
 		itemShop = null;
 		initialised = false;
+	}
+	
+	public boolean isExtensionEnabled() {
+		return resMan.isExtensionEnabled();
 	}
 
 	//terrain
@@ -259,40 +269,50 @@ public class GameState implements Closeable {
 		// Method
 		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
 		final String booleanMethodName = "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
-		final Method[] methods;
+//		final Method[] methods;
 		// TODO add LineCreeps
 		final GameCharacter character = chars.get(charName);
-		if (character instanceof Hero) {
-			// Hero class
-			methods = Hero.class.getMethods();
-		} else {
-			// Generic Character class
-			methods = GameCharacter.class.getMethods();
+//		if (character instanceof Hero) {
+//			// Hero class
+//			methods = Hero.class.getMethods();
+//		} else {
+//			// Generic Character class
+//			methods = GameCharacter.class.getMethods();
+//		}
+//		for (Method m : methods) {
+//			if (!methodName.equals(m.getName()))
+//				continue;
+//			if (m.getGenericParameterTypes().length != 0)
+//				continue;
+//			try {
+//				m.setAccessible(true);
+//				return m.invoke(character);
+//			} catch (Exception e) {
+//				System.out.println("Property getter of '" + name + "' is not available.");
+//				System.out.println(e.getCause().getMessage());
+//			}
+//			if (!booleanMethodName.equals(m.getName()))
+//				continue;
+//			if (m.getReturnType() != boolean.class)
+//				continue;
+//			// is boolean method
+//			try {
+//				m.setAccessible(true);
+//				return m.invoke(character);
+//			} catch (Exception e) {
+//				System.out.println("Property getter of '" + name + "' is not available.");
+//				System.out.println(e.getCause().getMessage());
+//			}
+//		}
+		try {
+			return character.getClass().getMethod(methodName, new Class[]{}).invoke(character);
+		} catch (Exception e) {
+			System.out.println("Property getter of '" + name + "' is not available.");
 		}
-		for (Method m : methods) {
-			if (!methodName.equals(m.getName()))
-				continue;
-			if (m.getGenericParameterTypes().length != 0)
-				continue;
-			try {
-				m.setAccessible(true);
-				return m.invoke(character);
-			} catch (Exception e) {
-				System.out.println("Property getter of '" + name + "' is not available.");
-				System.out.println(e.getCause().getMessage());
-			}
-			if (!booleanMethodName.equals(m.getName()))
-				continue;
-			if (m.getReturnType() != boolean.class)
-				continue;
-			// is boolean method
-			try {
-				m.setAccessible(true);
-				return m.invoke(character);
-			} catch (Exception e) {
-				System.out.println("Property getter of '" + name + "' is not available.");
-				System.out.println(e.getCause().getMessage());
-			}
+		try {
+			return character.getClass().getMethod(booleanMethodName, new Class[]{}).invoke(character);
+		} catch (Exception e) {
+			System.out.println("Boolean property getter of '" + name + "' is not available.");
 		}
 		// extended
 		return character.getExtendedProperty(name);
@@ -306,13 +326,14 @@ public class GameState implements Closeable {
 		boolean setterSuccess = false;
 		// TODO add LineCreeps
 		final GameCharacter character = chars.get(charName);
-		if (character instanceof Hero) {
-			// Hero class
-			methods = Hero.class.getMethods();
-		} else {
-			// Generic Character class
-			methods = GameCharacter.class.getMethods();
-		}
+//		if (character instanceof Hero) {
+//			// Hero class
+//			methods = Hero.class.getMethods();
+//		} else {
+//			// Generic Character class
+//			methods = GameCharacter.class.getMethods();
+//		}
+		methods = character.getClass().getMethods();
 		for (Method m : methods) {
 			if (!methodName.equals(m.getName()))
 				continue;
@@ -377,6 +398,92 @@ public class GameState implements Closeable {
 					break;
 				}
 			}
+		else if (!setterSuccess && value instanceof List)
+			for (Method m : methods) {
+				if (!methodName.equals(m.getName()))
+					continue;
+				if (m.getGenericReturnType() != void.class)
+					continue;
+				final Type[] params = m.getGenericParameterTypes();
+				if (params.length != 1)
+					continue;
+				Object numericValue;
+				int c = 0;
+				if (params[0] == double[].class) {
+					double[] val = new double[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.doubleValue();
+					numericValue = val;
+				} else if (params[0] == float[].class) {
+					float[] val = new float[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.floatValue();
+					numericValue = val;
+				} else if (params[0] == int[].class) {
+					int[] val = new int[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.intValue();
+					numericValue = val;
+				} else if (params[0] == short[].class) {
+					short[] val = new short[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.shortValue();
+					numericValue = val;
+				} else if (params[0] == byte[].class) {
+					byte[] val = new byte[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.byteValue();
+					numericValue = val;
+				} else if (params[0] == long[].class) {
+					long[] val = new long[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.longValue();
+					numericValue = val;
+				} else if (params[0] == Double[].class) {
+					Double[] val = new Double[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.doubleValue();
+					numericValue = val;
+				} else if (params[0] == Float[].class) {
+					Float[] val = new Float[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.floatValue();
+					numericValue = val;
+				} else if (params[0] == Integer[].class) {
+					Integer[] val = new Integer[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.intValue();
+					numericValue = val;
+				} else if (params[0] == Short[].class) {
+					Short[] val = new Short[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.shortValue();
+					numericValue = val;
+				} else if (params[0] == Byte[].class) {
+					Byte[] val = new Byte[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.byteValue();
+					numericValue = val;
+				} else if (params[0] == Long[].class) {
+					Long[] val = new Long[((List) value).size()];
+					for (Number e : (List<Number>) value)
+						val[c++] = e.longValue();
+					numericValue = val;
+				} else if (params[0] == Object[].class) {
+					numericValue = ((List) value).toArray(new Object[((List) value).size()]);
+				} else
+					continue;
+				try {
+					m.setAccessible(true);
+					m.invoke(character, numericValue);
+					setterSuccess = true;
+					break;
+				} catch (Exception e) {
+					System.out.println("Property getter of '" + name + "' is not available.");
+					System.out.println(e.getCause().getMessage());
+					break;
+				}
+			}
 		if (!setterSuccess) {
 			// extended
 			character.setExtendedProperty(name, value);
@@ -389,7 +496,7 @@ public class GameState implements Closeable {
 		return objPositions.get(name);
 	}
 	
-	public void setCharacterPosition(String name, int[] position) {
+	public void setCharacterPosition(String name, int... position) {
 		if (chars.containsKey(name)) {
 			if (position != null && position.length == 2) {
 				if (position[0] >= getGridWidth() || position[0] < 0 || position[1] >= getGridHeight() || position[1] < 0)
@@ -408,7 +515,7 @@ public class GameState implements Closeable {
 		}
 	}
 	
-	public String getCharacterAtPosition (int[] position) {
+	public String getCharacterAtPosition (int... position) {
 		return posReverseLookup.get(new GridPointIndex(position));
 	}
 	
@@ -436,7 +543,7 @@ public class GameState implements Closeable {
 		currentCharacter = roundOrder.get(idx);
 		roundCount++;
 		// if (isPlayer)
-		new Thread() {
+		Thread t = new Thread() {
 			@Override
 			public void run() {
 				GameState stateMachine = GameState.this;
@@ -447,9 +554,12 @@ public class GameState implements Closeable {
 				if (character.equals(currentCharacter))
 					turnNextRound();
 			}
-		}.start();
+		};
+		t.start();
+		automatonThread = t;
 		// else
 //		gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginRound", null));
+//		automatonThread = null;
 	}
 		
 	public int getRoundCount() {
