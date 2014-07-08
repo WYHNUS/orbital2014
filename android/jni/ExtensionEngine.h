@@ -33,9 +33,9 @@ private:
 	std::string&& stringifyJSON(v8::Handle<v8::Value>);
 
 	void notifyUpdate(const char *);
-	void setCharacterProperty(const char *, const char *);
+	void setCharacterProperty(const char *, const char *, const char *);
 	void setCharacterPosition(const char *, const char *);
-	const std::string getCharacterPositions(const char *);
+	const std::string getCharacterPosition(const char *);
 	const std::string getCharacterProperty(const char *, const char *);
 	const std::string getSelectedGrid();
 public:

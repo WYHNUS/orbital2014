@@ -61,17 +61,8 @@ public final class ExtensionEngine implements Closeable {
 		state.turnNextRound();
 	}
 	
-	private String getCharacterPosition(String characters) {
-		try {
-			JSONArray array = new JSONArray(characters);
-			JSONObject object = new JSONObject();
-			for (int i = 0; i < array.length(); i++)
-				object.put(array.getString(i), JsonConverter.ArrayToJson(state.getCharacterPositions().get(array.getString(i))));
-			return object.toString();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return null;
+	private String getCharacterPosition(String character) {
+		return JsonConverter.ArrayToJson(state.getCharacterPosition(character)).toString();
 	}
 	
 	private void setCharacterPosition(String character, String position) {

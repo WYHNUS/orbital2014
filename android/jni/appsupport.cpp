@@ -77,7 +77,7 @@ void setupExtensionCallback(JNIEnv *env, jobject obj, ExtensionEngine *ee) {
 	};
 	ee->getCharacterPositionCallback = [=](const std::string &chars) -> const std::string {
 		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");
-		jmethodID method = env->GetMethodID(clazz, "getSelectedGrid", "()Ljava/lang/String;");
+		jmethodID method = env->GetMethodID(clazz, "getCharacterPosition", "(Ljava/lang/String;)Ljava/lang/String;");
 		jstring result = (jstring) env->CallObjectMethod(obj, method, env->NewStringUTF(chars.c_str()));
 		const char *pos = env->GetStringUTFChars(result, 0);
 		std::string ret(pos);

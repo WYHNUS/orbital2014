@@ -22,6 +22,9 @@ public class GameCharacterAutomaton {
 	// getCharacterAtPosition(int[] {x, y}) returns character name (String)
 	// setCharacterPosition(String character, int[] pos {x, y}
 	// get/setCharacterProperty(String character, String property[, Object value])
+	// getTerrain() return float[]
+	// getTerrainHeight(int[] {x, y}) return float
+	// getTerrainType(int[] {x, y}) return int enum in GameState
 	
 	// put game character shared auto routine below
 	

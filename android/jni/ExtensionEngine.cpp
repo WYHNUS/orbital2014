@@ -101,20 +101,38 @@ ExtensionEngine::ExtensionEngine() {
 										ExtensionInterface *itf = static_cast<ExtensionInterface*>(
 												v8::Local<v8::External>::Cast(
 														v8::Local<v8::Object>::Cast(info.Data())->GetInternalField(0))->Value());
-										itf->engine->getCharacterProperty(*v8::String::Utf8Value(info.Holder()->GetInternalField(0)), *v8::String::Utf8Value(property));
+										v8::Handle<v8::Value> result = itf->engine->parseJSON(
+												itf->engine->getCharacterProperty(
+													*v8::String::Utf8Value(info.Holder()->GetInternalField(0)),
+													*v8::String::Utf8Value(property)));
+										info.GetReturnValue().Set(result);
 									},
 									[] (v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info) {
+										v8::Isolate *iso = info.GetIsolate();
+										v8::Isolate::Scope iso_scope(iso);
+										v8::Locker locker(iso);
+										v8::HandleScope scope (iso);
+										ExtensionInterface *itf = static_cast<ExtensionInterface*>(
+												v8::Local<v8::External>::Cast(
+														v8::Local<v8::Object>::Cast(info.Data())->GetInternalField(0))->Value());
+										itf->engine->setCharacterProperty(
+												*v8::String::Utf8Value(info.Holder()->GetInternalField(0)),
+												*v8::String::Utf8Value(property),
+												itf->engine->stringifyJSON(value).c_str());
+										info.GetReturnValue().Set(value);
 									},
 									[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Integer>& info) {
+										info.GetReturnValue().Set(v8::Integer::New(info.GetIsolate(), v8::DontDelete));
 									},
 									[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Boolean>& info) {
+										info.GetReturnValue().Set(v8::Boolean::New(info.GetIsolate(), false));
 									},
 									0,
 									info.Data());
 						},
 						// setter
 						[] (v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info) {
-							info.GetReturnValue().Set(v8::Undefined(info.GetIsolate()));
+							info.GetReturnValue().SetUndefined();
 						},
 						// query
 						[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Integer>& info) {
@@ -188,37 +206,39 @@ ExtensionEngine::ExtensionEngine() {
 				ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(args.Holder()->GetInternalField(0))->Value());
 				if (args[0].IsEmpty() || args[0]->IsUndefined() || args[0]->IsNull())
 					return;
-				if (args[0]->IsString()) {
-					v8::Handle<v8::Array> array = v8::Array::New(iso, 1);
-					array->Set(0, args[0]);
-					v8::Handle<v8::Value> result = array;
-					v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
-					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
-																->CallAsFunction(json, 1, &result);
-					const std::string& positionStr = itf->engine->getCharacterPositions(*v8::String::Utf8Value(result));
-					result = v8::String::NewFromUtf8(iso, positionStr.c_str());
-					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))
-																				->CallAsFunction(json, 1, &result);
-					if (result.IsEmpty()) {
-						args.GetReturnValue().Set(v8::Object::New(iso));
-					} else {
-						args.GetReturnValue().Set(result);
-					}
-				} else if (args[0]->IsArray()) {
-					v8::Handle<v8::Value> array = args[0];
-					v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
-					v8::Handle<v8::Value> result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
-																->CallAsFunction(json, 1, &array);
-					const std::string& positionStr = itf->engine->getCharacterPositions(*v8::String::Utf8Value(result));
-					result = v8::String::NewFromUtf8(iso, positionStr.c_str());
-					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))
-																				->CallAsFunction(json, 1, &result);
-					if (result.IsEmpty()) {
-						args.GetReturnValue().Set(v8::Object::New(iso));
-					} else {
-						args.GetReturnValue().Set(result);
-					}
-				}
+				v8::Handle<v8::Value> result = itf->engine->parseJSON(itf->engine->getCharacterPosition(*v8::String::Utf8Value(args[0])));
+				args.GetReturnValue().Set(result);
+//				if (args[0]->IsString()) {
+//					v8::Handle<v8::Array> array = v8::Array::New(iso, 1);
+//					array->Set(0, args[0]);
+//					v8::Handle<v8::Value> result = array;
+//					v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
+//					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
+//																->CallAsFunction(json, 1, &result);
+//					const std::string& positionStr = itf->engine->getCharacterPosition(*v8::String::Utf8Value(result));
+//					result = v8::String::NewFromUtf8(iso, positionStr.c_str());
+//					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))
+//																				->CallAsFunction(json, 1, &result);
+//					if (result.IsEmpty()) {
+//						args.GetReturnValue().Set(v8::Object::New(iso));
+//					} else {
+//						args.GetReturnValue().Set(result);
+//					}
+//				} else if (args[0]->IsArray()) {
+//					v8::Handle<v8::Value> array = args[0];
+//					v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
+//					v8::Handle<v8::Value> result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
+//																->CallAsFunction(json, 1, &array);
+//					const std::string& positionStr = itf->engine->getCharacterPosition(*v8::String::Utf8Value(result));
+//					result = v8::String::NewFromUtf8(iso, positionStr.c_str());
+//					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))
+//																				->CallAsFunction(json, 1, &result);
+//					if (result.IsEmpty()) {
+//						args.GetReturnValue().Set(v8::Object::New(iso));
+//					} else {
+//						args.GetReturnValue().Set(result);
+//					}
+//				}
 			}));
 	newInterfaceTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(iso, "setCharacterPosition"),
 			v8::FunctionTemplate::New(iso, [] (const v8::FunctionCallbackInfo<v8::Value> &args) {
@@ -392,7 +412,7 @@ void ExtensionEngine::notifyUpdate(const char *update) {
 	notifyUpdateCallback(std::string(update));
 }
 
-const std::string ExtensionEngine::getCharacterPositions(const char *chars) {
+const std::string ExtensionEngine::getCharacterPosition(const char *chars) {
 	return getCharacterPositionCallback(std::string(chars));
 }
 
@@ -402,6 +422,10 @@ const std::string ExtensionEngine::getCharacterProperty(const char *character, c
 
 void ExtensionEngine::setCharacterPosition(const char * character, const char * position) {
 	setCharacterPositionCallback(std::string(character), std::string(position));
+}
+
+void ExtensionEngine::setCharacterProperty(const char *character, const char *property, const char *value) {
+	setCharacterPropertyCallback(std::string(character), std::string(property), std::string(value));
 }
 
 const std::string ExtensionEngine::getSelectedGrid() {

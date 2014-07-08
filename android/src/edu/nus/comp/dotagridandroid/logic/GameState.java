@@ -269,41 +269,8 @@ public class GameState implements Closeable {
 		// Method
 		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
 		final String booleanMethodName = "is" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
-//		final Method[] methods;
 		// TODO add LineCreeps
 		final GameCharacter character = chars.get(charName);
-//		if (character instanceof Hero) {
-//			// Hero class
-//			methods = Hero.class.getMethods();
-//		} else {
-//			// Generic Character class
-//			methods = GameCharacter.class.getMethods();
-//		}
-//		for (Method m : methods) {
-//			if (!methodName.equals(m.getName()))
-//				continue;
-//			if (m.getGenericParameterTypes().length != 0)
-//				continue;
-//			try {
-//				m.setAccessible(true);
-//				return m.invoke(character);
-//			} catch (Exception e) {
-//				System.out.println("Property getter of '" + name + "' is not available.");
-//				System.out.println(e.getCause().getMessage());
-//			}
-//			if (!booleanMethodName.equals(m.getName()))
-//				continue;
-//			if (m.getReturnType() != boolean.class)
-//				continue;
-//			// is boolean method
-//			try {
-//				m.setAccessible(true);
-//				return m.invoke(character);
-//			} catch (Exception e) {
-//				System.out.println("Property getter of '" + name + "' is not available.");
-//				System.out.println(e.getCause().getMessage());
-//			}
-//		}
 		try {
 			return character.getClass().getMethod(methodName, new Class[]{}).invoke(character);
 		} catch (Exception e) {
