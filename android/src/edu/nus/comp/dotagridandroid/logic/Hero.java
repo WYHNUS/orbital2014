@@ -63,13 +63,13 @@ public class Hero extends GameCharacter{
 	public static final int MAX_SKILL_NUMBER = 8;
 	
 	// constructor
-	public Hero(String heroName, int bountyMoney, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
+	public Hero(String heroName, int bountyMoney, int bountyExp, int sight, int startingmoney, String mainAttribute, int startingHP, int startingMP, 
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 			double startingPhysicalDefence, double startingMagicResistance, int actionPoint, int teamNumber,
 			int startingStrength, int startingAgility, int startingIntelligence, 
 			double strengthGrowth, double agilityGrowth, double intelligenceGrowth, int movementSpeed) 
 	{
-		super(heroName, bountyMoney, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
+		super(heroName, bountyMoney, bountyExp, sight, startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, teamNumber);
 		setObjectType(GAMEOBJECT_TYPE_HERO);
 		
@@ -108,8 +108,8 @@ public class Hero extends GameCharacter{
 		
 		this.setMaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO));
 		this.setMaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO));
-		this.setCurrentHP(this.getmaxHP());
-		this.setCurrentMP(this.getmaxMP());
+		this.setCurrentHP(this.getMaxHP());
+		this.setCurrentMP(this.getMaxMP());
 
 		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + HeroHPGainPerRound);
 		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + HeroMPGainPerRound);
@@ -161,8 +161,8 @@ public class Hero extends GameCharacter{
 		this.setBasicMainAttribute(null);
 		this.setTotalMainAttribute(null);
 		
-		this.setMaxHP(that.getmaxHP());
-		this.setMaxMP(that.getmaxMP());
+		this.setMaxHP(that.getMaxHP());
+		this.setMaxMP(that.getMaxMP());
 		this.setCurrentHP(that.getCurrentHP());
 		this.setCurrentMP(that.getCurrentMP());
 		

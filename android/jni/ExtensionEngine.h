@@ -2,11 +2,12 @@
 #define DOTAGRID_EXTENSIONENGINE_H_
 #include <v8.h>
 #include <string>
-#include <map>
 #include <functional>
+#include <chrono>
+#include <thread>
+#include <map>
 
 class ExtensionEngine {
-private:
 	class ExtensionInterface {
 	public:
 		ExtensionEngine* engine;
@@ -14,6 +15,43 @@ private:
 		v8::Persistent<v8::Value> autoDelegate;
 		ExtensionInterface(ExtensionEngine* engine) : engine(engine) {}
 	};
+
+	class TimeoutHandler {
+		v8::Isolate *iso;
+		v8::Persistent<v8::Function> callback;
+		std::thread trd;
+		unsigned long timeout;
+		volatile bool running, interrupted;
+	public:
+		// default
+		TimeoutHandler(uint64_t, v8::Isolate*, const v8::Handle<v8::Function>&);
+		// copy
+		TimeoutHandler(const TimeoutHandler&) = delete;
+		// move
+		TimeoutHandler(TimeoutHandler&&) = delete;
+		// destruct
+		~TimeoutHandler();
+		TimeoutHandler& operator=(TimeoutHandler&&) = delete;
+		TimeoutHandler& operator=(const TimeoutHandler&) = delete;
+	};
+
+	class IntervalHandler {
+		v8::Isolate *iso;
+		v8::Persistent<v8::Function> callback;
+		std::thread trd;
+		unsigned long interval;
+		volatile bool running;
+	public:
+		IntervalHandler(uint64_t, v8::Isolate*, const v8::Handle<v8::Function>&);
+		IntervalHandler(const IntervalHandler&) = delete;
+		IntervalHandler(IntervalHandler&&) = delete;
+		~IntervalHandler();
+		IntervalHandler& operator=(IntervalHandler&&) = delete;
+		IntervalHandler& operator=(const IntervalHandler&) = delete;
+	};
+
+	std::map<ExtensionEngine::TimeoutHandler*, v8::Persistent<v8::Object>> timeoutHandlers;
+	std::map<ExtensionEngine::IntervalHandler*, v8::Persistent<v8::Object>> intervalHandlers;
 
 	v8::Isolate *iso;
 	v8::Persistent<v8::Context> context;
@@ -38,6 +76,8 @@ private:
 	const std::string getCharacterPosition(const char *);
 	const std::string getCharacterProperty(const char *, const char *);
 	const std::string getSelectedGrid();
+	friend TimeoutHandler::TimeoutHandler(uint64_t, v8::Isolate*, const v8::Handle<v8::Function>&);
+	friend IntervalHandler::IntervalHandler(uint64_t, v8::Isolate*, const v8::Handle<v8::Function>&);
 public:
 
 	std::function<void(void)> turnNextRoundCallback;

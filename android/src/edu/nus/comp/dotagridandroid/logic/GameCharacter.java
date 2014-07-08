@@ -11,6 +11,8 @@ public class GameCharacter extends GameObject {
 	private int bountyMoney;
 	private int bountyExp;
 	
+	private int sight;
+	
 	private boolean isAlive = false;
 	
 	private int startingHP, startingMP;
@@ -46,21 +48,24 @@ public class GameCharacter extends GameObject {
 	public static final double PHYSICAL_ATTACK_CONSUME_AP = 38.0;
 	
 	
-	public GameCharacter(String name, int bountyMoney, int startingHP, int startingMP, 
+	public GameCharacter(String name, int bountyMoney, int bountyExp, int sight, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, int maxActionPoint, int teamNumber)
 	{
 		super(GAMEOBJECT_TYPE_CHARACTER);
 		this.setName(name);
 		this.setBountyMoney(bountyMoney);
+		this.setBountyExp(bountyExp);
+		
+		this.setSight(sight);
 		this.setTeamNumber(teamNumber);
 		
 		this.setStartingHP(startingHP);
 		this.setStartingMP(startingMP);
 		this.setMaxHP(this.getStartingHP());
 		this.setMaxMP(this.getStartingMP());
-		this.setCurrentHP(this.getmaxHP());
-		this.setCurrentMP(this.getmaxMP());
+		this.setCurrentHP(this.getMaxHP());
+		this.setCurrentMP(this.getMaxMP());
 		
 		this.setStartingPhysicalAttack(startingPhysicalAttack);
 		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
@@ -98,8 +103,8 @@ public class GameCharacter extends GameObject {
 		this.setStartingMP(that.startingMP);
 		this.setMaxHP(this.getStartingHP());
 		this.setMaxMP(this.getStartingMP());
-		this.setCurrentHP(this.getmaxHP());
-		this.setCurrentMP(this.getmaxMP());
+		this.setCurrentHP(this.getMaxHP());
+		this.setCurrentMP(this.getMaxMP());
 		
 		this.setStartingPhysicalAttack(that.startingPhysicalAttack);
 		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
@@ -177,9 +182,9 @@ public class GameCharacter extends GameObject {
 		if (currentHP < 0) {
 			this.currentHP = 0;
 			this.setAlive(false);
-		} else if (currentHP > this.getmaxHP()) {
+		} else if (currentHP > this.getMaxHP()) {
 			// current HP cannnot go beyond max HP value
-			this.currentHP = this.getmaxHP();
+			this.currentHP = this.getMaxHP();
 		} else {
 			this.currentHP = currentHP;
 		}
@@ -195,9 +200,9 @@ public class GameCharacter extends GameObject {
 		// minimum currentMP is 0 
 		if (currentMP < 0) {
 			this.currentMP = 0;
-		} else if (currentMP > this.getmaxMP()) {
+		} else if (currentMP > this.getMaxMP()) {
 			// current MP cannnot go beyond max MP value
-			this.currentMP = this.getmaxMP();
+			this.currentMP = this.getMaxMP();
 		} else {
 			this.currentMP = currentMP;
 		}
@@ -205,7 +210,7 @@ public class GameCharacter extends GameObject {
 
 
 
-	public int getmaxHP() {
+	public int getMaxHP() {
 		return maxHP;
 	}
 
@@ -220,7 +225,7 @@ public class GameCharacter extends GameObject {
 	}
 
 
-	public int getmaxMP() {
+	public int getMaxMP() {
 		return maxMP;
 	}
 
@@ -538,5 +543,13 @@ public class GameCharacter extends GameObject {
 		} else {
 			this.teamNumber = teamNumber;
 		}
+	}
+	
+	public int getSight() {
+		return sight;
+	}
+	
+	public void setSight(int sight) {
+		this.sight = sight;
 	}
 }

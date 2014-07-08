@@ -74,7 +74,7 @@ public class GameState implements Closeable {
 		itemShop = new ConcurrentHashMap<>();
 		chosenGrid = new int[2];
 		// TODO load characters
-		chars.put("MyHero", new Hero("MyHero", 1, 0, "strength",
+		chars.put("MyHero", new Hero("MyHero", 1, 0, 0, 0, "strength",
 				100,
 				100,
 				100,
@@ -91,7 +91,7 @@ public class GameState implements Closeable {
 				100,
 				100,
 				100));
-		chars.put("MyHero2", new Hero("MyHero", 1, 0, "strength",
+		chars.put("MyHero2", new Hero("MyHero", 1, 0, 0, 0, "strength",
 				100,
 				100,
 				100,

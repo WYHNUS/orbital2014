@@ -1,7 +1,88 @@
 #include <ExtensionEngine.h>
 #include <android/log.h>
 
-std::map<v8::Isolate*, ExtensionEngine*> DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP;
+std::map<v8::Isolate*, ExtensionEngine*> _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP;
+const int __TIMEOUT_HANDLER = 0;
+const int __INTERVAL_HANDLER = 1;
+
+ExtensionEngine::TimeoutHandler::TimeoutHandler(
+		uint64_t timeout,
+		v8::Isolate *iso,
+		const v8::Handle<v8::Function> &callback) : timeout(timeout) {
+	this->callback.Reset(iso, callback);
+	trd = std::thread([&](){
+		const auto startTime = std::chrono::high_resolution_clock::now();
+		const auto timeoutDuration = std::chrono::milliseconds(this->timeout);
+		while (!this->interrupted && std::chrono::high_resolution_clock::now() - startTime < timeoutDuration)
+			;
+		if (interrupted)
+			return;
+		running = true;
+		v8::Isolate *iso = this->iso;
+		v8::Isolate::Scope iso_scope(iso);
+		v8::Locker locker (iso);
+		v8::HandleScope scope (iso);
+		ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[this->iso];
+		v8::Handle<v8::Function> callback = v8::Local<v8::Function>::New(this->iso, this->callback);
+		v8::Handle<v8::Context> context = v8::Local<v8::Context>::New(iso, engine->context);
+		v8::Context::Scope context_scope (context);
+		v8::TryCatch tryCatch;
+		if (!callback.IsEmpty()) {
+			callback->CallAsFunction(context->Global(), 0, 0);
+			if (tryCatch.HasCaught())
+				__android_log_print(ANDROID_LOG_DEBUG, "EE", "timeout: Script Exception:\n%s", *v8::String::Utf8Value(tryCatch.Exception()));
+		}
+		running = false;
+	});
+	trd.detach();
+}
+
+ExtensionEngine::TimeoutHandler::~TimeoutHandler() {
+	if (running)
+		trd.join();
+	else {
+		interrupted = true;
+		trd.join();
+	}
+	callback.Reset();
+}
+
+ExtensionEngine::IntervalHandler::IntervalHandler(
+		uint64_t interval,
+		v8::Isolate *iso,
+		const v8::Handle<v8::Function> &callback) : interval(interval) {
+	this->callback.Reset(iso, callback);
+	trd = std::thread([&](){
+		while (running) {
+			const auto startTime = std::chrono::high_resolution_clock::now();
+			const auto duration = std::chrono::milliseconds(this->interval);
+			while (!running && std::chrono::high_resolution_clock::now() - startTime < duration)
+				;
+			v8::Isolate *iso = this->iso;
+			v8::Isolate::Scope iso_scope(iso);
+			v8::Locker locker (iso);
+			v8::HandleScope scope (iso);
+			ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[this->iso];
+			v8::Handle<v8::Function> callback = v8::Local<v8::Function>::New(this->iso, this->callback);
+			v8::Handle<v8::Context> context = v8::Local<v8::Context>::New(iso, engine->context);
+			v8::Context::Scope context_scope (context);
+			v8::TryCatch tryCatch;
+			if (!callback.IsEmpty()) {
+				callback->CallAsFunction(context->Global(), 0, 0);
+				if (tryCatch.HasCaught())
+					__android_log_print(ANDROID_LOG_DEBUG, "EE", "timeout: Script Exception:\n%s", *v8::String::Utf8Value(tryCatch.Exception()));
+			}
+		}
+	});
+	running = true;
+	trd.detach();
+}
+
+ExtensionEngine::IntervalHandler::~IntervalHandler() {
+	running = false;
+	trd.join();
+	callback.Reset();
+}
 
 v8::Handle<v8::Value> ExtensionEngine::parseJSON(const std::string& value) {
 	v8::Isolate::Scope iso_scope(iso);
@@ -40,7 +121,7 @@ ExtensionEngine::ExtensionEngine() {
 			v8::Isolate* iso = args.GetIsolate();
 			v8::Isolate::Scope iso_scope(iso);
 			v8::Locker locker(iso);
-			ExtensionEngine* self = DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso];
+			ExtensionEngine* self = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso];
 			if (self) {
 				v8::HandleScope scope (iso);
 				if (args[0]->IsExternal()) {
@@ -208,37 +289,6 @@ ExtensionEngine::ExtensionEngine() {
 					return;
 				v8::Handle<v8::Value> result = itf->engine->parseJSON(itf->engine->getCharacterPosition(*v8::String::Utf8Value(args[0])));
 				args.GetReturnValue().Set(result);
-//				if (args[0]->IsString()) {
-//					v8::Handle<v8::Array> array = v8::Array::New(iso, 1);
-//					array->Set(0, args[0]);
-//					v8::Handle<v8::Value> result = array;
-//					v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
-//					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
-//																->CallAsFunction(json, 1, &result);
-//					const std::string& positionStr = itf->engine->getCharacterPosition(*v8::String::Utf8Value(result));
-//					result = v8::String::NewFromUtf8(iso, positionStr.c_str());
-//					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))
-//																				->CallAsFunction(json, 1, &result);
-//					if (result.IsEmpty()) {
-//						args.GetReturnValue().Set(v8::Object::New(iso));
-//					} else {
-//						args.GetReturnValue().Set(result);
-//					}
-//				} else if (args[0]->IsArray()) {
-//					v8::Handle<v8::Value> array = args[0];
-//					v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
-//					v8::Handle<v8::Value> result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
-//																->CallAsFunction(json, 1, &array);
-//					const std::string& positionStr = itf->engine->getCharacterPosition(*v8::String::Utf8Value(result));
-//					result = v8::String::NewFromUtf8(iso, positionStr.c_str());
-//					result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))
-//																				->CallAsFunction(json, 1, &result);
-//					if (result.IsEmpty()) {
-//						args.GetReturnValue().Set(v8::Object::New(iso));
-//					} else {
-//						args.GetReturnValue().Set(result);
-//					}
-//				}
 			}));
 	newInterfaceTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(iso, "setCharacterPosition"),
 			v8::FunctionTemplate::New(iso, [] (const v8::FunctionCallbackInfo<v8::Value> &args) {
@@ -284,7 +334,7 @@ ExtensionEngine::ExtensionEngine() {
 	v8::Handle<v8::Object> json = v8::Local<v8::Object>::Cast(newContext->Global()->Get(v8::String::NewFromUtf8(iso, "JSON")));
 	jsonUtil.Reset(iso, json);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "JSON Stored");
-	DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso] = this;
+	_DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso] = this;
 	currentInterface = new ExtensionInterface(this);
 }
 
@@ -297,7 +347,7 @@ v8::Handle<v8::Object> ExtensionEngine::wrapInterface() {
 
 ExtensionEngine::~ExtensionEngine() {
 	delete currentInterface;
-	DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP.erase(iso);
+	_DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP.erase(iso);
 	interfaceTemplate.Reset();
 	jsonUtil.Reset();
 	context.Reset();
@@ -326,6 +376,101 @@ void ExtensionEngine::execute() {
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Context Scope");
 	context->Global()->Set(v8::String::NewFromUtf8(iso, "ExtensionInterface"), interfaceTemplate->GetFunction());
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Expose ExtensionInterface");
+	// expose some useful functions
+	context->Global()->Set(v8::String::NewFromUtf8(iso, "setTimeout"), v8::FunctionTemplate::New(iso,
+			[](const v8::FunctionCallbackInfo<v8::Value> &args){
+				v8::Isolate* iso = args.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::HandleScope scope(iso);
+				if (args[0].IsEmpty() || args[1].IsEmpty() || !args[0]->IsFunction() || !args[1]->IsNumber() || !args[1]->IsNumberObject())
+					return;
+				v8::Handle<v8::ObjectTemplate> timerHandler = v8::ObjectTemplate::New(iso);
+				timerHandler->SetInternalFieldCount(2);
+				ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso];
+				TimeoutHandler *handler = new TimeoutHandler(args[1]->IntegerValue(), iso, v8::Local<v8::Function>::Cast(args[0]));
+				v8::Handle<v8::Object> handlerInstance = timerHandler->NewInstance();
+				handlerInstance->SetInternalField(0, v8::External::New(iso, handler));
+				handlerInstance->SetInternalField(1, v8::External::New(iso, (void*) __TIMEOUT_HANDLER));
+				engine->timeoutHandlers[handler].Reset(iso, handlerInstance);
+				engine->timeoutHandlers[handler].SetWeak(handler,
+						[] (const v8::WeakCallbackData<v8::Object, TimeoutHandler> &data) {
+							ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[data.GetIsolate()];
+							TimeoutHandler *handler = data.GetParameter();
+							delete data.GetParameter();
+							engine->timeoutHandlers[handler].Reset();
+							engine->timeoutHandlers.erase(
+									engine->timeoutHandlers.find(handler));
+						});
+			})->GetFunction());
+	context->Global()->Set(v8::String::NewFromUtf8(iso, "clearTimeout"), v8::FunctionTemplate::New(iso,
+			[](const v8::FunctionCallbackInfo<v8::Value> &args){
+				v8::Isolate* iso = args.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::HandleScope scope(iso);
+				if (args[0].IsEmpty() || !args[0]->IsObject())
+					return;
+				v8::Handle<v8::Object> handlerInstance = v8::Local<v8::Object>::Cast(args[0]);
+				if (handlerInstance->GetInternalField(1).IsEmpty()
+						|| v8::Local<v8::External>::Cast(handlerInstance->GetInternalField(1))->Value() != (void*) __TIMEOUT_HANDLER)
+					return;
+				TimeoutHandler *handler = (TimeoutHandler*) v8::Local<v8::External>::Cast(handlerInstance->GetInternalField(0))->Value();
+				delete handler;
+				ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso];
+				engine->timeoutHandlers[handler].Reset();
+				engine->timeoutHandlers.erase(
+						engine->timeoutHandlers.find(handler));
+			})->GetFunction());
+	context->Global()->Set(v8::String::NewFromUtf8(iso, "setInterval"), v8::FunctionTemplate::New(iso,
+			[](const v8::FunctionCallbackInfo<v8::Value> &args){
+				v8::Isolate* iso = args.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::HandleScope scope(iso);
+				v8::Handle<v8::ObjectTemplate> timerHandler = v8::ObjectTemplate::New(iso);
+				timerHandler->SetInternalFieldCount(2);
+				ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso];
+				IntervalHandler *handler = new IntervalHandler(args[1]->IntegerValue(), iso, v8::Local<v8::Function>::Cast(args[0]));
+				v8::Handle<v8::Object> handlerInstance = timerHandler->NewInstance();
+				handlerInstance->SetInternalField(0, v8::External::New(iso, handler));
+				handlerInstance->SetInternalField(1, v8::External::New(iso, (void*) __INTERVAL_HANDLER));
+				engine->intervalHandlers[handler].Reset(iso, handlerInstance);
+				engine->intervalHandlers[handler].SetWeak(handler,
+						[] (const v8::WeakCallbackData<v8::Object, IntervalHandler> &data) {
+							ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[data.GetIsolate()];
+							IntervalHandler *handler = data.GetParameter();
+							delete data.GetParameter();
+							engine->intervalHandlers[handler].Reset();
+							engine->intervalHandlers.erase(
+									engine->intervalHandlers.find(handler));
+						});
+			})->GetFunction());
+	context->Global()->Set(v8::String::NewFromUtf8(iso, "clearInterval"), v8::FunctionTemplate::New(iso,
+			[](const v8::FunctionCallbackInfo<v8::Value> &args){
+				v8::Isolate* iso = args.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::HandleScope scope(iso);
+				if (args[0].IsEmpty() || !args[0]->IsObject())
+					return;
+				v8::Handle<v8::Object> handlerInstance = v8::Local<v8::Object>::Cast(args[0]);
+				if (handlerInstance->GetInternalField(1).IsEmpty()
+						|| v8::Local<v8::External>::Cast(handlerInstance->GetInternalField(1))->Value() != (void*) __INTERVAL_HANDLER)
+					return;
+				IntervalHandler *handler = (IntervalHandler*) v8::Local<v8::External>::Cast(handlerInstance->GetInternalField(0))->Value();
+				delete handler;
+				ExtensionEngine *engine = _DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso];
+				engine->intervalHandlers[handler].Reset();
+				engine->intervalHandlers.erase(
+						engine->intervalHandlers.find(handler));
+			})->GetFunction());
+	context->Global()->Set(v8::String::NewFromUtf8(iso, "sleep"), v8::FunctionTemplate::New(iso,
+			[](const v8::FunctionCallbackInfo<v8::Value> &args){
+				v8::Isolate* iso = args.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::Locker locker (iso);
+				v8::HandleScope scope(iso);
+				if (args[0].IsEmpty() || args[0]->IsUndefined() || args[0]->IsNull())
+					return;
+				std::this_thread::sleep_for(std::chrono::milliseconds(args[0]->IntegerValue()));
+			})->GetFunction());
 	v8::Handle<v8::Script> script = v8::Script::Compile(source);
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Compile");
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "Script=\n%s", src.c_str());
