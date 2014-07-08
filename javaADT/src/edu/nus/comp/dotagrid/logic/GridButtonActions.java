@@ -108,12 +108,37 @@ public class GridButtonActions {
 		else if (GameButtonActions.readyToCastSpell  == true) {
 			boolean isWithinCastingRange = calculateWithinSkillRange();
 			
-			if (isWithinCastingRange) {
-				// cast this spell !
-				new CharacterActions(4, fromXPos, fromYPos, toXPos, toYPos);
+			Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
+			Skill castingSkill = new Skill(castingHero.skills[Player.invokedPlayerSkillIndex]);
+			
+			// hero can only invoke the skill if the skill's current count down is 0;
+			if (castingSkill.getCurrentCoolDownRound() == 0) {
+					
+				// hero must have enough mana in order to cast this spell
+				if (castingSkill.getUsedMP() < castingHero.getCurrentMP()) {
+						
+					// hero must have enough AP
+					if (castingSkill.getUsedActionPoint() < castingHero.getCurrentActionPoint()) {
+						
+						if (isWithinCastingRange) {
+							// cast this spell !
+							new CharacterActions(4, fromXPos, fromYPos, toXPos, toYPos);
+						} else {
+							JOptionPane.showMessageDialog(null, "Out Of Skill Casting Range!");
+						}
+						
+					} else {
+						JOptionPane.showMessageDialog(null, "You don't have enought Action Point to cast this spell!");
+					}
+						
+				} else {
+					JOptionPane.showMessageDialog(null, "You don't have enought mana to cast this spell!");
+				}
+					
 			} else {
-				JOptionPane.showMessageDialog(null, "Out Of Skill Casting Range!");
-			}
+				JOptionPane.showMessageDialog(null, "You have to wait another " + castingSkill.getCurrentCoolDownRound() + " rounds to cast this spell!");
+			}	
+
 			
 			// casting action ended
 			GameButtonActions.readyToCastSpell = false;

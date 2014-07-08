@@ -14,9 +14,14 @@ public class Skill {
 	 * 
 	 * 1 : teleport
 	 * 
+	 * 2 : summon creatures
+	 * 
 	 */
 	
 	private ImageIcon skillImage;
+	
+	private SummonCharacter skillCharacter;
+	private int summonRange;
 	
 	private int skillType;
 	private String skillName;
@@ -33,7 +38,7 @@ public class Skill {
 	
 	
 	// constructor
-	public Skill(int skillType, String skilName, int[] attributes) {
+	public Skill(int skillType, String skilName, Object[] attributes) {
 		this.skillType = skillType;
 		this.skillName = skilName;
 		this.setImage();
@@ -43,15 +48,23 @@ public class Skill {
 		
 			case 1 :
 				// usedMP, usedActionPoint, castRange, coolDownRounds
-				this.usedMP = attributes[0];
-				this.usedActionPoint = attributes[1];
-				this.castRange = attributes[2];
-				this.coolDownRounds = attributes[3];
+				this.usedMP = (int) attributes[0];
+				this.usedActionPoint = (int) attributes[1];
+				this.castRange = (int) attributes[2];
+				this.coolDownRounds = (int) attributes[3];
 				this.setCurrentCoolDownRound(0);
 				break;
 				
 			case 2 :
+				// usedMP, usedActionPoint, castRange, coolDownRounds, summonCharacter
+				this.usedMP = (int) attributes[0];
+				this.usedActionPoint = (int) attributes[1];
+				this.castRange = (int) attributes[2];
+				this.coolDownRounds = (int) attributes[3];
+				this.setCurrentCoolDownRound(0);
 				
+				this.skillCharacter = (SummonCharacter) attributes[4];
+				this.summonRange = (int) attributes[5];
 				break;
 		}
 		
@@ -201,5 +214,29 @@ public class Skill {
 			}
 		}
 
+	}
+
+
+
+	public SummonCharacter getSkillCharacter() {
+		return skillCharacter;
+	}
+
+
+
+	public void setSkillCharacter(SummonCharacter skillCharacter) {
+		this.skillCharacter = skillCharacter;
+	}
+
+
+
+	public int getSummonRange() {
+		return summonRange;
+	}
+
+
+
+	public void setSummonRange(int summonRange) {
+		this.summonRange = summonRange;
 	}
 }

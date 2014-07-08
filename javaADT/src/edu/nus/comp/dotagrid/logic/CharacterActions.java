@@ -58,8 +58,57 @@ public class CharacterActions {
 				teleport();
 				break;
 				
+			case 2 :
+				// summon creatures
+				summonCreatures();
+				break;
 		}
 		
+	}
+
+
+	private void summonCreatures() {
+		// summon creatures centered at selected grid position
+		Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
+		Skill castingSkill = new Skill(castingHero.skills[Player.invokedPlayerSkillIndex]);
+		int castingRange = castingSkill.getSummonRange();
+		boolean isCasted = false;
+		
+		for (int i=-castingRange; i<=castingRange; i++) {
+			for (int j=-castingRange; i<=castingRange; i++) {
+				// create summon character condition
+				if (Math.abs(i) + Math.abs(j) == castingRange) {
+					// check if summon character can be added to the grid
+					if (GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsMovable()) {
+						// only add summon creature on movable grid
+						isCasted = true;
+						
+						if (!GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsOccupied()) {
+							// add creature!
+							GridFrame.gridButtonMap[toXPos+i][toYPos+j] = new GridButton(castingSkill.getSkillCharacter());
+						}
+						
+					}
+				}
+			}
+		}
+		
+		// check if the spell has been successfully casted!
+		if (isCasted) {
+			// reduce character's AP 
+			GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
+					GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - castingSkill.getUsedActionPoint());
+												
+			// reduce character's MP
+			GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentMP(
+					GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentMP() - castingSkill.getUsedMP());
+										
+			// reset current cooldown
+			((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).skills[Player.invokedPlayerSkillIndex].setCurrentCoolDownRound(castingSkill.getCoolDownRounds());		
+		}
+		
+		// casting action ended
+		GameButtonActions.readyToCastSpell = false;	
 	}
 
 
@@ -67,58 +116,36 @@ public class CharacterActions {
 		
 		Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
 		Skill castingSkill = new Skill(castingHero.skills[Player.invokedPlayerSkillIndex]);
-		
-
-		// hero can only invoke the skill if the skill's current count down is 0;
-		if (castingSkill.getCurrentCoolDownRound() == 0) {
-				
-			// hero must have enough mana in order to cast this spell
-			if (castingSkill.getUsedMP() < castingHero.getCurrentMP()) {
-					
-				// hero must have enough AP
-				if (castingSkill.getUsedActionPoint() < castingHero.getCurrentActionPoint()) {
-				
-					// can only teleport to non-occupied and movable grid
-					if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable() == true 
-							&& GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == false) {
+	
+		// can only teleport to non-occupied and movable grid
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable() == true 
+				&& GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == false) {
 							
-						// perform move action
-						GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
-						GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
+			// perform move action
+			GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
+			GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
 															
-						// reduce character's AP 
-						GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentActionPoint(
-								GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentActionPoint() - castingSkill.getUsedActionPoint());
+			// reduce character's AP 
+			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentActionPoint(
+					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentActionPoint() - castingSkill.getUsedActionPoint());
 									
-						// reduce character's MP
-						GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentMP(
-								GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentMP() - castingSkill.getUsedMP());
+			// reduce character's MP
+			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentMP(
+					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentMP() - castingSkill.getUsedMP());
 							
-						// reset current cooldown
-						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).skills[Player.invokedPlayerSkillIndex].setCurrentCoolDownRound(castingSkill.getCoolDownRounds());
+			// reset current cooldown
+			((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).skills[Player.invokedPlayerSkillIndex].setCurrentCoolDownRound(castingSkill.getCoolDownRounds());
 							
-						// if hero is player, change player's position
-						if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
-							Screen.user.player.setXPos(toXPos);
-							Screen.user.player.setYPos(toYPos);
-						}
-									
-					} else {
-						JOptionPane.showMessageDialog(null, "Unable to Move to that position!");
-					}	
-
-				} else {
-					JOptionPane.showMessageDialog(null, "You don't have enought Action Point to cast this spell!");
-				}
-					
-			} else {
-				JOptionPane.showMessageDialog(null, "You don't have enought mana to cast this spell!");
+			// if hero is player, change player's position
+			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
+				Screen.user.player.setXPos(toXPos);
+				Screen.user.player.setYPos(toYPos);
 			}
-				
+									
 		} else {
-			JOptionPane.showMessageDialog(null, "You have to wait another " + castingSkill.getCurrentCoolDownRound() + " rounds to cast this spell!");
+			JOptionPane.showMessageDialog(null, "Unable to Move to that position!");
 		}	
-				
+		
 		// casting action ended
 		GameButtonActions.readyToCastSpell = false;	
 	}
