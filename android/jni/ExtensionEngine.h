@@ -29,7 +29,15 @@ private:
 
 	ExtensionInterface* currentInterface;
 
+	v8::Handle<v8::Value> parseJSON(const std::string&);
+	std::string&& stringifyJSON(v8::Handle<v8::Value>);
+
 	void notifyUpdate(const char *);
+	void setCharacterProperty(const char *, const char *);
+	void setCharacterPosition(const char *, const char *);
+	const std::string getCharacterPositions(const char *);
+	const std::string getCharacterProperty(const char *, const char *);
+	const std::string getSelectedGrid();
 public:
 
 	std::function<void(void)> turnNextRoundCallback;
@@ -46,9 +54,5 @@ public:
 	void execute();
 	void applyRule(const std::string&, const std::string&, const std::string&);
 	void automate(const std::string&);
-	void setCharacterProperty(const char *, const char *);
-	void setCharacterPosition(const char *, const char *);
-	const std::string getCharacterPositions(const char *);
-	const std::string getSelectedGrid();
 };
 #endif /* DOTAGRID_EXTENSIONENGINE_H_ */

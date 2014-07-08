@@ -3,6 +3,26 @@
 
 std::map<v8::Isolate*, ExtensionEngine*> DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP;
 
+v8::Handle<v8::Value> ExtensionEngine::parseJSON(const std::string& value) {
+	v8::Isolate::Scope iso_scope(iso);
+	v8::Locker locker(iso);
+	v8::EscapableHandleScope scope (iso);
+	v8::Local<v8::Value> result = v8::String::NewFromUtf8(iso, value.c_str());
+	v8::Local<v8::Object> json = v8::Local<v8::Object>::New(iso, jsonUtil);
+	result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "parse")))
+														->CallAsFunction(json, 1, &result);
+	return scope.Escape(result);
+}
+std::string&& ExtensionEngine::stringifyJSON(v8::Handle<v8::Value> value) {
+	v8::Isolate::Scope iso_scope(iso);
+	v8::Locker locker(iso);
+	v8::HandleScope scope (iso);
+	v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, jsonUtil);
+	v8::Handle<v8::Value> result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
+												->CallAsFunction(json, 1, &value);
+	return std::move(std::string(*v8::String::Utf8Value(result)));
+}
+
 ExtensionEngine::ExtensionEngine() {
 	v8::V8::Initialize();
 	iso = v8::Isolate::New();
@@ -43,7 +63,6 @@ ExtensionEngine::ExtensionEngine() {
 				__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate getter");
 				v8::HandleScope scope (iso);
 				ExtensionInterface *itf = static_cast<ExtensionInterface*>(v8::Local<v8::External>::Cast(info.Holder()->GetInternalField(0))->Value());
-//				ExtensionEngine *eng = itf->engine;
 				info.GetReturnValue().Set(v8::Local<v8::Value>::New(iso, itf->gameDelegate));
 			},
 			[] (v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<void>& info) {
@@ -56,6 +75,67 @@ ExtensionEngine::ExtensionEngine() {
 				ExtensionEngine *eng = itf->engine;
 				itf->gameDelegate.Reset(iso, value);
 				__android_log_print(ANDROID_LOG_DEBUG, "EE", "gameDelegate settle down");
+			});
+	newInterfaceTemplate->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(iso, "characters"),
+			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value> &info) {
+				v8::Isolate *iso = info.GetIsolate();
+				v8::Isolate::Scope iso_scope(iso);
+				v8::Locker locker(iso);
+				v8::HandleScope scope (iso);
+				v8::Handle<v8::ObjectTemplate> characterListDelegate = v8::ObjectTemplate::New(iso);
+				characterListDelegate->SetNamedPropertyHandler(
+						// getter
+						[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+							v8::Isolate *iso = info.GetIsolate();
+							v8::Isolate::Scope iso_scope(iso);
+							v8::Locker locker(iso);
+							v8::HandleScope scope (iso);
+							v8::Handle<v8::ObjectTemplate> characterDelegate = v8::ObjectTemplate::New(iso);
+							characterDelegate->SetInternalFieldCount(1);
+							characterDelegate->SetNamedPropertyHandler(
+									[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value>& info) {
+										v8::Isolate *iso = info.GetIsolate();
+										v8::Isolate::Scope iso_scope(iso);
+										v8::Locker locker(iso);
+										v8::HandleScope scope (iso);
+										ExtensionInterface *itf = static_cast<ExtensionInterface*>(
+												v8::Local<v8::External>::Cast(
+														v8::Local<v8::Object>::Cast(info.Data())->GetInternalField(0))->Value());
+										itf->engine->getCharacterProperty(*v8::String::Utf8Value(info.Holder()->GetInternalField(0)), *v8::String::Utf8Value(property));
+									},
+									[] (v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info) {
+									},
+									[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Integer>& info) {
+									},
+									[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Boolean>& info) {
+									},
+									0,
+									info.Data());
+						},
+						// setter
+						[] (v8::Local<v8::String> property, v8::Local<v8::Value> value, const v8::PropertyCallbackInfo<v8::Value>& info) {
+							info.GetReturnValue().Set(v8::Undefined(info.GetIsolate()));
+						},
+						// query
+						[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Integer>& info) {
+							info.GetReturnValue().Set(v8::Integer::New(info.GetIsolate(), v8::DontDelete | v8::ReadOnly));
+						},
+						// delete
+						[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Boolean>& info) {
+							info.GetReturnValue().Set(v8::Boolean::New(info.GetIsolate(), false));
+						},
+						// enumerate
+						[] (const v8::PropertyCallbackInfo<v8::Array>& info) {
+							v8::Isolate *iso = info.GetIsolate();
+							v8::Isolate::Scope iso_scope(iso);
+							v8::Locker locker(iso);
+							v8::HandleScope scope (iso);
+							v8::Handle<v8::Array> list = v8::Array::New(iso);
+						},
+						info.Holder());
+				v8::Handle<v8::Object> newInstance = characterListDelegate->NewInstance();
+				newInstance->SetInternalField(0, property);
+				info.GetReturnValue().Set(characterListDelegate->NewInstance());
 			});
 	newInterfaceTemplate->InstanceTemplate()->SetAccessor(v8::String::NewFromUtf8(iso, "autoDelegate"),
 			[] (v8::Local<v8::String> property, const v8::PropertyCallbackInfo<v8::Value> &info) {
@@ -86,10 +166,7 @@ ExtensionEngine::ExtensionEngine() {
 					return;
 				if (args[0]->IsObject()) {
 					v8::Handle<v8::Value> obj = args[0];
-					v8::Handle<v8::Object> json = v8::Local<v8::Object>::New(iso, itf->engine->jsonUtil);
-					v8::Handle<v8::Value> result = v8::Local<v8::Function>::Cast(json->Get(v8::String::NewFromUtf8(iso, "stringify")))
-																->CallAsFunction(json, 1, &obj);
-					itf->engine->notifyUpdate(*v8::String::Utf8Value(result));
+					itf->engine->notifyUpdate(itf->engine->stringifyJSON(obj).c_str());
 				}
 			}));
 	newInterfaceTemplate->PrototypeTemplate()->Set(v8::String::NewFromUtf8(iso, "turnNextRound"),
@@ -317,6 +394,10 @@ void ExtensionEngine::notifyUpdate(const char *update) {
 
 const std::string ExtensionEngine::getCharacterPositions(const char *chars) {
 	return getCharacterPositionCallback(std::string(chars));
+}
+
+const std::string ExtensionEngine::getCharacterProperty(const char *character, const char *property) {
+	return getCharacterPropertyCallback(std::string(character), std::string(property));
 }
 
 void ExtensionEngine::setCharacterPosition(const char * character, const char * position) {
