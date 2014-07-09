@@ -36,6 +36,10 @@ public class GameCharacterAutomaton {
 	
 	private static void autoActionHero(GameState stateMachine, String character) {
 		// Hero AI here
+		// Move to target
+		double moveTargetBenefit = 0;
+		// Move to enemy
+		double moveEnemyBenefit = 0;
 	}
 	
 	private static void autoActionLinecreep(GameState stateMachine, String character) {

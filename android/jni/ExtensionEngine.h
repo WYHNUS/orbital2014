@@ -2,6 +2,7 @@
 #define DOTAGRID_EXTENSIONENGINE_H_
 #include <v8.h>
 #include <string>
+#include <type_traits>
 #include <functional>
 #include <chrono>
 #include <thread>
@@ -63,6 +64,7 @@ class ExtensionEngine {
 	ExtensionEngine();
 	~ExtensionEngine();
 
+	static void itf_ctor(ExtensionEngine&, const v8::FunctionCallbackInfo<v8::Value>&);
 	v8::Handle<v8::Object> wrapInterface();
 
 	ExtensionInterface* currentInterface;

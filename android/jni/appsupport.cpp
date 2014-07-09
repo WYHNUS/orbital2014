@@ -1,3 +1,4 @@
+//#define __GXX_RTTI
 #include <string>
 #include <jni.h>
 #include <android/log.h>

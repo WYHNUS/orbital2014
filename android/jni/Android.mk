@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 LOCAL_PATH := $(JNI_DIR)
 include $(CLEAR_VARS)
 LOCAL_MODULE := appsupport
-LOCAL_CFLAGS := -g -Werror
+LOCAL_CFLAGS := -g -Werror# -frtti -fexceptions
 LOCAL_CPP_EXTENSION := .cpp .cc
 LOCAL_C_INCLUDES := $(LOCAL_PATH) \
 	$(LOCAL_PATH)/jsoncpp \

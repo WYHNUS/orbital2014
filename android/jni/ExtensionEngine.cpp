@@ -105,6 +105,8 @@ std::string&& ExtensionEngine::stringifyJSON(v8::Handle<v8::Value> value) {
 }
 
 ExtensionEngine::ExtensionEngine() {
+	// wrapped functions
+	// Initialisation start
 	v8::V8::Initialize();
 	iso = v8::Isolate::New();
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "ISO: %p\n", iso);
@@ -336,6 +338,21 @@ ExtensionEngine::ExtensionEngine() {
 	__android_log_print(ANDROID_LOG_DEBUG, "EE", "JSON Stored");
 	_DOTAGRID_EXTENSIONENGINE_ISOLATE_MAP[iso] = this;
 	currentInterface = new ExtensionInterface(this);
+}
+
+void ExtensionEngine::itf_ctor(ExtensionEngine &self, const v8::FunctionCallbackInfo<v8::Value> &args) {
+	__android_log_print(ANDROID_LOG_DEBUG, "EE", "ExtensionInterface constructor");
+	v8::Isolate::Scope iso_scope(self.iso);
+	v8::Locker locker(self.iso);
+	v8::HandleScope scope (self.iso);
+	if (args[0]->IsExternal()) {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "ExtensionInterface constructor: EXTERNAL");
+		args.This()->SetInternalField(0, args[0]);
+		args.GetReturnValue().Set(args.This());
+	} else {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "ExtensionInterface constructor: NEW");
+		args.GetReturnValue().Set(self.wrapInterface());
+	}
 }
 
 v8::Handle<v8::Object> ExtensionEngine::wrapInterface() {
