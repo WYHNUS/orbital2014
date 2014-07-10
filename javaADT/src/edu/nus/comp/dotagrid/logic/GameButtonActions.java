@@ -251,8 +251,22 @@ public class GameButtonActions {
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
 					// only non-player controlled character need AI to perform action
 					if (!GridFrame.gridButtonMap[x][y].getIsPlayer()){
-						// AI action!
-						new AICharacter(x, y);
+						// check if the character is summon character
+						if (GridFrame.gridButtonMap[x][y].getCharacter() instanceof SummonCharacter) {
+							
+							// reduce the current duration for summon character
+							((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).setCurrentDuration(
+									((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).getCurrentDuration() - 1);
+							// check if the duration is below 0
+							if (((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).getCurrentDuration() <= 0) {
+								// discard the summon character
+								GridFrame.gridButtonMap[x][y] = new GridButton(1);
+							}
+							
+						} else {
+							// AI action!
+							new AICharacter(x, y);
+						}
 					}
 				}
 			}

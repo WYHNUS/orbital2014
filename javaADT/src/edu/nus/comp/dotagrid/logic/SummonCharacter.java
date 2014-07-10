@@ -3,6 +3,7 @@ package edu.nus.comp.dotagrid.logic;
 public class SummonCharacter extends Character {
 	
 	private int duration;
+	private int currentDuration;
 	
 	public SummonCharacter(String name, int bountyExp, int bountyMoney, int sight, 
 			int startingHP, int startingMP,
@@ -16,6 +17,20 @@ public class SummonCharacter extends Character {
 				actionPoint, teamNumber);
 		
 		this.duration = duration;
+		this.setCurrentDuration(duration);
+		this.setCharacterImage("summonCharacters", this.getName());
+	}
+
+	public SummonCharacter(SummonCharacter summonChara) {
+
+		super(summonChara.getName(), summonChara.getBountyMoney(), summonChara.getBountyExp(), summonChara.getSight(),
+				summonChara.getStartingHP(), summonChara.getStartingMP(), summonChara.getStartingPhysicalAttack(),
+				summonChara.getStartingPhysicalAttackArea(), summonChara.getStartingPhysicalAttackSpeed(),
+				summonChara.getStartingPhysicalDefence(), summonChara.getStartingMagicResistance(), summonChara.getStartingMovementSpeed(),
+				summonChara.getMaxActionPoint(), summonChara.getTeamNumber());
+		
+		this.setDuration(summonChara.getDuration());
+		this.setCurrentDuration(summonChara.getCurrentDuration());
 		this.setCharacterImage("summonCharacters", this.getName());
 	}
 
@@ -25,6 +40,14 @@ public class SummonCharacter extends Character {
 
 	public void setDuration(int duration) {
 		this.duration = duration;
+	}
+
+	public int getCurrentDuration() {
+		return currentDuration;
+	}
+
+	public void setCurrentDuration(int currentDuration) {
+		this.currentDuration = currentDuration;
 	}
 	
 }

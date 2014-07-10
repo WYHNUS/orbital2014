@@ -78,6 +78,9 @@ public class Skill {
 		this.setSkillType(skill.getSkillType());
 		this.setSkillName(skill.getSkillName());
 		this.setImage();
+		
+		this.setSkillCharacter(skill.getSkillCharacter());
+		this.setSummonRange(skill.getSummonRange());
 
 		this.setUsedMP(skill.getUsedMP());
 		this.setUsedActionPoint(skill.getUsedActionPoint());

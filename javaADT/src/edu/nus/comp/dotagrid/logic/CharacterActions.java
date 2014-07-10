@@ -70,24 +70,26 @@ public class CharacterActions {
 	private void summonCreatures() {
 		// summon creatures centered at selected grid position
 		Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
+		int teamNumber = castingHero.getTeamNumber();
 		Skill castingSkill = new Skill(castingHero.skills[Player.invokedPlayerSkillIndex]);
 		int castingRange = castingSkill.getSummonRange();
 		boolean isCasted = false;
 		
 		for (int i=-castingRange; i<=castingRange; i++) {
-			for (int j=-castingRange; i<=castingRange; i++) {
+			for (int j=-castingRange; j<=castingRange; j++) {
 				// create summon character condition
 				if (Math.abs(i) + Math.abs(j) == castingRange) {
 					// check if summon character can be added to the grid
-					if (GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsMovable()) {
-						// only add summon creature on movable grid
-						isCasted = true;
-						
-						if (!GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsOccupied()) {
-							// add creature!
-							GridFrame.gridButtonMap[toXPos+i][toYPos+j] = new GridButton(castingSkill.getSkillCharacter());
+					if (withinBoundary(toXPos+i, toYPos+j)) {
+						if (GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsMovable()) {
+							// only add summon creature on movable grid
+							isCasted = true;
+							if (!GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsOccupied()) {
+								// add creature!
+								GridFrame.gridButtonMap[toXPos+i][toYPos+j] = new GridButton(new SummonCharacter(castingSkill.getSkillCharacter()));
+								GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter().setTeamNumber(teamNumber);
+							}
 						}
-						
 					}
 				}
 			}
@@ -109,6 +111,12 @@ public class CharacterActions {
 		
 		// casting action ended
 		GameButtonActions.readyToCastSpell = false;	
+	}
+
+
+	private boolean withinBoundary(int i, int j) {
+		// check if i and j are inside the gridButtonMap range
+		return (i>=0 && i<GridFrame.COLUMN_NUMBER && j>=0 && j<GridFrame.ROW_NUMBER);
 	}
 
 
