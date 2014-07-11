@@ -75,7 +75,7 @@ public class ItemDatabase {
 		clarity.setCastingRange(3);
 		itemDatabase[8] = clarity;
 		
-		Item flask = new Item("flask", 100, true);
+		Item flask = new Item("flask", 115, true);
 		flask.setDiscardAfterUse(true);
 		flask.setUsableTime(1);
 		flask.setCastingRange(3);

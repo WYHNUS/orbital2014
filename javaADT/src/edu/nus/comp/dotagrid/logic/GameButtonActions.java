@@ -183,19 +183,25 @@ public class GameButtonActions {
 					
 			// check if hero's item list is empty
 			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[playerItemIndex] != null) {
-				
 				// check if the item is usable
 				if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[playerItemIndex].isUsable()) {
 					// check if usable time is non-zero
 					if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[playerItemIndex].getUsableTime() > 0) {
+						// highlight usable range
+						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[playerItemIndex].
+							invokeItemAction(Screen.user.player.getXPos(), Screen.user.player.getYPos());
+						
 						// get ready to use item
 						readyToAct = true;
 						readyToUseItem = true;
 						
 						Player.invokedPlayerItemIndex = playerItemIndex;
+					} else {
+						System.out.println("Not enough usable times!");
 					}
+				} else {
+					System.out.println("item not usable!");
 				}
-				
 			}
 		}
 	}

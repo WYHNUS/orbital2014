@@ -58,8 +58,69 @@ public class CharacterActions {
 	private void useItem() {
 		// casting hero is at [fromXPos][fromYPos] position, target position is at [toXPos][toYPos]
 		// actions are different depending on item type
+
+		Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
+		
+		switch (castingHero.items[Player.invokedPlayerItemIndex].getItemName()) {
+		
+			case "clarity" : 
+				increaseMP(75);
+				break;
+				
+			case "flask" :
+				increaseHP(400);
+				break;
+		
+		}
+		
+		// decrease item usable times by 1
+		((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).items[Player.invokedPlayerItemIndex].setUsableTime(
+				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).items[Player.invokedPlayerItemIndex].getUsableTime() - 1);
+
+		// check if the item should be discarded
+		if (((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).items[Player.invokedPlayerItemIndex].getUsableTime() <= 0) {
+			System.out.println("discardble = " + ((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).items[Player.invokedPlayerItemIndex].isDiscardAfterUse());
+			if (((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).items[Player.invokedPlayerItemIndex].isDiscardAfterUse()) {
+				// discard the item
+				System.out.println("discard!");
+				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).removeItem(Player.invokedPlayerItemIndex);
+			}
+		}
 		
 	}
+
+
+	private void increaseHP(int increaseNumber) {
+		// if [toXPos][toYPos] is friendly unit, increase the unit's HP by increaseNumber
+		if (checkIfToPosIsFriendlyUnit()){
+			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(
+					increaseNumber + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP());
+		} else {
+			JOptionPane.showMessageDialog(null, "You need to use the item on a friendly unit!");
+		}
+	}
+
+	private void increaseMP(int increaseNumber) {
+		// if [toXPos][toYPos] is friendly unit, increase the unit's MP by increaseNumber
+		if (checkIfToPosIsFriendlyUnit()){
+			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentMP(
+					increaseNumber + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentMP());
+		} else {
+			JOptionPane.showMessageDialog(null, "You need to use the item on a friendly unit!");
+		}
+	}
+
+
+	private boolean checkIfToPosIsFriendlyUnit() {
+		// check if [toXPos][toYPos] is friendly unit
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null) {
+			return (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber() == 
+					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTeamNumber());
+		} else {
+			return false;
+		}
+	}
+
 
 
 	private void castSpell() {

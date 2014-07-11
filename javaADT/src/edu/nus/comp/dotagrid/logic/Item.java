@@ -95,6 +95,8 @@ public class Item {
 		
 		this.setUsable(item.isUsable());
 		this.setUsableTime(item.getUsableTime());
+		this.setDiscardAfterUse(item.isDiscardAfterUse());
+		this.setCastingRange(item.getCastingRange());
 		
 		this.setAddStrength(item.getAddStrength());
 		this.setAddAgility(item.getAddAgility());
@@ -115,7 +117,6 @@ public class Item {
 		
 		this.setAddMovementSpeed(item.getAddMovementSpeed());
 	}
-	
 	
 
 	public ImageIcon getItemImage() {
@@ -304,7 +305,34 @@ public class Item {
 	public void setAddMovementSpeed(int addMovementSpeed) {
 		this.addMovementSpeed = addMovementSpeed;
 	}
+	
+	
+	public void invokeItemAction(int heroXPos, int heroYPos) {
+		
+		// reset attack map and highlighted map
+		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
+			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
+				GridFrame.highlightedMap[x][y] = -1;
+				GridFrame.attackRangeMap[x][y] = -1;
+			}
+		}	
+					
+		// change highlighted map
+		for(int x=heroXPos-this.getCastingRange(); x<heroXPos+this.getCastingRange()+1; x++){
+			for(int y=heroYPos-this.getCastingRange(); y<heroYPos+this.getCastingRange()+1; y++){
+				// x and y need to be within the grid frame 
+				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
+					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
+						// x + y need to be within the number of attackable grid
+						if (Math.abs(heroXPos - x) + Math.abs(heroYPos - y) <= this.getCastingRange()) {
+							GridFrame.highlightedMap[x][y] = 1;
+						}
+					}
+				}
+			}
+		}
 
+	}
 
 
 }
