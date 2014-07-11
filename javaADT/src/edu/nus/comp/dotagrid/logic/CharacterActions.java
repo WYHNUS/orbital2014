@@ -1,8 +1,12 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 public class CharacterActions {
+	public static final int EXP_GAIN_RANGE = 10;
+	
 	private int toXPos;
 	private int toYPos;
 	private int fromXPos;
@@ -289,12 +293,39 @@ public class CharacterActions {
 						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
 						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
 							
-				// add Experience
-				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setExperience(
-						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getExperience()
-						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyExp());
-							
 			}
+			
+			// check if nearby has non-friendly hero
+			ArrayList<Hero> addExpHero = new ArrayList<Hero>();
+			for (int i=-EXP_GAIN_RANGE; i<=EXP_GAIN_RANGE; i++) {
+				for (int j=-EXP_GAIN_RANGE; j<=EXP_GAIN_RANGE; j++) {
+					// check if within range
+					if (Math.abs(i) + Math.abs(j) <= EXP_GAIN_RANGE) {
+						// check if within grid frame
+						if (withinBoundary(toXPos+i, toYPos+j)) {
+							// check if has character
+							if (GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter() != null) {
+								// check if the character is non-friendly hero
+								if ((GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter() instanceof Hero) &&
+										(GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter().getTeamNumber() == 
+										GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber())) {
+									// add the hero into the temp hero arraylist for future sharing of experience
+									addExpHero.add((Hero) GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter());
+								}
+							}
+						}
+					}
+				}
+			}
+			
+			if (!addExpHero.isEmpty()){
+				double sharedExp = (1.0 * GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyExp()) / addExpHero.size();
+				// add exp to each hero in the arraylist
+				for (Hero element : addExpHero) {
+					element.setExperience((int) (element.getExperience() + sharedExp));
+				}
+			}
+			
 						
 			// if the hero is dead
 			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {
