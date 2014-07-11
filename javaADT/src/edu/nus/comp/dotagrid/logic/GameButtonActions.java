@@ -11,6 +11,7 @@ public class GameButtonActions {
 	public static boolean readyToAttack = false;
 	public static boolean readyToCastSpell = false;
 	public static boolean readyToUpgradeSkill = false;
+	public static boolean readyToUseItem = false;
 	
 	private int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
 	private int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
@@ -50,6 +51,8 @@ public class GameButtonActions {
 		 * actionNumber 13 : pop up a sell item menu
 		 * 
 		 * actionNumber 20 - 27 : invoke ready to cast spell event
+		 * 
+		 * actionNumber 28 - 33 : invoke use item event
 		 * 
 		 */
 
@@ -142,10 +145,62 @@ public class GameButtonActions {
 			case 27 :
 				playerHeroCastSpell(7);
 				break;
+				
+				
+			case 28 :
+				playerHeroUseItem(0);
+				break;
+				
+			case 29 :
+				playerHeroUseItem(1);
+				break;
+				
+			case 30 :
+				playerHeroUseItem(2);
+				break;
+				
+			case 31 :
+				playerHeroUseItem(3);
+				break;
+				
+			case 32 :
+				playerHeroUseItem(4);
+				break;
+				
+			case 33 :
+				playerHeroUseItem(5);
+				break;
 		}
 	}
 
 	
+
+	private void playerHeroUseItem(int playerItemIndex) {
+		// based on playerItemIndex, use corresponding item
+		
+		// check if the selected grid is player's hero!
+		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer()) {
+					
+			// check if hero's item list is empty
+			if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[playerItemIndex] != null) {
+				
+				// check if the item is usable
+				if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[playerItemIndex].isUsable()) {
+					// check if usable time is non-zero
+					if (((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).items[playerItemIndex].getUsableTime() > 0) {
+						// get ready to use item
+						readyToAct = true;
+						readyToUseItem = true;
+						
+						Player.invokedPlayerItemIndex = playerItemIndex;
+					}
+				}
+				
+			}
+		}
+	}
+
+
 
 	private void upgradeSkill() {
 		// check if selected character is player's hero
@@ -189,8 +244,8 @@ public class GameButtonActions {
 						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].
 								invokeSkillAction(Screen.user.player.getXPos(), Screen.user.player.getYPos());
 						
-						GameButtonActions.readyToAct = true;
-						GameButtonActions.readyToCastSpell  = true;
+						readyToAct = true;
+						readyToCastSpell  = true;
 						
 						Skill.invokedSkillType = ((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].getSkillType();
 						Player.invokedPlayerSkillIndex = playerSkillIndex;

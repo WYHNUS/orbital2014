@@ -1,7 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
 public class ItemDatabase {
-	public static final int TOTAL_ITEM_NUMBER = 8;
+	public static final int TOTAL_ITEM_NUMBER = 10;
 	
 	public Item[] itemDatabase = new Item[TOTAL_ITEM_NUMBER];
 	
@@ -29,44 +29,56 @@ public class ItemDatabase {
 		 * int addMovementSpeed)
 		 */
 		
-		Item branches = new Item("branches", 53, 0, 0, true, 
+		Item branches = new Item("branches", 53, 0, 0, false, 
 				1.0, 1.0, 1.0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[0] = branches;	
 		
-		Item gauntlets = new Item("gauntlets", 150, 0, 0, true, 
+		Item gauntlets = new Item("gauntlets", 150, 0, 0, false, 
 				3.0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[1] = gauntlets;	
 		
-		Item slippers = new Item("slippers", 150, 0, 0, true, 
+		Item slippers = new Item("slippers", 150, 0, 0, false, 
 				0, 3.0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[2] = slippers;
 		
-		Item mantle = new Item("mantle", 150, 0, 0, true, 
+		Item mantle = new Item("mantle", 150, 0, 0, false, 
 				0, 0, 3.0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[3] = mantle;
 		
-		Item circlet = new Item("circlet", 185, 0, 0, true, 
+		Item circlet = new Item("circlet", 185, 0, 0, false, 
 				2.0, 2.0, 2.0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[4] = circlet;	
 		
-		Item beltOfStrength = new Item("beltOfStrength", 450, 0, 0, true, 
+		Item beltOfStrength = new Item("beltOfStrength", 450, 0, 0, false, 
 				6.0, 0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[5] = beltOfStrength;	
 		
-		Item bootsOfElves = new Item("bootsOfElves", 450, 0, 0, true, 
+		Item bootsOfElves = new Item("bootsOfElves", 450, 0, 0, false, 
 				0, 6.0, 0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[6] = bootsOfElves;
 		
-		Item robeOfTheMagi = new Item("robeOfTheMagi", 450, 0, 0, true, 
+		Item robeOfTheMagi = new Item("robeOfTheMagi", 450, 0, 0, false, 
 				0, 0, 6.0, 0, 0, 0, 0,
 				0, 0, 0, 0, 0, 0);
 		itemDatabase[7] = robeOfTheMagi;
+		
+		Item clarity = new Item("clarity", 50, true);
+		clarity.setDiscardAfterUse(true);
+		clarity.setUsableTime(1);
+		clarity.setCastingRange(3);
+		itemDatabase[8] = clarity;
+		
+		Item flask = new Item("flask", 100, true);
+		flask.setDiscardAfterUse(true);
+		flask.setUsableTime(1);
+		flask.setCastingRange(3);
+		itemDatabase[9] = flask;
 	}
 }

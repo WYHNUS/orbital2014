@@ -210,6 +210,13 @@ public class GameFrame{
 		items[4] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos, (int) gridWidth, (int) gridHeight);
 		items[5] = new GameButton("item", null, FRAME_BORDER_WIDTH + (int) ((2+3.5+3.5+2.5+2.5) * gridWidth + (5*0.5) * gridWidth + 2 * gridWidth), startingYPos + (int) gridHeight, (int) gridWidth, (int) gridHeight);
 			
+		items[0].setActionNumber(28);
+		items[1].setActionNumber(29);
+		items[2].setActionNumber(30);
+		items[3].setActionNumber(31);
+		items[4].setActionNumber(32);
+		items[5].setActionNumber(33);
+		
 		allGameButtons.add(items[0]);
 		allGameButtons.add(items[1]);
 		allGameButtons.add(items[2]);

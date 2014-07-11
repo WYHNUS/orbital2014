@@ -13,8 +13,10 @@ public class Item {
 	
 	private int requiredMPPerUse, requiredHPPerUse;
 	
-	private boolean isReusable;
+	private boolean isUsable;
+	private boolean discardAfterUse;
 	private int usableTime = 1; // default 1
+	private int castingRange;
 	
 	private double addStrength, addAgility, addIntelligence;
 	
@@ -35,8 +37,16 @@ public class Item {
 		// default java constructor
 	}
 
+	public Item(String itemName, int cost, boolean isUsable){
+		this.setItemName(itemName);
+		this.setItemImage();
+		this.setCost(cost);
+		this.setSellPrice((int) (cost/2.0));
 
-	public Item(String itemName, int cost, int requiredMPPerUse, int requiredHPPerUse, boolean isReusable,
+		this.setUsable(isUsable);
+	}
+
+	public Item(String itemName, int cost, int requiredMPPerUse, int requiredHPPerUse, boolean isUsable,
 				double addStrength, double addAgility, double addIntelligence, int addHP, int addMP, 
 				double addHPGainPerRound, double addMPGainPerRound, double addPhysicalDefence, double addMagicResistance,
 				double addPhysicalAttack, double addPhysicalAttackSpeed, int addPhysicalAttackArea, int addMovementSpeed)
@@ -50,7 +60,7 @@ public class Item {
 		this.setRequiredMPPerUse(requiredMPPerUse);
 		this.setRequiredHPPerUse(requiredHPPerUse);
 		
-		this.setReusable(isReusable);
+		this.setUsable(isUsable);
 		
 		this.setAddStrength(addStrength);
 		this.setAddAgility(addAgility);
@@ -83,7 +93,7 @@ public class Item {
 		this.setRequiredMPPerUse(item.getRequiredMPPerUse());
 		this.setRequiredHPPerUse(item.getRequiredHPPerUse());
 		
-		this.setReusable(item.isReusable());
+		this.setUsable(item.isUsable());
 		this.setUsableTime(item.getUsableTime());
 		
 		this.setAddStrength(item.getAddStrength());
@@ -113,7 +123,7 @@ public class Item {
 	}
 
 	public void setItemImage() {
-		this.itemImage = new ImageIcon("res/items/" + itemName + ".png");
+		this.itemImage = new ImageIcon("res/items/" + itemName + ".jpg");
 	}
 	
 	public String getItemName() {
@@ -157,13 +167,23 @@ public class Item {
 		this.requiredHPPerUse = requiredHPPerUse;
 	}
 
-	public boolean isReusable() {
-		return isReusable;
+	public boolean isUsable() {
+		return isUsable;
 	}
 
-	public void setReusable(boolean isReusable) {
-		this.isReusable = isReusable;
+	public void setUsable(boolean isUsable) {
+		this.isUsable = isUsable;
 	}
+
+	public boolean isDiscardAfterUse() {
+		return discardAfterUse;
+	}
+
+
+	public void setDiscardAfterUse(boolean discardAfterUse) {
+		this.discardAfterUse = discardAfterUse;
+	}
+
 
 	public int getUsableTime() {
 		return usableTime;
@@ -171,6 +191,14 @@ public class Item {
 
 	public void setUsableTime(int usableTime) {
 		this.usableTime = usableTime;
+	}
+
+	public int getCastingRange() {
+		return castingRange;
+	}
+
+	public void setCastingRange(int castingRange) {
+		this.castingRange = castingRange;
 	}
 
 	public double getAddStrength() {

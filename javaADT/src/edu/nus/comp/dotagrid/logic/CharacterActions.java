@@ -24,6 +24,10 @@ public class CharacterActions {
 		 * 
 		 * actionNumber 3 : update sight map
 		 * 
+		 * actionNumber 4 : use skill
+		 * 
+		 * actionNumber 5 : use item
+		 * 
 		 * */
 		
 		switch(actionNumber){
@@ -42,11 +46,22 @@ public class CharacterActions {
 			case 4 :
 				castSpell();
 				break;
+				
+			case 5 : 
+				useItem();
+				break;
 		}
 		
 	}
 
 	
+	private void useItem() {
+		// casting hero is at [fromXPos][fromYPos] position, target position is at [toXPos][toYPos]
+		// actions are different depending on item type
+		
+	}
+
+
 	private void castSpell() {
 		// casting hero is at [fromXPos][fromYPos] position, target position is at [toXPos][toYPos]
 		// actions are different depending on skill type

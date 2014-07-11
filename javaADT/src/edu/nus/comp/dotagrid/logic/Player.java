@@ -4,6 +4,7 @@ public class Player {
 	private int XPos, YPos;
 	private static int teamNumber;
 	public static int invokedPlayerSkillIndex;
+	public static int invokedPlayerItemIndex;
 
 	// constructor
 	public Player(int XPos, int YPos){

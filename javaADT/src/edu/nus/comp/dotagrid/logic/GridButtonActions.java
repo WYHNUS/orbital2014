@@ -146,13 +146,35 @@ public class GridButtonActions {
 			// player's action ended
 			GameButtonActions.readyToAct = false;
 			
-			// select position which has been attacked
+			// select position which the spell has casted on
 			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		}
-
+		
+		// check to execute use item action
+		else if (GameButtonActions.readyToUseItem  == true) {
+			boolean isWithinCastingRange = calculateWithinItemCastingRange();
+			
+			if (isWithinCastingRange) {
+				// use this item !
+				new CharacterActions(5, fromXPos, fromYPos, toXPos, toYPos);
+			} else {
+				JOptionPane.showMessageDialog(null, "Out Of Item Casting Range!");
+			}
+			
+			// casting action ended
+			GameButtonActions.readyToUseItem = false;
+						
+			// player's action ended
+			GameButtonActions.readyToAct = false;
+		}
 	}
 	
 	
+	private boolean calculateWithinItemCastingRange() {
+		// calculate if the selected grid is within attack range
+		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos)) <= ((Hero)(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter())).items[Player.invokedPlayerItemIndex].getCastingRange();
+	}
+
 	private boolean calculateWithinSkillRange() {
 		// calculate if the selected grid is within attack range
 		return (Math.abs(toXPos - fromXPos) + Math.abs(toYPos - fromYPos)) <= ((Hero)(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter())).skills[Player.invokedPlayerSkillIndex].getCastRange();	
