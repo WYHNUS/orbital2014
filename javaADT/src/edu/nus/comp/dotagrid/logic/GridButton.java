@@ -30,6 +30,7 @@ public class GridButton {
 		 * 3 : river
 		 * 4 : tree 
 		 * 5 : fence
+		 * 6 : cliff
 		 * 
 		 * 20 : Sentinel Tower 1
 		 * 21 : Sentinel Tower 2
@@ -52,6 +53,11 @@ public class GridButton {
 		 * 
 		 * 34 : scourgeMeeleBarrack
 		 * 35 : scourgeRangedBarrack
+		 * 
+		 * 41 : small neutral creep spawn point
+		 * 42 : middle neutral creep spawn point
+		 * 43 : large neutral creep spawn point
+		 * 44 : super neutral creep spawn point
 		 * 
 		 * 99 : player's hero spawn point
 		 * 
