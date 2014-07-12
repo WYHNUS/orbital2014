@@ -1,7 +1,7 @@
 package edu.nus.comp.dotagridandroid.logic;
 
 public class GameCharacterAutomaton {
-	public static void autoAction(GameState stateMachine, String character) {
+	public static void autoAction(final GameState stateMachine, final String character) {
 		if (stateMachine.isExtensionEnabled())
 			stateMachine.getExtensionEngine();
 		else
@@ -34,19 +34,23 @@ public class GameCharacterAutomaton {
 	
 	// calculate greatest benefit, attacking tower is highest, then hero, and the least linecreeps
 	
-	private static void autoActionHero(GameState stateMachine, String character) {
+	private static void autoActionHero(final GameState stateMachine, final String character) {
 		// Hero AI here
+		int actionPoints = (int) stateMachine.getCharacterProperty(character, "currentActionPoint");
+		while (actionPoints > 0) {
+			actionPoints = (int) stateMachine.getCharacterProperty(character, "currentActionPoint");
+		}
 		// Move to target
 		double moveTargetBenefit = 0;
 		// Move to enemy
 		double moveEnemyBenefit = 0;
 	}
 	
-	private static void autoActionLinecreep(GameState stateMachine, String character) {
+	private static void autoActionLinecreep(final GameState stateMachine, final String character) {
 		// Linecreep AI here
 	}
 	
-	private static void autoActionTower(GameState stateMachine, String character) {
+	private static void autoActionTower(final GameState stateMachine, final String character) {
 		// Tower AI here
 	}
 }
