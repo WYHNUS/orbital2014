@@ -7,11 +7,11 @@ public class LineCreepDatabase {
 	
 	public static final int TOTAL_LINECREEP_NUMBER = 12;
 	
-	public static final int meeleCreepUpgradeHP = 10;
-	public static final int rangedCreepUpgradeHP = 10;
+	public static final int MEELE_CREEP_UPGRADE_HP = 10;
+	public static final int RANGED_CREEP_UPGRADE_HP = 10;
 	
-	public static final double meeleCreepUpgradeAttack = 1.0;
-	public static final double rangedCreepUpgradeAttack = 2.0;
+	public static final double MEELE_CREEP_UPGRADE_ATTACK = 1.0;
+	public static final double RANGED_CREEP_UPGRADE_ATTACK = 2.0;
 	
 	private static int meeleHPSentinel;
 	private static int rangedHPSentinel;
@@ -64,15 +64,15 @@ public class LineCreepDatabase {
 		 * 
 		*/
 		
-		meeleHPSentinel = LineCreepDatabase.meeleCreepUpgradeHP * LineCreep.levelSentinel;
-		rangedHPSentinel = LineCreepDatabase.rangedCreepUpgradeHP * LineCreep.levelSentinel;
-		meeleAttackSentinel = LineCreepDatabase.meeleCreepUpgradeAttack * LineCreep.levelSentinel;
-		rangedAttackSentinel = LineCreepDatabase.rangedCreepUpgradeAttack * LineCreep.levelSentinel;
+		meeleHPSentinel = LineCreepDatabase.MEELE_CREEP_UPGRADE_HP * LineCreep.levelSentinel;
+		rangedHPSentinel = LineCreepDatabase.RANGED_CREEP_UPGRADE_HP * LineCreep.levelSentinel;
+		meeleAttackSentinel = LineCreepDatabase.MEELE_CREEP_UPGRADE_ATTACK * LineCreep.levelSentinel;
+		rangedAttackSentinel = LineCreepDatabase.RANGED_CREEP_UPGRADE_ATTACK * LineCreep.levelSentinel;
 		
-		meeleHPScourge = LineCreepDatabase.meeleCreepUpgradeHP * LineCreep.levelScourge;
-		rangedHPScourge = LineCreepDatabase.rangedCreepUpgradeHP * LineCreep.levelScourge;
-		meeleAttackScourge = LineCreepDatabase.meeleCreepUpgradeAttack * LineCreep.levelScourge;
-		rangedAttackScourge = LineCreepDatabase.rangedCreepUpgradeAttack * LineCreep.levelScourge;
+		meeleHPScourge = LineCreepDatabase.MEELE_CREEP_UPGRADE_HP * LineCreep.levelScourge;
+		rangedHPScourge = LineCreepDatabase.RANGED_CREEP_UPGRADE_HP * LineCreep.levelScourge;
+		meeleAttackScourge = LineCreepDatabase.MEELE_CREEP_UPGRADE_ATTACK * LineCreep.levelScourge;
+		rangedAttackScourge = LineCreepDatabase.RANGED_CREEP_UPGRADE_ATTACK * LineCreep.levelScourge;
 		
 		superMeeleHPSentinel = 150 + 9 * LineCreep.levelSentinel;
 		superRangedHPSentinel = 175 + 8 * LineCreep.levelSentinel;
