@@ -54,6 +54,10 @@ public class GameLogicManager implements Closeable {
 		current.setTerrain(terrain);
 		gameStates.put("Current", current);	// dummy
 	}
+
+	public List<String> getGameList() {
+		return Collections.emptyList();
+	}
 	
 	public void initiateSoundEngine() {
 		se = AppNativeAPI.createSoundEngine(context);
