@@ -7,7 +7,7 @@ public class GameMaster {
 		//
 	}
 	
-	public void applyRule(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
+	public void applyRule(final GameState stateMachine, final String character, final String actionName, final Map<String, Object> options) {
 		if (!character.equals(stateMachine.getCurrentCharacterName()))
 			return;
 		final int[]
@@ -98,7 +98,7 @@ public class GameMaster {
 		}
 	}
 
-	public boolean requestActionPossible(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
+	public boolean requestActionPossible(final GameState stateMachine, final String character, final String actionName, final Map<String, Object> options) {
 		if (!character.equals(stateMachine.getCurrentCharacterName()))
 			return false;
 		final int[] targetGrid = stateMachine.getChosenGrid(), heroGrid = stateMachine.getCharacterPositions().get(character);
