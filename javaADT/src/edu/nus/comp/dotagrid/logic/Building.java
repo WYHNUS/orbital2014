@@ -23,4 +23,13 @@ public class Building  extends Character {
 		this.setCharacterImage("buildings", this.getName());
 	}
 
+	public Building(Building building) {
+		super(building.getName(), building.getBountyMoney(), buildingBountyExp, buildingStartingSight, building.getStartingHP(), buildingStartingMP,
+				buildingPhysicalAttack, buildingPhysicalAttackArea,
+				buildingPhysicalAttackSpeed, building.getStartingPhysicalDefence(),
+				buildingMagicResistance, buildingMovementSpeed, buildingActionPoint, building.getTeamNumber());
+		
+		this.setCharacterImage("buildings", this.getName());
+	}
+
 }

@@ -6,6 +6,9 @@ import java.util.Queue;
 
 public class LineCreepSpawnPoint {
 	
+	public static final int spawnNormalRoundIndex = 10;
+	public static final int spawnEnhancedRoundIndex = 50;
+	
 	public static final int SENTINEL_TOP_LINE_SPAWN_X_POS = 8;
 	public static final int SENTINEL_TOP_LINE_SPAWN_Y_POS = 69;
 	
@@ -33,11 +36,11 @@ public class LineCreepSpawnPoint {
 		/* 
 		 * check and spawn new wave of creeps  :
 		 * 
-		 * spawn new normal wave every 10 turns
-		 * spawn new extended wave every 50 turns
+		 * spawn new normal wave every spawnNormalRoundIndex turns
+		 * spawn new extended wave every spawnEnhancedRoundIndex turns
 		*/
 		
-		if (GameFrame.turn % 10 == 0) {
+		if (GameFrame.turn % spawnNormalRoundIndex == 0) {
 			createWave();
 		}
 		
@@ -92,16 +95,16 @@ public class LineCreepSpawnPoint {
 			// create normal wave of sentinel ranged + siege creeps
 			LineCreepDatabase.createSentinelRangedCreeps(topSentinelCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createSentinelSiegeCreeps(topSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
 			// create super wave of sentinel ranged + siege creeps
 			LineCreepDatabase.createSentinelSuperRangedCreeps(topSentinelCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createSentinelSuperSiegeCreeps(topSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -137,16 +140,16 @@ public class LineCreepSpawnPoint {
 			// create normal wave of sentinel ranged + siege creeps
 			LineCreepDatabase.createSentinelRangedCreeps(midSentinelCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createSentinelSiegeCreeps(midSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
 			// create super wave of sentinel ranged + siege creeps
 			LineCreepDatabase.createSentinelSuperRangedCreeps(midSentinelCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createSentinelSuperSiegeCreeps(midSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -182,16 +185,16 @@ public class LineCreepSpawnPoint {
 			// create normal wave of sentinel ranged + siege creeps
 			LineCreepDatabase.createSentinelRangedCreeps(botSentinelCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createSentinelSiegeCreeps(botSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
 			// create super wave of sentinel ranged + siege creeps
 			LineCreepDatabase.createSentinelSuperRangedCreeps(botSentinelCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createSentinelSuperSiegeCreeps(botSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -229,16 +232,16 @@ public class LineCreepSpawnPoint {
 			// create normal wave of scourge ranged + siege creeps
 			LineCreepDatabase.createScourgeRangedCreeps(topScourgeCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createScourgeSiegeCreeps(topScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
 			// create super wave of scourge ranged + siege creeps
 			LineCreepDatabase.createScourgeSuperRangedCreeps(topScourgeCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createScourgeSuperSiegeCreeps(topScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -274,16 +277,16 @@ public class LineCreepSpawnPoint {
 			// create normal wave of scourge ranged + siege creeps
 			LineCreepDatabase.createScourgeRangedCreeps(midScourgeCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createScourgeSiegeCreeps(midScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
 			// create super wave of scourge ranged + siege creeps
 			LineCreepDatabase.createScourgeSuperRangedCreeps(midScourgeCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createScourgeSuperSiegeCreeps(midScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -319,16 +322,16 @@ public class LineCreepSpawnPoint {
 			// create normal wave of scourge ranged + siege creeps
 			LineCreepDatabase.createScourgeRangedCreeps(botScourgeCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createScourgeSiegeCreeps(botScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
 			// create super wave of scourge ranged + siege creeps
 			LineCreepDatabase.createScourgeSuperRangedCreeps(botScourgeCreeps, RANGED_CREEP_NUMBER);
 			
-			// add siege creeps every 50 turns
-			if (GameFrame.turn % 50 == 0) {
+			// add siege creeps every spawnEnhancedRoundIndex turns
+			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
 				LineCreepDatabase.createScourgeSuperSiegeCreeps(botScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}

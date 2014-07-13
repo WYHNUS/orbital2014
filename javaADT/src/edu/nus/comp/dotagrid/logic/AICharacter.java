@@ -5,7 +5,6 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class AICharacter {
-	
 	public static boolean isAttack = false;
 	private boolean endRound = false;
 	
@@ -71,9 +70,14 @@ public class AICharacter {
 		
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof Tower){
 			// tower AI
+			System.out.println("Tower AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
+			System.out.println("XPos = " + startingXPos + "     YPos = " + startingYPos);
 			
 			// attack when have enough action point
 			AIAttack();
+			
+			System.out.println("end AI round");
+			System.out.println();
 		}
 		
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof Hero){
@@ -111,7 +115,7 @@ public class AICharacter {
 		// reset targetPos in tempMap coordinates
 		int[] startingUncheckedPos = {targetPos[0] + distance - startingXPos, targetPos[1] + distance - startingYPos};
 		uncheckedPosition.add(startingUncheckedPos);
-		
+		System.out.println("target x pos = " + startingUncheckedPos[0] + "    target y pos = " + startingUncheckedPos[1]);
 		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
 		
 		int[] nearestNonOccupiedTargetPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition); 
@@ -283,30 +287,30 @@ public class AICharacter {
 		// add surrounding grids into position
 		int mapRange = tempPathMap.length;
 		
-		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1], mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1], mapRange)){
 			int[] newPos = {uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1]};
 			uncheckedPosition.add(newPos);
 		}
 						
-		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1, mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1, mapRange)){
 			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1};
 			uncheckedPosition.add(newPos);
 		}
 						
-		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1], mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1], mapRange)){
 			int[] newPos = {uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1]};
 			uncheckedPosition.add(newPos);
 		}
 						
-		if (!canBeAdded(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1, mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1, mapRange)){
 			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1};
 			uncheckedPosition.add(newPos);
 		}
 						
 		// add the current position into checked queue
-		checkedPosition.add(uncheckedPosition.peek());
-			
-
+		int[] temp = uncheckedPosition.peek().clone();
+		checkedPosition.add(temp);
+		
 		// terminating condition :
 		if (tempPathMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]] >= 0) {
 			// first element in the unchecked queue satisfy the searching condition
@@ -322,9 +326,9 @@ public class AICharacter {
 
 
 
-	private boolean canBeAdded(ArrayList<int[]> checkedPosition, int XPos, int YPos, int mapRange) {
+	private boolean canBeAdded(ArrayList<int[]> checkedPosition, Queue<int[]> uncheckedPosition, int XPos, int YPos, int mapRange) {
 		// each int[] in checkedPosition stores a pair of xpos and ypos
-		boolean isChecked = false;
+		boolean isUnchecked = true;
 				
 		// XPos and YPos need to be within range
 		if (XPos >= 0 && XPos <mapRange 
@@ -332,16 +336,24 @@ public class AICharacter {
 			// check if the position has been visited before
 			for (int[] element : checkedPosition){
 				if (element[0] == XPos && element[1] == YPos){
-					isChecked = true;
+					isUnchecked = false;
+					break;
+				}
+			}
+			
+			// check if the position has already been added
+			for (int[] element : uncheckedPosition){
+				if (element[0] == XPos && element[1] == YPos){
+					isUnchecked = false;
 					break;
 				}
 			}
 		} else{
 			// not within range! unable to visit!
-			isChecked = true;
+			isUnchecked = false;
 		}
 						
-		return isChecked;
+		return isUnchecked;
 	}
 
 

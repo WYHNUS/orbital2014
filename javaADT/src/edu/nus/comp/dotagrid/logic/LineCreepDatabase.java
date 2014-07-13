@@ -34,6 +34,8 @@ public class LineCreepDatabase {
 	private static double superRangedAttackScourge;
 	private static double superSiegeAttack;
 	
+	public static int[] botCreepCheckPoint = {90, 88};
+	
 	public LineCreepDatabase(){
 		/*
 		 * String name, 
@@ -91,28 +93,28 @@ public class LineCreepDatabase {
 	
 	public static void createSentinelMeeleCreeps(Queue <LineCreep> SentinelCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep sentinelMeeleCreep = new LineCreep("Sentinel Meele Creep", 44 , 62 , 550 + meeleHPSentinel, 0 , 21, meeleAttackSentinel, 1, 1.0, 2, 25, 325, 1);
+			LineCreep sentinelMeeleCreep = new LineCreep("Sentinel Meele Creep", 44 , 62 , 550 + meeleHPSentinel, 0 , 21, meeleAttackSentinel, 1, 0.9, 2, 25, 325, 1);
 			SentinelCreeps.offer(sentinelMeeleCreep);
 		}
 	}
 	
 	public static void createSentinelSuperMeeleCreeps(Queue <LineCreep> SentinelCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep superSentinelMeeleCreep = new LineCreep("Sentinel Meele Creep", 44 , 62 , 550 + meeleHPSentinel + superMeeleHPSentinel, 0 , 21, meeleAttackSentinel + superMeeleAttackSentinel, 1, 1.0, 3, 25, 325, 1);
+			LineCreep superSentinelMeeleCreep = new LineCreep("Sentinel Meele Creep", 44 , 62 , 550 + meeleHPSentinel + superMeeleHPSentinel, 0 , 21, meeleAttackSentinel + superMeeleAttackSentinel, 1, 0.9, 3, 25, 325, 1);
 			SentinelCreeps.offer(superSentinelMeeleCreep);
 		}
 	}
 	
 	public static void createSentinelRangedCreeps(Queue <LineCreep> SentinelCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep sentinelRangedCreep = new LineCreep("Sentinel Ranged Creep", 49, 41, 300 + rangedHPSentinel, 300, 24, rangedAttackSentinel, 3, 1.0, 0, 25, 325, 1);
+			LineCreep sentinelRangedCreep = new LineCreep("Sentinel Ranged Creep", 49, 41, 300 + rangedHPSentinel, 300, 24, rangedAttackSentinel, 3, 0.9, 0, 25, 325, 1);
 			SentinelCreeps.offer(sentinelRangedCreep);
 		}
 	}
 	
 	public static void createSentinelSuperRangedCreeps(Queue <LineCreep> SentinelCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep superSentinelRangedCreep = new LineCreep("Sentinel Ranged Creep", 49, 41, 300 + rangedHPSentinel + superRangedHPSentinel, 300, 24, rangedAttackSentinel + superRangedAttackSentinel, 3, 1.0, 1, 25, 325, 1);
+			LineCreep superSentinelRangedCreep = new LineCreep("Sentinel Ranged Creep", 49, 41, 300 + rangedHPSentinel + superRangedHPSentinel, 300, 24, rangedAttackSentinel + superRangedAttackSentinel, 3, 0.9, 1, 25, 325, 1);
 			SentinelCreeps.offer(superSentinelRangedCreep);
 		}
 	}
@@ -136,28 +138,28 @@ public class LineCreepDatabase {
 
 	public static void createScourgeMeeleCreeps(Queue <LineCreep> ScourgeCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep scourgeMeeleCreep = new LineCreep("Scourge Meele Creep", 44, 62, 550 + meeleHPScourge, 0, 21, meeleAttackScourge, 1, 1.0, 2, 25, 325, 2);
+			LineCreep scourgeMeeleCreep = new LineCreep("Scourge Meele Creep", 44, 62, 550 + meeleHPScourge, 0, 21, meeleAttackScourge, 1, 0.9, 2, 25, 325, 2);
 			ScourgeCreeps.offer(scourgeMeeleCreep);
 		}
 	}
 	
 	public static void createScourgeSuperMeeleCreeps(Queue <LineCreep> ScourgeCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep superScourgeMeeleCreep = new LineCreep("Scourge Meele Creep", 44, 62, 550 + meeleHPScourge + superMeeleHPScourge, 0, 21, meeleAttackScourge + superMeeleAttackScourge, 1, 1.0, 3, 25, 325, 2);
+			LineCreep superScourgeMeeleCreep = new LineCreep("Scourge Meele Creep", 44, 62, 550 + meeleHPScourge + superMeeleHPScourge, 0, 21, meeleAttackScourge + superMeeleAttackScourge, 1, 0.9, 3, 25, 325, 2);
 			ScourgeCreeps.offer(superScourgeMeeleCreep);
 		}
 	}
 	
 	public static void createScourgeRangedCreeps(Queue <LineCreep> ScourgeCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep scourgeRangedCreep = new LineCreep("Scourge Ranged Creep", 49, 41, 300 + rangedHPScourge, 300, 24, rangedAttackScourge, 3, 1.0, 0, 25, 325, 2);
+			LineCreep scourgeRangedCreep = new LineCreep("Scourge Ranged Creep", 49, 41, 300 + rangedHPScourge, 300, 24, rangedAttackScourge, 3, 0.9, 0, 25, 325, 2);
 			ScourgeCreeps.offer(scourgeRangedCreep);
 		}
 	}
 	
 	public static void createScourgeSuperRangedCreeps(Queue <LineCreep> ScourgeCreeps, int creepNumber){
 		for (int i=0; i<creepNumber; i++) {
-			LineCreep superScourgeRangedCreep = new LineCreep("Scourge Ranged Creep", 49, 41, 300 + rangedHPScourge + superRangedHPScourge, 300, 24, rangedAttackScourge + superRangedAttackScourge, 3, 1.0, 1, 25, 325, 2);
+			LineCreep superScourgeRangedCreep = new LineCreep("Scourge Ranged Creep", 49, 41, 300 + rangedHPScourge + superRangedHPScourge, 300, 24, rangedAttackScourge + superRangedAttackScourge, 3, 0.9, 1, 25, 325, 2);
 			ScourgeCreeps.offer(superScourgeRangedCreep);
 		}
 	}
@@ -212,6 +214,7 @@ public class LineCreepDatabase {
 		while (!creeps.isEmpty()) {
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower1Position);
+			creeps.peek().addAItargetPos(botCreepCheckPoint);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower3Position);
@@ -257,6 +260,7 @@ public class LineCreepDatabase {
 		while (!creeps.isEmpty()) {
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower1Position);
+			creeps.peek().addAItargetPos(botCreepCheckPoint);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower3Position);

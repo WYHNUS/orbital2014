@@ -111,6 +111,7 @@ public class BuildingDatabase {
 		// only check if barrack has not been destroyed
 		if (!isDestroyedSentinelTopMeeleBarrack) {
 			if (GridFrame.gridButtonMap[sentinelTopMeeleBarrackXPos][sentinelTopMeeleBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Top Meele Barrack has been Destroyed!!!");
 				isDestroyedSentinelTopMeeleBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
@@ -118,6 +119,7 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedSentinelTopRangedBarrack) {
 			if (GridFrame.gridButtonMap[sentinelTopRangedBarrackXPos][sentinelTopRangedBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Top Ranged Barrack has been Destroyed!!!");
 				isDestroyedSentinelTopRangedBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
@@ -125,6 +127,7 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedSentinelMidMeeleBarrack) {
 			if (GridFrame.gridButtonMap[sentinelMidMeeleBarrackXPos][sentinelMidMeeleBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Mid Meele Barrack has been Destroyed!!!");
 				isDestroyedSentinelMidMeeleBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
@@ -132,6 +135,7 @@ public class BuildingDatabase {
 
 		if (!isDestroyedSentinelMidRangedBarrack) {
 			if (GridFrame.gridButtonMap[sentinelMidRangedBarrackXPos][sentinelMidRangedBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Mid Ranged Barrack has been Destroyed!!!");
 				isDestroyedSentinelMidRangedBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
@@ -139,6 +143,7 @@ public class BuildingDatabase {
 
 		if (!isDestroyedSentinelBotMeeleBarrack) {
 			if (GridFrame.gridButtonMap[sentinelBotMeeleBarrackXPos][sentinelBotMeeleBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Bot Meele Barrack has been Destroyed!!!");
 				isDestroyedSentinelBotMeeleBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
@@ -146,12 +151,16 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedSentinelBotRangedBarrack) {
 			if (GridFrame.gridButtonMap[sentinelBotRangedBarrackXPos][sentinelBotRangedBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Bot Ranged Barrack has been Destroyed!!!");
 				isDestroyedSentinelBotRangedBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
 		}
 		
-		if (destroyedSentinelBarrackNumber == 6) LineCreep.levelSentinel = 30;
+		if (destroyedSentinelBarrackNumber == 6) {
+			System.out.println("Scourge will spawn super creeps!!!");
+			LineCreep.levelScourge = 30;
+		}
 		
 		// not possible scenario, report error
 		if (destroyedSentinelBarrackNumber > 6) 
@@ -161,6 +170,7 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedScourgeTopMeeleBarrack) {
 			if (GridFrame.gridButtonMap[scourgeTopMeeleBarrackXPos][scourgeTopMeeleBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Top Meele Barrack has been Destroyed!!!");
 				isDestroyedScourgeTopMeeleBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
@@ -168,6 +178,7 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedScourgeTopRangedBarrack) {
 			if (GridFrame.gridButtonMap[scourgeTopRangedBarrackXPos][scourgeTopRangedBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Top Ranged Barrack has been Destroyed!!!");
 				isDestroyedScourgeTopRangedBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
@@ -175,6 +186,7 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedScourgeMidMeeleBarrack) {
 			if (GridFrame.gridButtonMap[scourgeMidMeeleBarrackXPos][scourgeMidMeeleBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Mid Meele Barrack has been Destroyed!!!");
 				isDestroyedScourgeMidMeeleBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
@@ -182,6 +194,7 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedScourgeMidRangedBarrack) {
 			if (GridFrame.gridButtonMap[scourgeMidRangedBarrackXPos][scourgeMidRangedBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Mid Ranged Barrack has been Destroyed!!!");
 				isDestroyedScourgeMidRangedBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
@@ -189,6 +202,7 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedScourgeBotMeeleBarrack) {
 			if (GridFrame.gridButtonMap[scourgeBotMeeleBarrackXPos][scourgeBotMeeleBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Bot Meele Barrack has been Destroyed!!!");
 				isDestroyedScourgeBotMeeleBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
@@ -196,12 +210,16 @@ public class BuildingDatabase {
 		
 		if (!isDestroyedScourgeBotRangedBarrack) {
 			if (GridFrame.gridButtonMap[scourgeBotRangedBarrackXPos][scourgeBotRangedBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Bot Ranged Barrack has been Destroyed!!!");
 				isDestroyedScourgeBotRangedBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
 		}
 		
-		if (destroyedScourgeBarrackNumber == 6) LineCreep.levelScourge = 30;
+		if (destroyedScourgeBarrackNumber == 6) {
+			System.out.println("Sentinel will spawn super creeps!!!");
+			LineCreep.levelSentinel = 30;
+		}
 		
 		// not possible scenario, report error
 		if (destroyedScourgeBarrackNumber > 6) 

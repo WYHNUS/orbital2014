@@ -130,37 +130,37 @@ public class GridButton {
 		
 		if(imageNumber == 30) {
 			// sentinelBase
-			character = BuildingDatabase.buildingDatabase[0];
+			character = new Building(BuildingDatabase.buildingDatabase[0]);
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 31) {
 			// scourgeBase
-			character = BuildingDatabase.buildingDatabase[1];
+			character = new Building(BuildingDatabase.buildingDatabase[1]);
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 32) {
 			// sentinelMeeleBarrack
-			character = BuildingDatabase.buildingDatabase[2];
+			character = new Building(BuildingDatabase.buildingDatabase[2]);
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 33) {
 			// sentinelRangedBarrack
-			character = BuildingDatabase.buildingDatabase[3];
+			character = new Building(BuildingDatabase.buildingDatabase[3]);
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 34) {
 			// scourgeMeeleBarrack
-			character = BuildingDatabase.buildingDatabase[4];
+			character = new Building(BuildingDatabase.buildingDatabase[4]);
 			isOccupied = true;
 		}
 		
 		if(imageNumber == 35) {
 			// scourgeRangedBarrack
-			character = BuildingDatabase.buildingDatabase[5];
+			character = new Building(BuildingDatabase.buildingDatabase[5]);
 			isOccupied = true;
 		}
 		
