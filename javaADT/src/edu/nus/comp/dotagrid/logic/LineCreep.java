@@ -9,6 +9,7 @@ public class LineCreep extends Character{
 	public static int lineCreepActionPoint = 100;
 	public static int lineCreepStartingSight = 6;
 	
+	public static final int MAXIMUM_LEVEL = 30;
 	public static int levelSentinel = 0;
 	public static int levelScourge = 0;
 	

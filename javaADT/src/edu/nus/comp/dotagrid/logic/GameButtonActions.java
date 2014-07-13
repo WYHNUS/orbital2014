@@ -335,6 +335,7 @@ public class GameButtonActions {
 
 		// spawn a new wave of creeps
 		LineCreepSpawnPoint.spawnNewWave();
+		NeutralCreepSpawnPoint.spawnNewWave();
 		
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 

@@ -6,8 +6,10 @@ import java.util.Queue;
 
 public class LineCreepSpawnPoint {
 	
-	public static final int spawnNormalRoundIndex = 10;
-	public static final int spawnEnhancedRoundIndex = 50;
+	public static final int SPAWN_NORMAL_ROUND_INDEX = 10;
+	public static final int SPAWN_ENHANCED_ROUND_INDEX = 50;
+	public static final int UPGRADE_ALL_LINECREEPS_ROUND_INDEX = 200;
+	public static final int UPGRADE_RANGED_LINECREEPS_NUMBER_ROUND_INDEX = 600;
 	
 	public static final int SENTINEL_TOP_LINE_SPAWN_X_POS = 8;
 	public static final int SENTINEL_TOP_LINE_SPAWN_Y_POS = 69;
@@ -40,7 +42,7 @@ public class LineCreepSpawnPoint {
 		 * spawn new extended wave every spawnEnhancedRoundIndex turns
 		*/
 		
-		if (GameFrame.turn % spawnNormalRoundIndex == 0) {
+		if (GameFrame.turn % SPAWN_NORMAL_ROUND_INDEX == 0) {
 			createWave();
 		}
 		
@@ -50,19 +52,19 @@ public class LineCreepSpawnPoint {
 
 	private static void createWave() {
 		// reset level for creeps : maximum level 30
-		if (LineCreep.levelSentinel < 30) {
-			LineCreep.levelSentinel = GameFrame.turn / 200;
+		if (LineCreep.levelSentinel <= LineCreep.MAXIMUM_LEVEL) {
+			LineCreep.levelSentinel = GameFrame.turn / UPGRADE_ALL_LINECREEPS_ROUND_INDEX;
 		}
-		if (LineCreep.levelScourge < 30) {
-			LineCreep.levelScourge = GameFrame.turn / 200;
+		if (LineCreep.levelScourge <= LineCreep.MAXIMUM_LEVEL) {
+			LineCreep.levelScourge = GameFrame.turn / UPGRADE_ALL_LINECREEPS_ROUND_INDEX;
 		}
 		
 		
 		// change the number of spawning creeps
-		if (GameFrame.turn <= 600) {
-			MEELE_CREEP_NUMBER = 3 + GameFrame.turn / 200;
-			RANGED_CREEP_NUMBER = 1 + GameFrame.turn / 600;
-			SIEGE_CREEP_NUMBER = 1 + GameFrame.turn / 600;
+		if (GameFrame.turn <= UPGRADE_RANGED_LINECREEPS_NUMBER_ROUND_INDEX) {
+			MEELE_CREEP_NUMBER = 3 + GameFrame.turn / UPGRADE_ALL_LINECREEPS_ROUND_INDEX;
+			RANGED_CREEP_NUMBER = 1 + GameFrame.turn / UPGRADE_RANGED_LINECREEPS_NUMBER_ROUND_INDEX;
+			SIEGE_CREEP_NUMBER = 1 + GameFrame.turn / UPGRADE_RANGED_LINECREEPS_NUMBER_ROUND_INDEX;
 		}
 		
 
@@ -96,7 +98,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createSentinelRangedCreeps(topSentinelCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createSentinelSiegeCreeps(topSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
@@ -104,7 +106,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createSentinelSuperRangedCreeps(topSentinelCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createSentinelSuperSiegeCreeps(topSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -141,7 +143,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createSentinelRangedCreeps(midSentinelCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createSentinelSiegeCreeps(midSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
@@ -149,7 +151,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createSentinelSuperRangedCreeps(midSentinelCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createSentinelSuperSiegeCreeps(midSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -186,7 +188,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createSentinelRangedCreeps(botSentinelCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createSentinelSiegeCreeps(botSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
@@ -194,7 +196,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createSentinelSuperRangedCreeps(botSentinelCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createSentinelSuperSiegeCreeps(botSentinelCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -233,7 +235,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createScourgeRangedCreeps(topScourgeCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createScourgeSiegeCreeps(topScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
@@ -241,7 +243,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createScourgeSuperRangedCreeps(topScourgeCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createScourgeSuperSiegeCreeps(topScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -278,7 +280,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createScourgeRangedCreeps(midScourgeCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createScourgeSiegeCreeps(midScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
@@ -286,7 +288,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createScourgeSuperRangedCreeps(midScourgeCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createScourgeSuperSiegeCreeps(midScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}
@@ -323,7 +325,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createScourgeRangedCreeps(botScourgeCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createScourgeSiegeCreeps(botScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		} else {
@@ -331,7 +333,7 @@ public class LineCreepSpawnPoint {
 			LineCreepDatabase.createScourgeSuperRangedCreeps(botScourgeCreeps, RANGED_CREEP_NUMBER);
 			
 			// add siege creeps every spawnEnhancedRoundIndex turns
-			if (GameFrame.turn % spawnEnhancedRoundIndex == 0) {
+			if (GameFrame.turn % SPAWN_ENHANCED_ROUND_INDEX == 0) {
 				LineCreepDatabase.createScourgeSuperSiegeCreeps(botScourgeCreeps, SIEGE_CREEP_NUMBER);
 			}
 		}

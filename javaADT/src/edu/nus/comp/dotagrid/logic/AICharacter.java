@@ -115,7 +115,7 @@ public class AICharacter {
 		// reset targetPos in tempMap coordinates
 		int[] startingUncheckedPos = {targetPos[0] + distance - startingXPos, targetPos[1] + distance - startingYPos};
 		uncheckedPosition.add(startingUncheckedPos);
-		System.out.println("target x pos = " + startingUncheckedPos[0] + "    target y pos = " + startingUncheckedPos[1]);
+		
 		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
 		
 		int[] nearestNonOccupiedTargetPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition); 

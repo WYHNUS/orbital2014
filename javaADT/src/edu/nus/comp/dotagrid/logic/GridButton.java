@@ -59,12 +59,14 @@ public class GridButton {
 		 * 43 : large neutral creep spawn point
 		 * 44 : super neutral creep spawn point
 		 * 
+		 * 80 : line creep spawn point
 		 * 99 : player's hero spawn point
 		 * 
 		 */
 		
 
-		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 80 || imageNumber == 99) {
+		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 80 || imageNumber == 99
+				|| imageNumber == 41 || imageNumber == 42 || imageNumber == 43 || imageNumber == 44) {
 			this.setIsMovable(true);
 		}
 		

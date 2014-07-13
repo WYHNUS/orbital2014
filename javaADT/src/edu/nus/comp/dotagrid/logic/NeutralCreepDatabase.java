@@ -1,6 +1,6 @@
 package edu.nus.comp.dotagrid.logic;
 
-import java.util.ArrayList;
+import java.util.Queue;
 import java.util.Random;
 
 public class NeutralCreepDatabase {
@@ -13,22 +13,22 @@ public class NeutralCreepDatabase {
 	
 	public NeutralCreepDatabase() {}
 	
-	public static void createSmallNCWave(ArrayList<NeutralCreep> NCList){
+	public static void createSmallNCWave(Queue<NeutralCreep> NCList){
 		NCList.clear();
 		smallNCWave(selection.nextInt(smallNCWaveNumber), NCList);
 	}
 	
-	public static void createMiddleNCWave(ArrayList<NeutralCreep> NCList){
+	public static void createMiddleNCWave(Queue<NeutralCreep> NCList){
 		NCList.clear();
 		middleNCWave(selection.nextInt(middleNCWaveNumber), NCList);
 	}
 	
-	public static void createLargeNCWave(ArrayList<NeutralCreep> NCList){
+	public static void createLargeNCWave(Queue<NeutralCreep> NCList){
 		NCList.clear();
 		largeNCWave(selection.nextInt(largeNCWaveNumber), NCList);
 	}
 	
-	public static void createSuperNCWave(ArrayList<NeutralCreep> NCList){
+	public static void createSuperNCWave(Queue<NeutralCreep> NCList){
 		NCList.clear();
 		superNCWave(selection.nextInt(superNCWaveNumber), NCList);
 	}
@@ -36,7 +36,7 @@ public class NeutralCreepDatabase {
 	
 	// create NC waves
 	
-	private static void superNCWave(int waveNumber, ArrayList<NeutralCreep> NCList) {
+	private static void superNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
 		// add the selected NC wave to NCList
 		
 		switch (waveNumber) {
@@ -71,7 +71,7 @@ public class NeutralCreepDatabase {
 	}
 	
 
-	private static void largeNCWave(int waveNumber, ArrayList<NeutralCreep> NCList) {
+	private static void largeNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
 		// add the selected NC wave to NCList
 		
 		switch (waveNumber) {
@@ -111,7 +111,7 @@ public class NeutralCreepDatabase {
 		}
 	}
 	
-	private static void middleNCWave(int waveNumber, ArrayList<NeutralCreep> NCList) {
+	private static void middleNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
 		// add the selected NC wave to NCList
 		
 		switch (waveNumber) {
@@ -151,7 +151,7 @@ public class NeutralCreepDatabase {
 		}
 	}
 
-	private static void smallNCWave(int waveNumber, ArrayList<NeutralCreep> NCList) {
+	private static void smallNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
 		// add the selected NC wave to NCList
 		
 		switch (waveNumber) {
