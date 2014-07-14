@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.util.*;
+
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
@@ -17,6 +18,7 @@ public class MainSceneRenderer implements Renderer {
 
 	public MainSceneRenderer () {
 		// TODO: Change to scene flows
+//		scene = new WelcomeScene();
 		scene = new GameScene ();
 	}
 
@@ -81,6 +83,32 @@ public class MainSceneRenderer implements Renderer {
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {}	// should be passed to SceneRenderers, not here
+	
+	public void switchScene(String name, SceneConfiguration configuration) {
+		SceneRenderer scene = null;
+		switch (name) {
+		case "Welcome":
+			break;
+		case "GameSaves":
+			scene = new SelectGameScene();
+			break;
+		case "Statistics":
+			break;
+		case "About":
+			break;
+		case "Game":
+			scene = new GameScene();
+		}
+		manager.setApplicationSceneRenderer(scene);
+		scene.onTransferToView(configuration);
+		this.scene = scene;
+		scene.setGLResourceManager(vBufMan);
+		scene.setTexture2D(textures);
+		scene.setAspectRatio(ratio);
+		scene.setGameLogicManager(manager);
+		scene.setGraphicsResponder(responder);
+		scene.setRenderReady();	// TODO problematic
+	}
 
 	@Override
 	public void close() {

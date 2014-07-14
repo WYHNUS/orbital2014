@@ -27,7 +27,6 @@ void readPNG(zip_file *zf, const int textureHandler, unsigned int &textureWidth,
 		return;
 	}
 	png_set_read_fn(png_ptr, (png_voidp) zf, [] (png_structp pngStruct, png_bytep data, png_size_t length) {
-//		__android_log_print(ANDROID_LOG_DEBUG, "ResourceManager", "Loading ...%d", length);
 		zip_file *zf = static_cast<zip_file*>(png_get_io_ptr(pngStruct));
 		zip_fread(zf, data, length);
 	});
@@ -147,17 +146,17 @@ void readOBJ(zip_file *zf, size_t fileSize, GLuint bufferHandler, unsigned int &
 //						std::getline(*ss, str);
 //					}
 					v.push_back(x); v.push_back(y); v.push_back(z); v.push_back(1);
-					vertexPosition->push_back(v);
+					vertexPosition->push_back(std::move(v));
 				} else if (str[1] == 't') {
 					// texture, accept x and y only
 					*ss >> x >> y;
 					v.push_back(x); v.push_back(y);
-					texturePosition->push_back(v);
+					texturePosition->push_back(std::move(v));
 				} else if (str[1] == 'n') {
 					// normal
 					*ss >> x >> y >> z;
 					v.push_back(x); v.push_back(y); v.push_back(z);
-					normalVector->push_back(v);
+					normalVector->push_back(std::move(v));
 				} else {
 					std::getline(*ss, str);
 					continue;
@@ -185,7 +184,7 @@ void readOBJ(zip_file *zf, size_t fileSize, GLuint bufferHandler, unsigned int &
 						throw std::string("Invalid format");
 					f.push_back(no);
 				}
-				faces->push_back(f);
+				faces->push_back(std::move(f));
 				break;
 			}
 			default:
@@ -426,6 +425,6 @@ bool ResourceManager::isExtensionEnabled() {
 	return useExtensionEngine;
 }
 
-std::string ResourceManager::getTerrainConfiguration() {
+const std::string ResourceManager::getTerrainConfiguration() {
 	return terrainJSON;
 }

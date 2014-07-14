@@ -7,6 +7,7 @@ import android.content.Context;
 import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.appsupport.*;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
+import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 
 public class GameLogicManager implements Closeable {
 	private Map<String, Object> gameSetting = new ConcurrentHashMap<>();
@@ -15,6 +16,7 @@ public class GameLogicManager implements Closeable {
 	private Context context;
 	private SoundEngine se;
 	private GameServer currentServer;
+	private SceneRenderer applicationSceneRenderer;
 
 	public GameLogicManager(Context context) {
 		this.context = context;
@@ -111,14 +113,18 @@ public class GameLogicManager implements Closeable {
 		if (se != null)
 			se.close();
 	}
+	
+	public void setApplicationSceneRenderer(SceneRenderer scene) {
+		applicationSceneRenderer = scene;
+	}
 
 	public void processEvent(ControlEvent e) {
 		if ((e.type & ControlEvent.TYPE_INTERPRETED) == 0)
 			return;
-		if (e.extendedType.equals("APPLICATION")) {
+		if ("APPLICATION".equals(e.extendedType)) {
 			// application data
-		}
-		if (currentState != null)
+			applicationSceneRenderer.notifyUpdate(Collections.singletonMap("APPLICATION", (Object) e.data.extendedData));
+		} else if (currentState != null)
 			currentState.processEvent(e);
 	}
 }

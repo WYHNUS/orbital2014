@@ -11,7 +11,6 @@ import android.opengl.*;
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.ui.event.*;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
-import edu.nus.comp.dotagridandroid.appsupport.AppNativeAPI;
 import edu.nus.comp.dotagridandroid.logic.*;
 
 public class MainRenderer implements GLSurfaceView.Renderer, Closeable {

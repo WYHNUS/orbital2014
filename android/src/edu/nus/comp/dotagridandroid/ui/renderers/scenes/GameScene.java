@@ -15,6 +15,7 @@ public class GameScene implements SceneRenderer {
 	
 	private static final int MESSAGE_CHAR_PER_ROW = 20;
 	
+	private MainSceneRenderer mainRenderer;
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
 	private GameState state;
@@ -32,6 +33,11 @@ public class GameScene implements SceneRenderer {
 	public GameScene () {
 		dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
 		
+	}
+	
+	@Override
+	public void setMainSceneRenderer(MainSceneRenderer renderer) {
+		mainRenderer = renderer;
 	}
 
 	@Override
@@ -373,8 +379,7 @@ public class GameScene implements SceneRenderer {
 	}
 
 	@Override
-	public SceneConfiguration onTransferToView() {
-		return null;
+	public void onTransferToView(SceneConfiguration configuration) {
 	}
 
 }

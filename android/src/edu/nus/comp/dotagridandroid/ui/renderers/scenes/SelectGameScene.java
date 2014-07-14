@@ -12,14 +12,19 @@ public class SelectGameScene implements SceneRenderer {
 
 	private GLResourceManager glResMan;
 	private Map<String, Texture2D> textures;
-	private float ratio;
 	private GameLogicManager manager;
 	private GraphicsResponder responder;
 	
 	private Renderer eventCapturer;
+	private MainSceneRenderer mainRenderer;
 	
 	private List<String> gameList;
 	private ScrollRenderer scroll;
+	
+	@Override
+	public void setMainSceneRenderer(MainSceneRenderer renderer) {
+		mainRenderer = renderer;
+	}
 
 	@Override
 	public void setGLResourceManager(GLResourceManager manager) {
@@ -37,7 +42,6 @@ public class SelectGameScene implements SceneRenderer {
 
 	@Override
 	public void setAspectRatio(float ratio) {
-		this.ratio = ratio;
 	}
 
 	@Override
@@ -70,11 +74,10 @@ public class SelectGameScene implements SceneRenderer {
 			r.setGLResourceManager(glResMan);
 			r.setGameLogicManager(manager);
 			r.setGraphicsResponder(responder);
-			r.setMVP(null, null, null);
 			r.setRenderReady();
 			r.setTapEnabled(true);
-			r.setTapRespondName("LoadGame");
-			r.setTapRespondData(Collections.singletonMap("Name", (Object) gameName));
+			r.setTapRespondName("APPLICATION");
+			r.setTapRespondData(Collections.singletonMap("LoadGame", (Object) gameName));
 			scroll.setRenderer(gameName, r, FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, .7f - .5f * c, 0), FlatScalingMatrix4x4(.8f, .2f, 1)));
 			TextRenderer t = new TextRenderer();
 			t.setGameLogicManager(manager);
@@ -89,7 +92,17 @@ public class SelectGameScene implements SceneRenderer {
 							FlatScalingMatrix4x4(1f / xLimit, 1f / xLimit, 1)));
 			c++;
 		}
-		scroll.setScrollLimit(0f, 0f, 0f, 0f);
+		scroll.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, .2f, 0), FlatScalingMatrix4x4(1, .8f, 1)), null, null);
+		scroll.setScrollLimit(.5f * c - 1, 0f, 0f, 0f);
+		ButtonRenderer r = new ButtonRenderer();
+		r.setTexture2D(textures);
+		r.setGLResourceManager(glResMan);
+		r.setGameLogicManager(manager);
+		r.setMVP(null, null, null);
+		r.setRenderReady();
+		r.setTapEnabled(true);
+		r.setTapRespondName("APPLICATION");
+		r.setTapRespondData(Collections.singletonMap("Cancel", null));
 	}
 
 	@Override
@@ -128,9 +141,7 @@ public class SelectGameScene implements SceneRenderer {
 	}
 
 	@Override
-	public SceneConfiguration onTransferToView() {
-		// TODO Auto-generated method stub
-		return null;
+	public void onTransferToView(SceneConfiguration configuration) {
 	}
 
 }
