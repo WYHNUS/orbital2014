@@ -23,6 +23,8 @@ public class GridRenderer implements Renderer {
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
 	private Texture2D mapTexture;
+	
+	private boolean ready = false;
 	// configurations
 	// aspect ratio - width : height
 	private float ratio;
@@ -410,24 +412,8 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public void setRenderReady() {
-		try {computeTask.join();} catch (InterruptedException e) {e.printStackTrace();}
-		vBufMan.setVertexBuffer("GridPointBuffer", gridLines);
-		vBufMan.setIndexBuffer("GridPointMeshIndex", gridLinesIndex);
-		gridLines = null; gridLinesIndex = null;
-		textRender.setRenderReady();
-		textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
-		textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-1, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
-		mapTexture = manager.getCurrentGameState().getModelTexture("GridMapBackground");
-		normalGen = new NormalGenerator(columns, rows, resolution, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
-		normalGen.setRenderReady();
-		mapTerrain = mapNormalCoord = mapTextureCoord = null;
-		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
-		glBufferData(GL_ARRAY_BUFFER, Float.SIZE / 8 * 8 * (rows * resolution * (resolution * columns + 1) * 2), mapBuf.position(0), GL_STATIC_DRAW);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		mapBuf = null;
-		prepareObjects();
-		for (String key : lightSrc.keySet())
-			configureShadow(key);
+//		for (String key : lightSrc.keySet())
+//			configureShadow(key);
 	}
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
@@ -448,6 +434,25 @@ public class GridRenderer implements Renderer {
 	}
 	@Override
 	public boolean getReadyState() {
+		if (!ready) {
+			try {computeTask.join();} catch (InterruptedException e) {e.printStackTrace();}
+			vBufMan.setVertexBuffer("GridPointBuffer", gridLines);
+			vBufMan.setIndexBuffer("GridPointMeshIndex", gridLinesIndex);
+			gridLines = null; gridLinesIndex = null;
+			textRender.setRenderReady();
+			textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
+			textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-1, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
+			mapTexture = manager.getCurrentGameState().getModelTexture("GridMapBackground");
+			normalGen = new NormalGenerator(columns, rows, resolution, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
+			normalGen.setRenderReady();
+			mapTerrain = mapNormalCoord = mapTextureCoord = null;
+			glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
+			glBufferData(GL_ARRAY_BUFFER, Float.SIZE / 8 * 8 * (rows * resolution * (resolution * columns + 1) * 2), mapBuf.position(0), GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			mapBuf = null;
+			prepareObjects();
+			ready = true;
+		}
 		for (String light : lightDirty.keySet())
 			if (lightDirty.get(light))
 				configureShadow(light);
