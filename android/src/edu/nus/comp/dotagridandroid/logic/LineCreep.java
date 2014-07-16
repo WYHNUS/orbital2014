@@ -1,6 +1,6 @@
 package edu.nus.comp.dotagridandroid.logic;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class LineCreep extends GameCharacter {
 	
@@ -14,6 +14,8 @@ public class LineCreep extends GameCharacter {
 	
 	public static double LINECREEP_HP_GAIN_PER_ROUND = 5;
 	public static double LINECREEP_MP_GAIN_PER_ROUND = 7;
+	
+	private List<int[]> moveTargets;
 
 	public LineCreep(String name, int bountyMoney, int bountyExp, int startingHP, int startingMP, 
 			double startingPhysicalAttack, double basicPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 

@@ -15,6 +15,7 @@ public class MainSceneRenderer implements Renderer {
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
 	private SceneRenderer scene;
+	private volatile boolean loading = false;
 
 	public MainSceneRenderer () {
 		// TODO: Change to scene flows
@@ -62,6 +63,8 @@ public class MainSceneRenderer implements Renderer {
 	public void setRenderReady() {
 		// init
 		// TODO use game scene
+//		switchScene("Welcome", null);
+		// TODO restore game state
 		scene.setRenderReady();
 	}
 
@@ -89,8 +92,10 @@ public class MainSceneRenderer implements Renderer {
 		switch (name) {
 		case "Welcome":
 			break;
+		case "NewGame":
+			break;
 		case "GameSaves":
-			scene = new SelectGameScene();
+			scene = new SelectGameSaveScene();
 			break;
 		case "Statistics":
 			break;

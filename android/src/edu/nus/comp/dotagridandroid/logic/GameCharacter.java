@@ -33,6 +33,8 @@ public class GameCharacter extends GameObject {
 	private int maxActionPoint;
 	private int currentActionPoint;
 	
+	private int roundsToRevive = 0;
+	
 	/* 0 represents neutral 
 	 * 1 represents Sentinel 
 	 * 2 represents Scourge
@@ -495,7 +497,8 @@ public class GameCharacter extends GameObject {
 
 
 	public boolean isAlive() {
-		return isAlive;
+//		return isAlive;
+		return currentHP > 0 && roundsToRevive == 0;
 	}
 
 
@@ -551,5 +554,13 @@ public class GameCharacter extends GameObject {
 	
 	public void setSight(int sight) {
 		this.sight = sight;
+	}
+	
+	public void setRoundsToRevive(int rounds) {
+		roundsToRevive = rounds;
+	}
+	
+	public int getRoundsToRevive() {
+		return roundsToRevive;
 	}
 }

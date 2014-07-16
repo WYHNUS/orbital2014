@@ -8,7 +8,7 @@ import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 
-public class SelectGameScene implements SceneRenderer {
+public class SelectGameSaveScene implements SceneRenderer {
 
 	private GLResourceManager glResMan;
 	private Map<String, Texture2D> textures;
@@ -112,6 +112,11 @@ public class SelectGameScene implements SceneRenderer {
 
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
+		if (updates.get("APPLICATION") instanceof Map) {
+			Map<String, Object> appUpdates = (Map<String, Object>) updates.get("APPLICATION");
+			if (appUpdates.containsKey("Cancel"))
+				mainRenderer.switchScene("Welcome", null);
+		}
 	}
 
 	@Override
