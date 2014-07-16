@@ -68,11 +68,11 @@ public class CharacterActions {
 		switch (castingHero.items[Player.invokedPlayerItemIndex].getItemName()) {
 		
 			case "clarity" : 
-				increaseMP(75);
+				if (!increaseMP(75)) return;
 				break;
 				
 			case "flask" :
-				increaseHP(400);
+				if (!increaseHP(400)) return;
 				break;
 		
 		}
@@ -94,23 +94,27 @@ public class CharacterActions {
 	}
 
 
-	private void increaseHP(int increaseNumber) {
+	private boolean increaseHP(int increaseNumber) {
 		// if [toXPos][toYPos] is friendly unit, increase the unit's HP by increaseNumber
 		if (checkIfToPosIsFriendlyUnit()){
 			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(
 					increaseNumber + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP());
+			return true;
 		} else {
 			JOptionPane.showMessageDialog(null, "You need to use the item on a friendly unit!");
+			return false;
 		}
 	}
 
-	private void increaseMP(int increaseNumber) {
+	private boolean increaseMP(int increaseNumber) {
 		// if [toXPos][toYPos] is friendly unit, increase the unit's MP by increaseNumber
 		if (checkIfToPosIsFriendlyUnit()){
 			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentMP(
 					increaseNumber + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentMP());
+			return true;
 		} else {
 			JOptionPane.showMessageDialog(null, "You need to use the item on a friendly unit!");
+			return false;
 		}
 	}
 
@@ -338,6 +342,10 @@ public class CharacterActions {
 				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setCurrentHP(
 						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getmaxHP());
 							
+				// reset hero's MP
+				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setCurrentMP(
+						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getmaxMP());
+				
 				// check if the dead hero is player's hero
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
 					Screen.user.player.setXPos(Screen.user.playerStartingXPos);
