@@ -31,6 +31,9 @@ public class Character {
 	private int startingPhysicalAttackArea, totalPhysicalAttackArea;
 	private double startingPhysicalAttackSpeed, totalPhysicalAttackSpeed;
 	
+	private double criticalStrikeChance;
+	private double criticalStrikeMultiplier;
+	
 	private double startingPhysicalDefence, basicPhysicalDefence, totalPhysicalDefence;
 	private double startingMagicResistance, totalMagicResistance;
 	
@@ -528,6 +531,26 @@ public class Character {
 
 	public void setSight(int sight) {
 		this.sight = sight;
+	}
+
+
+	public double getCriticalStrikeMultiplier() {
+		return criticalStrikeMultiplier;
+	}
+
+
+	public void setCriticalStrikeMultiplier(double criticalStrikeMultiplier) {
+		this.criticalStrikeMultiplier = criticalStrikeMultiplier;
+	}
+
+
+	public double getCriticalStrikeChance() {
+		return criticalStrikeChance;
+	}
+
+
+	public void setCriticalStrikeChance(double criticalStrikeChance) {
+		this.criticalStrikeChance = criticalStrikeChance;
 	}
 
 

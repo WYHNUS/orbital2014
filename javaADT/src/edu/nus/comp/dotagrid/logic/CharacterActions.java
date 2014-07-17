@@ -1,11 +1,13 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JOptionPane;
 
 public class CharacterActions {
 	public static final int EXP_GAIN_RANGE = 10;
+	public static final double ATTACK_VARIATION = 0.05;
 	
 	private int toXPos;
 	private int toYPos;
@@ -266,12 +268,32 @@ public class CharacterActions {
 	private void attack() {
 		System.out.println("attack!");
 		
+		// get attack variation
+		Random rdm = new Random();
+		double attackVariation = rdm.nextDouble() * 2.0 * ATTACK_VARIATION - ATTACK_VARIATION + 1.0;
+		
+		// check for critical strike
+		boolean isCriticalStrike = false;
+		
+		if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeChance() >= 0) {
+			isCriticalStrike = (rdm.nextDouble() > GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeChance());
+		} 
+		
+		// set final attack for this character
+		double attack = attackVariation * Character.getActualDamage(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttack(), 
+				GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalDefence());
+		
+		if (isCriticalStrike) {
+			System.out.println("critical attack!");
+			attack *= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeMultiplier();
+		}
+		
 		// get the AP required for one physical attack
 		int usedAP = calculateAttackUsedAP();
 				
 		// perform attack action
-		GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
-				- Character.getActualDamage(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTotalPhysicalAttack(), GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTotalPhysicalDefence()));
+		GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP((int) (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
+				- attack));
 								
 		// reduce character's AP 
 		GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(

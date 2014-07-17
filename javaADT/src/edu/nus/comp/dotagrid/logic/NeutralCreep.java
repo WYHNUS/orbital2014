@@ -1,9 +1,13 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.ArrayList;
+
 
 public class NeutralCreep extends Character{
 	public static final int neutralCreepTeamNumber = 0;
 	public static int neutralCreepStartingSight = 6;
+	
+	private ArrayList<int[]> AItargetPos;
 	
 	private boolean moveBack = false;
 	
@@ -31,6 +35,14 @@ public class NeutralCreep extends Character{
 
 	public void setMoveBack(boolean moveBack) {
 		this.moveBack = moveBack;
+	}
+
+	public ArrayList<int[]> getAItargetPos() {
+		return AItargetPos;
+	}
+
+	public void setAItargetPos(ArrayList<int[]> aItargetPos) {
+		AItargetPos = aItargetPos;
 	}
 	
 }

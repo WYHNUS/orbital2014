@@ -16,7 +16,10 @@ public class AICharacter {
 	private int movement;
 	private int sight;
 	
-	private int targetRange = 3;
+	public static final int LINE_CREEP_TARGET_RANGE = 3;
+	public static final int NEUTRAL_CREEP_ATTACK_RANGE = 4;
+	public static final int NEUTRAL_CREEP_TARGET_RANGE = 4;
+	public static final int NEUTRAL_CREEP_RETURN_INDEX = 10;
 	
 	ArrayList<int[]> inSightEnemyPos = new ArrayList<int[]>();
 	private int[] nearestEnemyPos = new int[2];
@@ -57,7 +60,7 @@ public class AICharacter {
 				if (!prepareForAttack) {
 					// move to next targeted position
 					System.out.println("move to target positions");
-					moveTowardsNextTarget();
+					moveTowardsNextTarget(1);
 					checkReachTargetPosition();
 				}
 			} else {
@@ -77,10 +80,24 @@ public class AICharacter {
 			// check if need to move back to base position
 			if (((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).isMoveBack()) {
 				// move back!
+				moveTowardsNextTarget(2);
 				
 			} else {
-				// check and attack enemy
+				boolean prepareForAttack = false;
 				
+				// check and attack enemy
+				searchEnemiesForNeutralCreep();
+				
+				while (!inSightEnemyPos.isEmpty() && !endRound) {
+					prepareForAttack = true;
+					System.out.println("move to attack");
+					// if yes, move towards the enemy until it's within the attack range
+					moveTowardsEnemy();
+					// then attack!
+					AIAttack();
+				}
+				
+				checkToMoveBack(prepareForAttack);
 			}
 			
 			System.out.println("end AI round");
@@ -109,11 +126,46 @@ public class AICharacter {
 
 
 
+	private void searchEnemiesForNeutralCreep() {
+		// find the coordinates for in range enemy for neutral creeps, store their coordinates in an int[]
+		int[] pos = {startingXPos, startingYPos};
+		Queue<int[]> startingPosition = new LinkedList<int[]>();
+		startingPosition.add(pos);
+						
+		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
+						
+		findNearbyEnmeies(startingPosition, checkedPosition, NEUTRAL_CREEP_ATTACK_RANGE, inSightEnemyPos);
+	}
+
+
+
+	private void checkToMoveBack(boolean hasAttack) {
+		// check if the neutral creep need to move back to targeted position
+		int[] targetPos = ((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
+		if (Math.abs(startingXPos-targetPos[0]) + Math.abs(startingYPos-targetPos[1]) > NEUTRAL_CREEP_RETURN_INDEX) {
+			// out of range, set move back to true
+			((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).setMoveBack(true);
+		} else {
+			// in range, check if within target range
+			if (hasAttack) {
+				((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).setMoveBack(false);
+			} else {
+				if (Math.abs(targetPos[0] - startingXPos) + Math.abs(targetPos[1] - startingYPos) <= NEUTRAL_CREEP_TARGET_RANGE) {
+					((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).setMoveBack(false);
+				} else {
+					((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).setMoveBack(true);
+				}
+			}
+		}
+	}
+
+
+
 	private void checkReachTargetPosition() {
 		// check if the AI has moved in the targeted position's range 
 		int[] targetPos = ((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
 		
-		if (Math.abs(targetPos[0] - startingXPos) + Math.abs(targetPos[1] - startingYPos) <= targetRange) {
+		if (Math.abs(targetPos[0] - startingXPos) + Math.abs(targetPos[1] - startingYPos) <= LINE_CREEP_TARGET_RANGE) {
 			System.out.println("reach target position");
 			// within target range, discard current target position and search for next target
 			((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().remove(0);
@@ -121,9 +173,20 @@ public class AICharacter {
 	}
 
 
-	private void moveTowardsNextTarget() {
+	private void moveTowardsNextTarget(int index) {
+		// index 1 : Line Creep
+		// index 2 : Neutral Creep
+		
 		// draw 2D map from current position
-		int[] targetPos = ((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
+		int[] targetPos; 
+		if (index == 1) {
+			targetPos = ((LineCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
+		} else if (index == 2) {
+			targetPos = ((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).getAItargetPos().get(0);
+		} else {
+			targetPos = null;
+		}
+		
 		int distance = Math.abs(targetPos[0] - startingXPos) + Math.abs(targetPos[1] - startingYPos);
 		
 		FindPath tempPath = new FindPath(distance);
@@ -139,7 +202,7 @@ public class AICharacter {
 		
 		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
 		
-		int[] nearestNonOccupiedTargetPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition); 
+		int[] nearestNonOccupiedTargetPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition, index); 
 		
 		// check if the AI can move to the wait position
 		if (tempPathMap[nearestNonOccupiedTargetPos[0]][nearestNonOccupiedTargetPos[1]] > movement) {
@@ -264,7 +327,7 @@ public class AICharacter {
 					
 					ArrayList<int[]> checkedPos = new ArrayList<int[]>();
 					
-					int[] movetoPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPos);
+					int[] movetoPos = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPos, 1);
 					
 					// check if the AI can move to the wait position
 					if (tempPathMap[movetoPos[0]][movetoPos[1]] > movement) {
@@ -302,28 +365,28 @@ public class AICharacter {
 
 
 	private int[] findNearestReachableGrid(int[][] tempPathMap, Queue<int[]> uncheckedPosition,
-			ArrayList<int[]> checkedPosition) {
+			ArrayList<int[]> checkedPosition, int index) {
 		// starting from position X and Y, search for nearest reachable grid
 		
 		// add surrounding grids into position
 		int mapRange = tempPathMap.length;
 		
-		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1], mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1], mapRange, index)){
 			int[] newPos = {uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1]};
 			uncheckedPosition.add(newPos);
 		}
 						
-		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1, mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1, mapRange, index)){
 			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1};
 			uncheckedPosition.add(newPos);
 		}
 						
-		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1], mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1], mapRange, index)){
 			int[] newPos = {uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1]};
 			uncheckedPosition.add(newPos);
 		}
 						
-		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1, mapRange)){
+		if (canBeAdded(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1, mapRange, index)){
 			int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1};
 			uncheckedPosition.add(newPos);
 		}
@@ -340,14 +403,14 @@ public class AICharacter {
 		} else {	
 			uncheckedPosition.poll();
 			// recursive call!
-			int[] result = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition);
+			int[] result = findNearestReachableGrid(tempPathMap, uncheckedPosition, checkedPosition, index);
 			return result;
 		}
 	}
 
 
 
-	private boolean canBeAdded(ArrayList<int[]> checkedPosition, Queue<int[]> uncheckedPosition, int XPos, int YPos, int mapRange) {
+	private boolean canBeAdded(ArrayList<int[]> checkedPosition, Queue<int[]> uncheckedPosition, int XPos, int YPos, int mapRange, int index) {
 		// each int[] in checkedPosition stores a pair of xpos and ypos
 		boolean isUnchecked = true;
 				
@@ -372,6 +435,14 @@ public class AICharacter {
 		} else{
 			// not within range! unable to visit!
 			isUnchecked = false;
+		}
+		
+		if (index == 2) {
+			// check if the grid is movable on the grid map
+			if (!GridFrame.gridButtonMap[startingXPos+XPos-(mapRange-1)/2][startingYPos+YPos-(mapRange-1)/2].getIsMovable()) {
+				// non-movable grid cannot be added
+				isUnchecked = false;
+			}
 		}
 						
 		return isUnchecked;
