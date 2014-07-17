@@ -12,15 +12,17 @@ public class NeutralCreepSpawnPoint {
 	public static final int[] SMALL_NC_SPAWN_POS_1 = {32, 19};
 	public static final int[] SMALL_NC_SPAWN_POS_2 = {70, 81};
 	
-	public static final int[] MID_NC_SPAWN_POS_1 = {50, 22};
-	public static final int[] MID_NC_SPAWN_POS_2 = {39, 31};
-	public static final int[] MID_NC_SPAWN_POS_3 = {50, 66};
-	public static final int[] MID_NC_SPAWN_POS_4 = {77, 76};
+	public static final int[] MED_NC_SPAWN_POS_1 = {50, 22};
+	public static final int[] MED_NC_SPAWN_POS_2 = {39, 31};
+	public static final int[] MED_NC_SPAWN_POS_3 = {50, 66};
+	public static final int[] MED_NC_SPAWN_POS_4 = {77, 76};
 	
 	public static final int[] LARGE_NC_SPAWN_POS_1 = {19, 23};
 	public static final int[] LARGE_NC_SPAWN_POS_2 = {57, 29};
 	public static final int[] LARGE_NC_SPAWN_POS_3 = {42, 77};
 	public static final int[] LARGE_NC_SPAWN_POS_4 = {62, 76};
+	
+	public static final int BLOCK_SPAWN_RANGE = 3;
 
 	
 	public static void spawnNewWave() {
@@ -38,10 +40,10 @@ public class NeutralCreepSpawnPoint {
 		checkAndSpawnNC(SMALL_NC_SPAWN_POS_1, 1);
 		checkAndSpawnNC(SMALL_NC_SPAWN_POS_2, 1);
 		
-		checkAndSpawnNC(MID_NC_SPAWN_POS_1, 2);
-		checkAndSpawnNC(MID_NC_SPAWN_POS_2, 2);
-		checkAndSpawnNC(MID_NC_SPAWN_POS_3, 2);
-		checkAndSpawnNC(MID_NC_SPAWN_POS_4, 2);
+		checkAndSpawnNC(MED_NC_SPAWN_POS_1, 2);
+		checkAndSpawnNC(MED_NC_SPAWN_POS_2, 2);
+		checkAndSpawnNC(MED_NC_SPAWN_POS_3, 2);
+		checkAndSpawnNC(MED_NC_SPAWN_POS_4, 2);
 		
 		checkAndSpawnNC(LARGE_NC_SPAWN_POS_1, 3);
 		checkAndSpawnNC(LARGE_NC_SPAWN_POS_2, 3);
@@ -67,9 +69,9 @@ public class NeutralCreepSpawnPoint {
 					NeutralCreepDatabase.createSmallNCWave(tempCharaQueue);
 					break;
 					
-				// mid nc
+				// medium nc
 				case 2 :
-					NeutralCreepDatabase.createMiddleNCWave(tempCharaQueue);
+					NeutralCreepDatabase.createMediumNCWave(tempCharaQueue);
 					break;
 					
 				// large nc
@@ -77,9 +79,9 @@ public class NeutralCreepSpawnPoint {
 					NeutralCreepDatabase.createLargeNCWave(tempCharaQueue);
 					break;
 					
-				// super nc
+				// ancient nc
 				case 4 :
-					NeutralCreepDatabase.createSuperNCWave(tempCharaQueue);
+					NeutralCreepDatabase.createAncientNCWave(tempCharaQueue);
 					break;
 			}
 			
@@ -90,7 +92,22 @@ public class NeutralCreepSpawnPoint {
 
 
 	private static boolean noCharaWithinRange(int[] spawnPos) {
-		// TODO Auto-generated method stub
+		// neutral creep spawn condition
+		for (int i = -BLOCK_SPAWN_RANGE; i <= BLOCK_SPAWN_RANGE; i++) {
+			for (int j = -BLOCK_SPAWN_RANGE; j <= BLOCK_SPAWN_RANGE; j++) {
+				if (Math.abs(i) + Math.abs(j) <= BLOCK_SPAWN_RANGE) {
+					if (spawnPos[0] + i >= 0 && spawnPos[0] + i <GridFrame.COLUMN_NUMBER 
+							&& spawnPos[1] + j >= 0 && spawnPos[1] + j < GridFrame.ROW_NUMBER) {
+						
+						if (GridFrame.gridButtonMap[spawnPos[0] + i][spawnPos[1] + j].getIsMovable() && 
+								GridFrame.gridButtonMap[spawnPos[0] + i][spawnPos[1] + j].getCharacter() != null) {
+							return false;
+						}
+						
+					}
+				}
+			}
+		}
 		return true;
 	}
 }

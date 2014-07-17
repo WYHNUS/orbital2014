@@ -5,9 +5,9 @@ import java.util.Random;
 
 public class NeutralCreepDatabase {
 	public static int smallNCWaveNumber = 5;
-	public static int middleNCWaveNumber = 5;
+	public static int mediumNCWaveNumber = 5;
 	public static int largeNCWaveNumber = 5;
-	public static int superNCWaveNumber = 4;
+	public static int ancientNCWaveNumber = 4;
 	
 	private static Random selection = new Random();
 	
@@ -18,9 +18,9 @@ public class NeutralCreepDatabase {
 		smallNCWave(selection.nextInt(smallNCWaveNumber), NCList);
 	}
 	
-	public static void createMiddleNCWave(Queue<NeutralCreep> NCList){
+	public static void createMediumNCWave(Queue<NeutralCreep> NCList){
 		NCList.clear();
-		middleNCWave(selection.nextInt(middleNCWaveNumber), NCList);
+		mediumNCWave(selection.nextInt(mediumNCWaveNumber), NCList);
 	}
 	
 	public static void createLargeNCWave(Queue<NeutralCreep> NCList){
@@ -28,15 +28,15 @@ public class NeutralCreepDatabase {
 		largeNCWave(selection.nextInt(largeNCWaveNumber), NCList);
 	}
 	
-	public static void createSuperNCWave(Queue<NeutralCreep> NCList){
+	public static void createAncientNCWave(Queue<NeutralCreep> NCList){
 		NCList.clear();
-		superNCWave(selection.nextInt(superNCWaveNumber), NCList);
+		ancientNCWave(selection.nextInt(ancientNCWaveNumber), NCList);
 	}
 	
 	
 	// create NC waves
 	
-	private static void superNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
+	private static void ancientNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
 		// add the selected NC wave to NCList
 		
 		switch (waveNumber) {
@@ -111,7 +111,7 @@ public class NeutralCreepDatabase {
 		}
 	}
 	
-	private static void middleNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
+	private static void mediumNCWave(int waveNumber, Queue<NeutralCreep> NCList) {
 		// add the selected NC wave to NCList
 		
 		switch (waveNumber) {

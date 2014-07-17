@@ -300,6 +300,28 @@ The hero will respawn after a certain round (depending on hero's level) from the
 
 
 
+8. Neutral Creep
+
+Neutral Creeps are tougher, more dangerous creeps that appear in the forest. 
+They are aligned to neither of the teams, and offer an alternative source of Gold and Experience.
+
+
+8.1 Type of spawned Neutral Creep
+Each team's jungle includes one Small creep camp, two Medium creep camps, and two Large creep camps.
+
+
+8.2 Neutral Creep Spawn Codition
+Neutral creeps will spawn after every 20 rounds if there is no characters within their camp.
+
+
+
+
+
+
+
+
+
+
 
 All constants used: (cater to change)
 
