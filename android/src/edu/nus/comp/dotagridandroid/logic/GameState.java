@@ -479,7 +479,8 @@ public class GameState implements Closeable {
 				final GridPointIndex key = new GridPointIndex(objPositions.remove(name));
 				posReverseLookup.remove(key);
 			}
-		}
+		} else if (objPositions.containsKey(name))
+			posReverseLookup.remove(new GridPointIndex(objPositions.remove(name)));
 	}
 	
 	public String getCharacterAtPosition (int... position) {
@@ -497,6 +498,8 @@ public class GameState implements Closeable {
 	
 	// character actions
 	public void turnNextRound () {
+		// end round routine
+		// gameMaster.applyRule(stateMachine, null, "GameAction", Collections.singletonMap("EndRound", currentCharacter));
 		int idx = roundOrder.indexOf(currentCharacter);
 		if (idx == roundOrder.size())
 			idx = 0;

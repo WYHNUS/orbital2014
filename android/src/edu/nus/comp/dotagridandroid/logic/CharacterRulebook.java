@@ -26,6 +26,7 @@ public class CharacterRulebook {
 			case "BuyItem":
 			case "SellItem":
 			case "Skill":
+				break;
 			case "Attack": {
 				String targetCharacter = stateMachine.getCharacterAtPosition(stateMachine.getChosenGrid());
 				if (targetCharacter == null)
@@ -36,8 +37,11 @@ public class CharacterRulebook {
 						(Integer) stateMachine.getCharacterProperty(targetCharacter, "totalPhysicalDefence"));
 				stateMachine.setCharacterProperty(character, "currentActionPoint",
 						(Integer) stateMachine.getCharacterProperty(character, "currentActionPoint") - APused);
+				stateMachine.setCharacterProperty(targetCharacter, "currentHP",
+						(Integer) stateMachine.getCharacterProperty(targetCharacter, "currentHP") - damage);
 				if (!(Boolean) stateMachine.getCharacterProperty(targetCharacter, "alive")) {
 					// TODO check game ended
+					
 					if (stateMachine.getCharacterType(character) == GameObject.GAMEOBJECT_TYPE_HERO) {
 						stateMachine.setCharacterProperty(character, "money",
 								(Integer) stateMachine.getCharacterProperty(character, "money") +
@@ -49,7 +53,7 @@ public class CharacterRulebook {
 								);
 					}
 					// TODO reset character position
-					
+					stateMachine.setCharacterPosition(targetCharacter, null);
 				}
 				break;
 			}
