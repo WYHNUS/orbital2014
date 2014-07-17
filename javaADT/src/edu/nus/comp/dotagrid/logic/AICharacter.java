@@ -68,6 +68,26 @@ public class AICharacter {
 			System.out.println();
 		}
 		
+		
+		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof NeutralCreep){
+			// NeutralCreep AI
+			System.out.println("NeutralCreep AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
+			System.out.println("XPos = " + startingXPos + "     YPos = " + startingYPos);
+			
+			// check if need to move back to base position
+			if (((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).isMoveBack()) {
+				// move back!
+				
+			} else {
+				// check and attack enemy
+				
+			}
+			
+			System.out.println("end AI round");
+			System.out.println();
+		}
+		
+		
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof Tower){
 			// tower AI
 			System.out.println("Tower AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
@@ -79,6 +99,7 @@ public class AICharacter {
 			System.out.println("end AI round");
 			System.out.println();
 		}
+		
 		
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof Hero){
 			// comp Hero AI
