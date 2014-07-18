@@ -6,7 +6,6 @@ import java.util.concurrent.*;
 
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.*;
-import edu.nus.comp.dotagridandroid.logic.GameCharacter;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
@@ -76,9 +75,10 @@ public class GridRenderer implements Renderer {
 	private int[][] highlightedGridIndex;
 	// light sources
 	public final int MAX_LIGHT_SOURCES = CommonShaders.MAX_LIGHT_SOURCE;
-	private final float[] lightObserver = {0,0,BOARD_Z_COORD};
+	private final float[] lightObserver = {0,0,0};
 	// light config - 0: source.x, 1: source.y, 2: source.z, 3: color.r, 4: color.g, 5: color.b, 6: specular, 7: attenuation, 8: sight
 	private final Map<String, float[]> lightSrc = new ConcurrentHashMap<>(), lightViews = new ConcurrentHashMap<>();
+	private final Map<String, int[]> lightGridPosition = new ConcurrentHashMap<>();
 	private final Map<String, Boolean> lightDirty = new ConcurrentHashMap<>(), lightOn = new ConcurrentHashMap<>();
 	// light - shadowMaps
 	private int frameBuf, renderBuf;
@@ -90,6 +90,7 @@ public class GridRenderer implements Renderer {
 	private final Map<String, String> drawableTexture = new ConcurrentHashMap<>();
 	private final Map<String, float[]> drawableModel = new ConcurrentHashMap<>();
 	private final Map<String, Boolean> drawableVisible = new ConcurrentHashMap<>();
+	private final Map<String, int[]> drawableGridPosition = new ConcurrentHashMap<>();
 	// multithreading
 	private Thread computeTask;
 	// map resolution for interpolation
@@ -383,15 +384,18 @@ public class GridRenderer implements Renderer {
 		for (String name : chars.keySet()) {
 			final String charModelName = chars.get(name).getCharacterImage();
 			final int[] pos = charPositions.get(name);
-			if (pos == null)
+			if (pos == null || !chars.get("name").isAlive())
 				continue;
 			drawableModelHandlers.put(name, manager.getCurrentGameState().getCharacterModel(charModelName));
 			drawableModelSizes.put(name, manager.getCurrentGameState().getCharacterModelSize(charModelName));
 			drawableTexture.put(name, charModelName);
-			drawableVisible.put(name, true);
+			drawableVisible.put(name, true);	// applicable for visibility skill
+			drawableGridPosition.put(name, pos);
+			final float scalingFactor = Math.min(1f / columns, 1f / rows);
 			drawableModel.put(name, FlatMatrix4x4Multiplication(
 					FlatTranslationMatrix4x4(2f / columns * pos[0] - 1,2f / rows * pos[1] - 1, terrain[pos[0] + pos[1] * columns]),
-					FlatScalingMatrix4x4(1f / columns, 1f / rows, .1f),
+//					FlatScalingMatrix4x4(1f / columns, 1f / rows, .1f),
+					scalingFactor < BOARD_Z_COORD / 2 ? FlatScalingMatrix4x4(scalingFactor, scalingFactor, scalingFactor / BOARD_Z_COORD / 2) : FlatScalingMatrix4x4(BOARD_Z_COORD / 2, BOARD_Z_COORD / 2, .5f),
 					FlatTranslationMatrix4x4(1,1,1)));
 			// configure light
 			final float[] lightPos
@@ -405,8 +409,9 @@ public class GridRenderer implements Renderer {
 				lightSrc.put(name, new float[]{
 						lightPos[0], lightPos[1], lightPos[2],
 						1, 1, 1,	// TODO change to hero's color and sight
-						5, 2, .5f});
+						5, 2, chars.get(name).getSight() / (float) (rows > columns ? rows : columns)});
 				lightOn.put(name, chars.get(name).isAlive());
+				lightGridPosition.put(name, pos);
 			}
 		}
 		// put all lightSrc dirty
@@ -698,14 +703,15 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		// drawables
-		for (String key : drawableModelHandlers.keySet()) {
-			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
-			glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
-			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
-			glEnableVertexAttribArray(vPosition);
-			glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
-			glDisableVertexAttribArray(vPosition);
-		}
+		for (String key : drawableModelHandlers.keySet())
+			if (drawableVisible.get(key)) {
+				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
+				glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
+				glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
+				glEnableVertexAttribArray(vPosition);
+				glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
+				glDisableVertexAttribArray(vPosition);
+			}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	// coordinate calculations
