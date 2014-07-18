@@ -79,6 +79,7 @@ public class GridRenderer implements Renderer {
 	// light config - 0: source.x, 1: source.y, 2: source.z, 3: color.r, 4: color.g, 5: color.b, 6: specular, 7: attenuation, 8: sight
 	private final Map<String, float[]> lightSrc = new ConcurrentHashMap<>(), lightViews = new ConcurrentHashMap<>();
 	private final Map<String, int[]> lightGridPosition = new ConcurrentHashMap<>();
+	private final Map<String, Integer> lightGridRange = new ConcurrentHashMap<>();
 	private final Map<String, Boolean> lightDirty = new ConcurrentHashMap<>(), lightOn = new ConcurrentHashMap<>();
 	// light - shadowMaps
 	private int frameBuf, renderBuf;
@@ -382,10 +383,13 @@ public class GridRenderer implements Renderer {
 		// if enemy, display in close proximity
 		// for now, just draw everything
 		for (String name : chars.keySet()) {
+			lightOn.put(name, false);
 			final String charModelName = chars.get(name).getCharacterImage();
 			final int[] pos = charPositions.get(name);
-			if (pos == null || !chars.get("name").isAlive())
+			if (pos == null || !chars.get(name).isAlive()) {
+				drawableVisible.put(name, false);
 				continue;
+			}
 			drawableModelHandlers.put(name, manager.getCurrentGameState().getCharacterModel(charModelName));
 			drawableModelSizes.put(name, manager.getCurrentGameState().getCharacterModelSize(charModelName));
 			drawableTexture.put(name, charModelName);
@@ -412,11 +416,29 @@ public class GridRenderer implements Renderer {
 						5, 2, chars.get(name).getSight() / (float) (rows > columns ? rows : columns)});
 				lightOn.put(name, chars.get(name).isAlive());
 				lightGridPosition.put(name, pos);
+				lightGridRange.put(name, chars.get(name).getSight());
 			}
 		}
-		// put all lightSrc dirty
-		for (String name : lightSrc.keySet())
-			lightDirty.put(name, true);
+		// put all lightSrc dirty and check visibility
+		for (String name : lightSrc.keySet()) 
+			if (lightOn.get(name)) {
+				lightDirty.put(name, true);
+//				for (String drawableName : drawableVisible.keySet())
+//					if (!lightOn.get(drawableName) && drawableVisible.get(drawableName)
+//							&& Math.pow(lightGridPosition.get(name)[0] - drawableGridPosition.get(drawableName)[0], 2)
+//							+ Math.pow(lightGridPosition.get(name)[1] - drawableGridPosition.get(drawableName)[1], 2)
+//							> Math.pow(lightGridRange.get(name), 2))
+//						drawableVisible.put(drawableName, false);
+			}
+		for (String drawableName : drawableVisible.keySet())
+			if (drawableVisible.get(drawableName)) {
+				boolean visible = false;
+				for (String light : lightSrc.keySet())
+					visible |= lightOn.get(light) && Math.pow(lightGridPosition.get(light)[0] - drawableGridPosition.get(drawableName)[0], 2)
+							+ Math.pow(lightGridPosition.get(light)[1] - drawableGridPosition.get(drawableName)[1], 2)
+							<= Math.pow(lightGridRange.get(light), 2);
+				drawableVisible.put(drawableName, visible);
+			}
 	}
 	@Override
 	public void setRenderReady() {
@@ -572,46 +594,55 @@ public class GridRenderer implements Renderer {
 		mLight = glGetUniformLocation(shadowObjProgram.getProgramId(), "lightTransform");
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
-		for (String key : drawableModelHandlers.keySet()) {
-			if (!drawableVisible.get(key))
-				continue;
-			firstTime = true;
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			
-			glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
-			glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
-			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
-			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 4);
-			glVertexAttribPointer(vNormal, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 6);
-			glEnableVertexAttribArray(vPosition);
-			glEnableVertexAttribArray(vNormal);
-			glEnableVertexAttribArray(textureCoord);
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTexture.get(key)).getTexture());
-			glUniform1i(textureLocation, 0);
-			glUniform1i(shadowLocation, 1);
-			for (Map.Entry<String, float[]> entry : lightSrc.entrySet())
-				if (lightOn.get(entry.getKey())) {
-					glActiveTexture(GL_TEXTURE1);
-					glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
-					final float[] config = entry.getValue();
-					glUniformMatrix4fv(mLight, 1, false, FlatMatrix4x4Multiplication(lightProjection, lightViews.get(entry.getKey())), 0);
-					glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
-					glUniform3f(source, config[0], config[1], config[2]);
-					glUniform3f(color, config[3], config[4], config[5]);
-					glUniform1f(specular, config[6]);
-					glUniform1f(attenuation, config[7]);
-					glUniform1f(sight, config[8]);
-					glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
-					if (firstTime) {
-						glBlendFunc(GL_ONE, GL_ONE);
-						firstTime = false;
-					}
+		final float[] matMVP = FlatMatrix4x4Multiplication(projection, view, model); 
+		for (String key : drawableModelHandlers.keySet())
+			if (drawableVisible.get(key)) {
+				final float[] centrePoint = FlatMatrix4x4Vector4Multiplication(
+						matMVP,
+						new float[] {(drawableGridPosition.get(key)[0] + .5f) * 2 / columns - 1, (drawableGridPosition.get(key)[1] + .5f) * 2 / rows - 1, 1, 1});
+				if (centrePoint[0] / centrePoint[3] > 1 || centrePoint[0] / centrePoint[3] < -1 ||
+						centrePoint[1] / centrePoint[3] > 1 || centrePoint[1] / centrePoint[3] < -1 ||
+						centrePoint[2] / centrePoint[3] > 1 || centrePoint[2] / centrePoint[3] < -1) {
+					System.out.println("Drop Object!");
+					continue;
 				}
-			glDisableVertexAttribArray(vPosition);
-			glDisableVertexAttribArray(vNormal);
-			glDisableVertexAttribArray(textureCoord);
-		}
+				firstTime = true;
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				
+				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
+				glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
+				glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
+				glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 4);
+				glVertexAttribPointer(vNormal, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 6);
+				glEnableVertexAttribArray(vPosition);
+				glEnableVertexAttribArray(vNormal);
+				glEnableVertexAttribArray(textureCoord);
+				glActiveTexture(GL_TEXTURE0);
+				glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTexture.get(key)).getTexture());
+				glUniform1i(textureLocation, 0);
+				glUniform1i(shadowLocation, 1);
+				for (Map.Entry<String, float[]> entry : lightSrc.entrySet())
+					if (lightOn.get(entry.getKey())) {
+						glActiveTexture(GL_TEXTURE1);
+						glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
+						final float[] config = entry.getValue();
+						glUniformMatrix4fv(mLight, 1, false, FlatMatrix4x4Multiplication(lightProjection, lightViews.get(entry.getKey())), 0);
+						glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
+						glUniform3f(source, config[0], config[1], config[2]);
+						glUniform3f(color, config[3], config[4], config[5]);
+						glUniform1f(specular, config[6]);
+						glUniform1f(attenuation, config[7]);
+						glUniform1f(sight, config[8]);
+						glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
+						if (firstTime) {
+							glBlendFunc(GL_ONE, GL_ONE);
+							firstTime = false;
+						}
+					}
+				glDisableVertexAttribArray(vPosition);
+				glDisableVertexAttribArray(vNormal);
+				glDisableVertexAttribArray(textureCoord);
+			}
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 	private void drawSelection() {
@@ -704,7 +735,9 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		// drawables
 		for (String key : drawableModelHandlers.keySet())
-			if (drawableVisible.get(key)) {
+			if (drawableVisible.get(key)
+					&& Math.pow(lightGridPosition.get(name)[0] - drawableGridPosition.get(key)[0], 2)
+							+ Math.pow(lightGridPosition.get(name)[1] - drawableGridPosition.get(key)[1], 2) <= Math.pow(lightGridRange.get(name), 2)) {
 				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
 				glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
 				glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);

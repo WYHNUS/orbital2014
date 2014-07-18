@@ -124,8 +124,8 @@ public class CommonShaders {
 		+ "varying vec2 autoTextureCoord, autoNormalCoord, autoShadowCoord;"
 		+ "varying vec3 position;"
 		+ "varying float actualDepth;"
-		+ "const float shadowDecay = 20.0;"	// shadow decay factor
-		+ "const float lightDecay = 30.0;"
+		+ "const float shadowDecay = 30.0;"	// shadow decay factor
+		+ "const float lightDecay = 10.0;"
 		+ "void main () {"
 			+ "vec4 materialColor = texture2D (texture, autoTextureCoord);"
 			+ "vec3 normalVec = normalize (texture2D (normal, autoNormalCoord).rgb * 2.0 - 1.0);"
@@ -157,8 +157,8 @@ public class CommonShaders {
 		+ "varying vec3 position;"
 		+ "varying vec4 autoNormal;"
 		+ "varying float actualDepth;"
-		+ "const float shadowDecay = 20.0;"	// shadow decay factor
-		+ "const float lightDecay = 30.0;"
+		+ "const float shadowDecay = 30.0;"	// shadow decay factor
+		+ "const float lightDecay = 10.0;"
 		+ "void main () {"
 			+ "vec4 materialColor = texture2D (texture, autoTextureCoord);"
 			+ "vec3 normalVec = normalize (autoNormal.xyz);"
