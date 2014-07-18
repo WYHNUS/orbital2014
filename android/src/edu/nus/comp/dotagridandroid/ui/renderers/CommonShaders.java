@@ -136,7 +136,7 @@ public class CommonShaders {
 			+ "float lightDistance = length (position - light.source);"
 			+ "vec3 outbound = inbound - 2.0 * dot (inbound, normalVec) * normalVec;"
 			+ "float atn = max(0.0, dot(normalVec, -inbound)) / (1.0 + light.attenuation * pow (observerDistance + lightDistance, 2.0));"
-			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular)) * exp(lightDecay * min(light.sight - observerDistance - lightDistance, 0.0));"
+			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular)) * exp(lightDecay * min(light.sight * 2.0 - observerDistance - lightDistance, 0.0));"
 			+ "vec3 finalColor = lightColor * materialColor.rgb;"
 			// shadow map
 			+ "vec3 shadowValue = texture2D (shadow, autoShadowCoord).xyz;"
@@ -169,7 +169,7 @@ public class CommonShaders {
 			+ "float lightDistance = length (position - light.source);"
 			+ "vec3 outbound = inbound - 2.0 * dot (inbound, normalVec) * normalVec;"
 			+ "float atn = max(0.0, dot(normalVec, -inbound)) / (1.0 + light.attenuation * pow (observerDistance + lightDistance, 2.0));"
-			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular)) * exp(lightDecay * min(light.sight - observerDistance - lightDistance, 0.0));"
+			+ "vec3 lightColor = light.color * atn * (1.0 + pow (dot (normalObserver, outbound), light.specular)) * exp(lightDecay * min(light.sight * 2.0 - observerDistance - lightDistance, 0.0));"
 			+ "vec3 finalColor = lightColor * materialColor.rgb;"
 			// shadow map
 			+ "vec3 shadowValue = texture2D (shadow, autoShadowCoord).xyz;"

@@ -1,4 +1,4 @@
 MyHeroModel dotagrid.obj
-Tree dotagridTree.obj
-Tower tower.obj
+Tree dotagridTreeSimplified.obj
 Fountain cube.obj
+Tower cube.obj tower.obj

@@ -79,7 +79,7 @@ public class GameState implements Closeable {
 		itemShop = new ConcurrentHashMap<>();
 		chosenGrid = new int[2];
 		// TODO load characters
-		chars.put("MyHero", new Hero("MyHero", 1, 0, 0, 0, "strength",
+		chars.put("MyHero", new Hero("MyHero", 1, 0, 10, 0, "strength",
 				100,
 				100,
 				100,
@@ -96,7 +96,7 @@ public class GameState implements Closeable {
 				100,
 				100,
 				100));
-		chars.put("MyHero2", new Hero("MyHero", 1, 0, 0, 0, "strength",
+		chars.put("MyHero2", new Hero("MyHero", 1, 0, 10, 0, "strength",
 				100,
 				100,
 				100,
@@ -134,8 +134,9 @@ public class GameState implements Closeable {
 		itm.setItemImage("DefaultButton");
 		itemShop.put("TestItem5", itm);
 		// terrain
+		Map<String, Object> terrainConfig = null;
 		try {
-			Map<String, Object> terrainConfig = JsonConverter.JsonToMap(new JSONObject(resMan.getTerrainConfiguration()));
+			terrainConfig = JsonConverter.JsonToMap(new JSONObject(resMan.getTerrainConfiguration()));
 			Map<String, Object> terrain = (Map<String, Object>) terrainConfig.get("terrain");
 			gridWidth = ((Number) terrainConfig.get("width")).intValue();
 			gridHeight = ((Number) terrainConfig.get("height")).intValue();
@@ -172,6 +173,29 @@ public class GameState implements Closeable {
 				break;
 			}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			terrain = new float[gridWidth * gridHeight];
+			terrainType = new int[gridWidth * gridHeight];
+			Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
+		}
+		// terrain characters
+		for (int i = 0; i < gridWidth * gridHeight; i++)
+			switch (terrainType[i]) {
+			case TERRAIN_TYPE_FOREST: {
+				// TODO Change here
+				Tree tree = new Tree();
+				tree.setCharacterImage("Tree");	// TODO Change here!
+				chars.put("Tree" + i, tree);
+				setCharacterPosition("Tree" + i, i % gridWidth, i / gridWidth);
+				break;
+			}
+			case TERRAIN_TYPE_RIVER: {
+				break;
+			}
+			}
+		// towers
+		try {
 			List<Map<String, Object>> towerConfig = (List<Map<String, Object>>) terrainConfig.get("towers");
 			if (towerConfig != null)
 				for (Map<String, Object> tower : towerConfig) {
@@ -190,6 +214,7 @@ public class GameState implements Closeable {
 							((Number) tower.get("actionPoint")).intValue(),
 							((Number) tower.get("team")).intValue());
 					towerCharacter.setCharacterImage((String) tower.get("model"));
+					towerCharacter.setSight(((Number) tower.get("sight")).intValue());
 					chars.put(name, towerCharacter);
 					setCharacterPosition(name,
 							((List<Number>) tower.get("position")).get(0).intValue(),
@@ -197,24 +222,7 @@ public class GameState implements Closeable {
 				}
 		} catch (Exception e) {
 			e.printStackTrace();
-			terrain = new float[gridWidth * gridHeight];
-			terrainType = new int[gridWidth * gridHeight];
-			Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
 		}
-		for (int i = 0; i < gridWidth * gridHeight; i++)
-			switch (terrainType[i]) {
-			case TERRAIN_TYPE_FOREST: {
-				// TODO Change here
-				Tree tree = new Tree();
-				tree.setCharacterImage("Tree");	// TODO Change here!
-				chars.put("Tree" + i, tree);
-				setCharacterPosition("Tree" + i, i % gridWidth, i / gridWidth);
-				break;
-			}
-			case TERRAIN_TYPE_RIVER: {
-				break;
-			}
-			}
 		// end
 		chosenGrid = objPositions.get(playerCharacter).clone();
 		initialised = true;

@@ -1,7 +1,7 @@
 {
 	"width" : 100,
 	"height" : 100,
-	"texture" : "",
+	"texture" : "GridMapBackground",
 	"terrain" : {
 		"type" : "fixed",
 		"heights": [
@@ -107,9 +107,11 @@
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
-		]
+		],
+		"treeModel" : "Tree",
+		"treeClusteredModel" : "TreeClustered"
 	},
-	"towers" : [
+	"towers" : [/*
 		{
 			"name" : "sentinelTopTower3",
 			"team" : 1,
@@ -124,7 +126,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "sentinelMidTower3",
@@ -140,7 +143,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "sentinelBotTower3",
@@ -156,7 +160,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 
 		{
@@ -173,7 +178,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "sentinelMidTower2",
@@ -189,7 +195,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "sentinelBotTower2",
@@ -205,7 +212,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		
 		{
@@ -222,7 +230,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "sentinelMidTower1",
@@ -238,7 +247,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "sentinelBotTower1",
@@ -254,7 +264,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 
 		{
@@ -271,7 +282,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "scourgeMidTower3",
@@ -287,7 +299,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "scourgeBotTower3",
@@ -303,7 +316,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 
 		{
@@ -320,7 +334,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "scourgeMidTower2",
@@ -336,7 +351,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "scourgeBotTower2",
@@ -352,7 +368,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		
 		{
@@ -369,7 +386,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "scourgeMidTower1",
@@ -385,7 +403,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 		{
 			"name" : "scourgeBotTower1",
@@ -401,7 +420,8 @@
 			"startingPhysicalAttackArea" : 5,
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
-			"actionPoint" : 100
+			"actionPoint" : 100,
+			"sight" : 5
 		},
 
 		{
@@ -418,7 +438,8 @@
 			"startingPhysicalAttackArea" : 7,
 			"startingPhysicalAttackSpeed" : "max",
 			"startingPhysicalDefence" : 15,
-			"actionPoint" : 200
+			"actionPoint" : 200,
+			"sight" : 5
 		},
 		{
 			"name" : "scourgeFountain",
@@ -434,8 +455,9 @@
 			"startingPhysicalAttackArea" : 7,
 			"startingPhysicalAttackSpeed" : "max",
 			"startingPhysicalDefence" : 15,
-			"actionPoint" : 200
-		}
+			"actionPoint" : 200,
+			"sight" : 5
+		}*/
 	],
 	"fronts" : [
 		{
