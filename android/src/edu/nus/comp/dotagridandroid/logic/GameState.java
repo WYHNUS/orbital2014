@@ -30,6 +30,7 @@ public class GameState implements Closeable {
 	private List<String> roundOrder;
 	private int roundCount = 0;
 	private Map<String, GameCharacter> chars;
+	private Map<String, Boolean> charsTurned;
 	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
@@ -68,6 +69,7 @@ public class GameState implements Closeable {
 		} else
 			gameMaster = new GameMaster();	// TODO extended or basic?
 		chars = new ConcurrentHashMap<>();
+		charsTurned = new ConcurrentHashMap<>();
 		roundOrder = new ArrayList<>();
 		objs = new ConcurrentHashMap<>();
 		objPositions = new ConcurrentHashMap<>();
@@ -170,6 +172,29 @@ public class GameState implements Closeable {
 				break;
 			}
 			}
+			List<Map<String, Object>> towerConfig = (List<Map<String, Object>>) terrainConfig.get("towers");
+			if (towerConfig != null)
+				for (Map<String, Object> tower : towerConfig) {
+					String name = (String) tower.get("name");
+					Tower towerCharacter = new Tower (
+							name,
+							((Number) tower.get("bountyMoney")).intValue(),
+							((Number) tower.get("startingHP")).intValue(),
+							((Number) tower.get("startingMP")).intValue(),
+							((Number) tower.get("startingPhysicalAttack")).doubleValue(),
+							((Number) tower.get("startingPhysicalAttackArea")).intValue(),
+							"max".equals(tower.get("startingPhysicalAttackSpeed")) ?
+									GameCharacter.MAX_PHYSICAL_ATTACK_SPEED :
+									((Number) tower.get("startingPhysicalAttackSpeed")).intValue(),
+							((Number) tower.get("startingPhysicalDefence")).intValue(),
+							((Number) tower.get("actionPoint")).intValue(),
+							((Number) tower.get("team")).intValue());
+					towerCharacter.setCharacterImage((String) tower.get("model"));
+					chars.put(name, towerCharacter);
+					setCharacterPosition(name,
+							((List<Number>) tower.get("position")).get(0).intValue(),
+							((List<Number>) tower.get("position")).get(1).intValue());
+				}
 		} catch (Exception e) {
 			e.printStackTrace();
 			terrain = new float[gridWidth * gridHeight];
