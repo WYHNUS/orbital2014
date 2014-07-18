@@ -13,6 +13,8 @@ public class LineCreep extends Character{
 	public static int levelSentinel = 0;
 	public static int levelScourge = 0;
 	
+	public static final int LINE_CREEP_ATTACK_PRIORITY = 3;
+	
 	public static double LINECREEP_HP_GAIN_PER_ROUND = 5;
 	public static double LINECREEP_MP_GAIN_PER_ROUND = 7;
 
@@ -24,7 +26,7 @@ public class LineCreep extends Character{
 		super(name, bountyMoney, bountyExp, lineCreepStartingSight, startingHP, startingMP, startingPhysicalAttack,
 				startingPhysicalAttackArea, startingPhysicalAttackSpeed,
 				startingPhysicalDefence, startingMagicResistance,
-				startingMovementSpeed, lineCreepActionPoint, teamNumber);
+				startingMovementSpeed, lineCreepActionPoint, LINE_CREEP_ATTACK_PRIORITY, teamNumber);
 		
 		// set basic physical attack
 		this.setBasicPhysicalAttack(basicPhysicalAttack);

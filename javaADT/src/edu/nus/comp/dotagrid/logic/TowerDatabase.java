@@ -40,8 +40,8 @@ public class TowerDatabase {
 	public static int[] scourgeMidTower3Position = {73, 26};
 	public static int[] scourgeBotTower3Position = {91, 33};
 	
-	public static int[] scourgeLeftTower4Position = {80, 15};
-	public static int[] scourgeRightTower4Position = {84, 19};
+	public static int[] scourgeLeftTower4Position = {81, 15};
+	public static int[] scourgeRightTower4Position = {85, 19};
 	
 	public static int[] scourgeFountainPosition = {94, 6};
 	

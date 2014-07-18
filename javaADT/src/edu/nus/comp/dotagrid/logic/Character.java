@@ -40,6 +40,11 @@ public class Character {
 	private int maxActionPoint;
 	private int currentActionPoint;
 	
+	// attack priority from 1 - 10 : larger value means less likely to be attacked
+	private int startingAttackPriority;
+	private int currentAttackPriority;
+
+
 	/* 0 represents neutral 
 	 * 1 represents Sentinel 
 	 * 2 represents Scourge
@@ -58,7 +63,7 @@ public class Character {
 	public Character(String name, int bountyMoney, int bountyExp, int sight, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
 					double startingPhysicalDefence, double startingMagicResistance, int startingMovementSpeed, 
-					int actionPoint, int teamNumber)
+					int actionPoint, int startingAttackPriority, int teamNumber)
 	{
 		
 		this.setName(name);
@@ -97,6 +102,9 @@ public class Character {
 		
 		this.setMaxActionPoint(actionPoint);
 		this.setCurrentActionPoint(this.getMaxActionPoint());
+		
+		this.setStartingAttackPriority(startingAttackPriority);
+		this.setCurrentAttackPriority(startingAttackPriority);
 		
 		this.setAlive(true);
 	}
@@ -520,6 +528,33 @@ public class Character {
 			System.out.println("Invalid teamNumber !");
 		} else {
 			this.teamNumber = teamNumber;
+		}
+	}
+	
+	public int getStartingAttackPriority() {
+		return startingAttackPriority;
+	}
+
+
+	public void setStartingAttackPriority(int startingAttackPriority) {
+		if (startingAttackPriority < 1 || startingAttackPriority > 10) {
+			System.out.println("Out of attackPriority boundary!");
+		} else {
+			this.startingAttackPriority = startingAttackPriority;
+		}
+	}
+
+
+	public int getCurrentAttackPriority() {
+		return currentAttackPriority;
+	}
+
+
+	public void setCurrentAttackPriority(int currentAttackPriority) {
+		if (currentAttackPriority < 1 || currentAttackPriority > 10) {
+			System.out.println("Out of attackPriority boundary!");
+		} else {
+			this.currentAttackPriority = currentAttackPriority;
 		}
 	}
 

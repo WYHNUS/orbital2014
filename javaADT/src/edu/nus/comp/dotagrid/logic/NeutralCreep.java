@@ -7,6 +7,8 @@ public class NeutralCreep extends Character{
 	public static final int neutralCreepTeamNumber = 0;
 	public static int neutralCreepStartingSight = 6;
 	
+	public static final int NEUTRAL_CREEP_ATTACK_PRIORITY = 4;
+	
 	private ArrayList<int[]> AItargetPos;
 	
 	private boolean moveBack = false;
@@ -18,7 +20,7 @@ public class NeutralCreep extends Character{
 		
 		super(name, bountyMoney, bountyExp, neutralCreepStartingSight, startingHP, startingMP, startingPhysicalAttack,
 				startingPhysicalAttackArea, startingPhysicalAttackSpeed, startingPhysicalDefence, startingMagicResistance,
-				startingMovementSpeed, startingAP, neutralCreepTeamNumber);
+				startingMovementSpeed, startingAP, NEUTRAL_CREEP_ATTACK_PRIORITY, neutralCreepTeamNumber);
 		
 		// set regeneration rate
 		this.setHPGainPerRound(HPGainPerRound);

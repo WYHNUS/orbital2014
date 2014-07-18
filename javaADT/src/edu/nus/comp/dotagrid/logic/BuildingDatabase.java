@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 public class BuildingDatabase {
@@ -82,9 +84,17 @@ public class BuildingDatabase {
 		*/
 		
 		Building sentinelBase = new Building("Sentinel Base", 0, 4250, 15, 1);
+		ArrayList<int[]> tempList = new ArrayList<int[]>();
+		tempList.add(TowerDatabase.sentinelLeftTower4Position);
+		tempList.add(TowerDatabase.sentinelRightTower4Position);
+		sentinelBase.setProtectionPosList(tempList);
 		buildingDatabase[0] = sentinelBase;
 		
 		Building scourgeBase = new Building("Scourge Base", 0, 4250, 15, 2);
+		ArrayList<int[]> tempList1 = new ArrayList<int[]>();
+		tempList1.add(TowerDatabase.scourgeLeftTower4Position);
+		tempList1.add(TowerDatabase.scourgeRightTower4Position);
+		scourgeBase.setProtectionPosList(tempList1);
 		buildingDatabase[1] = scourgeBase;
 		
 		Building sentinelMeeleBarrack = new Building("Sentinel Meele Barrack", 0, 1500, 15, 1);

@@ -1,5 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.ArrayList;
+
 public class Building  extends Character {
 
 	public static int buildingBountyExp = 0;
@@ -12,12 +14,16 @@ public class Building  extends Character {
 	public static int buildingMovementSpeed = -99999;
 	public static int buildingActionPoint = 0;
 	
+	private ArrayList<int[]> protectionPosList = new ArrayList<int[]>();
+	
+	public static final int BUILDING_ATTACK_PRIORITY = 9;
+	
 	public Building(String name, int bountyMoney, int startingHP, double startingPhysicalDefence, int teamNumber) {
 		
 		super(name, bountyMoney, buildingBountyExp, buildingStartingSight, startingHP, buildingStartingMP,
 				buildingPhysicalAttack, buildingPhysicalAttackArea,
 				buildingPhysicalAttackSpeed, startingPhysicalDefence,
-				buildingMagicResistance, buildingMovementSpeed, buildingActionPoint, teamNumber);
+				buildingMagicResistance, buildingMovementSpeed, buildingActionPoint, BUILDING_ATTACK_PRIORITY, teamNumber);
 
 
 		this.setCharacterImage("buildings", this.getName());
@@ -27,9 +33,19 @@ public class Building  extends Character {
 		super(building.getName(), building.getBountyMoney(), buildingBountyExp, buildingStartingSight, building.getStartingHP(), buildingStartingMP,
 				buildingPhysicalAttack, buildingPhysicalAttackArea,
 				buildingPhysicalAttackSpeed, building.getStartingPhysicalDefence(),
-				buildingMagicResistance, buildingMovementSpeed, buildingActionPoint, building.getTeamNumber());
+				buildingMagicResistance, buildingMovementSpeed, buildingActionPoint, BUILDING_ATTACK_PRIORITY, building.getTeamNumber());
 		
+		this.setProtectionPosList(building.getProtectionPosList());
+		this.setCurrentAttackPriority(building.getCurrentAttackPriority());
 		this.setCharacterImage("buildings", this.getName());
+	}
+
+	public ArrayList<int[]> getProtectionPosList() {
+		return protectionPosList;
+	}
+
+	public void setProtectionPosList(ArrayList<int[]> protectionPosList) {
+		this.protectionPosList = protectionPosList;
 	}
 
 }

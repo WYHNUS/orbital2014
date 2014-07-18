@@ -189,6 +189,8 @@ public class LineCreepDatabase {
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeTopTower3Position);
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeLeftTower4Position);
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeRightTower4Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.scourgeBasePos);
 			tempQueue.add(creeps.poll());
 		}
@@ -203,6 +205,8 @@ public class LineCreepDatabase {
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeMidTower3Position);
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeLeftTower4Position);
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeRightTower4Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.scourgeBasePos);
 			tempQueue.add(creeps.poll());
 		}
@@ -218,6 +222,8 @@ public class LineCreepDatabase {
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.scourgeBotTower3Position);
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeRightTower4Position);
+			creeps.peek().addAItargetPos(TowerDatabase.scourgeLeftTower4Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.scourgeBasePos);
 			tempQueue.add(creeps.poll());
 		}
@@ -235,6 +241,8 @@ public class LineCreepDatabase {
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelTopTower3Position);
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelLeftTower4Position);
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelRightTower4Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.sentinelBasePos);
 			tempQueue.add(creeps.poll());
 		}
@@ -249,6 +257,8 @@ public class LineCreepDatabase {
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelMidTower3Position);
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelLeftTower4Position);
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelRightTower4Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.sentinelBasePos);
 			tempQueue.add(creeps.poll());
 		}
@@ -264,6 +274,8 @@ public class LineCreepDatabase {
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower1Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower2Position);
 			creeps.peek().addAItargetPos(TowerDatabase.sentinelBotTower3Position);
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelRightTower4Position);
+			creeps.peek().addAItargetPos(TowerDatabase.sentinelLeftTower4Position);
 			creeps.peek().addAItargetPos(BuildingDatabase.sentinelBasePos);
 			tempQueue.add(creeps.poll());
 		}

@@ -1,5 +1,6 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.JOptionPane;
@@ -347,6 +348,37 @@ public class GameButtonActions {
 					// reset HP and MP for all existing characters
 					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentHP((int)(GridFrame.gridButtonMap[x][y].getCharacter().getCurrentHP() + GridFrame.gridButtonMap[x][y].getCharacter().getHPGainPerRound()));
 					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentMP((int)(GridFrame.gridButtonMap[x][y].getCharacter().getCurrentMP() + GridFrame.gridButtonMap[x][y].getCharacter().getMPGainPerRound()));
+					
+					// if character is Tower or Building, check and update protectionPosList
+					{
+						ArrayList<int[]> protectedPos;
+						if (GridFrame.gridButtonMap[x][y].getCharacter() instanceof Tower){
+							protectedPos = ((Tower)GridFrame.gridButtonMap[x][y].getCharacter()).getProtectionPosList();
+						} else if (GridFrame.gridButtonMap[x][y].getCharacter() instanceof Building){
+							protectedPos = ((Building)GridFrame.gridButtonMap[x][y].getCharacter()).getProtectionPosList();
+						} else {
+							protectedPos = new ArrayList<int[]>();
+						}
+						
+						for (Iterator<int[]> iterator = protectedPos.iterator(); iterator.hasNext();) {
+							int[] element = iterator.next();
+							// check if there is character
+							if (GridFrame.gridButtonMap[element[0]][element[1]].getCharacter() != null) {
+								// check if the character is Tower
+								if (! (GridFrame.gridButtonMap[element[0]][element[1]].getCharacter() instanceof Tower)) { 
+									// remove element from arraylist
+									System.out.println("x = " + element[0] + "    y = " + element[1]);
+									System.out.println("Remove Protection because character is not tower!");
+									iterator.remove();
+								}
+							} else {
+								// remove element from arraylist
+								System.out.println("x = " + element[0] + "    y = " + element[1]);
+								System.out.println("Remove Protection because there is no existing character!");
+								iterator.remove();
+							}
+						}
+					}
 					
 					// if character is hero, reset all hero's skills' current cooldown round
 					if (GridFrame.gridButtonMap[x][y].getIsHero() == true) {

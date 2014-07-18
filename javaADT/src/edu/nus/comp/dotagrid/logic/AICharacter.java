@@ -1,6 +1,8 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -21,8 +23,9 @@ public class AICharacter {
 	public static final int NEUTRAL_CREEP_TARGET_RANGE = 4;
 	public static final int NEUTRAL_CREEP_RETURN_INDEX = 10;
 	
-	ArrayList<int[]> inSightEnemyPos = new ArrayList<int[]>();
+	LinkedList<int[]> inSightEnemyPos = new LinkedList<int[]>();
 	private int[] nearestEnemyPos = new int[2];
+	private int enemyCounter;
 	
 	
 	public AICharacter(int XPos, int YPos) {
@@ -45,6 +48,7 @@ public class AICharacter {
 				boolean prepareForAttack = false;
 				// line creep AI
 				searchForInSightEnemies();
+				sortInSightEnemiesList();
 				
 				// check if there is any enemy within sight
 				while (!inSightEnemyPos.isEmpty() && !endRound) {
@@ -122,6 +126,20 @@ public class AICharacter {
 			// comp Hero AI
 			
 		}
+	}
+
+
+
+	private void sortInSightEnemiesList() {
+		// sort the inSightEnemyPos to arrange enemies based on their attackPriority
+		Collections.sort(inSightEnemyPos, new Comparator<int[]>() {
+			@Override
+			public int compare(int[] char1Pos, int[] char2Pos) {
+				// compare current attack priority for characters at position char1Pos and char2Pos
+				return (GridFrame.gridButtonMap[char1Pos[0]][char1Pos[1]].getCharacter().getCurrentAttackPriority() 
+						- GridFrame.gridButtonMap[char2Pos[0]][char2Pos[1]].getCharacter().getCurrentAttackPriority());
+			}
+		});
 	}
 
 
@@ -318,8 +336,8 @@ public class AICharacter {
 				
 			} else {
 				System.out.println("no existing path -...-");
-				// if such a path does not exist, check if there are any other enemies in sight
-				if (inSightEnemyPos.size() <= 1) {
+				// if such a path does not exist, check if the in sight enemy list has been traveled once
+				if (inSightEnemyPos.size() <= enemyCounter) {
 					// no other enemy in sight! move towards the enemy and wait for chance to attack
 					Queue<int[]> uncheckedPosition = new LinkedList<int[]>();
 					int[] startingPos = {enemyXPos, enemyYPos};
@@ -351,8 +369,9 @@ public class AICharacter {
 					System.out.println("wait for chance");
 					endRound = true;
 				} else {
-					// there are opportunities to attack other enemies, remove current enemy from target list
-					inSightEnemyPos.remove(0);
+					// there are opportunities to attack other enemies, put current enemy to end of the target list
+					inSightEnemyPos.add(inSightEnemyPos.remove(0));
+					enemyCounter++;
 					nearestEnemyPos[0] = inSightEnemyPos.get(0)[0];
 					nearestEnemyPos[1] = inSightEnemyPos.get(0)[1];
 				}
@@ -498,7 +517,7 @@ public class AICharacter {
 		startingPosition.add(pos);
 		
 		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
-		ArrayList<int[]> enemyList = new ArrayList<int[]>();
+		LinkedList<int[]> enemyList = new LinkedList<int[]>();
 		
 		findNearbyEnmeies(startingPosition, checkedPosition, attackRange, enemyList);
 		
@@ -519,7 +538,7 @@ public class AICharacter {
 
 	
 	private void findNearbyEnmeies(Queue<int[]> uncheckedPosition, ArrayList<int[]> checkedPosition, int checkRange,
-			ArrayList<int[]> enemyStoreList) {
+			LinkedList<int[]> enemyStoreList) {
 		// find the coordinates for nearest enemy within attack range, store its coordinates in an int[], if there isn't any enemy, return {-1, -1}
 
 		// base case : 

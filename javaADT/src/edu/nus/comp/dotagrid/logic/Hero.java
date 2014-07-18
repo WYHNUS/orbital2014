@@ -69,6 +69,8 @@ public class Hero extends Character{
 	public static int heroStartingMoney = 875;
 	public static int heroSight = 7;
 	
+	public static final int HERO_ATTACK_PRIORITY = 5;
+	
 	
 	// constructor
 	public Hero(String heroName, String mainAttribute, int startingHP, int startingMP, 
@@ -80,7 +82,7 @@ public class Hero extends Character{
 		
 		super(heroName, heroStartingBountyMoney, heroStartingBountyExp, heroSight, 
 				startingHP, startingMP, startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
-				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, teamNumber);
+				startingPhysicalDefence, startingMagicResistance, movementSpeed, actionPoint, HERO_ATTACK_PRIORITY, teamNumber);
 		
 		// reset basic physical attack
 		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
@@ -141,8 +143,10 @@ public class Hero extends Character{
 		super(hero.getName(), hero.getBountyMoney(), hero.getBountyExp(), hero.getSight(), hero.getStartingHP(), hero.getStartingMP(), 
 				hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), hero.getStartingPhysicalAttackSpeed(), 
 				hero.getStartingPhysicalDefence(), hero.getStartingMagicResistance(), 
-				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), hero.getTeamNumber());
+				hero.getStartingMovementSpeed(), hero.getMaxActionPoint(), HERO_ATTACK_PRIORITY, hero.getTeamNumber());
 
+		this.setCurrentAttackPriority(hero.getCurrentAttackPriority());
+		
 		this.setHeroSpawningXPos(hero.getHeroSpawningXPos());
 		this.setHeroSpawningYPos(hero.getHeroSpawningYPos());
 		

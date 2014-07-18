@@ -275,7 +275,7 @@ public class CharacterActions {
 		// check for critical strike
 		boolean isCriticalStrike = false;
 		
-		if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeChance() >= 0) {
+		if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeChance() > 0) {
 			isCriticalStrike = (rdm.nextDouble() > GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeChance());
 		} 
 		
@@ -286,6 +286,27 @@ public class CharacterActions {
 		if (isCriticalStrike) {
 			System.out.println("critical attack!");
 			attack *= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeMultiplier();
+		}
+		
+		// check if the attacked target is building or tower
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Tower) {
+			// check if the protection has been invoked
+			if (!((Tower)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getProtectionPosList().isEmpty()) {
+				System.out.println("Attacked Tower has been protected!");
+				// set attack to 1
+				attack = 1;
+			}
+		}
+		
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Building) {
+			// check if the protection has been invoked
+			if (!((Building)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getProtectionPosList().isEmpty()) {
+				System.out.println("Attacked Building has been protected!");
+				// set attack to 1
+				attack = 1;
+			} else {
+				System.out.println(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getName() + " is not protected!");
+			}
 		}
 		
 		// get the AP required for one physical attack

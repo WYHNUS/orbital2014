@@ -5,6 +5,8 @@ public class SummonCharacter extends Character {
 	private int duration;
 	private int currentDuration;
 	
+	public static final int LINE_CREEP_ATTACK_PRIORITY = 4;
+	
 	public SummonCharacter(String name, int bountyExp, int bountyMoney, int sight, 
 			int startingHP, int startingMP,
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
@@ -14,7 +16,7 @@ public class SummonCharacter extends Character {
 		super(name, bountyMoney, bountyExp, sight, startingHP, startingMP, 
 				startingPhysicalAttack, startingPhysicalAttackArea, startingPhysicalAttackSpeed, 
 				startingPhysicalDefence, startingMagicResistance, startingMovementSpeed, 
-				actionPoint, teamNumber);
+				actionPoint, LINE_CREEP_ATTACK_PRIORITY, teamNumber);
 		
 		this.duration = duration;
 		this.setCurrentDuration(duration);
@@ -27,8 +29,9 @@ public class SummonCharacter extends Character {
 				summonChara.getStartingHP(), summonChara.getStartingMP(), summonChara.getStartingPhysicalAttack(),
 				summonChara.getStartingPhysicalAttackArea(), summonChara.getStartingPhysicalAttackSpeed(),
 				summonChara.getStartingPhysicalDefence(), summonChara.getStartingMagicResistance(), summonChara.getStartingMovementSpeed(),
-				summonChara.getMaxActionPoint(), summonChara.getTeamNumber());
+				summonChara.getMaxActionPoint(), LINE_CREEP_ATTACK_PRIORITY, summonChara.getTeamNumber());
 		
+		this.setCurrentAttackPriority(summonChara.getCurrentAttackPriority());
 		this.setDuration(summonChara.getDuration());
 		this.setCurrentDuration(summonChara.getCurrentDuration());
 		this.setCharacterImage("summonCharacters", this.getName());
