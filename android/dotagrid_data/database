@@ -1,0 +1,9 @@
+{
+	"MyHero" : {
+		"characterImage" : "MyHeroModel",
+		"physicalAttackArea" : 100
+	},
+	"Tree" : {
+		"characterImage" : "tree"
+	}
+}

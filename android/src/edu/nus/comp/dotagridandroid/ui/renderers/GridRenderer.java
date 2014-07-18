@@ -16,6 +16,7 @@ public class GridRenderer implements Renderer {
 	public static final float BASE_ZOOM_FACTOR = 0.5f;
 	public static final int SHADOW_MAP_TEXTURE_DIMENSION = 2048;
 	private static final float LIGHT_MAX_RADIUS = 5;
+	private static final float LIGHT_HEIGHT_OFFSET = 2;
 	
 	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
@@ -382,6 +383,8 @@ public class GridRenderer implements Renderer {
 		for (String name : chars.keySet()) {
 			final String charModelName = chars.get(name).getCharacterImage();
 			final int[] pos = charPositions.get(name);
+			if (pos == null)
+				continue;
 			drawableModelHandlers.put(name, manager.getCurrentGameState().getCharacterModel(charModelName));
 			drawableModelSizes.put(name, manager.getCurrentGameState().getCharacterModelSize(charModelName));
 			drawableTexture.put(name, charModelName);
@@ -396,13 +399,13 @@ public class GridRenderer implements Renderer {
 						new float[]{
 							2 * (.5f + pos[0]) / columns - 1,
 							2 * (.5f + pos[1]) / rows - 1,
-							1 + terrain[pos[0] + pos[1] * columns],	// 1 should be changed
+							LIGHT_HEIGHT_OFFSET + terrain[pos[0] + pos[1] * columns],	// 1 should be changed
 							1});
 			if (chars.get(name).getTeamNumber() == mainCharacterTeamNumber) {
 				lightSrc.put(name, new float[]{
 						lightPos[0], lightPos[1], lightPos[2],
 						1, 1, 1,	// TODO change to hero's color and sight
-						5, 2, .2f});
+						5, 2, .5f});
 				lightOn.put(name, chars.get(name).isAlive());
 			}
 		}

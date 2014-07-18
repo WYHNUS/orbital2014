@@ -48,6 +48,8 @@ public class GameCharacter extends GameObject {
 	public static final double MAX_PHYSICAL_ATTACK_SPEED = 4.54;
 	public static final double MIN_PHYSICAL_ATTACK_CONSUME_AP = 20.0;
 	public static final double PHYSICAL_ATTACK_CONSUME_AP = 38.0;
+
+	public static final int TEAM_NEUTURAL = 0;
 	
 	
 	public GameCharacter(String name, int bountyMoney, int bountyExp, int sight, int startingHP, int startingMP, 

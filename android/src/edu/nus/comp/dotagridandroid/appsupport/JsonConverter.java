@@ -247,18 +247,19 @@ public final class JsonConverter {
 			return null;
 		Map<String, Object> map = new HashMap<>();
 		JSONArray names = obj.names();
-		for (int i = 0; i < names.length(); i++) {
-			String key = names.getString(i);
-			Object value = obj.get(key);
-			if (value == null)
-				continue;
-			else if (value instanceof JSONObject)
-				map.put(key, JsonToMap((JSONObject) value));
-			else if (value instanceof JSONArray)
-				map.put(key, JsonToArray((JSONArray) value));
-			else
-				map.put(key, value);
-		}
+		if (names != null)
+			for (int i = 0; i < names.length(); i++) {
+				String key = names.getString(i);
+				Object value = obj.get(key);
+				if (value == null)
+					continue;
+				else if (value instanceof JSONObject)
+					map.put(key, JsonToMap((JSONObject) value));
+				else if (value instanceof JSONArray)
+					map.put(key, JsonToArray((JSONArray) value));
+				else
+					map.put(key, value);
+			}
 		return Collections.unmodifiableMap(map);
 	}
 	public static List<Object> JsonToArray (JSONArray arr) throws JSONException {

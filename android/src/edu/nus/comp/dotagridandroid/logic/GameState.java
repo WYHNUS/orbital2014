@@ -6,6 +6,7 @@ import java.lang.reflect.*;
 
 import org.json.*;
 
+import android.R.integer;
 import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
@@ -13,10 +14,12 @@ import edu.nus.comp.dotagridandroid.ui.event.*;
 import edu.nus.comp.dotagridandroid.appsupport.*;
 
 public class GameState implements Closeable {
-	public static final int TERRAIN_TYPE_FLAT = 0;
-	public static final int TERRAIN_TYPE_MOUNTAIN = 1;
-	public static final int TERRAIN_TYPE_BARRIER = 2;
-	public static final int TERRAIN_TYPE_FOREST = 3;
+	public static final int TERRAIN_TYPE_FLAT = 1;
+	public static final int TERRAIN_TYPE_MOUNTAIN = 0;
+	public static final int TERRAIN_TYPE_RIVER = 3;
+	public static final int TERRAIN_TYPE_FOREST = 4;
+	public static final int TERRAIN_TYPE_FENCE = 5;
+	public static final int TERRAIN_TYPE_CLIFF = 6;
 	
 	private int gridWidth, gridHeight;
 	private String packagePath;
@@ -27,6 +30,7 @@ public class GameState implements Closeable {
 	private List<String> roundOrder;
 	private int roundCount = 0;
 	private Map<String, GameCharacter> chars;
+	private Map<String, Boolean> charsTurned;
 	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
@@ -65,6 +69,7 @@ public class GameState implements Closeable {
 		} else
 			gameMaster = new GameMaster();	// TODO extended or basic?
 		chars = new ConcurrentHashMap<>();
+		charsTurned = new ConcurrentHashMap<>();
 		roundOrder = new ArrayList<>();
 		objs = new ConcurrentHashMap<>();
 		objPositions = new ConcurrentHashMap<>();
@@ -163,16 +168,53 @@ public class GameState implements Closeable {
 				this.terrainType = new int[gridWidth * gridHeight];
 				for (int i = 0; i < gridWidth * gridHeight; i++)
 					this.terrain[i] = r.nextFloat();
-				Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
+				Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);	
 				break;
 			}
 			}
+			List<Map<String, Object>> towerConfig = (List<Map<String, Object>>) terrainConfig.get("towers");
+			if (towerConfig != null)
+				for (Map<String, Object> tower : towerConfig) {
+					String name = (String) tower.get("name");
+					Tower towerCharacter = new Tower (
+							name,
+							((Number) tower.get("bountyMoney")).intValue(),
+							((Number) tower.get("startingHP")).intValue(),
+							((Number) tower.get("startingMP")).intValue(),
+							((Number) tower.get("startingPhysicalAttack")).doubleValue(),
+							((Number) tower.get("startingPhysicalAttackArea")).intValue(),
+							"max".equals(tower.get("startingPhysicalAttackSpeed")) ?
+									GameCharacter.MAX_PHYSICAL_ATTACK_SPEED :
+									((Number) tower.get("startingPhysicalAttackSpeed")).intValue(),
+							((Number) tower.get("startingPhysicalDefence")).intValue(),
+							((Number) tower.get("actionPoint")).intValue(),
+							((Number) tower.get("team")).intValue());
+					towerCharacter.setCharacterImage((String) tower.get("model"));
+					chars.put(name, towerCharacter);
+					setCharacterPosition(name,
+							((List<Number>) tower.get("position")).get(0).intValue(),
+							((List<Number>) tower.get("position")).get(1).intValue());
+				}
 		} catch (Exception e) {
 			e.printStackTrace();
 			terrain = new float[gridWidth * gridHeight];
 			terrainType = new int[gridWidth * gridHeight];
 			Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
 		}
+		for (int i = 0; i < gridWidth * gridHeight; i++)
+			switch (terrainType[i]) {
+			case TERRAIN_TYPE_FOREST: {
+				// TODO Change here
+				Tree tree = new Tree();
+				tree.setCharacterImage("Tree");	// TODO Change here!
+				chars.put("Tree" + i, tree);
+				setCharacterPosition("Tree" + i, i % gridWidth, i / gridWidth);
+				break;
+			}
+			case TERRAIN_TYPE_RIVER: {
+				break;
+			}
+			}
 		// end
 		chosenGrid = objPositions.get(playerCharacter).clone();
 		initialised = true;
@@ -465,7 +507,7 @@ public class GameState implements Closeable {
 	
 	public void setCharacterPosition(String name, int... position) {
 		if (chars.containsKey(name)) {
-			if (position != null && position.length == 2) {
+			if (position != null) {
 				if (position[0] >= getGridWidth() || position[0] < 0 || position[1] >= getGridHeight() || position[1] < 0)
 					return;	// failed
 				final GridPointIndex key = new GridPointIndex(position);
@@ -475,10 +517,8 @@ public class GameState implements Closeable {
 					posReverseLookup.remove(new GridPointIndex(objPositions.get(name)));
 				posReverseLookup.put(key, name);
 				objPositions.put(name, position.clone());
-			} else {
-				final GridPointIndex key = new GridPointIndex(objPositions.remove(name));
-				posReverseLookup.remove(key);
-			}
+			} else
+				posReverseLookup.remove(new GridPointIndex(objPositions.remove(name)));
 		} else if (objPositions.containsKey(name))
 			posReverseLookup.remove(new GridPointIndex(objPositions.remove(name)));
 	}
