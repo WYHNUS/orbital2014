@@ -32,6 +32,11 @@ public class NeutralCreepSpawnPoint {
 	public static final int[] LARGE_NC_SPAWN_POS_4 = {62, 76};
 	public static final int[] LARGE_NC_TARGET_POS_4 = {63, 74};
 	
+	public static final int[] ANCIENT_NC_SPAWN_POS_1 = {33, 44};
+	public static final int[] ANCIENT_NC_TARGET_POS_1 = {32, 42};
+	public static final int[] ANCIENT_NC_SPAWN_POS_2 = {80, 63};
+	public static final int[] ANCIENT_NC_TARGET_POS_2 = {80, 65};
+	
 	public static final int BLOCK_SPAWN_RANGE = 3;
 
 	
@@ -59,6 +64,9 @@ public class NeutralCreepSpawnPoint {
 		checkAndSpawnNC(LARGE_NC_SPAWN_POS_2, 3, LARGE_NC_TARGET_POS_2);
 		checkAndSpawnNC(LARGE_NC_SPAWN_POS_3, 3, LARGE_NC_TARGET_POS_3);
 		checkAndSpawnNC(LARGE_NC_SPAWN_POS_4, 3, LARGE_NC_TARGET_POS_4);
+		
+		checkAndSpawnNC(ANCIENT_NC_SPAWN_POS_1, 4, ANCIENT_NC_TARGET_POS_1);
+		checkAndSpawnNC(ANCIENT_NC_SPAWN_POS_2, 4, ANCIENT_NC_TARGET_POS_2);
 	}
 
 

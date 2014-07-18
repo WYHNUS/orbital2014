@@ -55,9 +55,9 @@ public class GridButton {
 		 * 35 : scourgeRangedBarrack
 		 * 
 		 * 41 : small neutral creep spawn point
-		 * 42 : middle neutral creep spawn point
+		 * 42 : medium neutral creep spawn point
 		 * 43 : large neutral creep spawn point
-		 * 44 : super neutral creep spawn point
+		 * 44 : ancient neutral creep spawn point
 		 * 
 		 * 80 : line creep spawn point
 		 * 99 : player's hero spawn point
