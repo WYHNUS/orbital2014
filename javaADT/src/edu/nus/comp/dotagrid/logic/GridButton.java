@@ -65,7 +65,7 @@ public class GridButton {
 		 */
 		
 
-		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 80 || imageNumber == 99
+		if (imageNumber == 1 || imageNumber == 2 || imageNumber == 3 || imageNumber == 99
 				|| imageNumber == 41 || imageNumber == 42 || imageNumber == 43 || imageNumber == 44) {
 			this.setIsMovable(true);
 		}

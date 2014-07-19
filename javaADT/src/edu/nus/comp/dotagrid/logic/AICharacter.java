@@ -549,28 +549,28 @@ public class AICharacter {
 			// add surrounding grids into position
 			
 			if (isWithinRange(checkRange, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1])){
-				if (!isChecked(checkedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1])){
+				if (!isChecked(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1])){
 					int[] newPos = {uncheckedPosition.peek()[0]+1, uncheckedPosition.peek()[1]};
 					uncheckedPosition.add(newPos);
 				}
 			} 
 			
 			if (isWithinRange(checkRange, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1)){
-				if (!isChecked(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1)){
+				if (!isChecked(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1)){
 					int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]+1};
 					uncheckedPosition.add(newPos);
 				}
 			}
 			
 			if (isWithinRange(checkRange, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1])){
-				if (!isChecked(checkedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1])){
+				if (!isChecked(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1])){
 					int[] newPos = {uncheckedPosition.peek()[0]-1, uncheckedPosition.peek()[1]};
 					uncheckedPosition.add(newPos);
 				}
 			}
 			
 			if (isWithinRange(checkRange, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1)){
-				if (!isChecked(checkedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1)){
+				if (!isChecked(checkedPosition, uncheckedPosition, uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1)){
 					int[] newPos = {uncheckedPosition.peek()[0], uncheckedPosition.peek()[1]-1};
 					uncheckedPosition.add(newPos);
 				}
@@ -608,7 +608,7 @@ public class AICharacter {
 	}
 
 	
-	private static boolean isChecked(ArrayList<int[]> checkedPosition, int XPos, int YPos) {
+	private static boolean isChecked(ArrayList<int[]> checkedPosition, Queue<int[]> uncheckedPosition, int XPos, int YPos) {
 		// each int[] in checkedPosition stores a pair of xpos and ypos
 		boolean isChecked = false;
 		
@@ -617,6 +617,13 @@ public class AICharacter {
 				&& YPos >= 0 && YPos <GridFrame.ROW_NUMBER){
 			// check if the position has been visited before
 			for (int[] element : checkedPosition){
+				if (element[0] == XPos && element[1] == YPos){
+					isChecked = true;
+					break;
+				}
+			}
+			
+			for (int[] element : uncheckedPosition){
 				if (element[0] == XPos && element[1] == YPos){
 					isChecked = true;
 					break;

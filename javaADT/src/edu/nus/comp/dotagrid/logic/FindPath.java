@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -12,8 +13,6 @@ public class FindPath {
 	private int pathXPos, pathYPos;
 	
 	private int searchRange;
-	
-	public Queue<int[]> pathQueue;
 	
 	// constructors
 	public FindPath(){}
@@ -35,7 +34,6 @@ public class FindPath {
 		// set the starting position to be 0
 		path[pathXPos][pathYPos] = 0;
 		
-		pathQueue = new LinkedList<int[]>();
 	}
 	
 
@@ -95,45 +93,53 @@ public class FindPath {
 	public int findShortestPath(int startingXPos, int startingYPos, int XPos, int YPos){
 		searchRange = Math.max(GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getNumberOfMovableGrid(),
 				GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getSight());
+
+		Queue<int[]> uncheckedQueue = new LinkedList<int[]>();
+		int[] startingPos = {startingXPos, startingYPos};
+		uncheckedQueue.add(startingPos);
 		
-		createShortestPath(pathXPos, pathYPos, startingXPos, startingYPos);
+		createShortestPath(pathXPos, pathYPos, uncheckedQueue);
+		
 		return path[XPos - startingXPos + (pathLength-1)/2][YPos - startingYPos + (pathLength-1)/2];
 	}
 	
 
 	// create path int-2D-array which store the shortest path to each grid
-	private void createShortestPath(int pathXPos, int pathYPos, int startingXPos, int startingYPos) {
+	private void createShortestPath(int pathXPos, int pathYPos, Queue<int[]> uncheckedQueue) {
 		// can move only if the grid is movable and not occupied
 		// and only need to calculate if the position has not been calculated before
 		
 		// treat all grids that are not within searchRange as non-occupied
 		
-		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, -1, 0);
-		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, 1, 0);
-		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, 0, -1);
-		checkPathPos(pathXPos, pathYPos, startingXPos, startingYPos, 0, 1);
+		checkPathPos(pathXPos, pathYPos, uncheckedQueue, -1, 0);
+		checkPathPos(pathXPos, pathYPos, uncheckedQueue, 1, 0);
+		checkPathPos(pathXPos, pathYPos, uncheckedQueue, 0, -1);
+		checkPathPos(pathXPos, pathYPos, uncheckedQueue, 0, 1);
 		
-		if (pathQueue.isEmpty() == true) {
+		if (uncheckedQueue.isEmpty()) {
 			// queue is empty, no more path!
 			return;
 		} else {
-			createShortestPath(pathQueue.peek()[0], pathQueue.peek()[1], pathQueue.peek()[2], pathQueue.poll()[3]);
+			createShortestPath(uncheckedQueue.peek()[0], uncheckedQueue.poll()[1], uncheckedQueue);
 		}
 	}
 
 	
-	private void checkPathPos(int pathXPos, int pathYPos, int startingXPos,	int startingYPos, int xIncrease, int yIncrease) {
-		// check and manipulate pathQueue
+	private void checkPathPos(int pathXPos, int pathYPos, Queue<int[]> uncheckedQueue, int xIncrease, int yIncrease) {
 		
+		// check and manipulate pathQueue
+		int startingXPos = uncheckedQueue.peek()[0];
+		int startingYPos = uncheckedQueue.peek()[1];
+				
 		// cannot go beyond the 2D array size (same length for x and y)
 		if (pathXPos+xIncrease >=0 && pathXPos+xIncrease < path.length && pathYPos+yIncrease >= 0 && pathYPos+yIncrease < path.length) {
 			// the position is movable and has not been calculated before
-			if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsMovable() == true 
+			if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsMovable() 
 					&& path[pathXPos+xIncrease][pathYPos+yIncrease] == -1) {
 				// check if within search range
 				if (isWithinSearchRange(pathXPos+xIncrease, pathYPos+yIncrease)) {
 					// if within range, position cannot be occupied
-					if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsOccupied() == false) {
+					if (!GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsOccupied()) {
 						// set the value for this position
 						setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
 								
@@ -143,7 +149,7 @@ public class FindPath {
 						tempArray[2] = startingXPos+xIncrease;
 						tempArray[3] = startingYPos+yIncrease;
 								
-						pathQueue.add(tempArray);
+						uncheckedQueue.add(tempArray);
 					}
 				} else {
 					// not within range, treat as non-occupied grids
@@ -157,7 +163,7 @@ public class FindPath {
 					tempArray[2] = startingXPos+xIncrease;
 					tempArray[3] = startingYPos+yIncrease;
 							
-					pathQueue.add(tempArray);
+					uncheckedQueue.add(tempArray);
 				}
 			}
 		}
