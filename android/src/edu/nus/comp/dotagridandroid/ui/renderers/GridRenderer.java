@@ -512,6 +512,7 @@ public class GridRenderer implements Renderer {
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	}
 	private void drawMap() {
+		final float[] matMVP = FlatMatrix4x4Multiplication(projection, view, model); 
 		// map
 		int vPosition = glGetAttribLocation(mapProgram.getProgramId(), "vPosition"),
 			mModel = glGetUniformLocation(mapProgram.getProgramId(), "model"),
@@ -554,23 +555,34 @@ public class GridRenderer implements Renderer {
 		glEnableVertexAttribArray(textureCoord);
 		glEnableVertexAttribArray(normalCoord);
 		// light configurations
-		for (Map.Entry<String, float[]> entry : lightSrc.entrySet()) {
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
-			final float[] config = entry.getValue();
-			glUniformMatrix4fv(mLight, 1, false, FlatMatrix4x4Multiplication(lightProjection, lightViews.get(entry.getKey())), 0);
-			glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
-			glUniform3f(source, config[0], config[1], config[2]);
-			glUniform3f(color, config[3], config[4], config[5]);
-			glUniform1f(specular, config[6]);
-			glUniform1f(attenuation, config[7]);
-			glUniform1f(sight, config[8]);
-			glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * resolution * (columns * resolution + 1) * 2);
-			if (firstTime) {
-				glBlendFunc(GL_ONE, GL_ONE);
-				firstTime = false;
+		for (Map.Entry<String, float[]> entry : lightSrc.entrySet())
+			if (lightOn.get(entry.getKey())) {
+				final float[] centrePoint = FlatMatrix4x4Vector4Multiplication(
+						matMVP,
+						new float[] {(lightGridPosition.get(entry.getKey())[0] + .5f) * 2 / columns - 1, (lightGridPosition.get(entry.getKey())[1] + .5f) * 2 / rows - 1, 1, 1});
+				if (centrePoint[0] / centrePoint[3] > 1 || centrePoint[0] / centrePoint[3] < -1 ||
+						centrePoint[1] / centrePoint[3] > 1 || centrePoint[1] / centrePoint[3] < -1 ||
+						centrePoint[2] / centrePoint[3] > 1 || centrePoint[2] / centrePoint[3] < -1) {
+//					System.out.println("Drop Object!");
+					continue;
+				}
+				
+				glActiveTexture(GL_TEXTURE2);
+				glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
+				final float[] config = entry.getValue();
+				glUniformMatrix4fv(mLight, 1, false, FlatMatrix4x4Multiplication(lightProjection, lightViews.get(entry.getKey())), 0);
+				glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
+				glUniform3f(source, config[0], config[1], config[2]);
+				glUniform3f(color, config[3], config[4], config[5]);
+				glUniform1f(specular, config[6]);
+				glUniform1f(attenuation, config[7]);
+				glUniform1f(sight, config[8]);
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * resolution * (columns * resolution + 1) * 2);
+				if (firstTime) {
+					glBlendFunc(GL_ONE, GL_ONE);
+					firstTime = false;
+				}
 			}
-		}
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
 		glDisableVertexAttribArray(normalCoord);
@@ -594,7 +606,6 @@ public class GridRenderer implements Renderer {
 		mLight = glGetUniformLocation(shadowObjProgram.getProgramId(), "lightTransform");
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
-		final float[] matMVP = FlatMatrix4x4Multiplication(projection, view, model); 
 		for (String key : drawableModelHandlers.keySet())
 			if (drawableVisible.get(key)) {
 				final float[] centrePoint = FlatMatrix4x4Vector4Multiplication(
@@ -603,7 +614,7 @@ public class GridRenderer implements Renderer {
 				if (centrePoint[0] / centrePoint[3] > 1 || centrePoint[0] / centrePoint[3] < -1 ||
 						centrePoint[1] / centrePoint[3] > 1 || centrePoint[1] / centrePoint[3] < -1 ||
 						centrePoint[2] / centrePoint[3] > 1 || centrePoint[2] / centrePoint[3] < -1) {
-					System.out.println("Drop Object!");
+//					System.out.println("Drop Object!");
 					continue;
 				}
 				firstTime = true;

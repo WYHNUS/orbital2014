@@ -31,6 +31,12 @@ public class RenderMathsAccelerated {
 			throw new RuntimeException ("Wrong vector size");
 		return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	}
+	public static float Vector4CubicInterpolation (float[] f, float x) {
+		if (f.length != 4)
+			throw new RuntimeException("Wrong vector size");
+		// 0: f(0), 1: f(1), 2: f'(0), 3: f'(1)
+		return f[0] + x * (f[2] + x * (-3 * f[0] + 3 * f[1] - 2 * f[2] - f[3] + x * (2 * f[0] - 2 * f[1] + f[2] + f[3])));
+	}
 	public static float[] FlatTranslationMatrix4x4 (float x, float y, float z) {
 		return new float[] {1,0,0,x,0,1,0,y,0,0,1,z,0,0,0,1};
 	}
