@@ -21,8 +21,8 @@ public class GridButtonActions {
 	public void updateWhenNoActionInvoked() {
 		
 		// display the selected position's character icon on the characterIcon if within player's sight
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true && GridFrame.sightMap[toXPos][toYPos] == 1) {
-
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() && GridFrame.sightMap[toXPos][toYPos] == 1) {
+			
 			// change allCharacterInfoGameButtons in game frame to the selected character's info
 			displayCharacterInfoOnGameFrame(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
 			
@@ -44,7 +44,7 @@ public class GridButtonActions {
 		// only one of the readyToMove / readyToAttack / readyToCastSpell can be true at each time interval (use if{} else if{} to save time)
 
 		// check to execute move action
-		if (GameButtonActions.readyToMove == true) {
+		if (GameButtonActions.readyToMove) {
 			
 			// check if within movable grids
 			if (isWithinMovableRange()) {
@@ -67,7 +67,7 @@ public class GridButtonActions {
 		
 		
 		// check to execute attack action
-		else if (GameButtonActions.readyToAttack == true) {
+		else if (GameButtonActions.readyToAttack) {
 			boolean isWithinAttackRange = calculateWithinAttackRange();
 			
 			// check if within attackable range
@@ -105,7 +105,7 @@ public class GridButtonActions {
 		}
 		
 		// check to execute cast spell (hero's skill) action
-		else if (GameButtonActions.readyToCastSpell  == true) {
+		else if (GameButtonActions.readyToCastSpell) {
 			boolean isWithinCastingRange = calculateWithinSkillRange();
 			
 			Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
@@ -151,7 +151,7 @@ public class GridButtonActions {
 		}
 		
 		// check to execute use item action
-		else if (GameButtonActions.readyToUseItem  == true) {
+		else if (GameButtonActions.readyToUseItem) {
 			boolean isWithinCastingRange = calculateWithinItemCastingRange();
 			
 			if (isWithinCastingRange) {

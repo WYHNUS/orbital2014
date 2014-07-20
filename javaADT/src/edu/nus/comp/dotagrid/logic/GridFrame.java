@@ -193,9 +193,11 @@ public class GridFrame {
 			for (int y=0; y<COLUMN_NUMBER-1; y++) {
 						
 				// only occupied grid has character
-				if (gridButtonMap[x][y].getIsOccupied() == true) {
+				if (gridButtonMap[x][y].getIsOccupied()) {
 					// only friendly character's sight can be shared
 					if (gridButtonMap[x][y].getCharacter().getTeamNumber() == Player.getTeamNumber()){
+						if (gridButtonMap[x][y].getIsPlayer())
+							System.out.println("update sight map!");
 						// update selected character's sight
 						new CharacterActions(3, -1, -1, x, y);
 					}

@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
@@ -248,22 +249,166 @@ public class CharacterActions {
 	private void updateSightMap() {
 		// update sight map centered at position (toXPos, toYPos)
 		int sightRange = GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getSight();
-		
-		for(int x=toXPos-sightRange; x<toXPos+sightRange+1; x++){
-			for(int y=toYPos-sightRange; y<toYPos+sightRange+1; y++){
+		ArrayList<Pair<double[], double[]>> blockedAngleList = new ArrayList<Pair<double[], double[]>>(); 
+
+		// check and add all in sight blocking element into the list 
+		for(int x=toXPos-sightRange; x<=toXPos+sightRange; x++) {
+			for(int y=toYPos-sightRange; y<=toYPos+sightRange; y++) {
 				// x and y need to be within the grid frame 
-				if (x >= 0 && x <= GridFrame.COLUMN_NUMBER-1){
-					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
-						// x + y need to be within the number of sight grid
-						if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= sightRange) {
+				if (x >= 0 && x < GridFrame.COLUMN_NUMBER && y>=0 && y < GridFrame.ROW_NUMBER) {
+					// x + y need to be within the number of sight grid
+					if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= sightRange) {
+						if (GridFrame.gridButtonMap[x][y].isBlockSight()) {
+							Pair<double[], double[]> blockingElementAngles = calculateAngles(toXPos+0.5, toYPos+0.5, x, y);
+							blockedAngleList.add(blockingElementAngles);
+						}
+					}
+				}
+			}
+		}
+
+		
+		// reset sight map for any visible element
+		for(int x=toXPos-sightRange; x<=toXPos+sightRange; x++) {
+			for(int y=toYPos-sightRange; y<=toYPos+sightRange; y++) {
+				// x and y need to be within the grid frame 
+				if (x >= 0 && x < GridFrame.COLUMN_NUMBER && y>=0 && y < GridFrame.ROW_NUMBER) {
+					// x + y need to be within the number of sight grid
+					if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= sightRange) {
+						
+						// check if the selected grid can be set to visible
+						Pair<double[], double[]> selectedGridAngles = calculateAngles(toXPos+0.5, toYPos+0.5, x, y);
+						double selectedGridAverageAngle; 
+						
+						// special condition : selected grid is directly at the right of the starting grid
+						if (y == toYPos && x > toXPos) {
+							selectedGridAverageAngle = 0;
+						} else {
+							selectedGridAverageAngle = (selectedGridAngles.getFirst()[0] + selectedGridAngles.getFirst()[3]) / 2.0;
+						}
+						
+						// check if the grid has been blocked by any element in the list
+						boolean isBlocked = false;
+						boolean needCheck = false;
+						
+						for (Pair<double[], double[]> element : blockedAngleList) {
+							
+							// boolean is used to check if the selected grid is within blocked angle's check range
+							if (element.getSecond()[0] > toXPos && element.getSecond()[1] > toYPos) {
+								// 1st quadrant
+								if (x >= element.getSecond()[0] && y >= element.getSecond()[1]) {
+									needCheck = true;
+								}
+								
+							} else if (element.getSecond()[0] < toXPos && element.getSecond()[1] > toYPos) {
+								// 2nd quadrant
+								if (x <= element.getSecond()[0] && y >= element.getSecond()[1]) {
+									needCheck = true;
+								}
+								
+							} else if (element.getSecond()[0] < toXPos && element.getSecond()[1] < toYPos) {
+								// 3rd quadrant
+								if (x <= element.getSecond()[0] && y <= element.getSecond()[1]) {
+									needCheck = true;
+								}
+								
+							} else if (element.getSecond()[0] > toXPos && element.getSecond()[1] < toYPos) {
+								// 4th quadrant
+								if (x >= element.getSecond()[0] && y <= element.getSecond()[1]) {
+									needCheck = true;
+								}
+								
+							} else if (element.getSecond()[0] > toXPos && element.getSecond()[1] == toYPos) {
+								// directly on the right
+								if (x >= element.getSecond()[0]) {
+									needCheck = true;
+								}
+								
+							} else if (element.getSecond()[0] < toXPos && element.getSecond()[1] == toYPos) {
+								// directly on the left
+								if (x <= element.getSecond()[0]) {
+									needCheck = true;
+								}
+								
+							} else if (element.getSecond()[0] == toXPos && element.getSecond()[1] > toYPos) {
+								// directly on the top
+								if (y >= element.getSecond()[1]) {
+									needCheck = true;
+								}
+								
+							} else if (element.getSecond()[0] == toXPos && element.getSecond()[1] < toYPos) {
+								// directly on the bottom
+								if (y <= element.getSecond()[1]) {
+									needCheck = true;
+								}
+							} 
+							
+							if (x == element.getSecond()[0] && y == element.getSecond()[1]) {
+								needCheck = false;
+							}
+							
+							
+							if (needCheck) {
+								// special case : grid is directly on the right of the starting grid
+								if (element.getSecond()[0] > toXPos && element.getSecond()[1] == toYPos) {
+									if (selectedGridAverageAngle <= element.getFirst()[1] || selectedGridAverageAngle >= element.getFirst()[2]) {
+										// within range! remove from the sight map
+										isBlocked = true;
+									}
+								}
+								// check if the average angle of the selected grid is within the blocking element angle's range
+								else if (selectedGridAverageAngle >= element.getFirst()[0] && selectedGridAverageAngle <= element.getFirst()[3]) {
+									// within range! remove from the sight map
+									isBlocked = true;
+								}
+							}
+							
+						}
+						
+						// only set grid to visible if it is not blocked by any other grid
+						if (!isBlocked) {
 							GridFrame.sightMap[x][y] = 1;
 						}
 					}
 				}
 			}
 		}
-		
+
 	}
+
+	private Pair<double[], double[]> calculateAngles(double startingX, double startingY, double blockingX, double blockingY) {
+		// calculate both the maximum and minimum angle from (startingX, startingY) to grid at (blockingX, blockingY)
+		
+		double angle1 = getAngle(startingX, startingY, blockingX, blockingY);
+		double angle2 = getAngle(startingX, startingY, blockingX+1, blockingY);
+		double angle3 = getAngle(startingX, startingY, blockingX, blockingY+1);
+		double angle4 = getAngle(startingX, startingY, blockingX+1, blockingY+1);
+		
+		double[] minAndMaxAngle = {angle1, angle2, angle3, angle4} ;
+		Arrays.sort(minAndMaxAngle);
+		
+		double[] blockingPos = {blockingX, blockingY};
+				
+		return new Pair<double[], double[]>(minAndMaxAngle, blockingPos);
+	}
+
+
+	private double getAngle(double startingX, double startingY, double blockingX, double blockingY) {
+		// calculate angle between (startingX, startingY) and (blockingX, blockingY)
+
+		// angle modifier changes the coordinate of the angle from (-PI/2, PI/2) to (0, 2PI), first quadrant no need to modify
+		double angleModifier = 0;
+		if (blockingX < startingX ) {
+			// second and third quadrant, modify by PI
+			angleModifier = Math.PI;
+		} else if (blockingX > startingX && blockingY < startingY) {
+			// fourth quadrant, modify by 2PI
+			angleModifier = 2.0 * Math.PI;
+		}
+		
+		return (Math.atan((blockingY - startingY) / (blockingX - startingX)) + angleModifier);
+	}
+
 
 	private void attack() {
 		System.out.println("attack!");
@@ -422,6 +567,8 @@ public class CharacterActions {
 				// can only move if character has enough AP
 				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP >= 0){
 					System.out.println("move!");
+					System.out.println("Character move from position (" + fromXPos + ", " + fromYPos + ") to position (" + toXPos + ", " + toYPos + ")");
+					
 					// perform move action
 					GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
 					GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
@@ -433,6 +580,7 @@ public class CharacterActions {
 
 					// if hero is player, change player's position
 					if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
+						System.out.println("Player has moved! Reset player's position!");
 						Screen.user.player.setXPos(toXPos);
 						Screen.user.player.setYPos(toYPos);
 					}

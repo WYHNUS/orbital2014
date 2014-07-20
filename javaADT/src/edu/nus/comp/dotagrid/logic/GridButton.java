@@ -10,6 +10,9 @@ public class GridButton {
 	// mark if any character is currently on the grid
 	private boolean isOccupied = false;
 	
+	// mark if the grid is able to block sight for characters
+	private boolean isBlockSight = false;
+	
 	// mark if the character is a hero
 	private boolean isHero = false;
 	
@@ -70,6 +73,10 @@ public class GridButton {
 			this.setIsMovable(true);
 		}
 		
+		if (imageNumber == 4) {
+			this.setBlockSight(true);
+		}
+		
 		if (imageNumber == 99){	
 			// randomly select a hero from hero database for player to control
 			Random random = new Random();
@@ -93,6 +100,7 @@ public class GridButton {
 	
 	
 	public GridButton(GridButton gridButton) {
+		this.setBlockSight(gridButton.isBlockSight());
 		this.setIsMovable(gridButton.getIsMovable());
 		this.setIsOccupied(gridButton.getIsOccupied());
 		this.setIsPlayer(gridButton.getIsPlayer());
@@ -105,6 +113,7 @@ public class GridButton {
 		this.setIsMovable(true);
 		this.setIsOccupied(true);
 		this.setIsPlayer(false);
+		this.setBlockSight(false);
 		
 		if (chara instanceof Hero) {
 			this.setIsHero(true);
@@ -174,6 +183,16 @@ public class GridButton {
 
 	public void setIsMovable(boolean isMovable) {
 		this.isMovable = isMovable;
+	}
+
+
+	public boolean isBlockSight() {
+		return isBlockSight;
+	}
+
+
+	public void setBlockSight(boolean isBlockSight) {
+		this.isBlockSight = isBlockSight;
 	}
 
 }

@@ -110,11 +110,12 @@ public class FindPath {
 		// and only need to calculate if the position has not been calculated before
 		
 		// treat all grids that are not within searchRange as non-occupied
-		
-		checkPathPos(pathXPos, pathYPos, uncheckedQueue, -1, 0);
-		checkPathPos(pathXPos, pathYPos, uncheckedQueue, 1, 0);
-		checkPathPos(pathXPos, pathYPos, uncheckedQueue, 0, -1);
-		checkPathPos(pathXPos, pathYPos, uncheckedQueue, 0, 1);
+		if (!uncheckedQueue.isEmpty()) {
+			checkPathPos(pathXPos, pathYPos, uncheckedQueue, -1, 0);
+			checkPathPos(pathXPos, pathYPos, uncheckedQueue, 1, 0);
+			checkPathPos(pathXPos, pathYPos, uncheckedQueue, 0, -1);
+			checkPathPos(pathXPos, pathYPos, uncheckedQueue, 0, 1);
+		}
 		
 		if (uncheckedQueue.isEmpty()) {
 			// queue is empty, no more path!
@@ -133,16 +134,34 @@ public class FindPath {
 				
 		// cannot go beyond the 2D array size (same length for x and y)
 		if (pathXPos+xIncrease >=0 && pathXPos+xIncrease < path.length && pathYPos+yIncrease >= 0 && pathYPos+yIncrease < path.length) {
-			// the position is movable and has not been calculated before
-			if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsMovable() 
-					&& path[pathXPos+xIncrease][pathYPos+yIncrease] == -1) {
-				// check if within search range
-				if (isWithinSearchRange(pathXPos+xIncrease, pathYPos+yIncrease)) {
-					// if within range, position cannot be occupied
-					if (!GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsOccupied()) {
-						// set the value for this position
+			// check if within grid frame
+			if (startingXPos+xIncrease >= 0 && startingXPos+xIncrease <= GridFrame.COLUMN_NUMBER-1
+					&& startingYPos+yIncrease >= 0 && startingYPos+yIncrease <= GridFrame.ROW_NUMBER-1) {
+				
+				// the position is movable and has not been calculated before
+				if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsMovable() 
+						&& path[pathXPos+xIncrease][pathYPos+yIncrease] == -1) {
+					// check if within search range
+					if (isWithinSearchRange(pathXPos+xIncrease, pathYPos+yIncrease)) {
+						// if within range, position cannot be occupied
+						if (!GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsOccupied()) {
+							// set the value for this position
+							setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
+									
+							int[] tempArray = new int[5];
+							tempArray[0] = pathXPos+xIncrease;
+							tempArray[1] = pathYPos+yIncrease;
+							tempArray[2] = startingXPos+xIncrease;
+							tempArray[3] = startingYPos+yIncrease;
+									
+							uncheckedQueue.add(tempArray);
+						}
+					} else {
+						// not within range, treat as non-occupied grids
+						
+						// set the value for this position 
 						setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
-								
+						
 						int[] tempArray = new int[5];
 						tempArray[0] = pathXPos+xIncrease;
 						tempArray[1] = pathYPos+yIncrease;
@@ -151,20 +170,8 @@ public class FindPath {
 								
 						uncheckedQueue.add(tempArray);
 					}
-				} else {
-					// not within range, treat as non-occupied grids
-					
-					// set the value for this position 
-					setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
-					
-					int[] tempArray = new int[5];
-					tempArray[0] = pathXPos+xIncrease;
-					tempArray[1] = pathYPos+yIncrease;
-					tempArray[2] = startingXPos+xIncrease;
-					tempArray[3] = startingYPos+yIncrease;
-							
-					uncheckedQueue.add(tempArray);
 				}
+				
 			}
 		}
 	}
