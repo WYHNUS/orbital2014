@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import edu.nus.comp.dotagridandroid.MainRenderer;
+import edu.nus.comp.dotagridandroid.appsupport.GridRendererGraphicsImpl;
 import edu.nus.comp.dotagridandroid.logic.*;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static android.opengl.GLES20.*;
@@ -17,6 +18,7 @@ public class GridRenderer implements Renderer {
 	private static final float LIGHT_MAX_RADIUS = 5;
 	private static final float LIGHT_HEIGHT_OFFSET = 2;
 	
+	private GridRendererGraphicsImpl graphicsImpl;
 	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private final int rows, columns;
@@ -43,7 +45,7 @@ public class GridRenderer implements Renderer {
 			model = IdentityMatrix4x4(),
 			view = IdentityMatrix4x4(),
 			projection = IdentityMatrix4x4();
-	private float[] selectGridMat, gridLines, terrain;
+	private float[] selectGridMatrix, gridLines, terrain;
 	// temporary map characteristics - do not use after init
 	private float[] mapTerrain, mapNormalCoord, mapTextureCoord;
 	private int[] gridLinesIndex;
@@ -51,7 +53,6 @@ public class GridRenderer implements Renderer {
 	private int mapVBO;
 	private FloatBuffer mapBuf;//, mapTerrainBuf, mapNormalCoordBuf, mapTextureCoordBuf;
 	// resource - renderers
-	private TextRenderer textRender;
 	private NormalGenerator normalGen;
 	// gesture states
 	private boolean hasSelection = false;
@@ -88,15 +89,16 @@ public class GridRenderer implements Renderer {
 	// drawables
 	private final Map<String, Integer> drawableModelHandlers = new ConcurrentHashMap<>();
 	private final Map<String, Integer> drawableModelSizes = new ConcurrentHashMap<>();
-	private final Map<String, String> drawableTexture = new ConcurrentHashMap<>();
-	private final Map<String, float[]> drawableModel = new ConcurrentHashMap<>();
+	private final Map<String, String> drawableTextures = new ConcurrentHashMap<>();
+	private final Map<String, float[]> drawableModels = new ConcurrentHashMap<>();
 	private final Map<String, Boolean> drawableVisible = new ConcurrentHashMap<>();
-	private final Map<String, int[]> drawableGridPosition = new ConcurrentHashMap<>();
+	private final Map<String, int[]> drawableGridPositions = new ConcurrentHashMap<>();
 	// multithreading
 	private Thread computeTask;
 	// map resolution for interpolation
 	private final int resolution;
 	public GridRenderer (int columns, int rows, float[] terrain) {
+		graphicsImpl = new GridRendererGraphicsImpl();
 		if (columns * rows > 5000)
 			resolution = 2;
 		else if (columns * rows > 1000)
@@ -117,9 +119,7 @@ public class GridRenderer implements Renderer {
 		shadowProgram = new GenericProgram (CommonShaders.VS_IDENTITY_SPECIAL_SHADOW, CommonShaders.FS_IDENTITY_SPECIAL_SHADOW);
 		shadowObjProgram = new GenericProgram (CommonShaders.VS_IDENTITY_SPECIAL_LIGHTING_UNIFORMNORMAL, CommonShaders.FS_IDENTITY_SPECIAL_LIGHTING_UNIFORMNORMAL);
 		// coord configurations
-		selectGridMat = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1f/columns, 1f/rows, 1), FlatTranslationMatrix4x4(1,1,0));
-		// text test
-		textRender = new TextRenderer();
+		selectGridMatrix = FlatMatrix4x4Multiplication(FlatScalingMatrix4x4(1f/columns, 1f/rows, 1), FlatTranslationMatrix4x4(1,1,0));
 		// calculate model
 		calculateModel();
 		// board IS at the origin so not need translation
@@ -152,21 +152,18 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {
 		responder = mainRenderer;
-		textRender.setGraphicsResponder(responder);
 	}
 	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {}
 	@Override
 	public void setGLResourceManager(GLResourceManager manager) {
 		vBufMan = manager;
-		textRender.setGLResourceManager(vBufMan);
 	};
 	@Override
 	public void setFrameBufferHandler(int framebuffer) {}
 	@Override
 	public void setTexture2D(Map<String, Texture2D> textures) {
 		this.textures = textures;
-		textRender.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 	}
 	@Override
 	public void setAspectRatio(float ratio) {
@@ -177,7 +174,8 @@ public class GridRenderer implements Renderer {
 			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius, lens_radius, lens_radius / ratio, -lens_radius / ratio);
 		else
 			projection = FlatPerspectiveMatrix4x4(cameraParams[9], cameraParams[10], -lens_radius * ratio, lens_radius * ratio, lens_radius, -lens_radius);
-		textRender.setAspectRatio(ratio);
+		graphicsImpl.setProjectionMatrix(projection);
+//		textRender.setAspectRatio(ratio);
 	}
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {
@@ -384,23 +382,28 @@ public class GridRenderer implements Renderer {
 		// for now, just draw everything
 		for (String name : chars.keySet()) {
 			lightOn.put(name, false);
+			graphicsImpl.setLightOn(name, false);
 			final String charModelName = chars.get(name).getCharacterImage();
 			final int[] pos = charPositions.get(name);
 			if (pos == null || !chars.get(name).isAlive()) {
 				drawableVisible.put(name, false);
+				graphicsImpl.setDrawableVisible(name, false);
 				continue;
 			}
 			drawableModelHandlers.put(name, manager.getCurrentGameState().getCharacterModel(charModelName));
 			drawableModelSizes.put(name, manager.getCurrentGameState().getCharacterModelSize(charModelName));
-			drawableTexture.put(name, charModelName);
+			drawableTextures.put(name, charModelName);
 			drawableVisible.put(name, true);	// applicable for visibility skill
-			drawableGridPosition.put(name, pos);
+			drawableGridPositions.put(name, pos);
 			final float scalingFactor = Math.min(1f / columns, 1f / rows);
-			drawableModel.put(name, FlatMatrix4x4Multiplication(
+			drawableModels.put(name, FlatMatrix4x4Multiplication(
 					FlatTranslationMatrix4x4(2f / columns * pos[0] - 1,2f / rows * pos[1] - 1, terrain[pos[0] + pos[1] * columns]),
 //					FlatScalingMatrix4x4(1f / columns, 1f / rows, .1f),
 					scalingFactor < BOARD_Z_COORD / 2 ? FlatScalingMatrix4x4(scalingFactor, scalingFactor, scalingFactor / BOARD_Z_COORD / 2) : FlatScalingMatrix4x4(BOARD_Z_COORD / 2, BOARD_Z_COORD / 2, .5f),
 					FlatTranslationMatrix4x4(1,1,1)));
+			graphicsImpl.setDrawable(name, manager.getCurrentGameState().getModelTexture(drawableTextures.get(name)).getTexture(),
+					drawableModelHandlers.get(name), drawableModelSizes.get(name), drawableModels.get(name), pos);
+			graphicsImpl.setDrawableVisible(name, true);
 			// configure light
 			final float[] lightPos
 				= FlatMatrix4x4Vector4Multiplication(model,
@@ -411,39 +414,32 @@ public class GridRenderer implements Renderer {
 							1});
 			if (chars.get(name).getTeamNumber() == mainCharacterTeamNumber) {
 				lightSrc.put(name, new float[]{
-						lightPos[0], lightPos[1], lightPos[2],
+						lightPos[0] / lightPos[3], lightPos[1] / lightPos[3], lightPos[2] / lightPos[3],
 						1, 1, 1,	// TODO change to hero's color and sight
 						5, 2, chars.get(name).getSight() / (float) (rows > columns ? rows : columns)});
 				lightOn.put(name, chars.get(name).isAlive());
 				lightGridPosition.put(name, pos);
 				lightGridRange.put(name, chars.get(name).getSight());
+				graphicsImpl.setLight(name, lightSrc.get(name), lightOn.get(name), pos, lightGridRange.get(name));
 			}
 		}
 		// put all lightSrc dirty and check visibility
 		for (String name : lightSrc.keySet()) 
-			if (lightOn.get(name)) {
+			if (lightOn.get(name))
 				lightDirty.put(name, true);
-//				for (String drawableName : drawableVisible.keySet())
-//					if (!lightOn.get(drawableName) && drawableVisible.get(drawableName)
-//							&& Math.pow(lightGridPosition.get(name)[0] - drawableGridPosition.get(drawableName)[0], 2)
-//							+ Math.pow(lightGridPosition.get(name)[1] - drawableGridPosition.get(drawableName)[1], 2)
-//							> Math.pow(lightGridRange.get(name), 2))
-//						drawableVisible.put(drawableName, false);
-			}
 		for (String drawableName : drawableVisible.keySet())
 			if (drawableVisible.get(drawableName)) {
 				boolean visible = false;
 				for (String light : lightSrc.keySet())
-					visible |= lightOn.get(light) && Math.pow(lightGridPosition.get(light)[0] - drawableGridPosition.get(drawableName)[0], 2)
-							+ Math.pow(lightGridPosition.get(light)[1] - drawableGridPosition.get(drawableName)[1], 2)
+					visible |= lightOn.get(light) && Math.pow(lightGridPosition.get(light)[0] - drawableGridPositions.get(drawableName)[0], 2)
+							+ Math.pow(lightGridPosition.get(light)[1] - drawableGridPositions.get(drawableName)[1], 2)
 							<= Math.pow(lightGridRange.get(light), 2);
 				drawableVisible.put(drawableName, visible);
+				graphicsImpl.setDrawableVisible(drawableName, visible);
 			}
 	}
 	@Override
 	public void setRenderReady() {
-//		for (String key : lightSrc.keySet())
-//			configureShadow(key);
 	}
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
@@ -459,37 +455,55 @@ public class GridRenderer implements Renderer {
 				highlightedGridIndex[c][1] = ((Number) ((List<Object>) grid).get(1)).intValue();
 				c++;
 			}
-		}
+			graphicsImpl.setHighlightedGrid(true, highlightedGridIndex);
+		} else
+			graphicsImpl.setHighlightedGrid(false, null);
 		responder.updateGraphics();
 	}
 	@Override
 	public boolean getReadyState() {
 		if (!ready) {
 			try {computeTask.join();} catch (InterruptedException e) {e.printStackTrace();}
+			int[] buf = new int[2];
+			glGenBuffers(2, buf, 0);
+			
+			glBindBuffer(GL_ARRAY_BUFFER, buf[0]);
+			glBufferData(GL_ARRAY_BUFFER, Float.SIZE / 8 * gridLines.length, BufferUtils.createFloatBuffer(gridLines.length).put(gridLines).position(0), GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buf[1]);
+			ShortBuffer idxDirectBuffer = BufferUtils.createShortBuffer(gridLinesIndex.length);
+			for (int i = 0; i < gridLinesIndex.length; i++)
+				idxDirectBuffer.put((short) (0xffff & gridLinesIndex[i]));
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, Short.SIZE / 8 * gridLinesIndex.length, idxDirectBuffer.position(0), GL_STATIC_DRAW);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+			
 			vBufMan.setVertexBuffer("GridPointBuffer", gridLines);
 			vBufMan.setIndexBuffer("GridPointMeshIndex", gridLinesIndex);
-			gridLines = null; gridLinesIndex = null;
-			textRender.setRenderReady();
-			textRender.setText("DOTA-GRID MOBILE (ANDROID) by C-DOTA");
-			textRender.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-1, 1, 0),FlatScalingMatrix4x4(0.05f/ratio,0.05f,1)), null, null);
 			mapTexture = manager.getCurrentGameState().getModelTexture("GridMapBackground");
 			normalGen = new NormalGenerator(columns, rows, resolution, mapTerrain, model, mapTexture.getWidth(), mapTexture.getHeight());
 			normalGen.setRenderReady();
-			mapTerrain = mapNormalCoord = mapTextureCoord = null;
 			glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
 			glBufferData(GL_ARRAY_BUFFER, Float.SIZE / 8 * 8 * (rows * resolution * (resolution * columns + 1) * 2), mapBuf.position(0), GL_STATIC_DRAW);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			
+			graphicsImpl.initialise(columns, rows, CommonShaders.VS_IDENTITY, CommonShaders.FS_IDENTITY, CommonShaders.VS_IDENTITY_SPECIAL_LIGHTING, CommonShaders.FS_IDENTITY_SPECIAL_LIGHTING, CommonShaders.VS_IDENTITY_SPECIAL_SHADOW, CommonShaders.FS_IDENTITY_SPECIAL_SHADOW, CommonShaders.VS_IDENTITY_SPECIAL_LIGHTING_UNIFORMNORMAL, CommonShaders.FS_IDENTITY_SPECIAL_LIGHTING_UNIFORMNORMAL, resolution, buf[0], buf[1], mapTexture.getTexture(), mapVBO, normalGen.getNormalTexture(), lightProjection);
+			
 			mapBuf = null;
+			gridLines = null; gridLinesIndex = null;
+			mapTerrain = mapNormalCoord = mapTextureCoord = null;
 			prepareObjects();
 			ready = true;
 		}
 		for (String light : lightDirty.keySet())
-			if (lightDirty.get(light))
+			if (lightDirty.get(light)) {
 				configureShadow(light);
+				lightDirty.put(light, false);
+			}
 		return true;
 	}
 	// draw functions
-	private void drawGrid() {
+	/*private void drawGrid() {
 		int vOffset = vBufMan.getVertexBufferOffset("GridPointBuffer"),
 			iOffset = vBufMan.getIndexBufferOffset("GridPointMeshIndex");
 		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
@@ -562,10 +576,8 @@ public class GridRenderer implements Renderer {
 						new float[] {(lightGridPosition.get(entry.getKey())[0] + .5f) * 2 / columns - 1, (lightGridPosition.get(entry.getKey())[1] + .5f) * 2 / rows - 1, 1, 1});
 				if (centrePoint[0] / centrePoint[3] > 1 || centrePoint[0] / centrePoint[3] < -1 ||
 						centrePoint[1] / centrePoint[3] > 1 || centrePoint[1] / centrePoint[3] < -1 ||
-						centrePoint[2] / centrePoint[3] > 1 || centrePoint[2] / centrePoint[3] < -1) {
-//					System.out.println("Drop Object!");
+						centrePoint[2] / centrePoint[3] > 1 || centrePoint[2] / centrePoint[3] < -1)
 					continue;
-				}
 				
 				glActiveTexture(GL_TEXTURE2);
 				glBindTexture(GL_TEXTURE_2D, shadowMaps.get(entry.getKey()));
@@ -610,17 +622,15 @@ public class GridRenderer implements Renderer {
 			if (drawableVisible.get(key)) {
 				final float[] centrePoint = FlatMatrix4x4Vector4Multiplication(
 						matMVP,
-						new float[] {(drawableGridPosition.get(key)[0] + .5f) * 2 / columns - 1, (drawableGridPosition.get(key)[1] + .5f) * 2 / rows - 1, 1, 1});
+						new float[] {(drawableGridPositions.get(key)[0] + .5f) * 2 / columns - 1, (drawableGridPositions.get(key)[1] + .5f) * 2 / rows - 1, 1, 1});
 				if (centrePoint[0] / centrePoint[3] > 1 || centrePoint[0] / centrePoint[3] < -1 ||
 						centrePoint[1] / centrePoint[3] > 1 || centrePoint[1] / centrePoint[3] < -1 ||
-						centrePoint[2] / centrePoint[3] > 1 || centrePoint[2] / centrePoint[3] < -1) {
-//					System.out.println("Drop Object!");
+						centrePoint[2] / centrePoint[3] > 1 || centrePoint[2] / centrePoint[3] < -1)
 					continue;
-				}
 				firstTime = true;
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				
-				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
+				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModels.get(key)), 0);
 				glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
 				glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
 				glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, Float.SIZE / 8 * 10, Float.SIZE / 8 * 4);
@@ -629,7 +639,7 @@ public class GridRenderer implements Renderer {
 				glEnableVertexAttribArray(vNormal);
 				glEnableVertexAttribArray(textureCoord);
 				glActiveTexture(GL_TEXTURE0);
-				glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTexture.get(key)).getTexture());
+				glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture(drawableTextures.get(key)).getTexture());
 				glUniform1i(textureLocation, 0);
 				glUniform1i(shadowLocation, 1);
 				for (Map.Entry<String, float[]> entry : lightSrc.entrySet())
@@ -676,7 +686,7 @@ public class GridRenderer implements Renderer {
 			mat = FlatMatrix4x4Multiplication(
 					model,
 					FlatTranslationMatrix4x4(2f/columns * orgGridIndex[0]-1, 2f/rows * orgGridIndex[1]-1, 1),
-					selectGridMat);
+					selectGridMatrix);
 			glUniformMatrix4fv(mModel, 1, false, mat, 0);
 			glUniform4f(vColor, 1, 0, 0, .2f);
 			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
@@ -689,74 +699,77 @@ public class GridRenderer implements Renderer {
 				mat = FlatMatrix4x4Multiplication(
 					model,
 					FlatTranslationMatrix4x4(2f/columns * idx[0]-1, 2f/rows * idx[1]-1, 1),
-					selectGridMat);
+					selectGridMatrix);
 				glUniformMatrix4fv(mModel, 1, false, mat, 0);
 				glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 			}
 		}
 		glDisableVertexAttribArray(vPosition);
-	}
+	}*/
 	@Override
 	public void draw() {
-		drawMap();
-		drawGrid();
-		drawSelection();
-		textRender.draw();
+//		drawMap();
+//		drawGrid();
+//		drawSelection();
+		long timer = System.currentTimeMillis();
+		graphicsImpl.draw();
+		System.out.println("Timer " + (System.currentTimeMillis() - timer));
 	}
 	// shadow generation
 	private void configureShadow (String name) {
-		if (!shadowMaps.containsKey(name)) {
-			// generate texture
-			int[] v = new int[1];
-			glGenTextures(1, v, 0);
-			shadowMaps.put(name, v[0]);
-			// configure
-			glBindTexture(GL_TEXTURE_2D, v[0]);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SHADOW_MAP_TEXTURE_DIMENSION, SHADOW_MAP_TEXTURE_DIMENSION, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glBindTexture(GL_TEXTURE_2D, 0);
-		}
-		final float[] lightConfig = lightSrc.get(name);
-		final float[] lightView = FlatTranslationMatrix4x4(-lightConfig[0], -lightConfig[1], -lightConfig[2]);
-		lightViews.put(name, lightView);
-		glBindFramebuffer(GL_FRAMEBUFFER, frameBuf);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowMaps.get(name), 0);
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuf);
-		glViewport(0, 0, SHADOW_MAP_TEXTURE_DIMENSION, SHADOW_MAP_TEXTURE_DIMENSION);
-		glClearColor(0, 0, 0, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glUseProgram(shadowProgram.getProgramId());
-		final int
-			vPosition = glGetAttribLocation(shadowProgram.getProgramId(), "vPosition"),
-			mModel = glGetUniformLocation(shadowProgram.getProgramId(), "model"),
-			mView = glGetUniformLocation(shadowProgram.getProgramId(), "view"),
-			mProjection = glGetUniformLocation(shadowProgram.getProgramId(), "projection");
-		glUniformMatrix4fv(mModel, 1, false, model, 0);
-		glUniformMatrix4fv(mView, 1, false, lightView, 0);
-		glUniformMatrix4fv(mProjection, 1, false, lightProjection, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
-		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 8, 0);
-		glEnableVertexAttribArray(vPosition);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * resolution * (columns * resolution + 1) * 2);
-		glDisableVertexAttribArray(vPosition);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		// drawables
-		for (String key : drawableModelHandlers.keySet())
-			if (drawableVisible.get(key)
-					&& Math.pow(lightGridPosition.get(name)[0] - drawableGridPosition.get(key)[0], 2)
-							+ Math.pow(lightGridPosition.get(name)[1] - drawableGridPosition.get(key)[1], 2) <= Math.pow(lightGridRange.get(name), 2)) {
-				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModel.get(key)), 0);
-				glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
-				glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
-				glEnableVertexAttribArray(vPosition);
-				glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
-				glDisableVertexAttribArray(vPosition);
-			}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		graphicsImpl.configureShadow(name);
+//		if (!shadowMaps.containsKey(name)) {
+//			// generate texture
+//			int[] v = new int[1];
+//			glGenTextures(1, v, 0);
+//			shadowMaps.put(name, v[0]);
+//			// configure
+//			glBindTexture(GL_TEXTURE_2D, v[0]);
+//			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SHADOW_MAP_TEXTURE_DIMENSION, SHADOW_MAP_TEXTURE_DIMENSION, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//			glBindTexture(GL_TEXTURE_2D, 0);
+//		}
+//		final float[] lightConfig = lightSrc.get(name);
+//		final float[] lightView = FlatTranslationMatrix4x4(-lightConfig[0], -lightConfig[1], -lightConfig[2]);
+//		lightViews.put(name, lightView);
+//		glBindFramebuffer(GL_FRAMEBUFFER, frameBuf);
+//		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, shadowMaps.get(name), 0);
+//		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, renderBuf);
+//		glViewport(0, 0, SHADOW_MAP_TEXTURE_DIMENSION, SHADOW_MAP_TEXTURE_DIMENSION);
+//		glClearColor(0, 0, 0, 1);
+//		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+//		glUseProgram(shadowProgram.getProgramId());
+//		final int
+//			vPosition = glGetAttribLocation(shadowProgram.getProgramId(), "vPosition"),
+//			mModel = glGetUniformLocation(shadowProgram.getProgramId(), "model"),
+//			mView = glGetUniformLocation(shadowProgram.getProgramId(), "view"),
+//			mProjection = glGetUniformLocation(shadowProgram.getProgramId(), "projection");
+//		glUniformMatrix4fv(mModel, 1, false, model, 0);
+//		glUniformMatrix4fv(mView, 1, false, lightView, 0);
+//		glUniformMatrix4fv(mProjection, 1, false, lightProjection, 0);
+//		glBindBuffer(GL_ARRAY_BUFFER, mapVBO);
+//		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 8, 0);
+//		glEnableVertexAttribArray(vPosition);
+//		glDrawArrays(GL_TRIANGLE_STRIP, 0, rows * resolution * (columns * resolution + 1) * 2);
+//		glDisableVertexAttribArray(vPosition);
+//		glBindBuffer(GL_ARRAY_BUFFER, 0);
+//		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+//		// drawables
+//		for (String key : drawableModelHandlers.keySet())
+//			if (drawableVisible.get(key)
+//					&& Math.pow(lightGridPosition.get(name)[0] - drawableGridPositions.get(key)[0], 2)
+//							+ Math.pow(lightGridPosition.get(name)[1] - drawableGridPositions.get(key)[1], 2) <= Math.pow(lightGridRange.get(name), 2)) {
+//				glUniformMatrix4fv(mModel, 1, false, FlatMatrix4x4Multiplication(model, drawableModels.get(key)), 0);
+//				glBindBuffer(GL_ARRAY_BUFFER, drawableModelHandlers.get(key));
+//				glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, Float.SIZE / 8 * 10, 0);
+//				glEnableVertexAttribArray(vPosition);
+//				glDrawArrays(GL_TRIANGLES, 0, drawableModelSizes.get(key));
+//				glDisableVertexAttribArray(vPosition);
+//			}
+//		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
 	// coordinate calculations
 	private void calculateModel() {
@@ -766,7 +779,7 @@ public class GridRenderer implements Renderer {
 			model = FlatScalingMatrix4x4(BASE_ZOOM_FACTOR, rows / (float) columns * BASE_ZOOM_FACTOR, BOARD_Z_COORD);
 		else
 			model = FlatScalingMatrix4x4(BASE_ZOOM_FACTOR, BASE_ZOOM_FACTOR, BOARD_Z_COORD);
-//		model = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0,0,BOARD_Z_COORD), model);
+		graphicsImpl.setModelMatrix(model);
 	}
 	private void calculateView () {
 		if (processingTranslation)
@@ -793,6 +806,7 @@ public class GridRenderer implements Renderer {
 		view = FlatMatrix4x4Multiplication(
 				FlatRotationMatrix4x4((float) Math.acos(cameraParams[7]), -cameraParams[8], 0, cameraParams[6])
 				,view);
+		graphicsImpl.setViewMatrix(view);
 	}
 	// event interpreters
 	@Override
@@ -890,7 +904,6 @@ public class GridRenderer implements Renderer {
 			mapRotation += perspectiveRotationAngle;
 			perspectiveRotationAngle = 0;
 			processingPerspective = false;
-//			calculateModel();
 			calculateView();
 		}
 	}
@@ -995,6 +1008,7 @@ public class GridRenderer implements Renderer {
 				(int) Math.floor(Math.scalb(orgGridPoint[1] + 1, -1) * rows)
 				};
 		hasSelection = (orgGridIndex[0] >= 0 && orgGridIndex[0] < columns && orgGridIndex[1] >= 0 && orgGridIndex[1] < rows);
+		graphicsImpl.setSelectedGrid(hasSelection, orgGridIndex);
 		// TODO Move hero
 		if (hasSelection) {
 			ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_INTERPRETED, e.data);
@@ -1011,11 +1025,11 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void close() {
 		// delete buffers
+		graphicsImpl.close();
 		mapProgram.close();
 		gridProgram.close();
 		shadowProgram.close();
 		shadowObjProgram.close();
-		textRender.close();
 		glDeleteRenderbuffers(1, new int[]{renderBuf}, 0);
 		glDeleteFramebuffers(1, new int[]{frameBuf}, 0);
 		glDeleteBuffers(1, new int[]{mapVBO}, 0);

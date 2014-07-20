@@ -14,6 +14,7 @@ public class ResourceManager implements Closeable{
 	private static native String getAllScript(long ptr);
 	private static native boolean isExtensionEnabled(long ptr);
 	private static native String getTerrainConfiguration(long ptr);
+	private static native String getCharacterConfiguration(long ptr);
 	// java
 	private long ptr;
 	protected ResourceManager(long ptr) {
@@ -54,5 +55,9 @@ public class ResourceManager implements Closeable{
 	
 	public String getTerrainConfiguration() {
 		return getTerrainConfiguration(ptr);
+	}
+	
+	public String getCharacterConfiguration() {
+		return getCharacterConfiguration(ptr);
 	}
 }

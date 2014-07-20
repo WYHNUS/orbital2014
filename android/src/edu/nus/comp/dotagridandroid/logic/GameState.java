@@ -79,7 +79,7 @@ public class GameState implements Closeable {
 		itemShop = new ConcurrentHashMap<>();
 		chosenGrid = new int[2];
 		// TODO load characters
-		chars.put("MyHero", new Hero("MyHero", 1, 0, 10, 0, "strength",
+		chars.put("MyHero", new Hero("MyHero", 1, 0, 200, 0, "strength",
 				100,
 				100,
 				100,
@@ -96,7 +96,7 @@ public class GameState implements Closeable {
 				100,
 				100,
 				100));
-		chars.put("MyHero2", new Hero("MyHero", 1, 0, 10, 0, "strength",
+		chars.put("MyHero2", new Hero("MyHero", 1, 0, 200, 0, "strength",
 				100,
 				100,
 				100,
@@ -212,7 +212,7 @@ public class GameState implements Closeable {
 									((Number) tower.get("startingPhysicalAttackSpeed")).intValue(),
 							((Number) tower.get("startingPhysicalDefence")).intValue(),
 							((Number) tower.get("actionPoint")).intValue(),
-							((Number) tower.get("team")).intValue());
+							((Number) tower.get("team")).intValue()/*0*/);
 					towerCharacter.setCharacterImage((String) tower.get("model"));
 					towerCharacter.setSight(((Number) tower.get("sight")).intValue());
 					chars.put(name, towerCharacter);

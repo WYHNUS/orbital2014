@@ -1,15 +1,15 @@
-//#define __GXX_RTTI
 #include <string>
 #include <jni.h>
 #include <android/log.h>
 #include <android/asset_manager_jni.h>
-#include <SoundEngine.h>
-#include <ExtensionEngine.h>
-#include <ResourceManager.h>
-#include <GLES2/gl2.h>
+//#include <GLES2/gl2.h>
 #include <iostream>
 #include <fstream>
 #include <json/json.h>
+#include <SoundEngine.h>
+#include <ExtensionEngine.h>
+#include <ResourceManager.h>
+#include <GridRendererGraphicsImpl.h>
 
 void testExtensionEngine() {
 	ExtensionEngine* engine = ExtensionEngine::Create();
@@ -26,7 +26,7 @@ void testSoundEngine() {
 	SoundEngine::Destroy(se);
 }
 
-void testGL() {
+/*void testGL() {
 	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
 	char const *vsSrc = "attribute vec4 vPosition;void main() {gl_Position=vPosition;}",
@@ -53,7 +53,7 @@ void testGL() {
 	glDeleteProgram(prog);
 	glDeleteShader(vs);
 	glDeleteShader(fs);
-}
+}*/
 
 void setupExtensionCallback(JNIEnv *env, jobject obj, ExtensionEngine *ee) {
 	ee->notifyUpdateCallback = [=](const std::string &update) {
@@ -113,16 +113,6 @@ void setupExtensionCallback(JNIEnv *env, jobject obj, ExtensionEngine *ee) {
 }
 
 extern "C" {
-
-JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testSL(JNIEnv *env, jobject obj) {
-//	testSoundEngine();
-}
-
-JNIEXPORT void JNICALL
-Java_edu_nus_comp_dotagridandroid_appsupport_AppNativeAPI_testJS(JNIEnv *env, jobject obj) {
-	testExtensionEngine();
-}
 
 // ExtensionEngine
 
@@ -339,6 +329,186 @@ Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getAllScript(JNIEnv
 JNIEXPORT jstring JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getTerrainConfiguration(JNIEnv *env, jobject obj, jlong ptr) {
 	return env->NewStringUTF(((ResourceManager*)ptr)->getTerrainConfiguration().c_str());
+}
+
+JNIEXPORT jstring JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_ResourceManager_getCharacterConfiguration(JNIEnv *env, jobject obj, jlong ptr) {
+	return env->NewStringUTF(((ResourceManager*)ptr)->getCharacterConfiguration().c_str());
+}
+
+
+// GridRendererGraphicsImpl
+
+JNIEXPORT jlong JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_newInstance(JNIEnv *env, jobject obj) {
+	return (jlong) new GridRendererGraphicsImpl();
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_initialise(JNIEnv *env, jobject obj, jlong ptr,
+			jint columns,
+			jint rows,
+			jstring gridvs,
+			jstring gridfs,
+			jstring mapvs,
+			jstring mapfs,
+			jstring shadowvs,
+			jstring shadowfs,
+			jstring shadowobjvs,
+			jstring shadowobjfs,
+			jint resolution,
+			jint gridBuffer,
+			jint gridIndexBuffer,
+			jint mapTexture,
+			jint terrainBuffer,
+			jint terrainNormalMap,
+			jfloatArray lightProjection) {
+	const char *gridvsParam = env->GetStringUTFChars(gridvs, 0),
+			*gridfsParam = env->GetStringUTFChars(gridfs, 0),
+			*mapvsParam = env->GetStringUTFChars(mapvs, 0),
+			*mapfsParam = env->GetStringUTFChars(mapfs, 0),
+			*shadowvsParam = env->GetStringUTFChars(shadowvs, 0),
+			*shadowfsParam = env->GetStringUTFChars(shadowfs, 0),
+			*shadowobjvsParam = env->GetStringUTFChars(shadowobjvs, 0),
+			*shadowobjfsParam = env->GetStringUTFChars(shadowobjfs, 0);
+	float *lightProjectionParam = env->GetFloatArrayElements(lightProjection, 0);
+	((GridRendererGraphicsImpl*) ptr)->initialise(
+				columns,
+				rows,
+				gridvsParam,
+				gridfsParam,
+				mapvsParam,
+				mapfsParam,
+				shadowvsParam,
+				shadowfsParam,
+				shadowobjvsParam,
+				shadowobjfsParam,
+				resolution,
+				gridBuffer,
+				gridIndexBuffer,
+				mapTexture,
+				terrainBuffer,
+				terrainNormalMap,
+				lightProjectionParam
+			);
+	env->ReleaseStringUTFChars(gridvs, gridvsParam);
+	env->ReleaseStringUTFChars(gridfs, gridfsParam);
+	env->ReleaseStringUTFChars(mapvs, mapvsParam);
+	env->ReleaseStringUTFChars(mapfs, mapfsParam);
+	env->ReleaseStringUTFChars(shadowvs, shadowvsParam);
+	env->ReleaseStringUTFChars(shadowfs, shadowfsParam);
+	env->ReleaseStringUTFChars(shadowobjvs, shadowobjvsParam);
+	env->ReleaseStringUTFChars(shadowobjfs, shadowobjfsParam);
+	env->ReleaseFloatArrayElements(lightProjection, lightProjectionParam, 0);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_close(JNIEnv *env, jobject obj, jlong ptr) {
+	((GridRendererGraphicsImpl*) ptr)->close();
+	delete (GridRendererGraphicsImpl*) ptr;
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setModelMatrix (JNIEnv *env, jobject obj, jlong ptr, jfloatArray mat) {
+	float *matParam = env->GetFloatArrayElements(mat, 0);
+	((GridRendererGraphicsImpl*) ptr)->setModelMatrix(matParam);
+	env->ReleaseFloatArrayElements(mat, matParam, 0);
+	env->DeleteLocalRef(mat);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setViewMatrix (JNIEnv *env, jobject obj, jlong ptr, jfloatArray mat) {
+	float *matParam = env->GetFloatArrayElements(mat, 0);
+	((GridRendererGraphicsImpl*) ptr)->setViewMatrix(matParam);
+	env->ReleaseFloatArrayElements(mat, matParam, 0);
+	env->DeleteLocalRef(mat);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setProjectionMatrix (JNIEnv *env, jobject obj, jlong ptr, jfloatArray mat) {
+	float *matParam = env->GetFloatArrayElements(mat, 0);
+	((GridRendererGraphicsImpl*) ptr)->setProjectionMatrix(matParam);
+	env->ReleaseFloatArrayElements(mat, matParam, 0);
+	env->DeleteLocalRef(mat);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setDrawable (JNIEnv *env, jobject obj, jlong ptr, jstring name, jint textureHandler, jint modelHandler, jint modelSize, jfloatArray modelMatrix, jintArray pos) {
+	float *modelMatrixParam = env->GetFloatArrayElements(modelMatrix, 0);
+	int *posParam = env->GetIntArrayElements(pos, 0);
+	const char * nameParam = env->GetStringUTFChars(name, 0);
+	((GridRendererGraphicsImpl*) ptr)->setDrawable(nameParam, textureHandler, modelHandler, modelSize, std::vector<float>(modelMatrixParam, modelMatrixParam + 16), std::vector<int>(posParam, posParam + 2));
+	env->ReleaseFloatArrayElements(modelMatrix, modelMatrixParam, 0);
+	env->ReleaseIntArrayElements(pos, posParam, 0);
+	env->ReleaseStringUTFChars(name, nameParam);
+	env->DeleteLocalRef(modelMatrix);
+	env->DeleteLocalRef(pos);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setDrawableVisible (JNIEnv *env, jobject obj, jlong ptr, jstring name, jboolean visible) {
+	const char * nameParam = env->GetStringUTFChars(name, 0);
+	((GridRendererGraphicsImpl*) ptr)->setDrawableVisible(nameParam, visible);
+	env->ReleaseStringUTFChars(name, nameParam);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setLight (JNIEnv *env, jobject obj, jlong ptr, jstring name, jfloatArray lightSrc, jboolean lightOn, jintArray pos, jint range) {
+	float *lightSrcParam = env->GetFloatArrayElements(lightSrc, 0);
+	int *posParam = env->GetIntArrayElements(pos, 0);
+	const char * nameParam = env->GetStringUTFChars(name, 0);
+	((GridRendererGraphicsImpl*) ptr)->setLight(nameParam, std::vector<float>(lightSrcParam, lightSrcParam + 9), lightOn, std::vector<int>(posParam, posParam + 2), range);
+	env->ReleaseFloatArrayElements(lightSrc, lightSrcParam, 0);
+	env->ReleaseIntArrayElements(pos, posParam, 0);
+	env->ReleaseStringUTFChars(name, nameParam);
+	env->DeleteLocalRef(lightSrc);
+	env->DeleteLocalRef(pos);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setLightOn (JNIEnv *env, jobject obj, jlong ptr, jstring name, jboolean lightOn) {
+	const char * nameParam = env->GetStringUTFChars(name, 0);
+	((GridRendererGraphicsImpl*) ptr)->setLightOn(nameParam, lightOn);
+	env->ReleaseStringUTFChars(name, nameParam);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setSelectedGrid (JNIEnv *env, jobject obj, jlong ptr, jboolean hasSelectedGrid, jintArray pos) {
+	int *posParam = env->GetIntArrayElements(pos, 0);
+	((GridRendererGraphicsImpl*) ptr)->setSelectGrid(hasSelectedGrid, std::vector<int>(posParam, posParam + 2));
+	env->ReleaseIntArrayElements(pos, posParam, 0);
+	env->DeleteLocalRef(pos);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setHighlightedGrid (JNIEnv *env, jobject obj, jlong ptr, jboolean hasHighlightedGrid, jobjectArray pos) {
+	std::vector<std::vector<int>> posParam;
+	if (hasHighlightedGrid && pos) {
+		int len = env->GetArrayLength(pos);
+		for (int i = 0; i < len; i++) {
+			jintArray grid = (jintArray) env->GetObjectArrayElement(pos, i);
+			if (grid) {
+				int *gridIdx = env->GetIntArrayElements(grid, 0);
+				posParam.push_back({gridIdx[0], gridIdx[1]});
+				env->ReleaseIntArrayElements(grid, gridIdx, 0);
+			}
+		}
+	}
+	((GridRendererGraphicsImpl*) ptr)->setHighlightedGrid(hasHighlightedGrid, posParam);
+	env->DeleteLocalRef(pos);
+}
+
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_configureShadow(JNIEnv *env, jobject obj, jlong ptr, jstring name) {
+	const char * nameParam = env->GetStringUTFChars(name, 0);
+	((GridRendererGraphicsImpl*) ptr)->configureShadow(nameParam);
+	env->ReleaseStringUTFChars(name, nameParam);
+}
+
+JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_draw(JNIEnv *env, jobject obj, jlong ptr) {
+	((GridRendererGraphicsImpl*) ptr)->draw();
 }
 
 }

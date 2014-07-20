@@ -51,8 +51,6 @@ public class Main extends Activity {
 			}
 		}
 		logicManager.initiateSoundEngine();
-		AppNativeAPI.testJS();
-		AppNativeAPI.testSL();
 	}
 	
 	@Override
