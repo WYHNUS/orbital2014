@@ -260,7 +260,7 @@ public class GridButtonActions {
 				+ " + " + character.getBasicPhysicalAttack());
 		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", character.getTotalPhysicalDefence()));
 		
-		GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getMaxActionPoint());
+		//GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getMaxActionPoint());
 		
 		// properties that only hero possess
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {

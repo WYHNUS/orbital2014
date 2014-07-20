@@ -47,6 +47,9 @@ public class Screen extends JPanel implements Runnable {
 			g.setColor(Color.BLUE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 	
+			new BuildingDatabase();
+			new SkillDatabase();
+			new NeutralCreepDatabase();
 
 		} else if (scene == 1) {
 			// start game!				
@@ -59,6 +62,10 @@ public class Screen extends JPanel implements Runnable {
 				
 				// draw game grid 
 				newGameGridFrame = new GridFrame(g, this);
+				
+				// initialize towers
+				TowerDatabase.initializeAllTowers();
+				BuildingDatabase.initializeAllBuildings();
 			
 				isFrameInitialized = true;
 			} else {
@@ -95,10 +102,6 @@ public class Screen extends JPanel implements Runnable {
 
 		loadGame();
 		
-		new BuildingDatabase();
-		new SkillDatabase();
-		new NeutralCreepDatabase();
-
 		// game loop
 		while (running) {
 			repaint();
