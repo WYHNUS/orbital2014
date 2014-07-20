@@ -35,11 +35,10 @@ public class GameMaster {
 			System.out.println("Requesting move area");
 			List<List<Integer>> allowed = new ArrayList<>();
 			if (reqPos[0] >= 0 && reqPos[0] < stateMachine.getGridWidth() && reqPos[1] >= 0 && reqPos[1] < stateMachine.getGridHeight()) {
-				final double[] APmap = getLowestMoveAPConsumptionMap(stateMachine, prevPos, reqPos, character);
+				final double[] APmap = getLowestMoveAPConsumptionMap(stateMachine, prevPos, character);
 				final int currentActionPoint = (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint");
 				int column = 0, row = 0;
-				for (int i = 0; i < stateMachine.getGridWidth() * stateMachine.getGridHeight(); i++) {
-					column++;
+				for (int i = 0; i < stateMachine.getGridWidth() * stateMachine.getGridHeight(); i++, column++) {
 					if (column == stateMachine.getGridWidth()) {
 						column = 0; row++;
 					}
@@ -91,6 +90,14 @@ public class GameMaster {
 			}
 			break;
 		}
+		case "BeginTurn":
+			break;
+		case "EndTurn":
+			break;
+		case "BeginRound":
+			break;
+		case "EndRound":
+			break;
 		case "Cancel":
 			// nothing
 			stateMachine.notifyUpdate(Collections.singletonMap("Cancel", (Object) "ALL"));
@@ -129,7 +136,7 @@ public class GameMaster {
 		return true;
 	}
 	
-	private double[] getLowestMoveAPConsumptionMap (GameState stateMachine, int[] start, int[] end, String character) {
+	private double[] getLowestMoveAPConsumptionMap (GameState stateMachine, int[] start, String character) {
 		final float[] terrain = stateMachine.getTerrain();
 		final int width = stateMachine.getGridWidth(), height = stateMachine.getGridHeight();
 		final int[][] dirs = new int[][] {{-1,0},{1,0},{0,-1},{0,1}};
@@ -137,15 +144,16 @@ public class GameMaster {
 		Queue<int[]> q = new LinkedList<>();
 		double[] map = new double[width * height];
 //		Arrays.fill(map, character.getMaxActionPoint() + 1);
-		Arrays.fill(map, (Integer) stateMachine.getCharacterProperty(character, "maxActionPoint") + 1);
-		final int APConsumptionPerGrid = (Integer) stateMachine.getCharacterProperty(character, "APUsedInMovingOneGrid");
+		Arrays.fill(map, (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint") + 1);
+		final double APConsumptionPerGrid = (Double) stateMachine.getCharacterProperty(character, "APUsedInMovingOneGrid");
 		map[start[0] + start[1] * width] = 0;
 		q.add(start);
 		while (!q.isEmpty()) {
 			final int[] prevPos = q.remove();
 			for (byte i = 0; i < 4; i++) 
 				if (prevPos[0] + dirs[i][0] < width && prevPos[0] + dirs[i][0] >= 0 &&
-						prevPos[1] + dirs[i][1] < height && prevPos[1] + dirs[i][1] >= 0) {
+						prevPos[1] + dirs[i][1] < height && prevPos[1] + dirs[i][1] >= 0 &&
+						stateMachine.getCharacterAtPosition(prevPos[0] + dirs[i][0], prevPos[1] + dirs[i][1]) == null) {
 					final double APconsumed = APConsumptionPerGrid/*character.getAPUsedInMovingOneGrid()*/ +
 							Math.max(0, terrain[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width] - terrain[prevPos[0] + prevPos[1] * width]) * TERRAIN_CONST;
 					if (APconsumed < map[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width]) {

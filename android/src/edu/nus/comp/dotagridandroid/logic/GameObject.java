@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagridandroid.logic;
 import java.util.*;
 public class GameObject {
+	public static final int GAMEOBJECT_TYPE_ROUNDFLAG = 0;
 	public static final int GAMEOBJECT_TYPE_OBJECT = 1;
 	public static final int GAMEOBJECT_TYPE_CHARACTER = 2;
 	public static final int GAMEOBJECT_TYPE_HERO = 3;

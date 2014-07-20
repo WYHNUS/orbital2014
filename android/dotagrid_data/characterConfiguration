@@ -1,0 +1,25 @@
+{
+	"heros" : {
+		"MyHero" : {}
+	},
+	"creepConfiguration" : [
+		{
+			"team" : 1,
+			"meeleCreepModel" : "",
+			"meeleCreepModelTexture" : "red",
+			"rangedCreepModel" : "",
+			"rangedCreepModelTexture" : "red",
+			"seigeCreepModel" : "",
+			"seigeCreepModelTexture : "red"
+		},
+		{
+			"team" : 2,
+			"meeleCreepModel" : "",
+			"meeleCreepModelTexture" : "blue",
+			"rangedCreepModel" : "",
+			"rangedCreepModelTexture" : "blue",
+			"seigeCreepModel" : "",
+			"seigeCreepModelTexture : "blue"
+		}
+	]
+}

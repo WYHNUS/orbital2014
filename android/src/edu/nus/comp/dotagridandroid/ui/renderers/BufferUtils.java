@@ -2,7 +2,7 @@ package edu.nus.comp.dotagridandroid.ui.renderers;
 import java.nio.*;
 
 public class BufferUtils {
-	final static int FLOAT_BYTES = Float.SIZE / 8,
+	public final static int FLOAT_BYTES = Float.SIZE / 8,
 			INT_BYTES = Integer.SIZE / 8,
 			SHORT_BYTES = Short.SIZE / 8;
 	public static FloatBuffer createFloatBuffer(int size) {

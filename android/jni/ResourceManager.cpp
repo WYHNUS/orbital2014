@@ -355,6 +355,17 @@ ResourceManager::ResourceManager(const char * const pathToPkg) : useExtensionEng
 		}
 		delete ss;
 	}
+	// character configuraiton
+	file = "characterConfiguration";
+	zip_stat(z, file, 0, &st);
+	zf = zip_fopen(z, file, 0);
+	if (zf) {
+		content = new char[st.size + 1];
+		zip_fread(zf, content, st.size);
+		zip_fclose(zf);
+		content[st.size] = 0;
+		characterJSON = content;
+	}
 	// close zip
 	zip_close(z);
 }
@@ -427,4 +438,8 @@ bool ResourceManager::isExtensionEnabled() {
 
 const std::string ResourceManager::getTerrainConfiguration() {
 	return terrainJSON;
+}
+
+const std::string ResourceManager::getCharacterConfiguration() {
+	return characterJSON;
 }
