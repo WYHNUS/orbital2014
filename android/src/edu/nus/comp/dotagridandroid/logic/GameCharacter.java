@@ -51,6 +51,9 @@ public class GameCharacter extends GameObject {
 
 	public static final int TEAM_NEUTURAL = 0;
 	
+	public GameCharacter() {
+		super(GAMEOBJECT_TYPE_CHARACTER);
+	}
 	
 	public GameCharacter(String name, int bountyMoney, int bountyExp, int sight, int startingHP, int startingMP, 
 					double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 

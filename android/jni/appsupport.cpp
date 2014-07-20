@@ -110,6 +110,16 @@ void setupExtensionCallback(JNIEnv *env, jobject obj, ExtensionEngine *ee) {
 				env->NewStringUTF(property.c_str()),
 				env->NewStringUTF(value.c_str()));
 	};
+	ee->getTerrainConfigurationCallback = [=]()->const std::string {
+		__android_log_print(ANDROID_LOG_DEBUG, "EE", "getTerrainConfigurationCallback called");
+		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");
+		jmethodID method = env->GetMethodID(clazz, "getTerrainConfiguration", "()Ljava/lang/String;");
+		jstring result = (jstring) env->CallObjectMethod(obj, method);
+		const char *ans = env->GetStringUTFChars(result, 0);
+		std::string ret(ans);
+		env->ReleaseStringUTFChars(result, ans);
+		return ret;
+	};
 }
 
 extern "C" {
@@ -492,6 +502,7 @@ Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setHighlig
 				posParam.push_back({gridIdx[0], gridIdx[1]});
 				env->ReleaseIntArrayElements(grid, gridIdx, 0);
 			}
+			env->DeleteLocalRef(grid);
 		}
 	}
 	((GridRendererGraphicsImpl*) ptr)->setHighlightedGrid(hasHighlightedGrid, posParam);

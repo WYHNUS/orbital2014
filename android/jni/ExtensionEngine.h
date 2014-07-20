@@ -64,7 +64,6 @@ class ExtensionEngine {
 	ExtensionEngine();
 	~ExtensionEngine();
 
-	static void itf_ctor(ExtensionEngine&, const v8::FunctionCallbackInfo<v8::Value>&);
 	v8::Handle<v8::Object> wrapInterface();
 
 	ExtensionInterface* currentInterface;
@@ -89,6 +88,7 @@ public:
 	std::function<const std::string(void)> getSelectedGridCallback, getCharacterListCallback;
 	std::function<const std::string(const std::string&, const std::string&)> getCharacterPropertyCallback;
 	std::function<void(const std::string&, const std::string&, const std::string&)> setCharacterPropertyCallback;
+	std::function<const std::string(void)> getTerrainConfigurationCallback;
 
 	static ExtensionEngine* Create();
 	static void Destroy(const ExtensionEngine*);

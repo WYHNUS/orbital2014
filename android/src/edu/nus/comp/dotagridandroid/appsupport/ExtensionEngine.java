@@ -58,7 +58,11 @@ public final class ExtensionEngine implements Closeable {
 	}
 	
 	private void turnNextRound() {
-		state.turnNextRound();
+		state.nextTurn();
+	}
+	
+	private String getTerrainConfiguration() {
+		return state.getTerrainConfiguration();
 	}
 	
 	private String getCharacterPosition(String character) {

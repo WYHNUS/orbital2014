@@ -10,7 +10,7 @@ import edu.nus.comp.dotagridandroid.logic.*;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import static android.opengl.GLES20.*;
 import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
-
+@SuppressWarnings("unchecked")
 public class GridRenderer implements Renderer {
 	public static final float BOARD_Z_COORD = .05f;
 	public static final float BASE_ZOOM_FACTOR = 0.5f;
@@ -441,6 +441,7 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void setRenderReady() {
 	}
+	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
 		highlightedGridIndex = null;
