@@ -129,7 +129,7 @@ public class GridFrame {
 		for (int x=0; x<gridColNumberInScreen; x++) {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
 				
-				if (gridButtonMap[x + currentGridXPos][y + currentGridYPos].getIsOccupied() == true
+				if (gridButtonMap[x + currentGridXPos][y + currentGridYPos].getCharacter() != null
 						&& sightMap[x + currentGridXPos][y + currentGridYPos] != -1) {
 					g.drawImage(gridButtonMap[x + currentGridXPos][y + currentGridYPos].getCharacter().getCharacterImage(),
 							(int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
@@ -193,7 +193,7 @@ public class GridFrame {
 			for (int y=0; y<COLUMN_NUMBER-1; y++) {
 						
 				// only occupied grid has character
-				if (gridButtonMap[x][y].getIsOccupied()) {
+				if (gridButtonMap[x][y].getCharacter() != null) {
 					// only friendly character's sight can be shared
 					if (gridButtonMap[x][y].getCharacter().getTeamNumber() == Player.getTeamNumber()){
 						if (gridButtonMap[x][y].getIsPlayer())

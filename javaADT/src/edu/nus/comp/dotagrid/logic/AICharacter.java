@@ -39,7 +39,7 @@ public class AICharacter {
 		
 		if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof LineCreep){
 			System.out.println("LineCreep AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
-			System.out.println("XPos = " + startingXPos + "     YPos = " + startingYPos);
+			System.out.println("Starting Position :  XPos = " + startingXPos + "     YPos = " + startingYPos);
 			
 			// check if AI has enough AP to perform any actions
 			if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getCurrentActionPoint() >= 
@@ -79,7 +79,7 @@ public class AICharacter {
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof NeutralCreep){
 			// NeutralCreep AI
 			System.out.println("NeutralCreep AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
-			System.out.println("XPos = " + startingXPos + "     YPos = " + startingYPos);
+			System.out.println("Starting Position :  XPos = " + startingXPos + "     YPos = " + startingYPos);
 			
 			// check if need to move back to base position
 			if (((NeutralCreep)GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter()).isMoveBack()) {
@@ -112,7 +112,7 @@ public class AICharacter {
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof Tower){
 			// tower AI
 			System.out.println("Tower AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
-			System.out.println("XPos = " + startingXPos + "     YPos = " + startingYPos);
+			System.out.println("Starting Position :  XPos = " + startingXPos + "     YPos = " + startingYPos);
 			
 			// attack when have enough action point
 			AIAttack();
@@ -205,11 +205,22 @@ public class AICharacter {
 			targetPos = null;
 		}
 		
+		System.out.println("target position is at : x = " + targetPos[0] + "   y = " + targetPos[1]);
+		
 		int distance = Math.abs(targetPos[0] - startingXPos) + Math.abs(targetPos[1] - startingYPos);
 		
 		FindPath tempPath = new FindPath(distance);
 		tempPath.findShortestPath(startingXPos, startingYPos, targetPos[0], targetPos[1]);
 		int[][] tempPathMap = tempPath.getPath();
+		
+		/*
+		for (int i=0; i<tempPathMap.length; i++) {
+			for (int j=0; j<tempPathMap.length; j++) {
+				System.out.printf("%3s", tempPathMap[j][i]);
+			}
+			System.out.println();
+		}
+		*/
 		
 		// backtrack from targeted position to search for nearest reachable position
 		Queue<int[]> uncheckedPosition = new LinkedList<int[]>();
@@ -321,7 +332,6 @@ public class AICharacter {
 					movetoPos[1] += (startingYPos - sight);
 					
 					System.out.println("is movable :  " + GridFrame.gridButtonMap[movetoPos[0]][movetoPos[1]].getIsMovable());
-					System.out.println("is occupied :  " + GridFrame.gridButtonMap[movetoPos[0]][movetoPos[1]].getIsOccupied());
 					
 					// move the AI!
 					new CharacterActions(1, startingXPos, startingYPos, movetoPos[0], movetoPos[1]);

@@ -385,11 +385,10 @@ public class LineCreepSpawnPoint {
 		
 			// check is current position is suitable for adding a character
 			if (GridFrame.gridButtonMap[positionQueue.peek()[0]][positionQueue.peek()[1]].getIsMovable() == true 
-					&& GridFrame.gridButtonMap[positionQueue.peek()[0]][positionQueue.peek()[1]].getIsOccupied() == false) {
+					&& GridFrame.gridButtonMap[positionQueue.peek()[0]][positionQueue.peek()[1]].getCharacter() == null) {
 				// can only place the character onto a movable and non-occupied grid
 				
 				// change the grid, add a character!
-				GridFrame.gridButtonMap[positionQueue.peek()[0]][positionQueue.peek()[1]].setIsOccupied(true);
 				GridFrame.gridButtonMap[positionQueue.peek()[0]][positionQueue.poll()[1]].setCharacter(characterQueue.poll());
 			} else {
 				// discard the position

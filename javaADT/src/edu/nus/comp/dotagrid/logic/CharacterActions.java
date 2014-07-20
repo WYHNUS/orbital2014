@@ -171,7 +171,7 @@ public class CharacterActions {
 						if (GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsMovable()) {
 							// only add summon creature on movable grid
 							isCasted = true;
-							if (!GridFrame.gridButtonMap[toXPos+i][toYPos+j].getIsOccupied()) {
+							if (GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter() == null) {
 								// add creature!
 								GridFrame.gridButtonMap[toXPos+i][toYPos+j] = new GridButton(new SummonCharacter(castingSkill.getSkillCharacter()));
 								GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter().setTeamNumber(teamNumber);
@@ -213,8 +213,8 @@ public class CharacterActions {
 		Skill castingSkill = new Skill(castingHero.skills[Player.invokedPlayerSkillIndex]);
 	
 		// can only teleport to non-occupied and movable grid
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable() == true 
-				&& GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == false) {
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable()
+				&& GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() == null) {
 							
 			// perform move action
 			GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
@@ -558,8 +558,8 @@ public class CharacterActions {
 	
 	private void move() {				
 		// can only move on non-occupied and movable grid
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable() == true 
-				&& GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == false) {
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable()
+				&& GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() == null) {
 
 			// get the AP required for such movement
 			int usedAP = calculateMovementUsedAP(fromXPos, fromYPos, toXPos, toYPos);
@@ -612,6 +612,15 @@ public class CharacterActions {
 		FindPath tempPath = new FindPath(GridFrame.gridButtonMap[previouslySelectedXPos][previouslySelectedYPos].getCharacter().getNumberOfMovableGrid());
 		
 		int numberOfGridsMoved = tempPath.findShortestPath(previouslySelectedXPos, previouslySelectedYPos, selectedXPos, selectedYPos);
+		
+		int[][] tempPathMap = tempPath.getPath();
+		
+		for (int i=0; i<tempPathMap.length; i++) {
+			for (int j=0; j<tempPathMap.length; j++) {
+				System.out.printf("%3s", tempPathMap[j][i]);
+			}
+			System.out.println();
+		}
 		
 		if (numberOfGridsMoved > GridFrame.gridButtonMap[previouslySelectedXPos][previouslySelectedYPos].getCharacter().getNumberOfMovableGrid()
 				|| numberOfGridsMoved == -1) {

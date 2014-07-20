@@ -21,7 +21,7 @@ public class GridButtonActions {
 	public void updateWhenNoActionInvoked() {
 		
 		// display the selected position's character icon on the characterIcon if within player's sight
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() && GridFrame.sightMap[toXPos][toYPos] == 1) {
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null && GridFrame.sightMap[toXPos][toYPos] == 1) {
 			
 			// change allCharacterInfoGameButtons in game frame to the selected character's info
 			displayCharacterInfoOnGameFrame(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
@@ -73,7 +73,7 @@ public class GridButtonActions {
 			// check if within attackable range
 			if (isWithinAttackRange && GridFrame.sightMap[toXPos][toYPos] == 1) {
 				// can only attack on occupied grid
-				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsOccupied() == true) {
+				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() == null) {
 					// can only attack non-friendly units
 					if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTeamNumber() != GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber()) {
 						// can only attack if character has enough AP

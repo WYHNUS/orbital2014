@@ -7,9 +7,6 @@ public class GridButton {
 	// mark if any character can move across the grid 
 	private boolean isMovable = false;
 	
-	// mark if any character is currently on the grid
-	private boolean isOccupied = false;
-	
 	// mark if the grid is able to block sight for characters
 	private boolean isBlockSight = false;
 	
@@ -91,7 +88,6 @@ public class GridButton {
 			((Hero)character).setHeroSpawningXPos(Screen.user.playerStartingXPos);
 			((Hero)character).setHeroSpawningYPos(Screen.user.playerStartingYPos);
 			
-			isOccupied = true;
 			isHero = true;
 			isPlayer = true;
 		}
@@ -102,7 +98,6 @@ public class GridButton {
 	public GridButton(GridButton gridButton) {
 		this.setBlockSight(gridButton.isBlockSight());
 		this.setIsMovable(gridButton.getIsMovable());
-		this.setIsOccupied(gridButton.getIsOccupied());
 		this.setIsPlayer(gridButton.getIsPlayer());
 		this.setIsHero(gridButton.getIsHero());
 		this.setCharacter(gridButton.getCharacter());
@@ -111,7 +106,6 @@ public class GridButton {
 	
 	public GridButton(Character chara) {
 		this.setIsMovable(true);
-		this.setIsOccupied(true);
 		this.setIsPlayer(false);
 		this.setBlockSight(false);
 		
@@ -151,14 +145,6 @@ public class GridButton {
 	
 	public Character getCharacter(){
 		return character;
-	}
-
-	public void setIsOccupied(boolean isOccupied){
-		this.isOccupied = isOccupied;
-	}
-	
-	public boolean getIsOccupied(){
-		return isOccupied;
 	}
 
 	public boolean getIsPlayer() {
