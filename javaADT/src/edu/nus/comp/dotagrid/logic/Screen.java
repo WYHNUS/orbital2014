@@ -55,12 +55,12 @@ public class Screen extends JPanel implements Runnable {
 			new NeutralCreepDatabase();
 
 		} else if (scene == 1) {
-			System.out.println("START THE GAME!!!!!!!!!");
 			// start game!				
 			g.setColor(Color.BLACK);	
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 
-			if (isFrameInitialized == false) {				
+			if (isFrameInitialized == false) {	
+				System.out.println("START THE GAME!!!!!!!!!");			
 				// draw game frame
 				newGameFrame = new GameFrame(g, frame);
 				

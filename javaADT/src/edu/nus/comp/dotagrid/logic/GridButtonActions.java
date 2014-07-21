@@ -73,7 +73,7 @@ public class GridButtonActions {
 			// check if within attackable range
 			if (isWithinAttackRange && GridFrame.sightMap[toXPos][toYPos] == 1) {
 				// can only attack on occupied grid
-				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() == null) {
+				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null) {
 					// can only attack non-friendly units
 					if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTeamNumber() != GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber()) {
 						// can only attack if character has enough AP
@@ -260,7 +260,7 @@ public class GridButtonActions {
 				+ " + " + character.getBasicPhysicalAttack());
 		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", character.getTotalPhysicalDefence()));
 		
-		//GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getMaxActionPoint());
+		GameFrame.allCharacterInfoGameButtons.get(30).setString("AP : " + character.getCurrentActionPoint() + " / " + character.getMaxActionPoint());
 		
 		// properties that only hero possess
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {

@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 
 public class GameEnded {
 	public static void isGameEnded() {
-		// check if sentinel base has been destroyed
+		// check if scourge base has been destroyed
 		 if (GridFrame.gridButtonMap[BuildingDatabase.scourgeAncientXPos][BuildingDatabase.scourgeAncientYPos]
 				.getCharacter().isAlive() == false) {
 			 // end game and announce sentinel win
@@ -12,7 +12,7 @@ public class GameEnded {
 		 }
 
 			// check if sentinel base has been destroyed
-		if (GridFrame.gridButtonMap[BuildingDatabase.scourgeAncientXPos][BuildingDatabase.scourgeAncientYPos]
+		if (GridFrame.gridButtonMap[BuildingDatabase.sentinelAncientXPos][BuildingDatabase.sentinelAncientYPos]
 				.getCharacter().isAlive() == false) {
 			 // end game and announce scourge win
 			 announceWinner(2);
@@ -21,7 +21,7 @@ public class GameEnded {
 	
 	public static void announceWinner(int winningTeamNumber){
 		// check if player is in winner's team
-		if (Player.getTeamNumber() != winningTeamNumber) {
+		if (Player.getTeamNumber() == winningTeamNumber) {
 			 System.out.println("Game ended! Player has won!");
 			// announce player has win the game
 			JOptionPane.showMessageDialog(null, "You have WON the GAME!!!!!");

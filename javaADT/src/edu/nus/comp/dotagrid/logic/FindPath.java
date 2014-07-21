@@ -141,38 +141,34 @@ public class FindPath {
 				// the position is movable and has not been calculated before
 				if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getIsMovable() 
 						&& path[pathXPos+xIncrease][pathYPos+yIncrease] == -1) {
-					// no character should be on the grid
-					if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getCharacter() == null) {
-						
-						// check if within search range
-						if (isWithinSearchRange(pathXPos+xIncrease, pathYPos+yIncrease)) {
-							// if within range, position cannot be occupied
-							if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getCharacter() == null) {
-								// set the value for this position
-								setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
-	
-								int[] tempArray = new int[4];
-								tempArray[0] = pathXPos+xIncrease;
-								tempArray[1] = pathYPos+yIncrease;
-								tempArray[2] = startingXPos+xIncrease;
-								tempArray[3] = startingYPos+yIncrease;
-	
-								uncheckedQueue.add(tempArray);
-							}
-						} else {
-							// not within range, treat as non-occupied grids
-							
-							// set the value for this position 
+					// check if within search range
+					if (isWithinSearchRange(pathXPos+xIncrease, pathYPos+yIncrease)) {
+						// if within range, position cannot be occupied
+						if (GridFrame.gridButtonMap[startingXPos+xIncrease][startingYPos+yIncrease].getCharacter() == null) {
+							// set the value for this position
 							setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
-							
+
 							int[] tempArray = new int[4];
 							tempArray[0] = pathXPos+xIncrease;
 							tempArray[1] = pathYPos+yIncrease;
 							tempArray[2] = startingXPos+xIncrease;
 							tempArray[3] = startingYPos+yIncrease;
-									
+
 							uncheckedQueue.add(tempArray);
 						}
+					} else {
+						// not within range, treat as non-occupied grids
+
+						// set the value for this position 
+						setPathValue(pathXPos+xIncrease, pathYPos+yIncrease, pathLength);
+
+						int[] tempArray = new int[4];
+						tempArray[0] = pathXPos+xIncrease;
+						tempArray[1] = pathYPos+yIncrease;
+						tempArray[2] = startingXPos+xIncrease;
+						tempArray[3] = startingYPos+yIncrease;
+
+						uncheckedQueue.add(tempArray);
 					}
 				}
 				
