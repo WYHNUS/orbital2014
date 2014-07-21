@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 
+import javax.swing.ImageIcon;
+
 public class GameButton{
 	
 	private String string;
@@ -53,7 +55,12 @@ public class GameButton{
 	}
 	
 	public void setImage(Image image){
+		this.setIsReadyToDrawImage(true);
 		this.image = image;
+	}
+	
+	public void setImage(String imageName){
+		this.image = new ImageIcon("res/Game Icon/" + imageName + ".jpg").getImage();
 	}
 	
 	public Image getImage(){
@@ -84,9 +91,11 @@ public class GameButton{
 	}	
 	
 	public void drawString(Graphics g) {
-		int xPosAllign = 15;
-		int yPosAllign = 20;
-		g.drawString(string, xPos + xPosAllign, yPos + yPosAllign);
+		if (!this.getIsReadyToDrawImage()){
+			int xPosAllign = 15;
+			int yPosAllign = 20;
+			g.drawString(string, xPos + xPosAllign, yPos + yPosAllign);
+		}
 	}
 	
 	public void drawImage(Graphics g) {

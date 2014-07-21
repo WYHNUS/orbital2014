@@ -11,9 +11,9 @@ public class BuildingDatabase {
 	public static int destroyedScourgeBarrackNumber = 0;
 
 	// sentinel buildings
-	public static int sentinelBaseXPos = 14;
-	public static int sentinelBaseYPos = 84;
-	public static int[] sentinelBasePos = {14, 84};
+	public static int sentinelAncientXPos = 14;
+	public static int sentinelAncientYPos = 84;
+	public static int[] sentinelAncientPos = {14, 84};
 
 	public static int sentinelTopMeeleBarrackXPos = 5;
 	public static int sentinelTopMeeleBarrackYPos = 68;
@@ -41,9 +41,9 @@ public class BuildingDatabase {
 
 
 	// scourge buildings
-	public static int scourgeBaseXPos = 85;
-	public static int scourgeBaseYPos = 15;
-	public static int[] scourgeBasePos = {85, 15};
+	public static int scourgeAncientXPos = 85;
+	public static int scourgeAncientYPos = 15;
+	public static int[] scourgeAncientPos = {85, 15};
 
 	public static int scourgeTopMeeleBarrackXPos = 70;
 	public static int scourgeTopMeeleBarrackYPos = 6;
@@ -73,6 +73,7 @@ public class BuildingDatabase {
 	public BuildingDatabase(){}
 
 	public static void initializeAllBuildings(){
+		System.out.println("initialize buildings!");
 		initializeSentinelBuildings();
 		initializeScourgeBuildings();
 	}
@@ -117,7 +118,7 @@ public class BuildingDatabase {
 		createBuilding(botRangedBarrack, scourgeBotRangedBarrackXPos, scourgeBotRangedBarrackYPos);
 
 		// base
-		createBuilding(createScourgeBase(), scourgeBaseXPos, scourgeBaseYPos);
+		createBuilding(createScourgeAncient(), scourgeAncientXPos, scourgeAncientYPos);
 	}
 
 	private static void initializeSentinelBuildings() {
@@ -160,7 +161,7 @@ public class BuildingDatabase {
 		createBuilding(botRangedBarrack, sentinelBotRangedBarrackXPos, sentinelBotRangedBarrackYPos);
 
 		// base
-		createBuilding(createSentinelBase(), sentinelBaseXPos, sentinelBaseYPos);
+		createBuilding(createSentinelAncient(), sentinelAncientXPos, sentinelAncientYPos);
 	}
 
 	private static void createBuilding(Building building, int xPos, int yPos) {
@@ -310,21 +311,21 @@ public class BuildingDatabase {
 		return new Building("Scourge Ranged Barrack", 0, 1500, 5, 2);
 	}
 
-	public static Building createSentinelBase() {
-		Building sentinelBase = new Building("Sentinel Base", 0, 4250, 15, 1);
+	public static Building createSentinelAncient() {
+		Building sentinelAncient = new Building("Sentinel Ancient", 0, 4250, 15, 1);
 		ArrayList<int[]> tempList = new ArrayList<int[]>();
 		tempList.add(TowerDatabase.sentinelLeftTower4Position);
 		tempList.add(TowerDatabase.sentinelRightTower4Position);
-		sentinelBase.setProtectionPosList(tempList);
-		return sentinelBase;
+		sentinelAncient.setProtectionPosList(tempList);
+		return sentinelAncient;
 	}
 
-	public static Building createScourgeBase() {
-		Building scourgeBase = new Building("Scourge Base", 0, 4250, 15, 2);
+	public static Building createScourgeAncient() {
+		Building scourgeAncient = new Building("Scourge Ancient", 0, 4250, 15, 2);
 		ArrayList<int[]> tempList1 = new ArrayList<int[]>();
 		tempList1.add(TowerDatabase.scourgeLeftTower4Position);
 		tempList1.add(TowerDatabase.scourgeRightTower4Position);
-		scourgeBase.setProtectionPosList(tempList1);
-		return scourgeBase;
+		scourgeAncient.setProtectionPosList(tempList1);
+		return scourgeAncient;
 	}
 }

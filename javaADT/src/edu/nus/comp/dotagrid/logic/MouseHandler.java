@@ -5,11 +5,16 @@ import java.awt.event.MouseListener;
 
 public class MouseHandler implements MouseListener{
 	
+	public static boolean isClicked;
+	
 	private int handXPos = 0;
 	private int handYPos = 0;
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+		
+		isClicked = true;
+		
 		handXPos = e.getXOnScreen();
 		handYPos = e.getYOnScreen();
 		
@@ -22,7 +27,6 @@ public class MouseHandler implements MouseListener{
             // right click
         	GameFrame.invokeRightClickEvent(handXPos, handYPos);
         }
-		
 	}
 
 

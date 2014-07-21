@@ -48,6 +48,7 @@ public class TowerDatabase {
 	public TowerDatabase(){}
 	
 	public static void initializeAllTowers(){
+		System.out.println("initialize towers!");
 		initializeSentinelTowers();
 		initializeScourgeTowers();
 	}

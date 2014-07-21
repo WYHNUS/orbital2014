@@ -737,7 +737,8 @@ public class Hero extends Character{
 		
 		// delete the item
 		this.items[itemNumber] = null;
-		GameFrame.allCharacterInfoGameButtons.get(11 + itemNumber).setImage(null);
+		GameFrame.allCharacterInfoGameButtons.get(11 + itemNumber).setIsReadyToDrawImage(false);
+		GameFrame.allCharacterInfoGameButtons.get(11 + itemNumber).setImage("");
 	}
 	
 	

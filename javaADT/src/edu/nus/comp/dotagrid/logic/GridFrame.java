@@ -261,6 +261,7 @@ public class GridFrame {
 
 	// method to check and invoke grid frame event
 	public static void invokeLeftClickEvent(int handXPos, int handYPos){
+		MouseHandler.isClicked = true;
 		setSelectedXCoodinatePos(handXPos);
 		setSelectedYCoodinatePos(handYPos);
 		
@@ -269,7 +270,7 @@ public class GridFrame {
 		
 		// check if the selected position is within grid frame
 		if (isWithinGridFrame || (ItemShop.shouldUpdateItemInFo == true)) {	
-			
+			System.out.println("test");
 			// reset all character info!
 			resetAllCharacterInfo();			
 			
@@ -424,5 +425,21 @@ public class GridFrame {
 		GridFrame.selectedYCoodinatePos = selectedYCoodinatePos;
 	}
 	
-	
+
+	public static double getGridWidth() {
+		return gridWidth;
+	}
+
+	public static void setGridWidth(double gridWidth) {
+		GridFrame.gridWidth = gridWidth;
+	}
+
+	public static double getGridHeight() {
+		return gridHeight;
+	}
+
+	public static void setGridHeight(double gridHeight) {
+		GridFrame.gridHeight = gridHeight;
+	}
+
 }

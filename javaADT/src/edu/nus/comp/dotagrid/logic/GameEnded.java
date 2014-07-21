@@ -5,14 +5,14 @@ import javax.swing.JOptionPane;
 public class GameEnded {
 	public static void isGameEnded() {
 		// check if sentinel base has been destroyed
-		 if (GridFrame.gridButtonMap[BuildingDatabase.sentinelBaseXPos][BuildingDatabase.sentinelBaseYPos]
+		 if (GridFrame.gridButtonMap[BuildingDatabase.scourgeAncientXPos][BuildingDatabase.scourgeAncientYPos]
 				.getCharacter().isAlive() == false) {
 			 // end game and announce sentinel win
 			 announceWinner(1);
 		 }
 
 			// check if sentinel base has been destroyed
-		if (GridFrame.gridButtonMap[BuildingDatabase.scourgeBaseXPos][BuildingDatabase.scourgeBaseYPos]
+		if (GridFrame.gridButtonMap[BuildingDatabase.scourgeAncientXPos][BuildingDatabase.scourgeAncientYPos]
 				.getCharacter().isAlive() == false) {
 			 // end game and announce scourge win
 			 announceWinner(2);

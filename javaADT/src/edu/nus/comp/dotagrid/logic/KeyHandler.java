@@ -14,7 +14,6 @@ public class KeyHandler implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		// TODO Auto-generated method stub
 		int keyCode = e.getKeyCode();
 		
 		System.out.println(keyCode);
@@ -26,6 +25,7 @@ public class KeyHandler implements KeyListener {
 		if (keyCode == 32) {
 			this.keyTyped.keySPACE();
 		}
+		
 	}
 
 	@Override

@@ -22,7 +22,7 @@ public class GridButtonActions {
 		
 		// display the selected position's character icon on the characterIcon if within player's sight
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null && GridFrame.sightMap[toXPos][toYPos] == 1) {
-			
+			System.out.println("A character has been selected!");
 			// change allCharacterInfoGameButtons in game frame to the selected character's info
 			displayCharacterInfoOnGameFrame(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
 			
@@ -267,8 +267,7 @@ public class GridButtonActions {
 			
 			// update character's information
 			((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).updateHeroAttributeInfo();
-			Hero heroCharacter = new Hero((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
-			updateInfo(heroCharacter);
+			updateInfo(((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()));
 		}
 
 	}

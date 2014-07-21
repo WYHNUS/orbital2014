@@ -276,7 +276,7 @@ public class CharacterActions {
 					// x + y need to be within the number of sight grid
 					if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= sightRange) {
 						
-						// check if the selected grid can be set to visible
+						// check if the selected grid can be set to visible 
 						Pair<double[], double[]> selectedGridAngles = calculateAngles(toXPos+0.5, toYPos+0.5, x, y);
 						double selectedGridAverageAngle; 
 						
@@ -478,7 +478,7 @@ public class CharacterActions {
 			AICharacter.isAttack = false;
 						
 			// if the attacker is hero, add bounty money and bounty Exp into hero's account
-			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero() == true) {
+			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {
 							
 				// add money
 				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
@@ -520,7 +520,7 @@ public class CharacterActions {
 			
 						
 			// if the hero is dead
-			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero() == true) {
+			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero()) {
 				// deduct dead hero's money
 				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setMoney(
 						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getMoney() 
@@ -534,12 +534,23 @@ public class CharacterActions {
 				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setCurrentMP(
 						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getmaxMP());
 				
+				// add hero's death
+				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setDeath(
+						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getDeath() + 1);
+				
 				// check if the dead hero is player's hero
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
 					Screen.user.player.setXPos(Screen.user.playerStartingXPos);
 					Screen.user.player.setYPos(Screen.user.playerStartingYPos);
 				}
-							
+				
+				// check if the attacker if a hero
+				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {
+					// add kill
+					((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setKill(
+							((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getKill() + 1);				
+				}
+				
 				// update reviveQueue
 				Pair<Hero, Integer> dead = new Pair<Hero, Integer>((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter(), 
 						CalculateLevelInfo.calculateDeathCount(((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getLevel()));
@@ -615,12 +626,14 @@ public class CharacterActions {
 		
 		int[][] tempPathMap = tempPath.getPath();
 		
+		/*
 		for (int i=0; i<tempPathMap.length; i++) {
 			for (int j=0; j<tempPathMap.length; j++) {
 				System.out.printf("%3s", tempPathMap[j][i]);
 			}
 			System.out.println();
 		}
+		*/
 		
 		if (numberOfGridsMoved > GridFrame.gridButtonMap[previouslySelectedXPos][previouslySelectedYPos].getCharacter().getNumberOfMovableGrid()
 				|| numberOfGridsMoved == -1) {

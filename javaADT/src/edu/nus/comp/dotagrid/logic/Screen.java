@@ -2,6 +2,7 @@ package edu.nus.comp.dotagrid.logic;
 
 import java.awt.*;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -46,12 +47,15 @@ public class Screen extends JPanel implements Runnable {
 			// load game
 			g.setColor(Color.BLUE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
+			
+			g.drawImage(new ImageIcon("res/Loading Image/" + "Furion" + ".jpg").getImage(), 0, 0, this.frame.getWidth(), this.frame.getHeight(), null);
 	
 			new BuildingDatabase();
 			new SkillDatabase();
 			new NeutralCreepDatabase();
 
 		} else if (scene == 1) {
+			System.out.println("START THE GAME!!!!!!!!!");
 			// start game!				
 			g.setColor(Color.BLACK);	
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
@@ -66,7 +70,14 @@ public class Screen extends JPanel implements Runnable {
 				// initialize towers
 				TowerDatabase.initializeAllTowers();
 				BuildingDatabase.initializeAllBuildings();
-			
+				
+				// initialize user
+				user = new User();
+				
+				// select player's hero's grid button
+				GridFrame.invokeLeftClickEvent((int)(7.5 * GridFrame.getGridWidth() + GameFrame.FRAME_BORDER_HEIGHT), 
+						(int)(6.5 * GridFrame.getGridHeight() + GameFrame.FRAME_BORDER_WIDTH));
+				
 				isFrameInitialized = true;
 			} else {
 				newGameFrame.updateGameFrame(g);
@@ -86,13 +97,13 @@ public class Screen extends JPanel implements Runnable {
 
 	// first time
 	public void loadGame() {
-		user = new User(this);
-
+		scene = 0; // sets scene to main menu
 		running = true;
 	}
 
 	public void startGame() {
 		this.scene = 1; // enter game!
+		MouseHandler.isClicked = true; // repaint
 	}
 
 	@Override
@@ -104,22 +115,25 @@ public class Screen extends JPanel implements Runnable {
 		
 		// game loop
 		while (running) {
-			repaint();
+			if (MouseHandler.isClicked) {
+				repaint();
+				MouseHandler.isClicked = false;
+			} else {
+				frames++;
 
-			frames++;
+				if (System.currentTimeMillis() - 1000 >= lastFrame) {
+					// has passed at least 1 second
+					fps = frames;
+					frames = 0;
+					lastFrame = System.currentTimeMillis();
+				}
 
-			if (System.currentTimeMillis() - 1000 >= lastFrame) {
-				// has passed at least 1 second
-				fps = frames;
-				frames = 0;
-				lastFrame = System.currentTimeMillis();
-			}
-
-			try {
-				// to control the repaint rate
-				Thread.sleep(2);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				try {
+					// to control the repaint rate
+					Thread.sleep(2);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 
