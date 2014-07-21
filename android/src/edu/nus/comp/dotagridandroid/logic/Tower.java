@@ -8,6 +8,7 @@ public class Tower extends GameCharacter {
 	public static int towerStartingSight = 8;
 	
 	private int front;
+	private int order;
 	
 	public Tower() {
 	}
@@ -29,5 +30,13 @@ public class Tower extends GameCharacter {
 	
 	public void setFront(int front) {
 		this.front = front;
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
 	}
 }

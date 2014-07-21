@@ -15,7 +15,7 @@ public abstract class GameMaster {
 	
 	public abstract void applyRule(String character, String actionName, Map<String, Object> options);
 
-	public abstract boolean requestActionPossible(final GameState stateMachine, final String character, final String actionName, final Map<String, Object> options);
+	public abstract boolean requestActionPossible(String character, String actionName, Map<String, Object> options);
 
 	public void setResource(ResourceManager resMan) {
 		this.resourceManager = resMan;
