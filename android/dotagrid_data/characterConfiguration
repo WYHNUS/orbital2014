@@ -6,7 +6,16 @@
 	},
 	"creepConfiguration" : {
 		"sentinelMeeleCreep" : {
-			"characterImage" : "MeeleCreep"
+			"characterImage" : "MeeleCreep",
+			"bountyMoney" : 44,
+			"boutyExp" : 62,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 21,
+			"startingPhysicalAttackArea" : 1,
+			"startingPhysicalAttackSpeed" : 0.9,
+			"startingPhysicalDefence" : 2,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325
 		},
 		"sentinelRangedCreep" : {
 			"characterImage" : "RangedCreep"
@@ -18,42 +27,42 @@
 		},
 		"sentinelSuperMeeleCreep" : {
 			"characterImage" : "SuperMeeleCreep"
-
+			"bountyMoney" : 44,
+			"boutyExp" : 62,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 21,
+			"startingPhysicalAttackArea" : 1,
+			"startingPhysicalAttackSpeed" : 0.9,
+			"startingPhysicalDefence" : 3,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325
 		},
 		"sentinelSuperRangedCreep" : {
 			"characterImage" : "SuperRangedCreep"
-
 		},
 		"sentinelSuperSiegeCreep" : {
 			"characterImage" : "SuperSiegeCreep"
-
 		},
 		"scourgeMeeleCreep" : {
 			"characterImage" : "MeeleCreep"
-
 		},
 		"scourgeRangedCreep" : {
 			"characterImage" : "RangedCreep"
-
 		},
 		"scourgeSiegeCreep" : {
 			"characterImage" : "SiegeCreep"
-
 		},
 		"scourgeSuperMeeleCreep" : {
 			"characterImage" : "SuperMeeleCreep"
-
 		},
 		"scourgeSuperRangedCreep" : {
 			"characterImage" : "SuperRangedCreep"
-
 		},
 		"scourgeSuperSiegeCreep" : {
 			"characterImage" : "SuperSiegeCreep"
-
 		},
 		"neutralCreep" : {
-
+			"characterImage" : "NeutralCreep"
 		}
 	},
 	"barrackConfiguration" : {

@@ -340,14 +340,25 @@ public class BasicGameMaster extends GameMaster {
 									((List<Number>) front.get("creepSpawnPoint")).get(1).intValue()
 							};
 							boolean meeleUpgraded = true, rangedUpgraded = true;
-							for (int otherTeam : teamsWithoutNeutral)
+							for (int otherTeam : teamsWithoutNeutral) {
+								boolean barrackSurvived = false;
 								if (otherTeam != i)
 									for (String unit : teamStrength.get(otherTeam).get(frontNumber))
-										if (state.getCharacterType(unit) == GameObject.GAMEOBJECT_TYPE_BARRACK)
+										if (state.getCharacterType(unit) == GameObject.GAMEOBJECT_TYPE_BARRACK) {
 											if ("meele".equals(state.getCharacterProperty(unit, "type")))
 												meeleUpgraded &= (Boolean) state.getCharacterProperty(unit, "alive");
 											else if ("ranged".equals(state.getCharacterProperty(unit, "type")))
 												rangedUpgraded &= (Boolean) state.getCharacterProperty(unit, "alive");
+											barrackSurvived |= (Boolean) state.getCharacterProperty(unit, "alive");
+										}
+								if (!barrackSurvived)
+									// maximum level bonus
+									for (Map.Entry<Integer, Integer> entry : teamCreepLevel.get(i).entrySet())
+										entry.setValue((Integer)
+												((List<Map<String, Object>>) thatTeamConfig.get("fronts"))
+													.get(entry.getKey())
+														.get("creepMaximumLevel"));
+							}
 							for (Map<String, Object> type : (List<Map<String, Object>>) front.get("creepSpawnType"))
 								if (roundCount % ((Number) type.get("round")).intValue() == 0)
 									for (int count = 0,
@@ -367,6 +378,11 @@ public class BasicGameMaster extends GameMaster {
 											//
 										} else if ("ranged".equals(type.get("species")) || "siege".equals(type.get("species")) && rangedUpgraded) {
 											//
+										} else switch ((String) type.get("species")) {
+										case "meele":
+											state.setCharacterProperty(name, "bountyMoney", 0);
+										case "ranged":
+										case "siege":
 										}
 										state.setCharacterProperty(name, "level", 0);
 									}
