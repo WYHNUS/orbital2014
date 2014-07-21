@@ -40,6 +40,7 @@ public class GameCharacter extends GameObject {
 	 * 2 represents Scourge
 	 * */
 	private int teamNumber;
+	private boolean automated = false;
 
 	public static final int MAX_MOVEMENT_SPEED = 522;
 	public static final double MIN_MOVEMENT_CONSUME_AP = 2.0;
@@ -567,5 +568,13 @@ public class GameCharacter extends GameObject {
 	
 	public int getRoundsToRevive() {
 		return roundsToRevive;
+	}
+	
+	public boolean isAutomated() {
+		return automated;
+	}
+	
+	public void setAutomated(boolean automated) {
+		this.automated = automated;
 	}
 }

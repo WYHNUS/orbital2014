@@ -11,7 +11,7 @@ import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 
 public class GameLogicManager implements Closeable {
 	private Map<String, Object> gameSetting = new ConcurrentHashMap<>();
-	private Map<String, GameState>gameStates = new ConcurrentHashMap<>();
+	private Map<String, GameState> gameStates = new ConcurrentHashMap<>();
 	private GameState currentState;
 	private Context context;
 	private SoundEngine se;
@@ -25,35 +25,6 @@ public class GameLogicManager implements Closeable {
 		final int width = 100, height = 100;
 		current.setGridHeight(height);
 		current.setGridWidth(width);
-		final float[] terrain = new float[width * height];
-		Random r = new Random();
-//		for (int i = 0; i < width * height; i++)
-//			terrain[i] = r.nextFloat();
-		for (int i = 0; i < width; i++)
-			terrain[height / 2 * width + i] = r. nextFloat();
-//		current.setTerrain(new float[]{
-//				0, 0, 0, 0, 0, 0, 0, 0,
-//				0, 0, 0, 0, 0, 0, 0, 0,
-//				0, 0, 0, 0, 0, 0, 0, 0,
-//				0, 0, 0, 0, 0, 0, 0, 0,
-//				1, 1, 0, 1, 1, 0, 1, 1,
-//				0, 0, 0, 0, 0, 0, 0, 0,
-//				0, 0, 0, 0, 0, 0, 0, 0,
-//				0, 0, 0, 0, 0, 0, 0, 0
-//		});
-//		current.setTerrain(new float[]{
-//				0,0,0,0,
-//				0,0,0,0,
-//				1,1,1,1,
-//				0,0,0,0
-//		});
-//		current.setTerrain(new float[]{
-//				0,0,0,
-//				1,1,1,
-//				0,0,0
-//		});
-//		current.setTerrain(new float[width * height]);
-		current.setTerrain(terrain);
 		gameStates.put("Current", current);	// dummy
 	}
 

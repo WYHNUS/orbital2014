@@ -1,11 +1,16 @@
 package edu.nus.comp.dotagridandroid.logic;
 import java.util.*;
 
-import org.json.JSONException;
+import org.json.*;
 
 import edu.nus.comp.dotagridandroid.appsupport.ExtensionEngine;
 import edu.nus.comp.dotagridandroid.appsupport.JsonConverter;
+import edu.nus.comp.dotagridandroid.appsupport.ResourceManager;
+
 public class ExtendedGameMaster extends GameMaster {
+	@Override
+	public void initialise() {
+	}
 	@Override
 	public void applyRule(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
 		if ("SetProperty".equals(actionName)) {
@@ -31,5 +36,10 @@ public class ExtendedGameMaster extends GameMaster {
 	@Override
 	public boolean requestActionPossible(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
 		return true;
+	}
+	@Override
+	public void serverNotify() {
+		// TODO Auto-generated method stub
+		
 	}
 }

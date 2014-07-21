@@ -16,6 +16,10 @@ public class LineCreep extends GameCharacter {
 	public static double LINECREEP_MP_GAIN_PER_ROUND = 7;
 	
 	private List<int[]> moveTargets;
+	
+	public LineCreep() {
+		super.setObjectType(GAMEOBJECT_TYPE_LINECREEP);
+	}
 
 	public LineCreep(String name, int bountyMoney, int bountyExp, int startingHP, int startingMP, 
 			double startingPhysicalAttack, double basicPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 

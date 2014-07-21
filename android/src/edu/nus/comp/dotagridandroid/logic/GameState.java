@@ -35,9 +35,9 @@ public class GameState implements Closeable {
 	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
-	private Map<Integer, Map<String, Object>> teamConfig;
 	private Map<String, Item> itemShop;
 	private Map<String, Texture2D> objTextures, objThumbnail;
+	private Map<String, Object> charsConfig;
 	private ResourceManager resMan;
 	private ExtensionEngine extensionEngine;
 	// game rule object
@@ -62,15 +62,6 @@ public class GameState implements Closeable {
 		if (initialised || server == null)
 			return;
 		// TODO change this part
-		resMan = AppNativeAPI.createResourceManager(packagePath);
-		if (resMan.isExtensionEnabled()) {
-			gameMaster = new ExtendedGameMaster();
-			extensionEngine = AppNativeAPI.createExtensionEngine();
-			extensionEngine.loadScript(resMan.getAllScript());
-			extensionEngine.execute();
-			extensionEngine.attachGameState(this);
-		} else
-			gameMaster = new GameMaster();	// TODO extended or basic?
 		chars = new ConcurrentHashMap<>();
 		charsTurned = Collections.synchronizedSet(new HashSet<String>());
 		roundOrder = new ConcurrentLinkedQueue<>();
@@ -79,69 +70,28 @@ public class GameState implements Closeable {
 		objTextures = new ConcurrentHashMap<>();
 		objThumbnail = new ConcurrentHashMap<>();
 		posReverseLookup = new ConcurrentHashMap<>();
-		teamConfig = new HashMap<>();
 		itemShop = new ConcurrentHashMap<>();
+		resMan = AppNativeAPI.createResourceManager(packagePath);
+		if (resMan.isExtensionEnabled()) {
+			gameMaster = new ExtendedGameMaster();
+			gameMaster.setResource(resMan);
+			gameMaster.setState(this);
+			extensionEngine = AppNativeAPI.createExtensionEngine();
+			extensionEngine.loadScript(resMan.getAllScript());
+			extensionEngine.execute();
+			extensionEngine.attachGameState(this);
+		} else {
+			gameMaster = new BasicGameMaster();	// TODO extended or basic?
+			gameMaster.setResource(resMan);
+			gameMaster.setState(this);
+		}
 		chosenGrid = new int[2];
 		// TODO load characters
-		chars.put("MyHero", new Hero("MyHero", 1, 0, 200, 0, "strength",
-				100,
-				100,
-				100,
-				2,
-				100,
-				100,
-				100,
-				10000,
-				1,
-				100,
-				100,
-				100,
-				100,
-				100,
-				100,
-				100));
-		chars.put("MyHero2", new Hero("MyHero", 1, 0, 200, 0, "strength",
-				100,
-				100,
-				100,
-				2,
-				100,
-				100,
-				100,
-				10000,
-				2,
-				100,
-				100,
-				100,
-				100,
-				100,
-				100,
-				100));
-		setCharacterPosition("MyHero", new int[]{0, 0});
-		setCharacterPosition("MyHero2", new int[]{19,19});
 		// TODO round order
 		do {
 			roundFlagName = java.util.UUID.randomUUID().toString();
 		} while (chars.containsKey(roundFlagName));
 		roundOrder.addAll(Arrays.asList("MyHero", "MyHero2", roundFlagName));
-		// character models
-		chars.get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
-		chars.get("MyHero2").setCharacterImage("MyHeroModel");
-		Item itm = new Item("TestItem", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-		itm.setItemImage("DefaultButton");
-		itemShop.put("TestItem", itm);
-		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-		itm.setItemImage("DefaultButton");
-		itemShop.put("TestItem2", itm);
-		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-		itm.setItemImage("DefaultButton");
-		itemShop.put("TestItem3", itm);
-		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-		itm.setItemImage("DefaultButton");
-		itemShop.put("TestItem4", itm);
-		itm = new Item("TestItem-SE", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-		itm.setItemImage("DefaultButton");
-		itemShop.put("TestItem5", itm);
 		// terrain
 		Map<String, Object> terrainConfig = null;
 		try {
@@ -159,15 +109,6 @@ public class GameState implements Closeable {
 						this.terrain[c++] = val.floatValue();
 					else
 						break;
-				c = 0;
-				if (terrain.get("types") == null || "plain".equals(terrain.get("types")))
-					Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
-				else
-					for (Number val : (List<Number>) terrain.get("types"))
-						if (c < this.terrainType.length)
-							this.terrainType[c++] = val.intValue();
-						else
-							break;
 				break;
 			}
 			case "random": {
@@ -175,73 +116,17 @@ public class GameState implements Closeable {
 				gridWidth = r.nextInt(300);
 				gridHeight = r.nextInt(300);
 				this.terrain = new float[gridWidth * gridHeight];
-				this.terrainType = new int[gridWidth * gridHeight];
 				for (int i = 0; i < gridWidth * gridHeight; i++)
 					this.terrain[i] = r.nextFloat();
-				Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);	
 				break;
 			}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			terrain = new float[gridWidth * gridHeight];
-			terrainType = new int[gridWidth * gridHeight];
-			Arrays.fill(terrainType, TERRAIN_TYPE_FLAT);
-		}
-		// terrain characters
-		for (int i = 0; i < gridWidth * gridHeight; i++)
-			switch (terrainType[i]) {
-			case TERRAIN_TYPE_FOREST: {
-				// TODO Change here
-				Tree tree = new Tree();
-				tree.setCharacterImage("Tree");	// TODO Change here!
-				chars.put("Tree" + i, tree);
-				setCharacterPosition("Tree" + i, i % gridWidth, i / gridWidth);
-				break;
-			}
-			case TERRAIN_TYPE_RIVER: {
-				break;
-			}
-			}
-		// towers
-		try {
-			List<Map<String, Object>> towerConfig = (List<Map<String, Object>>) terrainConfig.get("towers");
-			if (towerConfig != null)
-				for (Map<String, Object> tower : towerConfig) {
-					String name = (String) tower.get("name");
-					Tower towerCharacter = new Tower (
-							name,
-							((Number) tower.get("bountyMoney")).intValue(),
-							((Number) tower.get("startingHP")).intValue(),
-							((Number) tower.get("startingMP")).intValue(),
-							((Number) tower.get("startingPhysicalAttack")).doubleValue(),
-							((Number) tower.get("startingPhysicalAttackArea")).intValue(),
-							"max".equals(tower.get("startingPhysicalAttackSpeed")) ?
-									GameCharacter.MAX_PHYSICAL_ATTACK_SPEED :
-									((Number) tower.get("startingPhysicalAttackSpeed")).intValue(),
-							((Number) tower.get("startingPhysicalDefence")).intValue(),
-							((Number) tower.get("actionPoint")).intValue(),
-							((Number) tower.get("team")).intValue()/*0*/);
-					towerCharacter.setCharacterImage((String) tower.get("model"));
-					towerCharacter.setSight(((Number) tower.get("sight")).intValue());
-					chars.put(name, towerCharacter);
-					setCharacterPosition(name,
-							((List<Number>) tower.get("position")).get(0).intValue(),
-							((List<Number>) tower.get("position")).get(1).intValue());
-				}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// team
-		try {
-			for (Map<String, Object> team : (List<Map<String, Object>>) terrainConfig.get("teams")) {
-				int teamNumber = ((Number) team.get("team")).intValue();
-				teamConfig.put(teamNumber, team);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 		// end
+		gameMaster.initialise();
 		chosenGrid = objPositions.get(playerCharacter).clone();
 		initialised = true;
 	}
@@ -298,22 +183,26 @@ public class GameState implements Closeable {
 	}
 
 	public float[] getTerrain() {
-		return terrain;
+		return terrain.clone();
 	}
 	
 	public float getTerrainHeight(int... pos) {
 		return terrain[pos[0] + pos[1] * gridWidth];
 	}
 	
-	public int getTerrainType(int... pos) {
-		return terrainType[pos[0] + pos[1] * gridWidth];
-	}
+//	public int getTerrainType(int... pos) {
+//		return terrainType[pos[0] + pos[1] * gridWidth];
+//	}
 
-	public void setTerrain(float[] terrain) {
-		this.terrain = terrain;
-	}
+//	public void setTerrain(float[] terrain) {
+//		this.terrain = terrain;
+//	}
 	
 	// characters
+	public Map<String, Object> getCharacterConfiguration () {
+		return charsConfig;
+	}
+	
 	public String getCurrentCharacterName() {
 		return currentCharacter;
 	}
@@ -336,7 +225,7 @@ public class GameState implements Closeable {
 	
 	public Object getCharacterProperty(String charName, String name) {
 		// call getter method through reflection
-		if (name == null || name.length() == 0 || !chars.containsKey(charName))
+		if (name == null || name.length() == 0 || !chars.containsKey(charName) || roundFlagName.equals(charName))
 			return null;
 		// Method
 		final String methodName = "get" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
@@ -357,7 +246,7 @@ public class GameState implements Closeable {
 		return character.getExtendedProperty(name);
 	}
 	
-	public void setCharacterProperty(String charName, String name, Object value) {
+	public synchronized void setCharacterProperty(String charName, String name, Object value) {
 		if (name == null || name.length() == 0 || !chars.containsKey(charName) || value == null)
 			return;
 		final String methodName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
@@ -365,13 +254,6 @@ public class GameState implements Closeable {
 		boolean setterSuccess = false;
 		// TODO add LineCreeps
 		final GameCharacter character = chars.get(charName);
-//		if (character instanceof Hero) {
-//			// Hero class
-//			methods = Hero.class.getMethods();
-//		} else {
-//			// Generic Character class
-//			methods = GameCharacter.class.getMethods();
-//		}
 		methods = character.getClass().getMethods();
 		for (Method m : methods) {
 			if (!methodName.equals(m.getName()))
@@ -388,6 +270,8 @@ public class GameState implements Closeable {
 			else if (value instanceof Long && params[0] == Long.TYPE)
 				;
 			else if (value instanceof Short && params[0] == Short.TYPE)
+				;
+			else if (value instanceof Boolean && params[0] == Boolean.TYPE)
 				;
 			else if (!params[0].getClass().isAssignableFrom(value.getClass()))
 				continue;
@@ -557,13 +441,27 @@ public class GameState implements Closeable {
 		return posReverseLookup.get(new GridPointIndex(position));
 	}
 	
-	public void addAutoCharacter(String name, GameCharacter character) {
+	public void addCharacter(String name, GameCharacter character, boolean automated, boolean controlled) {
+		if (chars.containsKey(name) || roundFlagName.equals(name))
+			return;
 		chars.put(name, character);
-		roundOrder.add(name);
+		setCharacterProperty(name, "automated", automated);
+		if (controlled)
+			roundOrder.add(name);
+	}
+	
+	public GameCharacter removeCharacter(String name) {
+		roundOrder.remove(name);
+		return chars.remove(name);
 	}
 	
 	public int getCharacterType (String name) {
-		return chars.get(name).getObjectType();
+		if (roundFlagName.equals(name))
+			return GameObject.GAMEOBJECT_TYPE_ROUNDFLAG;
+		else if (chars.containsKey(name))
+			return chars.get(name).getObjectType();
+		else
+			return -1;
 	}
 	
 	// character actions
@@ -574,36 +472,37 @@ public class GameState implements Closeable {
 			throw new RuntimeException("Round Order is corrupted");
 		roundOrder.add(roundOrder.poll());
 		charsTurned.add(currentCharacter);
-		while (true) {
+		while (true)
 			if (roundFlagName.equals(roundOrder.peek())) {
 				gameMaster.applyRule(this, null, "GameAction", Collections.singletonMap("EndRound", null));
+				roundOrder.add(roundOrder.poll());
 				roundCount++;
 				gameMaster.applyRule(this, null, "GameAction", Collections.singletonMap("BeginRound", null));
 			} else if (chars.get(roundOrder.peek()).isAlive())
 				break;
-			roundOrder.add(roundOrder.poll());
-		}
+			else
+				roundOrder.add(roundOrder.poll());
 		currentCharacter = roundOrder.peek();
 		charsTurned.add(currentCharacter);
-		//if (isPlayer) {
-		Thread t = new Thread() {
-			@Override
-			public void run() {
-				GameState stateMachine = GameState.this;
-				gameMaster.applyRule(stateMachine, currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
-				String character = currentCharacter;
-				GameCharacterAutomaton.autoAction(stateMachine, currentCharacter);
-				// force nextRound
-				if (character.equals(currentCharacter))
-					nextTurn();
-			}
-		};
-		t.start();
-		automatonThread = t;
-		//} else {
-		gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
-		automatonThread = null;
-		//}
+		if (chars.get(currentCharacter).isAutomated()) {
+			Thread t = new Thread() {
+				@Override
+				public void run() {
+					GameState stateMachine = GameState.this;
+					gameMaster.applyRule(stateMachine, currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
+					String character = currentCharacter;
+					GameCharacterAutomaton.autoAction(stateMachine, currentCharacter);
+					// force nextRound
+					if (character.equals(currentCharacter))
+						nextTurn();
+				}
+			};
+			t.start();
+			automatonThread = t;
+		} else {
+			gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
+			automatonThread = null;
+		}
 	}
 		
 	public int getRoundCount() {
@@ -629,6 +528,10 @@ public class GameState implements Closeable {
 	}
 	
 	// items
+	public void setItemInShop (String name, Item item) {
+		itemShop.put(name, item);
+	}
+	
 	public Map<String, Item> getItemsInShop() {
 		return Collections.unmodifiableMap(itemShop);
 	}

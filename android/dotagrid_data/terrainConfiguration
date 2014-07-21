@@ -459,6 +459,93 @@
 			"sight" : 5
 		}
 	],
+	"barracks" : [
+		{
+			"name" : "sentinelTopMeeleBarrack",
+			"team" : 1,
+			"front" : 0,
+			"type" : "meele",
+			"model" : "MeeleBarrack"
+		},
+		{
+			"name" : "sentinelMidMeeleBarrack",
+			"team" : 1,
+			"front" : 1,
+			"type" : "meele",
+			"model" : "MeeleBarrack"
+		},
+		{
+			"name" : "sentinelBotMeeleBarrack",
+			"team" : 1,
+			"front" : 2,
+			"type" : "meele",
+			"model" : "MeeleBarrack"
+		},
+		{
+			"name" : "sentinelTopRangedBarrack",
+			"team" : 1,
+			"front" : 0,
+			"type" : "ranged",
+			"model" : "RangedBarrack"
+		},
+		{
+			"name" : "sentinelMidRangedBarrack",
+			"team" : 1,
+			"front" : 1,
+			"type" : "ranged",
+			"model" : "RangedBarrack"
+		},
+		{
+			"name" : "sentinelBotRangedBarrack",
+			"team" : 1,
+			"front" : 2,
+			"type" : "ranged",
+			"model" : "RangedBarrack"
+		},
+
+		{
+			"name" : "scourgeTopMeeleBarrack",
+			"team" : 2,
+			"front" : 0,
+			"type" : "meele",
+			"model" : "MeeleBarrack"
+		},
+		{
+			"name" : "scourgeMidMeeleBarrack",
+			"team" : 2,
+			"front" : 1,
+			"type" : "meele",
+			"model" : "MeeleBarrack"
+		},
+		{
+			"name" : "scourgeBotMeeleBarrack",
+			"team" : 2,
+			"front" : 2,
+			"type" : "meele",
+			"model" : "MeeleBarrack"
+		},
+		{
+			"name" : "scourgeTopRangedBarrack",
+			"team" : 2,
+			"front" : 0,
+			"type" : "ranged",
+			"model" : "RangedBarrack"
+		},
+		{
+			"name" : "scourgeMidRangedBarrack",
+			"team" : 2,
+			"front" : 1,
+			"type" : "ranged",
+			"model" : "RangedBarrack"
+		},
+		{
+			"name" : "scourgeBotRangedBarrack",
+			"team" : 2,
+			"front" : 2,
+			"type" : "ranged",
+			"model" : "RangedBarrack"
+		}
+	],
 	"teams" : [
 		{
 			"team" : 0,
@@ -473,58 +560,120 @@
 		{
 			"team" : 1,
 			"heroSpawnPoint" : [7, 8],
+			"fountain" : "sentinelFountain",
+			"creepBarrack" : {
+				"meele" : "SentinelMeeleCreepBarrack",
+				"ranged" : "SentinelRangedCreepBarrack"
+			},
 			"fronts" : [
 				/* 0 Top */
 				{
 					"creepSpawnPoint" : [8, 30],
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
-						{"type" : "sentinalMeeleCreep", "round" : 10},
-						{"type" : "sentinalRangedCreep", "round" : 10},
-						{"type" : "sentinalSiegeCreep", "round" : 50}
+						{"type" : "sentinelMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
+						{"type" : "sentinelRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
+						{"type" : "sentinelSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
 					],
 					"creepSpawnEnhancedRound" : 50,
 					"creepSpawnEnhancedType" : [
-						{"type" : "sentinalMeeleCreep"},
-						{"type" : "sentinalRangedCreep"},
-						{"type" : "sentinalSiegeCreep"}
-					]
+						{"type" : "sentinelSuperMeeleCreep"},
+						{"type" : "sentinelSuperRangedCreep"},
+						{"type" : "sentinelSuperSiegeCreep"}
+					],
+					"creepUpgradeRound" : 100
 				},
 				/* 1 Middle */
 				{
 					"creepSpawnPoint" : [24, 24],
 					"creepSpawnRound" : 10,
-					"creepSpawnEnhancedRound" : 50
+					"creepSpawnType" : [
+						{"type" : "sentinelMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
+						{"type" : "sentinelRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
+						{"type" : "sentinelSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+					],
+					"creepSpawnEnhancedRound" : 50,
+					"creepSpawnEnhancedType" : [
+						{"type" : "sentinelSuperMeeleCreep"},
+						{"type" : "sentinelSuperRangedCreep"},
+						{"type" : "sentinelSuperSiegeCreep"}
+					],
+					"creepUpgradeRound" : 100
 				},
 				/* 2 Bottom */
 				{
 					"creepSpawnPoint" : [28, 9],
 					"creepSpawnRound" : 10,
-					"creepSpawnEnhancedRound" : 50
+					"creepSpawnType" : [
+						{"type" : "sentinelMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
+						{"type" : "sentinelRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
+						{"type" : "sentinelSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+					],
+					"creepSpawnEnhancedRound" : 50,
+					"creepSpawnEnhancedType" : [
+						{"type" : "sentinelSuperMeeleCreep"},
+						{"type" : "sentinelSuperRangedCreep"},
+						{"type" : "sentinelSuperSiegeCreep"}
+					],
+					"creepUpgradeRound" : 100
 				}
 			]
 		},
 		{
 			"team" : 2,
 			"heroSpawnPoint" : [92, 91],
+			"fountain" : "scougeFountain",
 			"fronts" : [
 				/* 0 Top */
 				{
 					"creepSpawnPoint" : [70, 90],
 					"creepSpawnRound" : 10,
-					"creepSpawnEnhancedRound" : 50
+					"creepSpawnType" : [
+						{"type" : "scourgeMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
+						{"type" : "scourgeRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
+						{"type" : "scourgeSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+					],
+					"creepSpawnEnhancedRound" : 50,
+					"creepSpawnEnhancedType" : [
+						{"type" : "scourgeSuperMeeleCreep"},
+						{"type" : "scourgeSuperRangedCreep"},
+						{"type" : "scourgeSuperSiegeCreep"}
+					],
+					"creepUpgradeRound" : 100
 				},
 				/* 1 Middle */
 				{
 					"creepSpawnPoint" : [75, 75],
 					"creepSpawnRound" : 10,
-					"creepSpawnEnhancedRound" : 50
+					"creepSpawnType" : [
+						{"type" : "scourgeMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
+						{"type" : "scourgeRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
+						{"type" : "scourgeSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+					],
+					"creepSpawnEnhancedRound" : 50,
+					"creepSpawnEnhancedType" : [
+						{"type" : "scourgeSuperMeeleCreep"},
+						{"type" : "scourgeSuperRangedCreep"},
+						{"type" : "scourgeSuperSiegeCreep"}
+					],
+					"creepUpgradeRound" : 100
 				},
 				/* 2 Bottom */
 				{
 					"creepSpawnPoint" : [91, 69],
 					"creepSpawnRound" : 10,
-					"creepSpawnEnhancedRound" : 50
+					"creepSpawnType" : [
+						{"type" : "scourgeMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
+						{"type" : "scourgeRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
+						{"type" : "scourgeSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+					],
+					"creepSpawnEnhancedRound" : 50,
+					"creepSpawnEnhancedType" : [
+						{"type" : "scourgeSuperMeeleCreep"},
+						{"type" : "scourgeSuperRangedCreep"},
+						{"type" : "scourgeSuperSiegeCreep"}
+					],
+					"creepUpgradeRound" : 100
 				}
 			]
 		}
