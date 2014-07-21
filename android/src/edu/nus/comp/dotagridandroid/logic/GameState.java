@@ -3,17 +3,14 @@ package edu.nus.comp.dotagridandroid.logic;
 import java.util.*;
 import java.util.concurrent.*;
 import java.lang.reflect.*;
-
 import org.json.*;
-
-import android.R.integer;
 import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
 import edu.nus.comp.dotagridandroid.ui.event.*;
 import edu.nus.comp.dotagridandroid.appsupport.*;
 
-@SuppressWarnings("unchecked")
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class GameState implements Closeable {
 	public static final int TERRAIN_TYPE_FLAT = 1;
 	public static final int TERRAIN_TYPE_MOUNTAIN = 0;
@@ -25,14 +22,12 @@ public class GameState implements Closeable {
 	private int gridWidth, gridHeight;
 	private String packagePath;
 	private float[] terrain;
-	private int[] terrainType;
 	private boolean initialised = false;
 	private SceneRenderer currentSceneRenderer;
 	private Queue<String> roundOrder;
 	private int roundCount = 0;
 	private Map<String, GameCharacter> chars;
 	private Set<String> charsTurned;
-	private Map<String, GameObject> objs;
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
 	private Map<String, Item> itemShop;
@@ -65,7 +60,6 @@ public class GameState implements Closeable {
 		chars = new ConcurrentHashMap<>();
 		charsTurned = Collections.synchronizedSet(new HashSet<String>());
 		roundOrder = new ConcurrentLinkedQueue<>();
-		objs = new ConcurrentHashMap<>();
 		objPositions = new ConcurrentHashMap<>();
 		objTextures = new ConcurrentHashMap<>();
 		objThumbnail = new ConcurrentHashMap<>();
@@ -103,7 +97,6 @@ public class GameState implements Closeable {
 			case "fixed": {
 				int c = 0;
 				this.terrain = new float[gridWidth * gridHeight];
-				this.terrainType = new int[gridWidth * gridHeight];
 				for (Number val : (List<Number>) terrain.get("heights"))
 					if (c < this.terrain.length)
 						this.terrain[c++] = val.floatValue();
@@ -145,7 +138,6 @@ public class GameState implements Closeable {
 		extensionEngine = null;
 		gameMaster = null;
 		chars = null;
-		objs = null;
 		objPositions = null;
 		for (Texture2D tex : objTextures.values())
 			tex.close();
@@ -215,10 +207,6 @@ public class GameState implements Closeable {
 		return Collections.unmodifiableMap(chars);
 	}
 	
-	public Map<String, int[]> getCharacterPositions() {
-		return Collections.unmodifiableMap(objPositions);
-	}
-	
 	public ExtensionEngine getExtensionEngine() {
 		return extensionEngine;
 	}
@@ -252,7 +240,6 @@ public class GameState implements Closeable {
 		final String methodName = "set" + Character.toUpperCase(name.charAt(0)) + name.substring(1, name.length());
 		final Method[] methods;
 		boolean setterSuccess = false;
-		// TODO add LineCreeps
 		final GameCharacter character = chars.get(charName);
 		methods = character.getClass().getMethods();
 		for (Method m : methods) {
@@ -491,7 +478,6 @@ public class GameState implements Closeable {
 			Thread t = new Thread() {
 				@Override
 				public void run() {
-					GameState stateMachine = GameState.this;
 					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
 					String character = currentCharacter;
 //					GameCharacterAutomaton.autoAction(stateMachine, currentCharacter);
@@ -544,7 +530,7 @@ public class GameState implements Closeable {
 	public Map<String, Boolean> areActionPossible (Map<String, Map<String, Object>> actions) {
 		Map<String, Boolean> possible = new HashMap<>();
 		for (Map.Entry<String, Map<String,Object>> action : actions.entrySet())
-			possible.put(action.getKey(), gameMaster.requestActionPossible(this, playerCharacter, action.getKey(), action.getValue()));
+			possible.put(action.getKey(), gameMaster.requestActionPossible(playerCharacter, action.getKey(), action.getValue()));
 		return Collections.unmodifiableMap(possible);
 	}
 	

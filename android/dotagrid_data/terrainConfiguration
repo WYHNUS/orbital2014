@@ -127,7 +127,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
 			"actionPoint" : 100,
-			"sight" : 10
+			"sight" : 8
 		},
 		{
 			"name" : "sentinelMidTower3",
@@ -144,7 +144,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "sentinelBotTower3",
@@ -161,7 +161,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 
 		{
@@ -179,7 +179,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "sentinelMidTower2",
@@ -196,7 +196,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "sentinelBotTower2",
@@ -213,7 +213,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		
 		{
@@ -231,7 +231,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "sentinelMidTower1",
@@ -248,7 +248,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "sentinelBotTower1",
@@ -265,7 +265,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 
 		{
@@ -283,7 +283,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "scourgeMidTower3",
@@ -300,7 +300,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "scourgeBotTower3",
@@ -317,7 +317,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 25,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 
 		{
@@ -335,7 +335,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "scourgeMidTower2",
@@ -352,7 +352,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "scourgeBotTower2",
@@ -369,7 +369,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		
 		{
@@ -387,7 +387,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "scourgeMidTower1",
@@ -404,7 +404,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "scourgeBotTower1",
@@ -421,7 +421,7 @@
 			"startingPhysicalAttackSpeed" : 1.2,
 			"startingPhysicalDefence" : 18,
 			"actionPoint" : 100,
-			"sight" : 5
+			"sight" : 8
 		},
 
 		{
@@ -439,7 +439,7 @@
 			"startingPhysicalAttackSpeed" : "max",
 			"startingPhysicalDefence" : 15,
 			"actionPoint" : 200,
-			"sight" : 5
+			"sight" : 8
 		},
 		{
 			"name" : "scourgeFountain",
@@ -456,7 +456,77 @@
 			"startingPhysicalAttackSpeed" : "max",
 			"startingPhysicalDefence" : 15,
 			"actionPoint" : 200,
-			"sight" : 5
+			"sight" : 8
+		},
+
+		{
+			"name" : "sentinalGuardLeftTower",
+			"team" : 1,
+			"front" : 5,
+			"order" : 0,
+			"position" : [14, 19],
+			"model" : "Tower",
+			"bountyMoney" : 400,
+			"startingHP" : 1600,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 180,
+			"startingPhysicalAttackArea" : 5,
+			"startingPhysicalAttackSpeed" : 1.2,
+			"startingPhysicalDefence" : 25,
+			"actionPoint" : 100,
+			"sight" : 8
+		},
+		{
+			"name" : "sentinalGuardRightTower",
+			"team" : 1,
+			"front" : 5,
+			"order" : 0,
+			"position" : [18, 15],
+			"model" : "Tower",
+			"bountyMoney" : 400,
+			"startingHP" : 1600,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 180,
+			"startingPhysicalAttackArea" : 5,
+			"startingPhysicalAttackSpeed" : 1.2,
+			"startingPhysicalDefence" : 25,
+			"actionPoint" : 100,
+			"sight" : 8
+		}
+
+		{
+			"name" : "scourgeGuardLeftTower",
+			"team" : 1,
+			"front" : 5,
+			"order" : 0,
+			"position" : [14, 19],
+			"model" : "Tower",
+			"bountyMoney" : 400,
+			"startingHP" : 1600,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 180,
+			"startingPhysicalAttackArea" : 5,
+			"startingPhysicalAttackSpeed" : 1.2,
+			"startingPhysicalDefence" : 25,
+			"actionPoint" : 100,
+			"sight" : 8
+		},
+		{
+			"name" : "scourgeGuardRightTower",
+			"team" : 1,
+			"front" : 5,
+			"order" : 0,
+			"position" : [18, 15],
+			"model" : "Tower",
+			"bountyMoney" : 400,
+			"startingHP" : 1600,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 180,
+			"startingPhysicalAttackArea" : 5,
+			"startingPhysicalAttackSpeed" : 1.2,
+			"startingPhysicalDefence" : 25,
+			"actionPoint" : 100,
+			"sight" : 8
 		}
 	],
 	"barracks" : [
@@ -465,6 +535,7 @@
 			"team" : 1,
 			"front" : 0,
 			"type" : "meele",
+			"position" : [5, 31],
 			"model" : "MeeleBarrack"
 		},
 		{
@@ -472,6 +543,7 @@
 			"team" : 1,
 			"front" : 1,
 			"type" : "meele",
+			"position" : [20, 27],
 			"model" : "MeeleBarrack"
 		},
 		{
@@ -479,6 +551,7 @@
 			"team" : 1,
 			"front" : 2,
 			"type" : "meele",
+			"position" : [29, 12],
 			"model" : "MeeleBarrack"
 		},
 		{
@@ -486,6 +559,7 @@
 			"team" : 1,
 			"front" : 0,
 			"type" : "ranged",
+			"position" : [11, 31],
 			"model" : "RangedBarrack"
 		},
 		{
@@ -493,6 +567,7 @@
 			"team" : 1,
 			"front" : 1,
 			"type" : "ranged",
+			"position" : [26, 21],
 			"model" : "RangedBarrack"
 		},
 		{
@@ -500,6 +575,7 @@
 			"team" : 1,
 			"front" : 2,
 			"type" : "ranged",
+			"position" : [29, 6],
 			"model" : "RangedBarrack"
 		},
 
@@ -508,6 +584,7 @@
 			"team" : 2,
 			"front" : 0,
 			"type" : "meele",
+			"position" : [70, 93],
 			"model" : "MeeleBarrack"
 		},
 		{
@@ -515,6 +592,7 @@
 			"team" : 2,
 			"front" : 1,
 			"type" : "meele",
+			"position" : [73, 78],
 			"model" : "MeeleBarrack"
 		},
 		{
@@ -522,6 +600,7 @@
 			"team" : 2,
 			"front" : 2,
 			"type" : "meele",
+			"position" : [88, 68],
 			"model" : "MeeleBarrack"
 		},
 		{
@@ -529,6 +608,7 @@
 			"team" : 2,
 			"front" : 0,
 			"type" : "ranged",
+			"position" : [70, 87],
 			"model" : "RangedBarrack"
 		},
 		{
@@ -536,6 +616,7 @@
 			"team" : 2,
 			"front" : 1,
 			"type" : "ranged",
+			"position" : [79, 72],
 			"model" : "RangedBarrack"
 		},
 		{
@@ -543,6 +624,7 @@
 			"team" : 2,
 			"front" : 2,
 			"type" : "ranged",
+			"position" : [94, 68],
 			"model" : "RangedBarrack"
 		}
 	],
@@ -561,6 +643,7 @@
 			"team" : 1,
 			"ancient" : {
 				"name" : "sentinalAncient",
+				"front" : 5,
 				"position" : [14, 15],
 				"bountyMoney" : 0,
 				"startingHP" : 4250,
@@ -580,51 +663,108 @@
 					"creepSpawnPoint" : [8, 30],
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
-						{"type" : "sentinelMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
-						{"type" : "sentinelRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
-						{"type" : "sentinelSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+						{
+							"species" : "meele",
+							"type" : "sentinelMeeleCreep",
+							"upgradedType" : "sentinelSuperMeeleCreep",
+							"round" : 10,
+							"initial" : 3,
+							"maximum" : 6,
+							"increaseRound" : 200
+						},
+						{
+							"species" : "ranged",
+							"type" : "sentinelRangedCreep",
+							"upgradedType" : "sentinelSuperRangedCreep",
+							"round" : 10,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						},
+						{
+							"species" : "siege",
+							"type" : "sentinelSiegeCreep",
+							"upgradedType" : "sentinelSuperSiegeCreep",
+							"round" : 50,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						}
 					],
-					"creepSpawnEnhancedRound" : 50,
-					"creepSpawnEnhancedType" : [
-						{"type" : "sentinelSuperMeeleCreep"},
-						{"type" : "sentinelSuperRangedCreep"},
-						{"type" : "sentinelSuperSiegeCreep"}
-					],
-					"creepUpgradeRound" : 100
+					"creepUpgradeRound" : 100,
+					"creepLevelUpRound" : 200
 				},
 				/* 1 Middle */
 				{
 					"creepSpawnPoint" : [24, 24],
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
-						{"type" : "sentinelMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
-						{"type" : "sentinelRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
-						{"type" : "sentinelSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+						{
+							"species" : "meele",
+							"type" : "sentinelMeeleCreep",
+							"upgradedType" : "sentinelSuperMeeleCreep",
+							"round" : 10,
+							"initial" : 3,
+							"maximum" : 6,
+							"increaseRound" : 200
+						},
+						{
+							"species" : "ranged",
+							"type" : "sentinelRangedCreep",
+							"upgradedType" : "sentinelSuperRangedCreep",
+							"round" : 10,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						},
+						{
+							"species" : "siege",
+							"type" : "sentinelSiegeCreep",
+							"upgradedType" : "sentinelSuperSiegeCreep",
+							"round" : 50,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						}
 					],
-					"creepSpawnEnhancedRound" : 50,
-					"creepSpawnEnhancedType" : [
-						{"type" : "sentinelSuperMeeleCreep"},
-						{"type" : "sentinelSuperRangedCreep"},
-						{"type" : "sentinelSuperSiegeCreep"}
-					],
-					"creepUpgradeRound" : 100
+					"creepUpgradeRound" : 100,
+					"creepLevelUpRound" : 200
 				},
 				/* 2 Bottom */
 				{
 					"creepSpawnPoint" : [28, 9],
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
-						{"type" : "sentinelMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
-						{"type" : "sentinelRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
-						{"type" : "sentinelSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+						{
+							"species" : "meele",
+							"type" : "sentinelMeeleCreep",
+							"upgradedType" : "sentinelSuperMeeleCreep",
+							"round" : 10,
+							"initial" : 3,
+							"maximum" : 6,
+							"increaseRound" : 200
+						},
+						{
+							"species" : "ranged",
+							"type" : "sentinelRangedCreep",
+							"upgradedType" : "sentinelSuperRangedCreep",
+							"round" : 10,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						},
+						{
+							"species" : "siege",
+							"type" : "sentinelSiegeCreep",
+							"upgradedType" : "sentinelSuperSiegeCreep",
+							"round" : 50,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						}
 					],
-					"creepSpawnEnhancedRound" : 50,
-					"creepSpawnEnhancedType" : [
-						{"type" : "sentinelSuperMeeleCreep"},
-						{"type" : "sentinelSuperRangedCreep"},
-						{"type" : "sentinelSuperSiegeCreep"}
-					],
-					"creepUpgradeRound" : 100
+					"creepUpgradeRound" : 100,
+					"creepLevelUpRound" : 200
 				}
 			]
 		},
@@ -632,6 +772,7 @@
 			"team" : 2,
 			"ancient" : {
 				"name" : "scourgeAncient",
+				"front" : 5,
 				"position" : [85, 84],
 				"bountyMoney" : 0,
 				"startingHP" : 4250,
@@ -647,51 +788,108 @@
 					"creepSpawnPoint" : [70, 90],
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
-						{"type" : "scourgeMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
-						{"type" : "scourgeRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
-						{"type" : "scourgeSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+						{
+							"species" : "meele",
+							"type" : "scourgeMeeleCreep",
+							"upgradedType" : "scourgeSuperMeeleCreep",
+							"round" : 10,
+							"initial" : 3,
+							"maximum" : 6,
+							"increaseRound" : 200
+						},
+						{
+							"species" : "ranged",
+							"type" : "scourgeRangedCreep",
+							"upgradedType" : "scourgeSuperSuperRangedCreep",
+							"round" : 10,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						},
+						{
+							"species" : "siege",
+							"type" : "scourgeSiegeCreep",
+							"upgradedType" : "scourgeSuperSiegeCreep",
+							"round" : 50,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+							}
 					],
-					"creepSpawnEnhancedRound" : 50,
-					"creepSpawnEnhancedType" : [
-						{"type" : "scourgeSuperMeeleCreep"},
-						{"type" : "scourgeSuperRangedCreep"},
-						{"type" : "scourgeSuperSiegeCreep"}
-					],
-					"creepUpgradeRound" : 100
+					"creepUpgradeRound" : 100,
+					"creepLevelUpRound" : 200
 				},
 				/* 1 Middle */
 				{
 					"creepSpawnPoint" : [75, 75],
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
-						{"type" : "scourgeMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
-						{"type" : "scourgeRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
-						{"type" : "scourgeSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+						{
+							"species" : "meele",
+							"type" : "scourgeMeeleCreep",
+							"upgradedType" : "scourgeSuperMeeleCreep",
+							"round" : 10,
+							"initial" : 3,
+							"maximum" : 6,
+							"increaseRound" : 200
+						},
+						{
+							"species" : "ranged",
+							"type" : "scourgeRangedCreep",
+							"upgradedType" : "scourgeSuperRangedCreep",
+							"round" : 10,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						},
+						{
+							"species" : "siege",
+							"type" : "scourgeSiegeCreep",
+							"upgradedType" : "scourgeSuperSiegeCreep",
+							"round" : 50,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						}
 					],
-					"creepSpawnEnhancedRound" : 50,
-					"creepSpawnEnhancedType" : [
-						{"type" : "scourgeSuperMeeleCreep"},
-						{"type" : "scourgeSuperRangedCreep"},
-						{"type" : "scourgeSuperSiegeCreep"}
-					],
-					"creepUpgradeRound" : 100
+					"creepUpgradeRound" : 100,
+					"creepLevelUpRound" : 200
 				},
 				/* 2 Bottom */
 				{
 					"creepSpawnPoint" : [91, 69],
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
-						{"type" : "scourgeMeeleCreep", "round" : 10, "initial" : 3, "maximum" : 6, "increaseRound" : 200},
-						{"type" : "scourgeRangedCreep", "round" : 10, "inital" : 1, "maximum" : 2, "increaseRound" : 600},
-						{"type" : "scourgeSiegeCreep", "round" : 50, "inital" : 1, "maximum" : 2, "increaseRound" : 600}
+						{
+							"species" : "meele",
+							"type" : "scourgeMeeleCreep",
+							"upgradedType" : "scourgeSuperMeeleCreep",
+							"round" : 10,
+							"initial" : 3,
+							"maximum" : 6,
+							"increaseRound" : 200
+						},
+						{
+							"species" : "ranged",
+							"type" : "scourgeRangedCreep",
+							"upgradedType" : "scourgeSuperRangedCreep",
+							"round" : 10,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						},
+						{
+							"species" : "siege",
+							"type" : "scourgeSiegeCreep",
+							"upgradedType" : "scourgeSuperSiegeCreep",
+							"round" : 50,
+							"inital" : 1,
+							"maximum" : 2,
+							"increaseRound" : 600
+						}
 					],
-					"creepSpawnEnhancedRound" : 50,
-					"creepSpawnEnhancedType" : [
-						{"type" : "scourgeSuperMeeleCreep"},
-						{"type" : "scourgeSuperRangedCreep"},
-						{"type" : "scourgeSuperSiegeCreep"}
-					],
-					"creepUpgradeRound" : 100
+					"creepUpgradeRound" : 100,
+					"creepLevelUpRound" : 200
 				}
 			]
 		}

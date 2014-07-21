@@ -372,10 +372,10 @@ public class GridRenderer implements Renderer {
 		}
 	}
 	private void prepareObjects() {
-		final Map<String, GameCharacter> chars = manager.getCurrentGameState().getCharacters();
-		final String mainCharacter = manager.getCurrentGameState().getCurrentCharacterName();
+		final GameState state = manager.getCurrentGameState();
+		final Map<String, GameCharacter> chars = state.getCharacters();
+		final String mainCharacter = state.getCurrentCharacterName();
 		final int mainCharacterTeamNumber = chars.get(mainCharacter).getTeamNumber();
-		final Map<String, int[]> charPositions = manager.getCurrentGameState().getCharacterPositions();
 		// TODO draw character
 		// if friendly, always display
 		// if enemy, display in close proximity
@@ -384,14 +384,14 @@ public class GridRenderer implements Renderer {
 			lightOn.put(name, false);
 			graphicsImpl.setLightOn(name, false);
 			final String charModelName = chars.get(name).getCharacterImage();
-			final int[] pos = charPositions.get(name);
+			final int[] pos = state.getCharacterPosition(charModelName);
 			if (pos == null || !chars.get(name).isAlive()) {
 				drawableVisible.put(name, false);
 				graphicsImpl.setDrawableVisible(name, false);
 				continue;
 			}
-			drawableModelHandlers.put(name, manager.getCurrentGameState().getCharacterModel(charModelName));
-			drawableModelSizes.put(name, manager.getCurrentGameState().getCharacterModelSize(charModelName));
+			drawableModelHandlers.put(name, state.getCharacterModel(charModelName));
+			drawableModelSizes.put(name, state.getCharacterModelSize(charModelName));
 			drawableTextures.put(name, charModelName);
 			drawableVisible.put(name, true);	// applicable for visibility skill
 			drawableGridPositions.put(name, pos);
@@ -401,7 +401,7 @@ public class GridRenderer implements Renderer {
 //					FlatScalingMatrix4x4(1f / columns, 1f / rows, .1f),
 					scalingFactor < BOARD_Z_COORD / 2 ? FlatScalingMatrix4x4(scalingFactor, scalingFactor, scalingFactor / BOARD_Z_COORD / 2) : FlatScalingMatrix4x4(BOARD_Z_COORD / 2, BOARD_Z_COORD / 2, .5f),
 					FlatTranslationMatrix4x4(1,1,1)));
-			graphicsImpl.setDrawable(name, manager.getCurrentGameState().getModelTexture(drawableTextures.get(name)).getTexture(),
+			graphicsImpl.setDrawable(name, state.getModelTexture(drawableTextures.get(name)).getTexture(),
 					drawableModelHandlers.get(name), drawableModelSizes.get(name), drawableModels.get(name), pos);
 			graphicsImpl.setDrawableVisible(name, true);
 			// configure light

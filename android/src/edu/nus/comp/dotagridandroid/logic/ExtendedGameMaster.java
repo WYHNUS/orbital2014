@@ -1,11 +1,7 @@
 package edu.nus.comp.dotagridandroid.logic;
 import java.util.*;
 
-import org.json.*;
-
-import edu.nus.comp.dotagridandroid.appsupport.ExtensionEngine;
-import edu.nus.comp.dotagridandroid.appsupport.JsonConverter;
-import edu.nus.comp.dotagridandroid.appsupport.ResourceManager;
+import edu.nus.comp.dotagridandroid.appsupport.*;
 
 public class ExtendedGameMaster extends GameMaster {
 	@Override
@@ -34,7 +30,7 @@ public class ExtendedGameMaster extends GameMaster {
 		}
 	}
 	@Override
-	public boolean requestActionPossible(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
+	public boolean requestActionPossible(String character, String actionName, Map<String, Object> options) {
 		return true;
 	}
 	@Override
