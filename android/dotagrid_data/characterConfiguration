@@ -1,25 +1,59 @@
 {
-	"heros" : {
-		"MyHero" : {}
-	},
-	"creepConfiguration" : [
-		{
-			"team" : 1,
-			"meeleCreepModel" : "",
-			"meeleCreepModelTexture" : "red",
-			"rangedCreepModel" : "",
-			"rangedCreepModelTexture" : "red",
-			"seigeCreepModel" : "",
-			"seigeCreepModelTexture : "red"
-		},
-		{
-			"team" : 2,
-			"meeleCreepModel" : "",
-			"meeleCreepModelTexture" : "blue",
-			"rangedCreepModel" : "",
-			"rangedCreepModelTexture" : "blue",
-			"seigeCreepModel" : "",
-			"seigeCreepModelTexture : "blue"
+	"heroConfiguration" : {
+		"MyHero" : {
+			"characterImage" : "MyHeroModel"
 		}
-	]
+	},
+	"creepConfiguration" : {
+		"sentinelMeeleCreep" : {
+			"characterImage" : "MeeleCreep"
+		},
+		"sentinelRangedCreep" : {
+			"characterImage" : "RangedCreep"
+
+		},
+		"sentinelSiegeCreep" : {
+			"characterImage" : "SiegeCreep"
+
+		},
+		"sentinelSuperMeeleCreep" : {
+			"characterImage" : "SuperMeeleCreep"
+
+		},
+		"sentinelSuperRangedCreep" : {
+			"characterImage" : "SuperRangedCreep"
+
+		},
+		"sentinelSuperSiegeCreep" : {
+			"characterImage" : "SuperSiegeCreep"
+
+		},
+		"scourgeMeeleCreep" : {
+			"characterImage" : "MeeleCreep"
+
+		},
+		"scourgeRangedCreep" : {
+			"characterImage" : "RangedCreep"
+
+		},
+		"scourgeSiegeCreep" : {
+			"characterImage" : "SiegeCreep"
+
+		},
+		"scourgeSuperMeeleCreep" : {
+			"characterImage" : "SuperMeeleCreep"
+
+		},
+		"scourgeSuperRangedCreep" : {
+			"characterImage" : "SuperRangedCreep"
+
+		},
+		"scourgeSuperSiegeCreep" : {
+			"characterImage" : "SuperSiegeCreep"
+
+		},
+		"neutralCreep" : {
+
+		}
+	}
 }
