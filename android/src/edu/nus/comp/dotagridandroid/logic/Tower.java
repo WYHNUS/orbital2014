@@ -6,6 +6,11 @@ public class Tower extends GameCharacter {
 	public static int startingMovementSpeed = -99999;
 	public static int startingMagicResistance = 100;
 	public static int towerStartingSight = 8;
+	
+	private int front;
+	
+	public Tower() {
+	}
 
 	public Tower(String name, int bountyMoney, int startingHP, int startingMP,
 			double startingPhysicalAttack, int startingPhysicalAttackArea, double startingPhysicalAttackSpeed, 
@@ -18,4 +23,11 @@ public class Tower extends GameCharacter {
 		setObjectType(GAMEOBJECT_TYPE_TOWER);
 	}
 
+	public int getFront() {
+		return front;
+	}
+	
+	public void setFront(int front) {
+		this.front = front;
+	}
 }

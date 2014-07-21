@@ -122,26 +122,39 @@ public class BasicGameMaster extends GameMaster {
 			List<Map<String, Object>> towerConfig = (List<Map<String, Object>>) terrainConfig.get("towers");
 			if (towerConfig != null)
 				for (Map<String, Object> tower : towerConfig) {
-					String name = (String) tower.get("name");
-					Tower towerCharacter = new Tower (
-							name,
-							((Number) tower.get("bountyMoney")).intValue(),
-							((Number) tower.get("startingHP")).intValue(),
-							((Number) tower.get("startingMP")).intValue(),
-							((Number) tower.get("startingPhysicalAttack")).doubleValue(),
-							((Number) tower.get("startingPhysicalAttackArea")).intValue(),
-							"max".equals(tower.get("startingPhysicalAttackSpeed")) ?
-									GameCharacter.MAX_PHYSICAL_ATTACK_SPEED :
-									((Number) tower.get("startingPhysicalAttackSpeed")).intValue(),
-							((Number) tower.get("startingPhysicalDefence")).intValue(),
-							((Number) tower.get("actionPoint")).intValue(),
-							((Number) tower.get("team")).intValue()/*0*/);
-					towerCharacter.setCharacterImage((String) tower.get("model"));
-					towerCharacter.setSight(((Number) tower.get("sight")).intValue());
+					final String name = (String) tower.get("name");
+//					Tower towerCharacter = new Tower (
+//							name,
+//							((Number) tower.get("bountyMoney")).intValue(),
+//							((Number) tower.get("startingHP")).intValue(),
+//							((Number) tower.get("startingMP")).intValue(),
+//							((Number) tower.get("startingPhysicalAttack")).doubleValue(),
+//							((Number) tower.get("startingPhysicalAttackArea")).intValue(),
+//							"max".equals(tower.get("startingPhysicalAttackSpeed")) ?
+//									GameCharacter.MAX_PHYSICAL_ATTACK_SPEED :
+//									((Number) tower.get("startingPhysicalAttackSpeed")).intValue(),
+//							((Number) tower.get("startingPhysicalDefence")).intValue(),
+//							((Number) tower.get("actionPoint")).intValue(),
+//							((Number) tower.get("team")).intValue()/*0*/);
+					Tower towerCharacter = new Tower();
 					state.addCharacter(name, towerCharacter, true, true);
 					state.setCharacterPosition(name,
 							((List<Number>) tower.get("position")).get(0).intValue(),
 							((List<Number>) tower.get("position")).get(1).intValue());
+					state.setCharacterProperty(name, "bountyMoney", tower.get("bountyMoney"));
+					state.setCharacterProperty(name, "startingHP", tower.get("startingHP"));
+					state.setCharacterProperty(name, "startingMP", tower.get("startingMP"));
+					state.setCharacterProperty(name, "startingPhysicalAttack", tower.get("startingPhysicalAttack"));
+					state.setCharacterProperty(name, "startingPhysicalAttackArea", tower.get("startingPhysicalAttackArea"));
+					state.setCharacterProperty(name, "startingPhysicalAttackSpeed",
+							"max".equals(tower.get("startingPhysicalAttackSpeed")) ?
+							GameCharacter.MAX_PHYSICAL_ATTACK_SPEED :
+							tower.get("startingPhysicalAttackSpeed"));
+					state.setCharacterProperty(name, "startingPhysicalDefence", tower.get("startingPhysicalDefence"));
+					state.setCharacterProperty(name, "actionPoint", tower.get("actionPoint"));
+					state.setCharacterProperty(name, "teamNumber", tower.get("teamNumber"));
+					state.setCharacterProperty(name, "characterImage", tower.get("model"));
+					state.setCharacterProperty(name, "sight", tower.get("sight"));
 				}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -149,16 +162,42 @@ public class BasicGameMaster extends GameMaster {
 		// barracks
 		try {
 			for (Map<String, Object> barrack : (List<Map<String, Object>>) terrainConfig.get("barracks")) {
-				
+				final String name = (String) barrack.get("name");
+				final int team = ((Number) barrack.get("team")).intValue(), front = ((Number) barrack.get("front")).intValue();
+				final String type = (String) barrack.get("type");
+				final String model = (String) barrack.get("model");
+				Barrack obj = new Barrack();
+				state.addCharacter(name, obj, false, false);
+				// load barrack data
+				Map<String, Object> barrackSetting = (Map<String, Object>) charsConfig.get("barrackConfiguration");
+				for (Map.Entry<String, Object> setting : ((Map<String, Object>) barrackSetting.get(type)).entrySet())
+					state.setCharacterProperty(name, setting.getKey(), setting.getValue());
+				state.setCharacterProperty(name, "teamNumber", team);
+				state.setCharacterProperty(name, "front", front);
+				state.setCharacterProperty(name, "characterImage", model);
+				state.setCharacterPosition(name,
+						((List<Number>) barrack.get("position")).get(0).intValue(),
+						((List<Number>) barrack.get("position")).get(1).intValue());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		// team
+		// team & ancients
 		try {
 			for (Map<String, Object> team : (List<Map<String, Object>>) terrainConfig.get("teams")) {
-				int teamNumber = ((Number) team.get("team")).intValue();
+				final int teamNumber = ((Number) team.get("team")).intValue();
 				teamConfig.put(teamNumber, team);
+				final Map<String, Object> ancientConfig = (Map<String, Object>) team.get("ancient");
+				final String name = (String) ancientConfig.get("name");
+				Ancient ancient = new Ancient();
+				state.addCharacter(name, ancient, false, false);
+				state.setCharacterProperty(name, "bountyMoney", ancientConfig.get("bountyMoney"));
+				state.setCharacterProperty(name, "startingHP", ancientConfig.get("startingHP"));
+				state.setCharacterProperty(name, "startingPhysicalDefence", ancientConfig.get("startingPhysicalDefence"));
+				state.setCharacterProperty(name, "characterImage", ancientConfig.get("model"));
+				state.setCharacterPosition(name,
+						((List<Number>) ancientConfig.get("position")).get(0).intValue(),
+						((List<Number>) ancientConfig.get("position")).get(0).intValue());
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -166,47 +205,46 @@ public class BasicGameMaster extends GameMaster {
 	}
 
 	@Override
-	public void applyRule(GameState stateMachine, String character,
-			String actionName, Map<String, Object> options) {
+	public void applyRule(String character, String actionName, Map<String, Object> options) {
 
-		if (!character.equals(stateMachine.getCurrentCharacterName()))
+		if (!character.equals(state.getCurrentCharacterName()))
 			return;
 		final int[]
-				prevPos = stateMachine.getCharacterPositions().get(stateMachine.getCurrentCharacterName()),
-				reqPos = stateMachine.getChosenGrid();
+				prevPos = state.getCharacterPositions().get(state.getCurrentCharacterName()),
+				reqPos = state.getChosenGrid();
 		switch (actionName) {
 		case "ChooseGrid": {
-			stateMachine.notifyUpdate(Collections.singletonMap("ChosenGrid", options.get("Coordinate")));
+			state.notifyUpdate(Collections.singletonMap("ChosenGrid", options.get("Coordinate")));
 			break;
 		}
 		case "RequestAttackArea": {
 			// TODO: calculate attack area
 			List<List<Integer>> allowed = new ArrayList<>();
-			final int gridWidth = stateMachine.getGridWidth(), gridHeight = stateMachine.getGridHeight();
-			final int totalAttackArea = (Integer) stateMachine.getCharacterProperty(character, "totalPhysicalAttackArea")
-					+ (Integer) stateMachine.getCharacterProperty(character, "totalItemAddPhysicalAttackArea");
+			final int gridWidth = state.getGridWidth(), gridHeight = state.getGridHeight();
+			final int totalAttackArea = (Integer) state.getCharacterProperty(character, "totalPhysicalAttackArea")
+					+ (Integer) state.getCharacterProperty(character, "totalItemAddPhysicalAttackArea");
 			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
 				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
 					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
 						allowed.add(Arrays.asList(prevPos[0] + i, prevPos[1] + j));
-			stateMachine.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
+			state.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
 			return;
 		}
 		case "RequestMoveArea": {
 			System.out.println("Requesting move area");
 			List<List<Integer>> allowed = new ArrayList<>();
-			if (reqPos[0] >= 0 && reqPos[0] < stateMachine.getGridWidth() && reqPos[1] >= 0 && reqPos[1] < stateMachine.getGridHeight()) {
-				final double[] APmap = getLowestMoveAPConsumptionMap(stateMachine, prevPos, character);
-				final int currentActionPoint = (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint");
+			if (reqPos[0] >= 0 && reqPos[0] < state.getGridWidth() && reqPos[1] >= 0 && reqPos[1] < state.getGridHeight()) {
+				final double[] APmap = getLowestMoveAPConsumptionMap(state, prevPos, character);
+				final int currentActionPoint = (Integer) state.getCharacterProperty(character, "currentActionPoint");
 				int column = 0, row = 0;
-				for (int i = 0; i < stateMachine.getGridWidth() * stateMachine.getGridHeight(); i++, column++) {
-					if (column == stateMachine.getGridWidth()) {
+				for (int i = 0; i < state.getGridWidth() * state.getGridHeight(); i++, column++) {
+					if (column == state.getGridWidth()) {
 						column = 0; row++;
 					}
 					if (APmap[i] <= currentActionPoint)
 						allowed.add(Arrays.asList(column, row));
 				}
-				stateMachine.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
+				state.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
 			}
 			return;
 		}
@@ -215,29 +253,38 @@ public class BasicGameMaster extends GameMaster {
 		}
 		case "GameAction": {
 			// check if action is possible
-			if (requestActionPossible(stateMachine, character, actionName, options)) {
+			if (requestActionPossible(state, character, actionName, options)) {
 				Map<String, Object> updates = new HashMap<>();
 				switch ((String) options.get("Action")) {
+				case "Automation": {
+					System.out.println("Automation " + character);
+					switch (state.getCharacters().get(character).getObjectType()) {
+					case GameObject.GAMEOBJECT_TYPE_HERO:
+						System.out.println("Hero automation not implemented");
+						break;
+					case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+						System.out.println("Linecreep automation not implemented");
+						break;
+					case GameObject.GAMEOBJECT_TYPE_TOWER:
+						System.out.println("Tower automation not implemented");
+						break;
+					}
+					return;
+				}
 				case "Attack":
 					System.out.println("Game action is attack");
 					// apply game rule
+					attack(character, state.getCharacterAtPosition(state.getChosenGrid()));
 					// notify
 					updates.put("Characters", Collections.singleton("ALL"));
-					stateMachine.notifyUpdate(Collections.unmodifiableMap(updates));
+					state.notifyUpdate(Collections.unmodifiableMap(updates));
 					return;
 				case "Move": {
 					System.out.println("Game action is move");
-					// calculate AP
-					final double actionPointUsed = (double) stateMachine.getCharacterProperty(character, "APUsedInMovingOneGrid")
-							* (Math.abs(reqPos[0] - prevPos[0]) + Math.abs(reqPos[1] - prevPos[1]));
-					final int currentActionPoint = (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint");
-					final int newActionPoint = (int) (currentActionPoint - actionPointUsed);
-					stateMachine.setCharacterProperty(character, "currentActionPoint", newActionPoint);
-					// move
-					stateMachine.setCharacterPosition(character, stateMachine.getChosenGrid());
+					move (character);
 					List<String> characters = Collections.singletonList(character);
 					updates = Collections.singletonMap("Characters", (Object) characters);
-					stateMachine.notifyUpdate(updates);
+					state.notifyUpdate(updates);
 					return;
 				}
 				case "BuyItem": {
@@ -251,11 +298,11 @@ public class BasicGameMaster extends GameMaster {
 				case "EndTurn":
 					break;
 				case "BeginRound": {
-					final int roundCount = stateMachine.getRoundCount();
+					final int roundCount = state.getRoundCount();
 					Map<String, Object> thatTeamConfig;
 					// spawn creeps
 					// line creeps
-					final Map<String, Object> charsConfig = stateMachine.getCharacterConfiguration();
+					final Map<String, Object> charsConfig = state.getCharacterConfiguration();
 					Set<Integer> teamsWithoutNeutral = new HashSet<Integer> (this.teamConfig.keySet());
 					teamsWithoutNeutral.remove(0);
 					for (Integer i : teamsWithoutNeutral) {
@@ -273,11 +320,11 @@ public class BasicGameMaster extends GameMaster {
 										String name;
 										do {
 											name = java.util.UUID.randomUUID().toString();
-										} while (stateMachine.getCharacterType(name) < 0 || stateMachine.getCharacterType(name) == GameObject.GAMEOBJECT_TYPE_ROUNDFLAG);
+										} while (state.getCharacterType(name) < 0 || state.getCharacterType(name) == GameObject.GAMEOBJECT_TYPE_ROUNDFLAG);
 										Map<String, Object> config = (Map<String, Object>) ((Map<String, Object>) charsConfig.get("creepConfiguration")).get(type.get("type"));
 										LineCreep creep = new LineCreep();
-										stateMachine.addCharacter(name, creep, true, true);
-										stateMachine.setCharacterProperty(name, "characterImage", null);
+										state.addCharacter(name, creep, true, true);
+										state.setCharacterProperty(name, "characterImage", null);
 										// specific rule
 									}
 						}
@@ -287,20 +334,20 @@ public class BasicGameMaster extends GameMaster {
 					break;
 				}
 				case "EndRound": {
-					for (Map.Entry<String, GameCharacter> entry : stateMachine.getCharacters().entrySet())
+					for (Map.Entry<String, GameCharacter> entry : state.getCharacters().entrySet())
 						if (entry.getValue().getRoundsToRevive() > 0) {
-							stateMachine.setCharacterProperty(entry.getKey(), "roundsToRevive", entry.getValue().getRoundsToRevive() - 1);
+							state.setCharacterProperty(entry.getKey(), "roundsToRevive", entry.getValue().getRoundsToRevive() - 1);
 							if (entry.getValue().getRoundsToRevive() == 0) {
-								stateMachine.setCharacterProperty(entry.getKey(), "currentHP", entry.getValue().getMaxHP());
-								stateMachine.setCharacterProperty(entry.getKey(), "currentMP", entry.getValue().getMaxMP());
-								stateMachine.setCharacterProperty(entry.getKey(), "currentActionPoint", entry.getValue().getMaxActionPoint());
+								state.setCharacterProperty(entry.getKey(), "currentHP", entry.getValue().getMaxHP());
+								state.setCharacterProperty(entry.getKey(), "currentMP", entry.getValue().getMaxMP());
+								state.setCharacterProperty(entry.getKey(), "currentActionPoint", entry.getValue().getMaxActionPoint());
 								List<Number> spawnPoint = (List<Number>)
 										teamConfig.get(entry.getValue().getTeamNumber()).get("heroSpawnPoint");
 								final int[] pos = {spawnPoint.get(0).intValue(), spawnPoint.get(1).intValue()};
-								if (stateMachine.getCharacterAtPosition(pos) == null)
-									stateMachine.setCharacterPosition(entry.getKey(), pos);
+								if (state.getCharacterAtPosition(pos) == null)
+									state.setCharacterPosition(entry.getKey(), pos);
 								else if (entry.getValue().getObjectType() == GameObject.GAMEOBJECT_TYPE_TREE) {
-									stateMachine.setCharacterProperty(entry.getKey(), "roundsToRevive", 1);
+									state.setCharacterProperty(entry.getKey(), "roundsToRevive", 1);
 								} else {
 //									final int limit = Math.max(pos[0], Math.max(stateMachine.getGridWidth() - pos[0], Math.max(pos[1], stateMachine.getGridHeight() - pos[1])));
 //									boolean searching = true;
@@ -315,17 +362,17 @@ public class BasicGameMaster extends GameMaster {
 //												searching = false;
 //												break;
 //											}
-									final int[] spawnPosition = getNearestFreeGrid(stateMachine, pos);
+									final int[] spawnPosition = getNearestFreeGrid(state, pos);
 									if (spawnPoint == null)
 										throw new RuntimeException("No spawn point found for " + entry.getKey());
 									else
-										stateMachine.setCharacterPosition(entry.getKey(), spawnPosition);
+										state.setCharacterPosition(entry.getKey(), spawnPosition);
 								}
 							}
 						} else if (entry.getValue().getRoundsToRevive() == 0) {
-							stateMachine.setCharacterProperty(entry.getKey(), "currentHP", entry.getValue().getCurrentHP() + entry.getValue().getHPGainPerRound());
-							stateMachine.setCharacterProperty(entry.getKey(), "currentMP", entry.getValue().getCurrentMP() + entry.getValue().getMPGainPerRound());
-							stateMachine.setCharacterProperty(entry.getKey(), "currentActionPoint", entry.getValue().getMaxActionPoint());
+							state.setCharacterProperty(entry.getKey(), "currentHP", entry.getValue().getCurrentHP() + entry.getValue().getHPGainPerRound());
+							state.setCharacterProperty(entry.getKey(), "currentMP", entry.getValue().getCurrentMP() + entry.getValue().getMPGainPerRound());
+							state.setCharacterProperty(entry.getKey(), "currentActionPoint", entry.getValue().getMaxActionPoint());
 						}
 					break;
 				}
@@ -335,7 +382,7 @@ public class BasicGameMaster extends GameMaster {
 		}
 		case "Cancel":
 			// nothing
-			stateMachine.notifyUpdate(Collections.singletonMap("Cancel", (Object) "ALL"));
+			state.notifyUpdate(Collections.singletonMap("Cancel", (Object) "ALL"));
 			return;
 		}
 	}
@@ -371,6 +418,8 @@ public class BasicGameMaster extends GameMaster {
 		// TODO TEST
 		return true;
 	}
+	
+	// utilities
 	
 	private double[] getLowestMoveAPConsumptionMap (GameState stateMachine, int[] start, String character) {
 		final float[] terrain = stateMachine.getTerrain();
@@ -412,4 +461,58 @@ public class BasicGameMaster extends GameMaster {
 					return new int[] {i, pos[1] - Math.abs(i - pos[0]) + r};
 		return null;
 	}
+	
+	private void attack (String character, String targetCharacter) {
+		if (targetCharacter == null)
+			return;
+		int APused = (Integer) state.getCharacterProperty(character, "APUsedWhenAttack");
+		int damage = GameCharacter.getActualDamage(
+				(Integer) state.getCharacterProperty(targetCharacter, "totalPhysicalAttack"),
+				(Integer) state.getCharacterProperty(targetCharacter, "totalPhysicalDefence"));
+		state.setCharacterProperty(character, "currentActionPoint",
+				(Integer) state.getCharacterProperty(character, "currentActionPoint") - APused);
+		state.setCharacterProperty(targetCharacter, "currentHP",
+				(Integer) state.getCharacterProperty(targetCharacter, "currentHP") - damage);
+		
+		characterDamageCheck (targetCharacter);
+		if (!(Boolean) state.getCharacterProperty(targetCharacter, "alive")) {
+			// TODO check game ended
+			//
+			switch (state.getCharacterType(character)) {
+			case GameObject.GAMEOBJECT_TYPE_HERO:
+				state.setCharacterProperty(character, "money",
+						(Integer) state.getCharacterProperty(character, "money") +
+						(Integer) state.getCharacterProperty(targetCharacter, "bountyMoney")
+						);
+				state.setCharacterProperty(character, "experience",
+						(Integer) state.getCharacterProperty(character, "experience") +
+						(Integer) state.getCharacterProperty(targetCharacter, "bountyExp")
+						);
+			}
+			// TODO reset character position
+			state.setCharacterPosition(targetCharacter, null);
+		}
+	}
+	
+	private void move (String character) {
+		int[] target = state.getChosenGrid(), source = state.getCharacterPosition(character);
+		if (state.getCharacterAtPosition(target) == null) {
+			// move
+			double[][] map = CharacterRulebook.getLowestMoveAPConsumptionMap(state, source, character);
+			if (map[target[0]][target[1]] < (Integer) state.getCharacterProperty(character, "currentActionPoint")) {
+				state.setCharacterPosition(character, target);
+				state.setCharacterProperty(character, "currentActionPoint",
+						(Integer) state.getCharacterProperty(character, "currentActionPoint") - map[target[0]][target[1]]
+						);
+			}
+		}
+	}
+	
+	private void characterDamageCheck (String targetCharacter) {
+		
+	}
+	
+	private void autoHero(String character) {}
+	private void autoLineCreep(String character) {}
+	private void autoTower(String character){}
 }

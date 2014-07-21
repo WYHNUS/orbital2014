@@ -438,7 +438,10 @@ public class GameState implements Closeable {
 	}
 	
 	public String getCharacterAtPosition (int... position) {
-		return posReverseLookup.get(new GridPointIndex(position));
+		if (position[0] >=0 && position[0] < gridWidth && position[1] >= 0 && position[1] < gridHeight)
+			return posReverseLookup.get(new GridPointIndex(position));
+		else
+			return "OutOfBound";
 	}
 	
 	public void addCharacter(String name, GameCharacter character, boolean automated, boolean controlled) {
@@ -467,17 +470,17 @@ public class GameState implements Closeable {
 	// character actions
 	public void nextTurn () {
 		// end round routine
-		gameMaster.applyRule(this, null, "GameAction", Collections.singletonMap("EndTurn", (Object) currentCharacter));
+		gameMaster.applyRule(null, "GameAction", Collections.singletonMap("EndTurn", (Object) currentCharacter));
 		if (!currentCharacter.equals(roundOrder.peek()))
 			throw new RuntimeException("Round Order is corrupted");
 		roundOrder.add(roundOrder.poll());
 		charsTurned.add(currentCharacter);
 		while (true)
 			if (roundFlagName.equals(roundOrder.peek())) {
-				gameMaster.applyRule(this, null, "GameAction", Collections.singletonMap("EndRound", null));
+				gameMaster.applyRule(null, "GameAction", Collections.singletonMap("EndRound", null));
 				roundOrder.add(roundOrder.poll());
 				roundCount++;
-				gameMaster.applyRule(this, null, "GameAction", Collections.singletonMap("BeginRound", null));
+				gameMaster.applyRule(null, "GameAction", Collections.singletonMap("BeginRound", null));
 			} else if (chars.get(roundOrder.peek()).isAlive())
 				break;
 			else
@@ -489,9 +492,10 @@ public class GameState implements Closeable {
 				@Override
 				public void run() {
 					GameState stateMachine = GameState.this;
-					gameMaster.applyRule(stateMachine, currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
+					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
 					String character = currentCharacter;
-					GameCharacterAutomaton.autoAction(stateMachine, currentCharacter);
+//					GameCharacterAutomaton.autoAction(stateMachine, currentCharacter);
+					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("Automation", null));
 					// force nextRound
 					if (character.equals(currentCharacter))
 						nextTurn();
@@ -500,7 +504,7 @@ public class GameState implements Closeable {
 			t.start();
 			automatonThread = t;
 		} else {
-			gameMaster.applyRule(this, currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
+			gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
 			automatonThread = null;
 		}
 	}
@@ -563,13 +567,13 @@ public class GameState implements Closeable {
 		// interface
 		case "ChooseGrid":
 			this.chosenGrid = (int[]) e.data.extendedData.get("Coordinates");
-			gameMaster.applyRule(this, playerCharacter, "ChooseGrid", e.data.extendedData);
+			gameMaster.applyRule(playerCharacter, "ChooseGrid", e.data.extendedData);
 			break;
 		case "RequestAttackArea":
-			gameMaster.applyRule(this, playerCharacter, "RequestAttackArea", null);
+			gameMaster.applyRule(playerCharacter, "RequestAttackArea", null);
 			break;
 		case "RequestMoveArea":
-			gameMaster.applyRule(this, playerCharacter, "RequestMoveArea", null);
+			gameMaster.applyRule(playerCharacter, "RequestMoveArea", null);
 			break;
 		case "RequestActionDetail":
 			break;
@@ -580,12 +584,12 @@ public class GameState implements Closeable {
 			break;
 		case "Cancel":
 			this.chosenGrid = new int[] {-1,-1};
-			gameMaster.applyRule(this, playerCharacter, "Cancel", null);	// bounce back
+			gameMaster.applyRule(playerCharacter, "Cancel", null);	// bounce back
 			break;
 		// game action
 		case "GameAction":
 			// send to game master
-			gameMaster.applyRule(this, playerCharacter, "GameAction", e.data.extendedData);
+			gameMaster.applyRule(playerCharacter, "GameAction", e.data.extendedData);
 			break;
 		case "GamePause":
 			// pause game

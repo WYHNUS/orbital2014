@@ -12,11 +12,11 @@ public class ExtendedGameMaster extends GameMaster {
 	public void initialise() {
 	}
 	@Override
-	public void applyRule(GameState stateMachine, String character, String actionName, Map<String, Object> options) {
+	public void applyRule(String character, String actionName, Map<String, Object> options) {
 		if ("SetProperty".equals(actionName)) {
 			// server special
 		} else {
-			ExtensionEngine ee = stateMachine.getExtensionEngine();
+			ExtensionEngine ee = state.getExtensionEngine();
 			String optionParam = null;
 			try {
 				optionParam = JsonConverter.MapToJson(options).toString();

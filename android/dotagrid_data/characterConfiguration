@@ -55,5 +55,19 @@
 		"neutralCreep" : {
 
 		}
+	},
+	"barrackConfiguration" : {
+		"meele" : {
+			"bountyMoney" : 0,
+			"startingHP" : 1500,
+			"startingPhysicalDefence" : 15,
+			"HPGainPerRound" : 0
+		},
+		"ranged" : {
+			"bountyMoney" : 0,
+			"startingHP" : 1500,
+			"startingPhysicalDefence" : 5,
+			"HPGainPerRound" : 0
+		}
 	}
 }

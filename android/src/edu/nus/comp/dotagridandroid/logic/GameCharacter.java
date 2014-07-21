@@ -528,7 +528,9 @@ public class GameCharacter extends GameObject {
 		} else {
 			this.bountyMoney = bountyMoney;
 		}
-	}	public int getTeamNumber() {
+	}
+	
+	public int getTeamNumber() {
 		return teamNumber;
 	}
 

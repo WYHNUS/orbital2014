@@ -11,17 +11,6 @@ public class CharacterRulebook {
 		case "GameAction": {
 			switch ((String) options.get("Action")) {
 			case "Move": {
-				int[] target = stateMachine.getChosenGrid(), source = stateMachine.getCharacterPosition(character);
-				if (stateMachine.getCharacterAtPosition(target) == null) {
-					// move
-					double[][] map = CharacterRulebook.getLowestMoveAPConsumptionMap(stateMachine, source, target, character);
-					if (map[target[0]][target[1]] < (Integer) stateMachine.getCharacterProperty(character, "currentActionPoint")) {
-						stateMachine.setCharacterPosition(character, target);
-						stateMachine.setCharacterProperty(character, "currentActionPoint",
-								(Integer) stateMachine.getCharacterProperty(character, "currentActionPoint") - map[target[0]][target[1]]
-								);
-					}
-				}
 			}
 			case "BuyItem":
 			case "SellItem":
@@ -31,30 +20,7 @@ public class CharacterRulebook {
 				String targetCharacter = stateMachine.getCharacterAtPosition(stateMachine.getChosenGrid());
 				if (targetCharacter == null)
 					return;
-				int APused = (Integer) stateMachine.getCharacterProperty(character, "APUsedWhenAttack");
-				int damage = GameCharacter.getActualDamage(
-						(Integer) stateMachine.getCharacterProperty(targetCharacter, "totalPhysicalAttack"),
-						(Integer) stateMachine.getCharacterProperty(targetCharacter, "totalPhysicalDefence"));
-				stateMachine.setCharacterProperty(character, "currentActionPoint",
-						(Integer) stateMachine.getCharacterProperty(character, "currentActionPoint") - APused);
-				stateMachine.setCharacterProperty(targetCharacter, "currentHP",
-						(Integer) stateMachine.getCharacterProperty(targetCharacter, "currentHP") - damage);
-				if (!(Boolean) stateMachine.getCharacterProperty(targetCharacter, "alive")) {
-					// TODO check game ended
-					
-					if (stateMachine.getCharacterType(character) == GameObject.GAMEOBJECT_TYPE_HERO) {
-						stateMachine.setCharacterProperty(character, "money",
-								(Integer) stateMachine.getCharacterProperty(character, "money") +
-								(Integer) stateMachine.getCharacterProperty(targetCharacter, "bountyMoney")
-								);
-						stateMachine.setCharacterProperty(character, "experience",
-								(Integer) stateMachine.getCharacterProperty(character, "experience") +
-								(Integer) stateMachine.getCharacterProperty(targetCharacter, "bountyExp")
-								);
-					}
-					// TODO reset character position
-					stateMachine.setCharacterPosition(targetCharacter, null);
-				}
+				
 				break;
 			}
 			}
@@ -62,7 +28,7 @@ public class CharacterRulebook {
 		}
 		}
 	}
-	public static double[][] getLowestMoveAPConsumptionMap (GameState stateMachine, int[] start, int[] end, String character) {
+	public static double[][] getLowestMoveAPConsumptionMap (GameState stateMachine, int[] start, String character) {
 		final float[] terrain = stateMachine.getTerrain();
 		final int width = stateMachine.getGridWidth(), height = stateMachine.getGridHeight();
 		final int[][] dirs = new int[][] {{-1,0},{1,0},{0,-1},{0,1}};

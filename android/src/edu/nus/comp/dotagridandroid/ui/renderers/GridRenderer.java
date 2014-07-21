@@ -16,7 +16,7 @@ public class GridRenderer implements Renderer {
 	public static final float BASE_ZOOM_FACTOR = 0.5f;
 	public static final int SHADOW_MAP_TEXTURE_DIMENSION = 2048;
 	private static final float LIGHT_MAX_RADIUS = 5;
-	private static final float LIGHT_HEIGHT_OFFSET = 2;
+	private static final float LIGHT_HEIGHT_OFFSET = 1.5f;
 	
 	private GridRendererGraphicsImpl graphicsImpl;
 	private GLResourceManager vBufMan;

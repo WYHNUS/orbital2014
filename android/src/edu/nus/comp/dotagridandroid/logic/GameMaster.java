@@ -13,7 +13,7 @@ public abstract class GameMaster {
 	
 	public abstract void initialise();
 	
-	public abstract void applyRule(GameState stateMachine, String character, String actionName, Map<String, Object> options);
+	public abstract void applyRule(String character, String actionName, Map<String, Object> options);
 
 	public abstract boolean requestActionPossible(final GameState stateMachine, final String character, final String actionName, final Map<String, Object> options);
 
