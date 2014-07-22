@@ -540,6 +540,7 @@ public class CharacterActions {
 				
 				// check if the dead hero is player's hero
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
+					JOptionPane.showMessageDialog(null, "You have been slaved.");
 					Screen.user.player.setXPos(Screen.user.playerStartingXPos);
 					Screen.user.player.setYPos(Screen.user.playerStartingYPos);
 				}

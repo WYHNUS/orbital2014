@@ -15,25 +15,25 @@ public class BuildingDatabase {
 	public static int sentinelAncientYPos = 84;
 	public static int[] sentinelAncientPos = {14, 84};
 
-	public static int sentinelTopMeeleBarrackXPos = 5;
-	public static int sentinelTopMeeleBarrackYPos = 68;
-	public static boolean isDestroyedSentinelTopMeeleBarrack = false;
+	public static int sentinelTopMeleeBarrackXPos = 5;
+	public static int sentinelTopMeleeBarrackYPos = 68;
+	public static boolean isDestroyedSentinelTopMeleeBarrack = false;
 
 	public static int sentinelTopRangedBarrackXPos = 11; 
 	public static int sentinelTopRangedBarrackYPos = 68;
 	public static boolean isDestroyedSentinelTopRangedBarrack = false;
 
-	public static int sentinelMidMeeleBarrackXPos = 20; 
-	public static int sentinelMidMeeleBarrackYPos = 72;
-	public static boolean isDestroyedSentinelMidMeeleBarrack = false;
+	public static int sentinelMidMeleeBarrackXPos = 20; 
+	public static int sentinelMidMeleeBarrackYPos = 72;
+	public static boolean isDestroyedSentinelMidMeleeBarrack = false;
 
 	public static int sentinelMidRangedBarrackXPos = 26; 
 	public static int sentinelMidRangedBarrackYPos = 78;
 	public static boolean isDestroyedSentinelMidRangedBarrack = false;
 
-	public static int sentinelBotMeeleBarrackXPos = 29; 
-	public static int sentinelBotMeeleBarrackYPos = 87;
-	public static boolean isDestroyedSentinelBotMeeleBarrack = false;
+	public static int sentinelBotMeleeBarrackXPos = 29; 
+	public static int sentinelBotMeleeBarrackYPos = 87;
+	public static boolean isDestroyedSentinelBotMeleeBarrack = false;
 
 	public static int sentinelBotRangedBarrackXPos = 29;
 	public static int sentinelBotRangedBarrackYPos = 93;
@@ -45,25 +45,25 @@ public class BuildingDatabase {
 	public static int scourgeAncientYPos = 15;
 	public static int[] scourgeAncientPos = {85, 15};
 
-	public static int scourgeTopMeeleBarrackXPos = 70;
-	public static int scourgeTopMeeleBarrackYPos = 6;
-	public static boolean isDestroyedScourgeTopMeeleBarrack = false;
+	public static int scourgeTopMeleeBarrackXPos = 70;
+	public static int scourgeTopMeleeBarrackYPos = 6;
+	public static boolean isDestroyedScourgeTopMeleeBarrack = false;
 
 	public static int scourgeTopRangedBarrackXPos = 70;
 	public static int scourgeTopRangedBarrackYPos = 12;
 	public static boolean isDestroyedScourgeTopRangedBarrack = false;
 
-	public static int scourgeMidMeeleBarrackXPos = 73;
-	public static int scourgeMidMeeleBarrackYPos = 21;
-	public static boolean isDestroyedScourgeMidMeeleBarrack = false;
+	public static int scourgeMidMeleeBarrackXPos = 73;
+	public static int scourgeMidMeleeBarrackYPos = 21;
+	public static boolean isDestroyedScourgeMidMeleeBarrack = false;
 
 	public static int scourgeMidRangedBarrackXPos = 79;
 	public static int scourgeMidRangedBarrackYPos = 27;
 	public static boolean isDestroyedScourgeMidRangedBarrack = false;
 
-	public static int scourgeBotMeeleBarrackXPos = 88;
-	public static int scourgeBotMeeleBarrackYPos = 31;
-	public static boolean isDestroyedScourgeBotMeeleBarrack = false;
+	public static int scourgeBotMeleeBarrackXPos = 88;
+	public static int scourgeBotMeleeBarrackYPos = 31;
+	public static boolean isDestroyedScourgeBotMeleeBarrack = false;
 
 	public static int scourgeBotRangedBarrackXPos = 94; 
 	public static int scourgeBotRangedBarrackYPos = 31;
@@ -85,9 +85,9 @@ public class BuildingDatabase {
 		ArrayList<int[]> protectionTopBarrackList = new ArrayList<int[]>();
 		protectionTopBarrackList.add(TowerDatabase.scourgeTopTower3Position);
 
-		Building topMeeleBarrack = createScourgeMeeleBarrack();
-		topMeeleBarrack.setProtectionPosList(protectionTopBarrackList);
-		createBuilding(topMeeleBarrack, scourgeTopMeeleBarrackXPos, scourgeTopMeeleBarrackYPos);
+		Building topMeleeBarrack = createScourgeMeleeBarrack();
+		topMeleeBarrack.setProtectionPosList(protectionTopBarrackList);
+		createBuilding(topMeleeBarrack, scourgeTopMeleeBarrackXPos, scourgeTopMeleeBarrackYPos);
 
 		Building topRangedBarrack = createScourgeRangedBarrack();
 		topRangedBarrack.setProtectionPosList(protectionTopBarrackList);
@@ -97,9 +97,9 @@ public class BuildingDatabase {
 		ArrayList<int[]> protectionMidBarrackList = new ArrayList<int[]>();
 		protectionMidBarrackList.add(TowerDatabase.scourgeMidTower3Position);
 
-		Building midMeeleBarrack = createScourgeMeeleBarrack();
-		midMeeleBarrack.setProtectionPosList(protectionMidBarrackList);
-		createBuilding(midMeeleBarrack, scourgeMidMeeleBarrackXPos, scourgeMidMeeleBarrackYPos);
+		Building midMeleeBarrack = createScourgeMeleeBarrack();
+		midMeleeBarrack.setProtectionPosList(protectionMidBarrackList);
+		createBuilding(midMeleeBarrack, scourgeMidMeleeBarrackXPos, scourgeMidMeleeBarrackYPos);
 
 		Building midRangedBarrack = createScourgeRangedBarrack();
 		midRangedBarrack.setProtectionPosList(protectionMidBarrackList);
@@ -109,9 +109,9 @@ public class BuildingDatabase {
 		ArrayList<int[]> protectionBotBarrackList = new ArrayList<int[]>();
 		protectionBotBarrackList.add(TowerDatabase.scourgeBotTower3Position);
 
-		Building botMeeleBarrack = createScourgeMeeleBarrack();
-		botMeeleBarrack.setProtectionPosList(protectionBotBarrackList);
-		createBuilding(botMeeleBarrack, scourgeBotMeeleBarrackXPos, scourgeBotMeeleBarrackYPos);
+		Building botMeleeBarrack = createScourgeMeleeBarrack();
+		botMeleeBarrack.setProtectionPosList(protectionBotBarrackList);
+		createBuilding(botMeleeBarrack, scourgeBotMeleeBarrackXPos, scourgeBotMeleeBarrackYPos);
 
 		Building botRangedBarrack = createScourgeRangedBarrack();
 		botRangedBarrack.setProtectionPosList(protectionBotBarrackList);
@@ -128,9 +128,9 @@ public class BuildingDatabase {
 		ArrayList<int[]> protectionTopBarrackList = new ArrayList<int[]>();
 		protectionTopBarrackList.add(TowerDatabase.sentinelTopTower3Position);
 
-		Building topMeeleBarrack = createSentinelMeeleBarrack();
-		topMeeleBarrack.setProtectionPosList(protectionTopBarrackList);
-		createBuilding(topMeeleBarrack, sentinelTopMeeleBarrackXPos, sentinelTopMeeleBarrackYPos);
+		Building topMeleeBarrack = createSentinelMeleeBarrack();
+		topMeleeBarrack.setProtectionPosList(protectionTopBarrackList);
+		createBuilding(topMeleeBarrack, sentinelTopMeleeBarrackXPos, sentinelTopMeleeBarrackYPos);
 
 		Building topRangedBarrack = createSentinelRangedBarrack();
 		topRangedBarrack.setProtectionPosList(protectionTopBarrackList);
@@ -140,9 +140,9 @@ public class BuildingDatabase {
 		ArrayList<int[]> protectionMidBarrackList = new ArrayList<int[]>();
 		protectionMidBarrackList.add(TowerDatabase.sentinelMidTower3Position);
 
-		Building midMeeleBarrack = createSentinelMeeleBarrack();
-		midMeeleBarrack.setProtectionPosList(protectionMidBarrackList);
-		createBuilding(midMeeleBarrack, sentinelMidMeeleBarrackXPos, sentinelMidMeeleBarrackYPos);
+		Building midMeleeBarrack = createSentinelMeleeBarrack();
+		midMeleeBarrack.setProtectionPosList(protectionMidBarrackList);
+		createBuilding(midMeleeBarrack, sentinelMidMeleeBarrackXPos, sentinelMidMeleeBarrackYPos);
 
 		Building midRangedBarrack = createSentinelRangedBarrack();
 		midRangedBarrack.setProtectionPosList(protectionMidBarrackList);
@@ -152,9 +152,9 @@ public class BuildingDatabase {
 		ArrayList<int[]> protectionBotBarrackList = new ArrayList<int[]>();
 		protectionBotBarrackList.add(TowerDatabase.sentinelBotTower3Position);
 
-		Building botMeeleBarrack = createSentinelMeeleBarrack();
-		botMeeleBarrack.setProtectionPosList(protectionBotBarrackList);
-		createBuilding(botMeeleBarrack, sentinelBotMeeleBarrackXPos, sentinelBotMeeleBarrackYPos);
+		Building botMeleeBarrack = createSentinelMeleeBarrack();
+		botMeleeBarrack.setProtectionPosList(protectionBotBarrackList);
+		createBuilding(botMeleeBarrack, sentinelBotMeleeBarrackXPos, sentinelBotMeleeBarrackYPos);
 
 		Building botRangedBarrack = createSentinelRangedBarrack();
 		botRangedBarrack.setProtectionPosList(protectionBotBarrackList);
@@ -175,10 +175,10 @@ public class BuildingDatabase {
 		// sentinel barracks
 
 		// only check if barrack has not been destroyed
-		if (!isDestroyedSentinelTopMeeleBarrack) {
-			if (GridFrame.gridButtonMap[sentinelTopMeeleBarrackXPos][sentinelTopMeeleBarrackYPos].getCharacter().isAlive() == false){
-				System.out.println("Sentinel Top Meele Barrack has been Destroyed!!!");
-				isDestroyedSentinelTopMeeleBarrack = true;
+		if (!isDestroyedSentinelTopMeleeBarrack) {
+			if (GridFrame.gridButtonMap[sentinelTopMeleeBarrackXPos][sentinelTopMeleeBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Top Melee Barrack has been Destroyed!!!");
+				isDestroyedSentinelTopMeleeBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
 		}	
@@ -191,10 +191,10 @@ public class BuildingDatabase {
 			}
 		}
 
-		if (!isDestroyedSentinelMidMeeleBarrack) {
-			if (GridFrame.gridButtonMap[sentinelMidMeeleBarrackXPos][sentinelMidMeeleBarrackYPos].getCharacter().isAlive() == false){
-				System.out.println("Sentinel Mid Meele Barrack has been Destroyed!!!");
-				isDestroyedSentinelMidMeeleBarrack = true;
+		if (!isDestroyedSentinelMidMeleeBarrack) {
+			if (GridFrame.gridButtonMap[sentinelMidMeleeBarrackXPos][sentinelMidMeleeBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Mid Melee Barrack has been Destroyed!!!");
+				isDestroyedSentinelMidMeleeBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
 		}
@@ -207,10 +207,10 @@ public class BuildingDatabase {
 			}
 		}
 
-		if (!isDestroyedSentinelBotMeeleBarrack) {
-			if (GridFrame.gridButtonMap[sentinelBotMeeleBarrackXPos][sentinelBotMeeleBarrackYPos].getCharacter().isAlive() == false){
-				System.out.println("Sentinel Bot Meele Barrack has been Destroyed!!!");
-				isDestroyedSentinelBotMeeleBarrack = true;
+		if (!isDestroyedSentinelBotMeleeBarrack) {
+			if (GridFrame.gridButtonMap[sentinelBotMeleeBarrackXPos][sentinelBotMeleeBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Sentinel Bot Melee Barrack has been Destroyed!!!");
+				isDestroyedSentinelBotMeleeBarrack = true;
 				destroyedSentinelBarrackNumber++;
 			}
 		}
@@ -234,10 +234,10 @@ public class BuildingDatabase {
 
 		// scourge  barracks
 
-		if (!isDestroyedScourgeTopMeeleBarrack) {
-			if (GridFrame.gridButtonMap[scourgeTopMeeleBarrackXPos][scourgeTopMeeleBarrackYPos].getCharacter().isAlive() == false){
-				System.out.println("Scourge Top Meele Barrack has been Destroyed!!!");
-				isDestroyedScourgeTopMeeleBarrack = true;
+		if (!isDestroyedScourgeTopMeleeBarrack) {
+			if (GridFrame.gridButtonMap[scourgeTopMeleeBarrackXPos][scourgeTopMeleeBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Top Melee Barrack has been Destroyed!!!");
+				isDestroyedScourgeTopMeleeBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
 		}
@@ -250,10 +250,10 @@ public class BuildingDatabase {
 			}
 		}
 
-		if (!isDestroyedScourgeMidMeeleBarrack) {
-			if (GridFrame.gridButtonMap[scourgeMidMeeleBarrackXPos][scourgeMidMeeleBarrackYPos].getCharacter().isAlive() == false){
-				System.out.println("Scourge Mid Meele Barrack has been Destroyed!!!");
-				isDestroyedScourgeMidMeeleBarrack = true;
+		if (!isDestroyedScourgeMidMeleeBarrack) {
+			if (GridFrame.gridButtonMap[scourgeMidMeleeBarrackXPos][scourgeMidMeleeBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Mid Melee Barrack has been Destroyed!!!");
+				isDestroyedScourgeMidMeleeBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
 		}
@@ -266,10 +266,10 @@ public class BuildingDatabase {
 			}
 		}
 
-		if (!isDestroyedScourgeBotMeeleBarrack) {
-			if (GridFrame.gridButtonMap[scourgeBotMeeleBarrackXPos][scourgeBotMeeleBarrackYPos].getCharacter().isAlive() == false){
-				System.out.println("Scourge Bot Meele Barrack has been Destroyed!!!");
-				isDestroyedScourgeBotMeeleBarrack = true;
+		if (!isDestroyedScourgeBotMeleeBarrack) {
+			if (GridFrame.gridButtonMap[scourgeBotMeleeBarrackXPos][scourgeBotMeleeBarrackYPos].getCharacter().isAlive() == false){
+				System.out.println("Scourge Bot Melee Barrack has been Destroyed!!!");
+				isDestroyedScourgeBotMeleeBarrack = true;
 				destroyedScourgeBarrackNumber++;
 			}
 		}
@@ -295,16 +295,16 @@ public class BuildingDatabase {
 	}
 
 
-	public static Building createSentinelMeeleBarrack() {
-		return new Building("Sentinel Meele Barrack", 0, 1500, 15, 1);
+	public static Building createSentinelMeleeBarrack() {
+		return new Building("Sentinel Melee Barrack", 0, 1500, 15, 1);
 	}
 
 	public static Building createSentinelRangedBarrack() {
 		return new Building("Sentinel Ranged Barrack", 0, 1500, 5, 1);
 	}
 
-	public static Building createScourgeMeeleBarrack() {
-		return new Building("Scourge Meele Barrack", 0, 1500, 15, 2);
+	public static Building createScourgeMeleeBarrack() {
+		return new Building("Scourge Melee Barrack", 0, 1500, 15, 2);
 	}
 
 	public static Building createScourgeRangedBarrack() {

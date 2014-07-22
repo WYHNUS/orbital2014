@@ -267,16 +267,48 @@ public class GameButtonActions {
 
 
 	private void sellItem() {
-		// sell an item from player's bought item list
-		System.out.println("show sell item interface!");
-		new SellItem();
+		// only invoke if player's hero is within item shop range
+		int playerXPos = Screen.user.player.getXPos();
+		int playerYPos = Screen.user.player.getYPos();
+		if ((playerXPos >= ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[0] && 
+				playerXPos < ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[0] + ItemShop.SENTINEL_ITEM_SHOP_X_OFFSET &&
+				playerYPos >= ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[1] && 
+				playerYPos < ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[1] + ItemShop.SENTINEL_ITEM_SHOP_Y_OFFSET) 
+				||
+				(playerXPos >= ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[0] && 
+				playerXPos < ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[0] + ItemShop.SCOURGE_ITEM_SHOP_X_OFFSET &&
+				playerYPos >= ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[1] && 
+				playerYPos < ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[1] + ItemShop.SCOURGE_ITEM_SHOP_Y_OFFSET)) {
+			// sell an item from player's bought item list
+			System.out.println("show sell item interface!");
+			new SellItem();
+		} else {
+			System.out.println("need to move closer to the fountain in order to invoke this action!");
+			JOptionPane.showMessageDialog(null, "You need to move closer to the fountain to invoke this action!");
+		}
 	}
 
 
 	private void showItemShop() {
-		// create a new frame to show item shop list
-		System.out.println("show item shop interface!");
-		new ItemShop();
+		// only invoke if player's hero is within item shop range
+		int playerXPos = Screen.user.player.getXPos();
+		int playerYPos = Screen.user.player.getYPos();
+		if ((playerXPos >= ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[0] && 
+				playerXPos < ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[0] + ItemShop.SENTINEL_ITEM_SHOP_X_OFFSET &&
+				playerYPos >= ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[1] && 
+				playerYPos < ItemShop.SENTINEL_ITEM_SHOP_AREA_POS[1] + ItemShop.SENTINEL_ITEM_SHOP_Y_OFFSET) 
+				||
+				(playerXPos >= ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[0] && 
+				playerXPos < ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[0] + ItemShop.SCOURGE_ITEM_SHOP_X_OFFSET &&
+				playerYPos >= ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[1] && 
+				playerYPos < ItemShop.SCOURGE_ITEM_SHOP_AREA_POS[1] + ItemShop.SCOURGE_ITEM_SHOP_Y_OFFSET)) {
+			// create a new frame to show item shop list
+			System.out.println("show item shop interface!");
+			new ItemShop();
+		} else {
+			System.out.println("need to move closer to the fountain in order to invoke this action!");
+			JOptionPane.showMessageDialog(null, "You need to move closer to the fountain to invoke this action!");
+		}
 	}
 
 

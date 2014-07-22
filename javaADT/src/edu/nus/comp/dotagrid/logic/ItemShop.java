@@ -14,6 +14,14 @@ import javax.swing.JPanel;
 
 public class ItemShop implements ActionListener{
 	
+	public static final int[] SENTINEL_ITEM_SHOP_AREA_POS = {0, 86};
+	public static final int SENTINEL_ITEM_SHOP_X_OFFSET = 13;
+	public static final int SENTINEL_ITEM_SHOP_Y_OFFSET = 13;
+	
+	public static final int[] SCOURGE_ITEM_SHOP_AREA_POS = {87, 0};
+	public static final int SCOURGE_ITEM_SHOP_X_OFFSET = 12;
+	public static final int SCOURGE_ITEM_SHOP_Y_OFFSET = 14;
+	
 	ItemDatabase itemDtabase; 
 	
 	public static boolean shouldUpdateItemInFo = false;

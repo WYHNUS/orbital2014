@@ -29,7 +29,7 @@ public class LineCreepSpawnPoint {
 	public static final int SCOURGE_BOT_LINE_SPAWN_X_POS = 91;	
 	public static final int SCOURGE_BOT_LINE_SPAWN_Y_POS = 30;
 	
-	public static int MEELE_CREEP_NUMBER = 3;
+	public static int MELEE_CREEP_NUMBER = 3;
 	public static int RANGED_CREEP_NUMBER = 1;
 	public static int SIEGE_CREEP_NUMBER = 1;
 
@@ -62,7 +62,7 @@ public class LineCreepSpawnPoint {
 		
 		// change the number of spawning creeps
 		if (GameFrame.turn <= UPGRADE_RANGED_LINECREEPS_NUMBER_ROUND_INDEX) {
-			MEELE_CREEP_NUMBER = 3 + GameFrame.turn / UPGRADE_ALL_LINECREEPS_ROUND_INDEX;
+			MELEE_CREEP_NUMBER = 3 + GameFrame.turn / UPGRADE_ALL_LINECREEPS_ROUND_INDEX;
 			RANGED_CREEP_NUMBER = 1 + GameFrame.turn / UPGRADE_RANGED_LINECREEPS_NUMBER_ROUND_INDEX;
 			SIEGE_CREEP_NUMBER = 1 + GameFrame.turn / UPGRADE_RANGED_LINECREEPS_NUMBER_ROUND_INDEX;
 		}
@@ -72,7 +72,7 @@ public class LineCreepSpawnPoint {
 		new LineCreepDatabase();
 		
 		
-		// each spawn point spawn MEELE_CREEP_NUMBER meele creeps + RANGED_CREEP_NUMBER ranged creep
+		// each spawn point spawn MELEE_CREEP_NUMBER melee creeps + RANGED_CREEP_NUMBER ranged creep
 		
 		// spawn sentinel line creeps
 		
@@ -85,12 +85,12 @@ public class LineCreepSpawnPoint {
 		// initialize checkedPosition
 		ArrayList<int[]> checkedPosition1 = new ArrayList<int[]>();
 		
-		if (!BuildingDatabase.isDestroyedScourgeTopMeeleBarrack) {
-			// create normal wave of sentinel meele creeps
-			LineCreepDatabase.createSentinelMeeleCreeps(topSentinelCreeps, MEELE_CREEP_NUMBER);
+		if (!BuildingDatabase.isDestroyedScourgeTopMeleeBarrack) {
+			// create normal wave of sentinel melee creeps
+			LineCreepDatabase.createSentinelMeleeCreeps(topSentinelCreeps, MELEE_CREEP_NUMBER);
 		} else {
-			// create super wave of sentinel meele creeps
-			LineCreepDatabase.createSentinelSuperMeeleCreeps(topSentinelCreeps, MEELE_CREEP_NUMBER);
+			// create super wave of sentinel melee creeps
+			LineCreepDatabase.createSentinelSuperMeleeCreeps(topSentinelCreeps, MELEE_CREEP_NUMBER);
 		}
 		
 		if (!BuildingDatabase.isDestroyedScourgeTopRangedBarrack) {
@@ -130,12 +130,12 @@ public class LineCreepSpawnPoint {
 		// initialize checkedPosition
 		ArrayList<int[]> checkedPosition2 = new ArrayList<int[]>();
 		
-		if (!BuildingDatabase.isDestroyedScourgeMidMeeleBarrack) {
-			// create normal wave of sentinel meele creeps
-			LineCreepDatabase.createSentinelMeeleCreeps(midSentinelCreeps, MEELE_CREEP_NUMBER);
+		if (!BuildingDatabase.isDestroyedScourgeMidMeleeBarrack) {
+			// create normal wave of sentinel melee creeps
+			LineCreepDatabase.createSentinelMeleeCreeps(midSentinelCreeps, MELEE_CREEP_NUMBER);
 		} else {
-			// create super wave of sentinel meele creeps
-			LineCreepDatabase.createSentinelSuperMeeleCreeps(midSentinelCreeps, MEELE_CREEP_NUMBER);
+			// create super wave of sentinel melee creeps
+			LineCreepDatabase.createSentinelSuperMeleeCreeps(midSentinelCreeps, MELEE_CREEP_NUMBER);
 		}
 		
 		if (!BuildingDatabase.isDestroyedScourgeMidRangedBarrack) {
@@ -175,12 +175,12 @@ public class LineCreepSpawnPoint {
 		// initialize checkedPosition
 		ArrayList<int[]> checkedPosition3 = new ArrayList<int[]>();
 		
-		if (!BuildingDatabase.isDestroyedScourgeBotMeeleBarrack) {
-			// create normal wave of sentinel meele creeps
-			LineCreepDatabase.createSentinelMeeleCreeps(botSentinelCreeps, MEELE_CREEP_NUMBER);
+		if (!BuildingDatabase.isDestroyedScourgeBotMeleeBarrack) {
+			// create normal wave of sentinel melee creeps
+			LineCreepDatabase.createSentinelMeleeCreeps(botSentinelCreeps, MELEE_CREEP_NUMBER);
 		} else {
-			// create super wave of sentinel meele creeps
-			LineCreepDatabase.createSentinelSuperMeeleCreeps(botSentinelCreeps, MEELE_CREEP_NUMBER);
+			// create super wave of sentinel melee creeps
+			LineCreepDatabase.createSentinelSuperMeleeCreeps(botSentinelCreeps, MELEE_CREEP_NUMBER);
 		}
 		
 		if (!BuildingDatabase.isDestroyedScourgeBotRangedBarrack) {
@@ -222,12 +222,12 @@ public class LineCreepSpawnPoint {
 		// initialize checkedPosition
 		ArrayList<int[]> checkedPosition4 = new ArrayList<int[]>();
 		
-		if (!BuildingDatabase.isDestroyedSentinelTopMeeleBarrack) {
-			// create normal wave of scourge meele creeps
-			LineCreepDatabase.createScourgeMeeleCreeps(topScourgeCreeps, MEELE_CREEP_NUMBER);
+		if (!BuildingDatabase.isDestroyedSentinelTopMeleeBarrack) {
+			// create normal wave of scourge melee creeps
+			LineCreepDatabase.createScourgeMeleeCreeps(topScourgeCreeps, MELEE_CREEP_NUMBER);
 		} else {
-			// create super wave of scourge meele creeps
-			LineCreepDatabase.createScourgeSuperMeeleCreeps(topScourgeCreeps, MEELE_CREEP_NUMBER);
+			// create super wave of scourge melee creeps
+			LineCreepDatabase.createScourgeSuperMeleeCreeps(topScourgeCreeps, MELEE_CREEP_NUMBER);
 		}
 		
 		if (!BuildingDatabase.isDestroyedSentinelTopRangedBarrack) {
@@ -267,12 +267,12 @@ public class LineCreepSpawnPoint {
 		// initialize checkedPosition
 		ArrayList<int[]> checkedPosition5 = new ArrayList<int[]>();
 		
-		if (!BuildingDatabase.isDestroyedSentinelMidMeeleBarrack) {
-			// create normal wave of scourge meele creeps
-			LineCreepDatabase.createScourgeMeeleCreeps(midScourgeCreeps, MEELE_CREEP_NUMBER);
+		if (!BuildingDatabase.isDestroyedSentinelMidMeleeBarrack) {
+			// create normal wave of scourge melee creeps
+			LineCreepDatabase.createScourgeMeleeCreeps(midScourgeCreeps, MELEE_CREEP_NUMBER);
 		} else {
-			// create super wave of scourge meele creeps
-			LineCreepDatabase.createScourgeSuperMeeleCreeps(midScourgeCreeps, MEELE_CREEP_NUMBER);
+			// create super wave of scourge melee creeps
+			LineCreepDatabase.createScourgeSuperMeleeCreeps(midScourgeCreeps, MELEE_CREEP_NUMBER);
 		}
 		
 		if (!BuildingDatabase.isDestroyedSentinelMidRangedBarrack) {
@@ -312,12 +312,12 @@ public class LineCreepSpawnPoint {
 		// initialize checkedPosition
 		ArrayList<int[]> checkedPosition6 = new ArrayList<int[]>();
 		
-		if (!BuildingDatabase.isDestroyedSentinelBotMeeleBarrack) {
-			// create normal wave of scourge meele creeps
-			LineCreepDatabase.createScourgeMeeleCreeps(botScourgeCreeps, MEELE_CREEP_NUMBER);
+		if (!BuildingDatabase.isDestroyedSentinelBotMeleeBarrack) {
+			// create normal wave of scourge melee creeps
+			LineCreepDatabase.createScourgeMeleeCreeps(botScourgeCreeps, MELEE_CREEP_NUMBER);
 		} else {
-			// create super wave of scourge meele creeps
-			LineCreepDatabase.createScourgeSuperMeeleCreeps(botScourgeCreeps, MEELE_CREEP_NUMBER);
+			// create super wave of scourge melee creeps
+			LineCreepDatabase.createScourgeSuperMeleeCreeps(botScourgeCreeps, MELEE_CREEP_NUMBER);
 		}
 		
 		if (!BuildingDatabase.isDestroyedSentinelBotRangedBarrack) {
