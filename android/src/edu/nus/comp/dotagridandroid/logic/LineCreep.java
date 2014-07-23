@@ -17,6 +17,8 @@ public class LineCreep extends GameCharacter {
 	
 	private List<int[]> moveTargets;
 	
+	private int level;
+	
 	public LineCreep() {
 		super.setObjectType(GAMEOBJECT_TYPE_LINECREEP);
 	}

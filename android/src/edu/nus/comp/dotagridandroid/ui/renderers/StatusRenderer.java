@@ -35,10 +35,14 @@ public class StatusRenderer implements Renderer {
 		controls.put("MoveLabel", new TextRenderer());
 		controls.put("Shop", new ButtonRenderer());
 		controls.put("ShopLabel", new TextRenderer());
+		controls.put("UseItem", new ButtonRenderer());
+		controls.put("UseItemLabel", new TextRenderer());
+		controls.put("SellItem", new ButtonRenderer());
+		controls.put("SellItemLabel", new TextRenderer());
 		controls.put("Skill", new ButtonRenderer());
 		controls.put("SkillLabel", new TextRenderer());
-		controls.put("NextRound", new ButtonRenderer());
-		controls.put("NextRoundLabel", new TextRenderer());
+		controls.put("NextTurn", new ButtonRenderer());
+		controls.put("NextTurnLabel", new TextRenderer());
 	}
 
 	@Override
@@ -140,14 +144,48 @@ public class StatusRenderer implements Renderer {
 		scroll.setRenderer("ShopLabel", text,
 				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -1.25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(1.25f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		// use item
+		button = (ButtonRenderer) controls.remove("UseItem");
+		button.setRenderReady();
+		button.setTapEnabled(true);
+		button.setTapRespondName("RequestItemUse");
+		scroll.setRenderer("UseItem", button,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -2.25f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2.25f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+		// use item label
+		text = (TextRenderer) controls.remove("UseItemLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setText(" Items");
+		text.setTextColour(new float[]{1,-1,-1,1});
+		scroll.setRenderer("UseItemLabel", text,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -2, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		// sell item
+		button = (ButtonRenderer) controls. remove("SellItem");
+		button.setRenderReady();
+		button.setTapEnabled(true);
+		button.setTapRespondName("RequestSellItem");
+		scroll.setRenderer("SellItem", button,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -3, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(3, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+		// sell item label
+		text = (TextRenderer) controls.remove("SellItemLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setText(" Sell ");
+		text.setTextColour(new float[]{1,-1,-1,1});
+		scroll.setRenderer("SellItemLabel", text,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -2.75f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2.75f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		// skill button
 		button = (ButtonRenderer) controls.remove("Skill");
 		button.setRenderReady();
 		button.setTapEnabled(true);
 		button.setTapRespondName("RequestSkill");
 		scroll.setRenderer("Skill", button,
-				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -2.25f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
-					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2.25f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -3.75f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(3.75f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
 		// skill label
 		text = (TextRenderer) controls.remove("SkillLabel");
 		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
@@ -155,25 +193,25 @@ public class StatusRenderer implements Renderer {
 		text.setText("Skill ");
 		text.setTextColour(new float[]{1,-1,-1,1});
 		scroll.setRenderer("SkillLabel", text,
-				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -2, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
-					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
-		// next round button
-		button = (ButtonRenderer) controls.remove("NextRound");
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -3.5f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(3.5f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		// next turn button
+		button = (ButtonRenderer) controls.remove("NextTurn");
 		button.setRenderReady();
 		button.setTapEnabled(true);
 		button.setTapRespondName("GameAction");
-		button.setTapRespondData(Collections.singletonMap("Action", (Object) "NextRound"));
-		scroll.setRenderer("NextRound", button,
-				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -3, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
-					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(3, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
-		// next round label
-		text = (TextRenderer) controls.remove("NextRoundLabel");
+		button.setTapRespondData(Collections.singletonMap("Action", (Object) "NextTurn"));
+		scroll.setRenderer("NextTurn", button,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -4.5f, 0), FlatScalingMatrix4x4(.25f, .25f, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(4.5f, 0, 0), FlatScalingMatrix4x4(.25f, .25f, 1)));
+		// next turn label
+		text = (TextRenderer) controls.remove("NextTurnLabel");
 		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 		text.setRenderReady();
-		text.setTexts(" Next ", "Round ");
-		scroll.setRenderer("NextRoundLabel", text,
-				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -2.75f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
-					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(2.75f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
+		text.setTexts(" Next ", " Turn ");
+		scroll.setRenderer("NextTurnLabel", text,
+				landscape ? FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(-.25f, -4.25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)) :
+					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(4.25f, .25f, 0), FlatScalingMatrix4x4(.5f/6, .5f/6, 1)));
 		// scroll positioning
 		scroll.setMVP(
 				landscape ? FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, -.25f, 0), FlatScalingMatrix4x4(1, .75f, 1)) :
