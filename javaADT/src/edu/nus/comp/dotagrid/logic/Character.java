@@ -18,6 +18,7 @@ public class Character {
 	private int sight;
 	
 	private boolean isAlive = false;
+	private boolean isAttackable = true; // check if the character can be attacked
 	
 	private int startingHP, startingMP;
 	private int maxHP, maxMP;
@@ -491,6 +492,9 @@ public class Character {
 		return (int)((1 - physicalDefence * 0.06 / (1 + 0.06 * physicalDefence) ) * physicalAttack);	
 	}
 
+	public static int getMangicalDamage(double magicalAttack, double magicalResis){
+		return (int)(magicalAttack * (100 - magicalResis));
+	}
 
 	public int getBountyMoney() {
 		return bountyMoney;
@@ -586,6 +590,16 @@ public class Character {
 
 	public void setCriticalStrikeChance(double criticalStrikeChance) {
 		this.criticalStrikeChance = criticalStrikeChance;
+	}
+
+
+	public boolean isAttackable() {
+		return isAttackable;
+	}
+
+
+	public void setAttackable(boolean isAttackable) {
+		this.isAttackable = isAttackable;
 	}
 
 

@@ -70,27 +70,9 @@ public class GridButton {
 		}
 		
 		if (imageNumber == 4) {
+			this.setCharacter(new Tree());
 			this.setBlockSight(true);
 		}
-		
-		if (imageNumber == 99){	
-			// randomly select a hero from hero database for player to control
-			Random random = new Random();
-			character = new HeroDatabase().heroDatabase[random.nextInt(HeroDatabase.totalHeroNumber)];
-			character.setTeamNumber(1);
-			
-			// create player!
-			Screen.user.createPlayer();
-			Player.setTeamNumber(character.getTeamNumber());
-			
-			// set player's hero's starting position
-			((Hero)character).setHeroSpawningXPos(Screen.user.playerStartingXPos);
-			((Hero)character).setHeroSpawningYPos(Screen.user.playerStartingYPos);
-			
-			isHero = true;
-			isPlayer = true;
-		}
-		
 	}
 	
 	

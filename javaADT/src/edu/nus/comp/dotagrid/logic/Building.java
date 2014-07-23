@@ -37,7 +37,7 @@ public class Building  extends Character {
 		
 		this.setProtectionPosList(building.getProtectionPosList());
 		this.setCurrentAttackPriority(building.getCurrentAttackPriority());
-		this.setCharacterImage("buildings", this.getName());
+		this.setCharacterImage("Buildings", this.getName());
 	}
 
 	public ArrayList<int[]> getProtectionPosList() {

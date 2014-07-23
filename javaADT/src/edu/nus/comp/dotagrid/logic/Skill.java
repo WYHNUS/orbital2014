@@ -16,6 +16,8 @@ public class Skill {
 	 * 
 	 * 2 : summon creatures
 	 * 
+	 * 3 : hit a maximum number of enemies in sight
+	 * 
 	 */
 	
 	private ImageIcon skillImage;
@@ -31,6 +33,9 @@ public class Skill {
 	
 	private int skillLevel;
 	private int castRange;
+	
+	private int magicalDamage;
+	private int numberOfChara;
 	
 	// coolDownRounds records the minimum rounds, if a hero has casted this spell, needed to end before using this skill again
 	// currentRound records the rounds needed to end before using this skill again
@@ -65,6 +70,18 @@ public class Skill {
 				
 				this.skillCharacter = (SummonCharacter) attributes[4];
 				this.summonRange = (int) attributes[5];
+				break;
+				
+			case 3 :
+				// usedMP, usedActionPoint, castRange, coolDownRounds,  magicalDanmage, maximumHitUnits
+				this.usedMP = (int) attributes[0];
+				this.usedActionPoint = (int) attributes[1];
+				this.castRange = (int) attributes[2];
+				this.coolDownRounds = (int) attributes[3];
+				this.setCurrentCoolDownRound(0);
+				
+				this.magicalDamage = (int) attributes[4];
+				this.numberOfChara = (int) attributes[5];
 				break;
 		}
 		
@@ -176,7 +193,7 @@ public class Skill {
 	}
 
 	public void setImage() {
-		this.skillImage = new ImageIcon("res/skills/" + skillName + ".gif");
+		this.skillImage = new ImageIcon("res/Skills/" + skillName + ".gif");
 	}
 
 	
@@ -241,5 +258,29 @@ public class Skill {
 
 	public void setSummonRange(int summonRange) {
 		this.summonRange = summonRange;
+	}
+
+
+
+	public int getMagicalDamage() {
+		return magicalDamage;
+	}
+
+
+
+	public void setMagicalDamage(int magicalDamage) {
+		this.magicalDamage = magicalDamage;
+	}
+
+
+
+	public int getNumberOfChara() {
+		return numberOfChara;
+	}
+
+
+
+	public void setNumberOfChara(int numberOfChara) {
+		this.numberOfChara = numberOfChara;
 	}
 }

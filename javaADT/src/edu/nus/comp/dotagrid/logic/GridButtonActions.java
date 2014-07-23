@@ -31,6 +31,7 @@ public class GridButtonActions {
 			displayAttackableGrids();
 			
 		} else {
+			System.out.println("A non-character grid has been selected!");
 			// highlight the selected position if no character is on the grid
 			GridFrame.highlightedMap[toXPos][toYPos] = 1;
 			
@@ -76,13 +77,18 @@ public class GridButtonActions {
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null) {
 					// can only attack non-friendly units
 					if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getTeamNumber() != GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber()) {
-						// can only attack if character has enough AP
-						if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - (int)(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedWhenAttack()) >= 0){
-							// attack!
-							new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);} 
-						
-						else {			
-							JOptionPane.showMessageDialog(null, "not enough action point to attack!");
+						// check if the character is attackable
+						if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAttackable()) {
+							// can only attack if character has enough AP
+							if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - (int)(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedWhenAttack()) >= 0){
+								// attack!
+								new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);} 
+							
+							else {			
+								JOptionPane.showMessageDialog(null, "not enough action point to attack!");
+							}
+						} else {
+							JOptionPane.showMessageDialog(null, "This unit is not attackable!");
 						}
 					} else {
 						JOptionPane.showMessageDialog(null, "Unable to attack friendly units!");

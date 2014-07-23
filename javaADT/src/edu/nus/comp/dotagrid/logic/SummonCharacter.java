@@ -20,7 +20,7 @@ public class SummonCharacter extends Character {
 		
 		this.duration = duration;
 		this.setCurrentDuration(duration);
-		this.setCharacterImage("summonCharacters", this.getName());
+		this.setCharacterImage("Summon Characters", this.getName());
 	}
 
 	public SummonCharacter(SummonCharacter summonChara) {
@@ -34,7 +34,7 @@ public class SummonCharacter extends Character {
 		this.setCurrentAttackPriority(summonChara.getCurrentAttackPriority());
 		this.setDuration(summonChara.getDuration());
 		this.setCurrentDuration(summonChara.getCurrentDuration());
-		this.setCharacterImage("summonCharacters", this.getName());
+		this.setCharacterImage("Summon Characters", this.getName());
 	}
 
 	public int getDuration() {

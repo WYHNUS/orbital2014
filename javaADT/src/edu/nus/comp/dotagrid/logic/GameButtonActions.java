@@ -382,6 +382,7 @@ public class GameButtonActions {
 					GridFrame.gridButtonMap[x][y].getCharacter().setCurrentMP((int)(GridFrame.gridButtonMap[x][y].getCharacter().getCurrentMP() + GridFrame.gridButtonMap[x][y].getCharacter().getMPGainPerRound()));
 					
 					// if character is Tower or Building, check and update protectionPosList
+					if (GridFrame.gridButtonMap[x][y].getCharacter() instanceof Tower || GridFrame.gridButtonMap[x][y].getCharacter() instanceof Building)
 					{
 						ArrayList<int[]> protectedPos;
 						if (GridFrame.gridButtonMap[x][y].getCharacter() instanceof Tower){
@@ -409,6 +410,14 @@ public class GameButtonActions {
 								System.out.println("Remove Protection because there is no existing character!");
 								iterator.remove();
 							}
+						}
+						
+						if (protectedPos.isEmpty()) {
+							// not protected
+							GridFrame.gridButtonMap[x][y].getCharacter().setAttackable(true);
+						} else {
+							// protected
+							GridFrame.gridButtonMap[x][y].getCharacter().setAttackable(false);
 						}
 					}
 					

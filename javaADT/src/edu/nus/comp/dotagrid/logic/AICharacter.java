@@ -591,11 +591,18 @@ public class AICharacter {
 			
 			// check is current position has a character
 			if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter() != null) {
-				// check if the character is enemy's character
-				if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter().getTeamNumber() != this.teamNumber){
-					// add enemy's position in to inSightEnemyPos ArrayList
-					int[] temp = {uncheckedPosition.peek()[0], uncheckedPosition.poll()[1]};
-					enemyStoreList.add(temp);
+				// check if the character is attackable
+				if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter().isAttackable()) {
+					System.out.println("name : " + GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter().getName());
+					// check if the character is enemy's character
+					if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter().getTeamNumber() != this.teamNumber){
+						// add enemy's position in to inSightEnemyPos ArrayList
+						int[] temp = {uncheckedPosition.peek()[0], uncheckedPosition.poll()[1]};
+						enemyStoreList.add(temp);
+					} else {
+						// discard the position
+						uncheckedPosition.poll();
+					}
 				} else {
 					// discard the position
 					uncheckedPosition.poll();

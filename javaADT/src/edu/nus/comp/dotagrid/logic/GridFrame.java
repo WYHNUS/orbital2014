@@ -270,7 +270,6 @@ public class GridFrame {
 		
 		// check if the selected position is within grid frame
 		if (isWithinGridFrame || (ItemShop.shouldUpdateItemInFo == true)) {	
-			System.out.println("test");
 			// reset all character info!
 			resetAllCharacterInfo();			
 			

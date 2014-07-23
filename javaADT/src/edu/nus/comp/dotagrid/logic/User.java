@@ -6,12 +6,18 @@ public class User {
 	public int playerStartingXPos = 7;
 	public int playerStartingYPos = 91;
 	
+	public static final int SENTINEL_PLAYER_STARTING_X_POS = 7;
+	public static final int SENTINEL_PLAYER_STARTING_Y_POS = 91;
+	
+	public static final int SCOURGE_PLAYER_STARTING_X_POS = 91;
+	public static final int SCOURGE_PLAYER_STARTING_Y_POS = 7;
+	
 	public Player player;
 	
 	public User() {
 		// randomly select a hero from hero database for player to control
 		Random random = new Random();
-		Hero character = new HeroDatabase().heroDatabase[random.nextInt(HeroDatabase.totalHeroNumber)];
+		Hero character = HeroDatabase.heroDatabase[random.nextInt(HeroDatabase.totalHeroNumber)];
 		character.setTeamNumber(1);
 		
 		// set player's hero's starting position

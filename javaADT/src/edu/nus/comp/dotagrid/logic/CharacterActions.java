@@ -149,8 +149,46 @@ public class CharacterActions {
 				// summon creatures
 				summonCreatures();
 				break;
+				
+			case 3 :
+				// hit a maximum number of enemies in sight
+				attackAllEnemies();
+				break;
 		}
 		
+	}
+
+
+	private void attackAllEnemies() {
+		// hit a maximum number of enemies in sight
+		Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
+		int teamNumber = castingHero.getTeamNumber();
+		Skill castingSkill = new Skill(castingHero.skills[Player.invokedPlayerSkillIndex]);
+		int magicalDamage = castingSkill.getMagicalDamage();
+		int counter = 0;
+		
+		// check through the map for enemies
+		for (int y=0; y<GridFrame.COLUMN_NUMBER; y++){
+			for (int x=0; x<GridFrame.ROW_NUMBER; x++){
+				// check if the grid has character and is within sight map
+				if (GridFrame.gridButtonMap[y][x].getCharacter() != null &&
+						GridFrame.sightMap[y][x] == 1) {
+					// check if the character is enemy and attackable
+					if (GridFrame.gridButtonMap[y][x].getCharacter().getTeamNumber() != teamNumber &&
+							GridFrame.gridButtonMap[y][x].getCharacter().getTotalMagicResistance() != 100 &&
+							GridFrame.gridButtonMap[y][x].getCharacter().isAttackable()) {
+						// counter cannot go beyond maximum attack units
+						if (counter <= castingSkill.getNumberOfChara()) {
+							// attack!
+							int actualDamage = Character.getMangicalDamage(magicalDamage, GridFrame.gridButtonMap[y][x].getCharacter().getTotalMagicResistance());
+							GridFrame.gridButtonMap[y][x].getCharacter().setCurrentHP((int) (GridFrame.gridButtonMap[y][x].getCharacter().getCurrentHP() 
+									- actualDamage));
+							counter++;
+						}
+					}
+				}
+			}
+		}
 	}
 
 
@@ -431,27 +469,6 @@ public class CharacterActions {
 		if (isCriticalStrike) {
 			System.out.println("critical attack!");
 			attack *= GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCriticalStrikeMultiplier();
-		}
-		
-		// check if the attacked target is building or tower
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Tower) {
-			// check if the protection has been invoked
-			if (!((Tower)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getProtectionPosList().isEmpty()) {
-				System.out.println("Attacked Tower has been protected!");
-				// set attack to 1
-				attack = 1;
-			}
-		}
-		
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Building) {
-			// check if the protection has been invoked
-			if (!((Building)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getProtectionPosList().isEmpty()) {
-				System.out.println("Attacked Building has been protected!");
-				// set attack to 1
-				attack = 1;
-			} else {
-				System.out.println(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getName() + " is not protected!");
-			}
 		}
 		
 		// get the AP required for one physical attack

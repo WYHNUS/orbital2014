@@ -66,10 +66,12 @@ public class Screen extends JPanel implements Runnable {
 				
 				// draw game grid 
 				newGameGridFrame = new GridFrame(g, this);
-				
+
 				// initialize towers
 				TowerDatabase.initializeAllTowers();
 				BuildingDatabase.initializeAllBuildings();
+
+				new HeroDatabase();
 				
 				// initialize user
 				user = new User();

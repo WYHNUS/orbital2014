@@ -171,63 +171,63 @@ public class TowerDatabase {
 
 	public static Tower createSentinelTower1() {
 		Tower sentinelTower1 = new Tower("Sentinel Tower 1", 250, 1300, 0, 120, 5, 1.2, 18, towerActionPoint, 1);
-		sentinelTower1.setCharacterImage("towers", "Sentinel Tower");
+		sentinelTower1.setCharacterImage("Towers", "Sentinel Tower");
 		return sentinelTower1;
 	}
 	
 	public static Tower createSentinelTower2() {
 		Tower sentinelTower2 = new Tower("Sentinel Tower 2", 300, 1600, 0, 140, 5, 1.2, 18, towerActionPoint, 1);
-		sentinelTower2.setCharacterImage("towers", "Sentinel Tower");
+		sentinelTower2.setCharacterImage("Towers", "Sentinel Tower");
 		return sentinelTower2;
 	}
 	
 	public static Tower createSentinelTower3() {
 		Tower sentinelTower3 = new Tower("Sentinel Tower 3", 350, 1600, 0, 180, 5, 1.2, 25, towerActionPoint, 1);
-		sentinelTower3.setCharacterImage("towers", "Sentinel Tower");
+		sentinelTower3.setCharacterImage("Towers", "Sentinel Tower");
 		return sentinelTower3;
 	}
 	
 	public static Tower createSentinelTower4() {
 		Tower sentinelTower4 = new Tower("Sentinel Tower 4", 400, 1600, 0, 180, 5, 1.2, 30, towerActionPoint, 1);
-		sentinelTower4.setCharacterImage("towers", "Sentinel Tower");
+		sentinelTower4.setCharacterImage("Towers", "Sentinel Tower");
 		return sentinelTower4;
 	}
 	
 	public static Tower createScourgeTower1() {
 		Tower scourgeTower1 = new Tower("Scourge Tower 1", 250, 1300, 0, 120, 5, 1.2, 18, towerActionPoint, 2);
-		scourgeTower1.setCharacterImage("towers", "Scourge Tower");
+		scourgeTower1.setCharacterImage("Towers", "Scourge Tower");
 		return scourgeTower1;
 	}
 	
 	public static Tower createScourgeTower2() {
 		Tower scourgeTower2 = new Tower("Scourge Tower 2", 300, 1600, 0, 140, 5, 1.2, 18, towerActionPoint, 2);
-		scourgeTower2.setCharacterImage("towers", "Scourge Tower");
+		scourgeTower2.setCharacterImage("Towers", "Scourge Tower");
 		return scourgeTower2;
 	}
 	
 	public static Tower createScourgeTower3() {
 		Tower scourgeTower3 = new Tower("Scourge Tower 3", 350, 1600, 0, 180, 5, 1.2, 25, towerActionPoint, 2);
-		scourgeTower3.setCharacterImage("towers", "Scourge Tower");
+		scourgeTower3.setCharacterImage("Towers", "Scourge Tower");
 		return scourgeTower3;
 	}
 	
 	public static Tower createScourgeTower4() {
 		Tower scourgeTower4 = new Tower("Scourge Tower 4", 400, 1600, 0, 180, 5, 1.2, 30, towerActionPoint, 2);
-		scourgeTower4.setCharacterImage("towers", "Scourge Tower");
+		scourgeTower4.setCharacterImage("Towers", "Scourge Tower");
 		return scourgeTower4;
 	}
 	
 	public static Tower createSentinelFountain() {
 		Tower sentinelFountain = new Tower("Sentinel Fountain", 1000, 50000, 0, 190, 7, Character.MAX_PHYSICAL_ATTACK_SPEED, 
 				15, fountainActionPoint, 1);
-		sentinelFountain.setCharacterImage("towers", "Sentinel Fountain");
+		sentinelFountain.setCharacterImage("Towers", "Sentinel Fountain");
 		return sentinelFountain;
 	}
 	
 	public static Tower createScourgeFountain() {
 		Tower scourgeFountain = new Tower("Scourge Fountain", 1000, 50000, 0, 190, 7, Character.MAX_PHYSICAL_ATTACK_SPEED, 
 				15, fountainActionPoint, 2);
-		scourgeFountain.setCharacterImage("towers", "Scourge Fountain");
+		scourgeFountain.setCharacterImage("Towers", "Scourge Fountain");
 		return scourgeFountain;
 	}
 }

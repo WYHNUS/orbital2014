@@ -37,7 +37,7 @@ public class LineCreep extends Character{
 		this.setMPGainPerRound(LINECREEP_MP_GAIN_PER_ROUND);
 		
 		// set image
-		this.setCharacterImage("creeps", this.getName());		
+		this.setCharacterImage("Line Creeps", this.getName());		
 		
 		// initialize targeted position
 		AItargetPos = new ArrayList<int[]>();

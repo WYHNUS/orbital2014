@@ -5,10 +5,9 @@ public class HeroDatabase {
 	
 	public static int totalHeroNumber = 1;
 	
-	public Hero[] heroDatabase = new Hero[totalHeroNumber];
+	public static Hero[] heroDatabase = new Hero[totalHeroNumber];
 	
 	public HeroDatabase(){
-		
 		/* 
 		 * String heroName, 
 		 * int BountyMoney
@@ -37,15 +36,19 @@ public class HeroDatabase {
 		 * int movementSpeed
 		 * 
 		 * */
+		heroDatabase[0] = getHeroFurion();
+	}
+	
+	public static Hero getHeroFurion(){
+		Hero furion = new Hero("furion", "intelligence", 
+				150, 10, 30000, 3, 0.7, 3.52, 20, 100, 1,
+				19, 18, 21, 1.8, 1.9, 2.9, 295);	
+		furion.setCharacterImage("Heroes", "furion");
+		furion.addSkill(SkillDatabase.getSkillSprout());
+		furion.addSkill(SkillDatabase.getSkillTeleportation());
+		furion.addSkill(SkillDatabase.getSkillWrathOfNature());
 		
-		Hero fur = new Hero("fur", "intelligence", 
-							150, 10, 30000, 3, 0.7, 3.52, 20, 100, 1,
-							19, 18, 21, 1.8, 1.9, 2.9, 295);	
-		fur.setCharacterImage("heroes", "fur");
-		fur.addSkill(SkillDatabase.skillDatabase[0]);
-		fur.addSkill(SkillDatabase.skillDatabase[1]);
-		heroDatabase[0] = fur;
-		
+		return furion;
 	}
 
 }
