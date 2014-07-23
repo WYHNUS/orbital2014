@@ -462,7 +462,7 @@ public class GameState implements Closeable {
 	// character actions
 	public void nextTurn () {
 		// end round routine
-		gameMaster.applyRule(null, "GameAction", Collections.singletonMap("EndTurn", (Object) currentCharacter));
+		gameMaster.applyRule(null, "GameAction", Collections.singletonMap("Action", (Object) "EndTurn"));
 		if (!currentCharacter.equals(roundOrder.peek()))
 			throw new RuntimeException("Round Order is corrupted");
 		roundOrder.add(roundOrder.poll());
@@ -485,7 +485,6 @@ public class GameState implements Closeable {
 				public void run() {
 					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
 					String character = currentCharacter;
-//					GameCharacterAutomaton.autoAction(stateMachine, currentCharacter);
 					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("Automation", null));
 					// force nextRound
 					if (character.equals(currentCharacter))

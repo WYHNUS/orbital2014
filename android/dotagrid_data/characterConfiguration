@@ -9,60 +9,92 @@
 			"characterImage" : "MeleeCreep",
 			"bountyMoney" : 44,
 			"boutyExp" : 62,
+			"startingHP" : 550,
 			"startingMP" : 0,
 			"startingPhysicalAttack" : 21,
 			"startingPhysicalAttackArea" : 1,
 			"startingPhysicalAttackSpeed" : 0.9,
 			"startingPhysicalDefence" : 2,
 			"startingMagicResistance" : 25,
-			"startingMovementSpeed" : 325
+			"startingMovementSpeed" : 325,
+			"startingHP-levelMultiplier" : 10,
+			"basicPhysicalAttack" : 0,
+			"basicPhysicalAttack-levelMultiplier" : 1
 		},
 		"sentinelRangedCreep" : {
-			"characterImage" : "RangedCreep"
-
+			"characterImage" : "RangedCreep",
+			"startingHP" : 300,
+			"startingHP-levelMultiplier" : 10,
+			"basicPhysicalAttack" : 0,
+			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"sentinelSiegeCreep" : {
-			"characterImage" : "SiegeCreep"
-
+			"characterImage" : "SiegeCreep",
+			"startingHP" : 500,
+			"startingHP-levelMultiplier" : 10,
+			"basicPhysicalAttack" : 0,
+			"basicPhysicalAttack-levelMultiplier" : 2,
 		},
 		"sentinelSuperMeleeCreep" : {
 			"characterImage" : "SuperMeleeCreep",
 			"bountyMoney" : 44,
 			"boutyExp" : 62,
 			"startingMP" : 0,
+			"startingHP" : 700,
 			"startingPhysicalAttack" : 21,
 			"startingPhysicalAttackArea" : 1,
 			"startingPhysicalAttackSpeed" : 0.9,
 			"startingPhysicalDefence" : 3,
 			"startingMagicResistance" : 25,
-			"startingMovementSpeed" : 325
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 19,
+
+			"startingHP-levelMultiplier" : 19,
+			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"sentinelSuperRangedCreep" : {
-			"characterImage" : "SuperRangedCreep"
+			"characterImage" : "SuperRangedCreep",
+			"startingHP" : 475,
+			"basicPhysicalAttack" : 20,
+
+			"basicPhysicalAttack-levelMultiplier" : 3,
+			"startingHP-levelMultiplier" : 18
 		},
 		"sentinelSuperSiegeCreep" : {
-			"characterImage" : "SuperSiegeCreep"
+			"characterImage" : "SuperSiegeCreep",
+			"startingHP" : 725,
+			"basicPhysicalAttack" : 20,
+
+			"basicPhysicalAttack-levelMultiplier" : 3,
+			"startingHP-levelMultiplier" : 18
 		},
 		"scourgeMeleeCreep" : {
-			"characterImage" : "MeleeCreep"
+			"characterImage" : "MeleeCreep",
+			"startingHP-levelMultiplier" : 10
 		},
 		"scourgeRangedCreep" : {
-			"characterImage" : "RangedCreep"
+			"characterImage" : "RangedCreep",
+			"startingHP-levelMultiplier" : 10
 		},
 		"scourgeSiegeCreep" : {
-			"characterImage" : "SiegeCreep"
+			"characterImage" : "SiegeCreep",
+			"startingHP-levelMultiplier" : 10
 		},
 		"scourgeSuperMeleeCreep" : {
-			"characterImage" : "SuperMeleeCreep"
+			"characterImage" : "SuperMeleeCreep",
+			"startingHP-levelMultiplier" : 10
 		},
 		"scourgeSuperRangedCreep" : {
-			"characterImage" : "SuperRangedCreep"
+			"characterImage" : "SuperRangedCreep",
+			"startingHP-levelMultiplier" : 10
 		},
 		"scourgeSuperSiegeCreep" : {
-			"characterImage" : "SuperSiegeCreep"
+			"characterImage" : "SuperSiegeCreep",
+			"startingHP-levelMultiplier" : 10
 		},
 		"neutralCreep" : {
-			"characterImage" : "NeutralCreep"
+			"characterImage" : "NeutralCreep",
+			"startingHP-levelMultiplier" : 10
 		}
 	},
 	"barrackConfiguration" : {

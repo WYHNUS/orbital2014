@@ -201,7 +201,7 @@ public class BasicGameMaster extends GameMaster {
 					teamCreepLevel.put(team, new HashMap<Integer, Map<String, Integer>>());
 				if (!teamCreepLevel.get(team).containsKey(front))
 					teamCreepLevel.get(team).put(front, new HashMap<String, Integer>());
-				teamCreepLevel.get(team).get(front).put(type, 0);
+				teamCreepLevel.get(team).get(front).put(type, -1);
 				Barrack obj = new Barrack();
 				state.addCharacter(name, obj, false, false);
 				// load barrack data
@@ -332,7 +332,7 @@ public class BasicGameMaster extends GameMaster {
 						return;
 					break;
 				}
-				case "NextRound": {
+				case "NextTurn": {
 					if (!character.equals(state.getCurrentCharacterName()))
 						return;
 					state.nextTurn();
@@ -489,16 +489,19 @@ public class BasicGameMaster extends GameMaster {
 				return true;
 			}
 			case "Attack": {
-				final int[] targetGrid = state.getChosenGrid(), heroGrid = state.getCharacterPosition(character);
-				if (!character.equals(state.getCurrentCharacterName()))
+				final int[] targetGrid = state.getChosenGrid(), attackerGrid = state.getCharacterPosition(character);
+				final String targetCharacter = state.getCharacterAtPosition(targetGrid);
+				if (targetCharacter == null || state.getCharacterType(targetCharacter) == GameObject.GAMEOBJECT_TYPE_TREE)
 					return false;
-				if (targetGrid[0] >= state.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= state.getGridHeight() || targetGrid[1] < 0)
+				else if (!character.equals(state.getCurrentCharacterName()))
+					return false;
+				else if (targetGrid[0] >= state.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= state.getGridHeight() || targetGrid[1] < 0)
 					return false;
 				Hero hero = (Hero) state.getCharacters().get(character);
 				return state.getCharacterAtPosition(targetGrid) != null &&	// has hero, linecreep or tower
 						hero.getTotalPhysicalAttackArea() + hero.getTotalItemAddPhysicalAttackArea()
-						>= Math.abs(targetGrid[0] - heroGrid[0])
-						+ Math.abs(targetGrid[1] - heroGrid[1]) &&	// within attack area
+						>= Math.abs(targetGrid[0] - attackerGrid[0])
+						+ Math.abs(targetGrid[1] - attackerGrid[1]) &&	// within attack area
 						hero.getCurrentActionPoint() > Hero.MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - hero.getTotalPhysicalAttackSpeed() / GameCharacter.MAX_PHYSICAL_ATTACK_SPEED)
 							* Hero.PHYSICAL_ATTACK_CONSUME_AP;	// has enough action points
 			}
@@ -518,7 +521,6 @@ public class BasicGameMaster extends GameMaster {
 		final double TERRAIN_CONST = 1;	// TODO terrain factor
 		Queue<int[]> q = new LinkedList<>();
 		double[] map = new double[width * height];
-//		Arrays.fill(map, character.getMaxActionPoint() + 1);
 		Arrays.fill(map, (Integer) state.getCharacterProperty(character, "currentActionPoint") + 1);
 		final double APConsumptionPerGrid = (Double) state.getCharacterProperty(character, "APUsedInMovingOneGrid");
 		map[start[0] + start[1] * width] = 0;
