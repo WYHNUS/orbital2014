@@ -3,7 +3,9 @@ package edu.nus.comp.dotagridandroid.logic;
 import java.util.*;
 import java.util.concurrent.*;
 import java.lang.reflect.*;
+
 import org.json.*;
+
 import edu.nus.comp.dotagridandroid.Closeable;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 import edu.nus.comp.dotagridandroid.ui.renderers.*;
@@ -57,6 +59,7 @@ public class GameState implements Closeable {
 		if (initialised || server == null)
 			return;
 		// TODO change this part
+		roundCount = 1;
 		chars = new ConcurrentHashMap<>();
 		charsTurned = Collections.synchronizedSet(new HashSet<String>());
 		roundOrder = new ConcurrentLinkedQueue<>();
@@ -120,6 +123,8 @@ public class GameState implements Closeable {
 		}
 		// end
 		gameMaster.initialise();
+		gameMaster.applyRule(null, "GameAction", Collections.singletonMap("Action", (Object) "BeginRound"));
+		gameMaster.applyRule(null, "GameAction", Collections.singletonMap("Action", (Object) "BeginTurn"));
 		chosenGrid = objPositions.get(playerCharacter).clone();
 		initialised = true;
 	}
@@ -223,12 +228,12 @@ public class GameState implements Closeable {
 		try {
 			return character.getClass().getMethod(methodName, new Class[]{}).invoke(character);
 		} catch (Exception e) {
-			System.out.println("Property getter of '" + name + "' is not available.");
+			System.out.println("Property getter of '" + name + "' is not available. Trying boolean.");
 		}
 		try {
 			return character.getClass().getMethod(booleanMethodName, new Class[]{}).invoke(character);
 		} catch (Exception e) {
-			System.out.println("Boolean property getter of '" + name + "' is not available.");
+			System.out.println("Boolean property getter of '" + name + "' is not available. Use GameObject data");
 		}
 		// extended
 		return character.getExtendedProperty(name);
@@ -260,7 +265,7 @@ public class GameState implements Closeable {
 				;
 			else if (value instanceof Boolean && params[0] == Boolean.TYPE)
 				;
-			else if (!params[0].getClass().isAssignableFrom(value.getClass()))
+			else if (!((Class) params[0]).isAssignableFrom(value.getClass()))
 				continue;
 			try {
 				m.setAccessible(true);

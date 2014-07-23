@@ -384,7 +384,7 @@ public class GridRenderer implements Renderer {
 			lightOn.put(name, false);
 			graphicsImpl.setLightOn(name, false);
 			final String charModelName = chars.get(name).getCharacterImage();
-			final int[] pos = state.getCharacterPosition(charModelName);
+			final int[] pos = state.getCharacterPosition(name);
 			if (pos == null || !chars.get(name).isAlive()) {
 				drawableVisible.put(name, false);
 				graphicsImpl.setDrawableVisible(name, false);

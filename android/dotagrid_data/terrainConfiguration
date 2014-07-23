@@ -6,7 +6,7 @@
 		"type" : "fixed",
 		"heights": [
 		],
-		"types":[
+		"types":[/*
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -106,7 +106,7 @@
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
+			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4*/
 		],
 		"treeModel" : "Tree",
 		"treeClusteredModel" : "TreeClustered"
@@ -492,11 +492,11 @@
 			"startingPhysicalDefence" : 25,
 			"actionPoint" : 100,
 			"sight" : 8
-		}
+		},
 
 		{
 			"name" : "scourgeGuardLeftTower",
-			"team" : 1,
+			"team" : 2,
 			"front" : 5,
 			"order" : 0,
 			"position" : [14, 19],
@@ -513,7 +513,7 @@
 		},
 		{
 			"name" : "scourgeGuardRightTower",
-			"team" : 1,
+			"team" : 2,
 			"front" : 5,
 			"order" : 0,
 			"position" : [18, 15],
@@ -531,28 +531,28 @@
 	],
 	"barracks" : [
 		{
-			"name" : "sentinelTopMeeleBarrack",
+			"name" : "sentinelTopMeleeBarrack",
 			"team" : 1,
 			"front" : 0,
-			"type" : "meele",
+			"type" : "melee",
 			"position" : [5, 31],
-			"model" : "MeeleBarrack"
+			"model" : "MeleeBarrack"
 		},
 		{
-			"name" : "sentinelMidMeeleBarrack",
+			"name" : "sentinelMidMeleeBarrack",
 			"team" : 1,
 			"front" : 1,
-			"type" : "meele",
+			"type" : "melee",
 			"position" : [20, 27],
-			"model" : "MeeleBarrack"
+			"model" : "MeleeBarrack"
 		},
 		{
-			"name" : "sentinelBotMeeleBarrack",
+			"name" : "sentinelBotMeleeBarrack",
 			"team" : 1,
 			"front" : 2,
-			"type" : "meele",
+			"type" : "melee",
 			"position" : [29, 12],
-			"model" : "MeeleBarrack"
+			"model" : "MeleeBarrack"
 		},
 		{
 			"name" : "sentinelTopRangedBarrack",
@@ -580,28 +580,28 @@
 		},
 
 		{
-			"name" : "scourgeTopMeeleBarrack",
+			"name" : "scourgeTopMeleeBarrack",
 			"team" : 2,
 			"front" : 0,
-			"type" : "meele",
+			"type" : "melee",
 			"position" : [70, 93],
-			"model" : "MeeleBarrack"
+			"model" : "MeleeBarrack"
 		},
 		{
-			"name" : "scourgeMidMeeleBarrack",
+			"name" : "scourgeMidMeleeBarrack",
 			"team" : 2,
 			"front" : 1,
-			"type" : "meele",
+			"type" : "melee",
 			"position" : [73, 78],
-			"model" : "MeeleBarrack"
+			"model" : "MeleeBarrack"
 		},
 		{
-			"name" : "scourgeBotMeeleBarrack",
+			"name" : "scourgeBotMeleeBarrack",
 			"team" : 2,
 			"front" : 2,
-			"type" : "meele",
+			"type" : "melee",
 			"position" : [88, 68],
-			"model" : "MeeleBarrack"
+			"model" : "MeleeBarrack"
 		},
 		{
 			"name" : "scourgeTopRangedBarrack",
@@ -654,7 +654,7 @@
 			"heroSpawnPoint" : [7, 8],
 			"fountain" : "sentinelFountain",
 			"creepBarrack" : {
-				"meele" : "SentinelMeeleCreepBarrack",
+				"melee" : "SentinelMeleeCreepBarrack",
 				"ranged" : "SentinelRangedCreepBarrack"
 			},
 			"fronts" : [
@@ -664,9 +664,9 @@
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
 						{
-							"species" : "meele",
-							"type" : "sentinelMeeleCreep",
-							"upgradedType" : "sentinelSuperMeeleCreep",
+							"species" : "melee",
+							"type" : "sentinelMeleeCreep",
+							"upgradedType" : "sentinelSuperMeleeCreep",
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
@@ -677,7 +677,7 @@
 							"type" : "sentinelRangedCreep",
 							"upgradedType" : "sentinelSuperRangedCreep",
 							"round" : 10,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						},
@@ -686,13 +686,14 @@
 							"type" : "sentinelSiegeCreep",
 							"upgradedType" : "sentinelSuperSiegeCreep",
 							"round" : 50,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						}
 					],
 					"creepUpgradeRound" : 100,
-					"creepLevelUpRound" : 200
+					"creepLevelUpRound" : 200,
+					"creepMaximumLevel" : 30
 				},
 				/* 1 Middle */
 				{
@@ -700,9 +701,9 @@
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
 						{
-							"species" : "meele",
-							"type" : "sentinelMeeleCreep",
-							"upgradedType" : "sentinelSuperMeeleCreep",
+							"species" : "melee",
+							"type" : "sentinelMeleeCreep",
+							"upgradedType" : "sentinelSuperMeleeCreep",
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
@@ -713,7 +714,7 @@
 							"type" : "sentinelRangedCreep",
 							"upgradedType" : "sentinelSuperRangedCreep",
 							"round" : 10,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						},
@@ -722,13 +723,14 @@
 							"type" : "sentinelSiegeCreep",
 							"upgradedType" : "sentinelSuperSiegeCreep",
 							"round" : 50,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						}
 					],
 					"creepUpgradeRound" : 100,
-					"creepLevelUpRound" : 200
+					"creepLevelUpRound" : 200,
+					"creepMaximumLevel" : 30
 				},
 				/* 2 Bottom */
 				{
@@ -736,9 +738,9 @@
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
 						{
-							"species" : "meele",
-							"type" : "sentinelMeeleCreep",
-							"upgradedType" : "sentinelSuperMeeleCreep",
+							"species" : "melee",
+							"type" : "sentinelMeleeCreep",
+							"upgradedType" : "sentinelSuperMeleeCreep",
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
@@ -749,7 +751,7 @@
 							"type" : "sentinelRangedCreep",
 							"upgradedType" : "sentinelSuperRangedCreep",
 							"round" : 10,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						},
@@ -758,13 +760,14 @@
 							"type" : "sentinelSiegeCreep",
 							"upgradedType" : "sentinelSuperSiegeCreep",
 							"round" : 50,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						}
 					],
 					"creepUpgradeRound" : 100,
-					"creepLevelUpRound" : 200
+					"creepLevelUpRound" : 200,
+					"creepMaximumLevel" : 30
 				}
 			]
 		},
@@ -789,9 +792,9 @@
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
 						{
-							"species" : "meele",
-							"type" : "scourgeMeeleCreep",
-							"upgradedType" : "scourgeSuperMeeleCreep",
+							"species" : "melee",
+							"type" : "scourgeMeleeCreep",
+							"upgradedType" : "scourgeSuperMeleeCreep",
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
@@ -802,7 +805,7 @@
 							"type" : "scourgeRangedCreep",
 							"upgradedType" : "scourgeSuperSuperRangedCreep",
 							"round" : 10,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						},
@@ -811,13 +814,14 @@
 							"type" : "scourgeSiegeCreep",
 							"upgradedType" : "scourgeSuperSiegeCreep",
 							"round" : 50,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 							}
 					],
 					"creepUpgradeRound" : 100,
-					"creepLevelUpRound" : 200
+					"creepLevelUpRound" : 200,
+					"creepMaximumLevel" : 30
 				},
 				/* 1 Middle */
 				{
@@ -825,9 +829,9 @@
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
 						{
-							"species" : "meele",
-							"type" : "scourgeMeeleCreep",
-							"upgradedType" : "scourgeSuperMeeleCreep",
+							"species" : "melee",
+							"type" : "scourgeMeleeCreep",
+							"upgradedType" : "scourgeSuperMeleeCreep",
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
@@ -838,7 +842,7 @@
 							"type" : "scourgeRangedCreep",
 							"upgradedType" : "scourgeSuperRangedCreep",
 							"round" : 10,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						},
@@ -847,13 +851,14 @@
 							"type" : "scourgeSiegeCreep",
 							"upgradedType" : "scourgeSuperSiegeCreep",
 							"round" : 50,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						}
 					],
 					"creepUpgradeRound" : 100,
-					"creepLevelUpRound" : 200
+					"creepLevelUpRound" : 200,
+					"creepMaximumLevel" : 30
 				},
 				/* 2 Bottom */
 				{
@@ -861,9 +866,9 @@
 					"creepSpawnRound" : 10,
 					"creepSpawnType" : [
 						{
-							"species" : "meele",
-							"type" : "scourgeMeeleCreep",
-							"upgradedType" : "scourgeSuperMeeleCreep",
+							"species" : "melee",
+							"type" : "scourgeMeleeCreep",
+							"upgradedType" : "scourgeSuperMeleeCreep",
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
@@ -874,7 +879,7 @@
 							"type" : "scourgeRangedCreep",
 							"upgradedType" : "scourgeSuperRangedCreep",
 							"round" : 10,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						},
@@ -883,13 +888,14 @@
 							"type" : "scourgeSiegeCreep",
 							"upgradedType" : "scourgeSuperSiegeCreep",
 							"round" : 50,
-							"inital" : 1,
+							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600
 						}
 					],
 					"creepUpgradeRound" : 100,
-					"creepLevelUpRound" : 200
+					"creepLevelUpRound" : 200,
+					"creepMaximumLevel" : 30
 				}
 			]
 		}
