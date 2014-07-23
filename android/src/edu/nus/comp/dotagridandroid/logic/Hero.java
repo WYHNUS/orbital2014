@@ -92,36 +92,39 @@ public class Hero extends GameCharacter{
 		this.setStartingAgility(startingAgility);
 		this.setStartingIntelligence(startingIntelligence);
 
-		this.setStartingHP(startingHP + startingStrength * STRENGTH_ADD_HP_RATIO);
-		this.setStartingMP(startingMP + startingIntelligence * INTELLIGENCE_ADD_MP_RATIO);
+		this.setStartingHP(startingHP);
+		this.setStartingMP(startingMP);
 		
+	}
+	
+	@Override
+	public void initialise() {
+		super.initialise();
+		this.setStartingHP((int) (this.getStartingHP() + startingStrength * STRENGTH_ADD_HP_RATIO));
+		this.setStartingMP((int) (this.getStartingMP() + startingIntelligence * INTELLIGENCE_ADD_MP_RATIO));
 		this.setBasicStrength(this.getStartingStrength());
 		this.setBasicAgility(this.getStartingAgility());
 		this.setBasicIntelligence(this.getStartingIntelligence());
-		
 		this.setTotalStrength(this.getStartingStrength());
 		this.setTotalAgility(this.getStartingAgility());
 		this.setTotalIntelligence(this.getStartingIntelligence());
-		
 		this.setBasicMainAttribute(null);
 		this.setTotalMainAttribute(null);
-		
 		this.setMaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO));
 		this.setMaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO));
 		this.setCurrentHP(this.getMaxHP());
 		this.setCurrentMP(this.getMaxMP());
-
 		this.setHPGainPerRound(this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + HeroHPGainPerRound);
 		this.setMPGainPerRound(this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + HeroMPGainPerRound);
-
 		this.setTotalPhysicalDefence(this.getBasicPhysicalDefence() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_DEFENCE_RATIO);		
 		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO);
-		
 		this.setTotalPhysicalAttack(this.getBasicPhysicalAttack() + this.getTotalMainAttribute() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO);
-		
 	}
 	
-
+	@Override
+	public void updateProperties() {
+		updateHeroAttributeInfo();
+	}
 
 	public Hero(Hero that) {
 //		super(hero.getName(), hero.getBountyMoney(), hero.getStartingHP(), hero.getStartingMP(), hero.getStartingPhysicalAttack(), hero.getStartingPhysicalAttackArea(), 

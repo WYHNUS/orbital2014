@@ -227,6 +227,9 @@ public class BasicGameMaster extends GameMaster {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		for (Map.Entry<String, GameCharacter> characterObject : state.getCharacters().entrySet())
+			characterObject.getValue().initialise();
 	}
 
 	@Override
@@ -396,23 +399,59 @@ public class BasicGameMaster extends GameMaster {
 										do {
 											name = java.util.UUID.randomUUID().toString();
 										} while (state.getCharacterType(name) > 0 || state.getCharacterType(name) == GameObject.GAMEOBJECT_TYPE_ROUNDFLAG);
-										Map<String, Object> config = (Map<String, Object>) ((Map<String, Object>) charsConfig.get("creepConfiguration"))
+										final Map<String, Object> config = (Map<String, Object>) ((Map<String, Object>) charsConfig.get("creepConfiguration"))
 												.get(type.get("type"));
+										final Map<String, Object> configUpgraded = (Map<String, Object>) ((Map<String, Object>) charsConfig.get("creepConfiguration")).get(type.get("upgradedType"));
+										final int level = teamCreepLevel.get(i).get(frontNumber).get(type.get("species"));
 										LineCreep creep = new LineCreep();
 										state.addCharacter(name, creep, true, true);
 										state.setCharacterProperty(name, "characterImage", config.get("characterImage"));
 										// specific rule
 										if ("melee".equals(type.get("species")) && meleeUpgraded) {
-											//
+											state.setCharacterProperty(name, "bountyMoney", configUpgraded.get("bountyMoney"));
+											state.setCharacterProperty(name, "startingHP",
+													((Number) configUpgraded.get("startingHP")).intValue() + ((Number) configUpgraded.get("startingHP-levelMultiplier")).intValue() * level);
+											state.setCharacterProperty(name, "startingMP", configUpgraded.get("startingMP"));
+											state.setCharacterProperty(name, "startingPhysicalAttack", configUpgraded.get("startingPhysicalAttack"));
+											state.setCharacterProperty(name, "startingPhysicalAttackArea", configUpgraded.get("startingPhysicalAttackArea"));
+											state.setCharacterProperty(name, "startingPhysicalAttackSpeed", configUpgraded.get("startingPhysicalAttackSpeed"));
+											state.setCharacterProperty(name, "startingPhysicalDefence", configUpgraded.get("startingPhysicalDefence"));
+											state.setCharacterProperty(name, "startingMagicResistance", configUpgraded.get("startingMagicResistance"));
+											state.setCharacterProperty(name, "startingMovementSpeed", configUpgraded.get("startingMovementSpeed"));
+											state.setCharacterProperty(name, "basicPhysicalAttack",
+													((Number) configUpgraded.get("basicPhysicalAttack")).intValue()
+													+ ((Number) configUpgraded.get("basicPhysicalAttack-levelMultiplier")).intValue() * level);
 										} else if ("ranged".equals(type.get("species")) || "siege".equals(type.get("species")) && rangedUpgraded) {
-											//
-										} else switch ((String) type.get("species")) {
-										case "melee":
-											state.setCharacterProperty(name, "bountyMoney", 0);
-										case "ranged":
-										case "siege":
+											state.setCharacterProperty(name, "bountyMoney", configUpgraded.get("bountyMoney"));
+											state.setCharacterProperty(name, "startingHP",
+													((Number) configUpgraded.get("startingHP")).intValue() + ((Number) configUpgraded.get("startingHP-levelMultiplier")).intValue() * level);
+											state.setCharacterProperty(name, "startingMP", configUpgraded.get("startingMP"));
+											state.setCharacterProperty(name, "startingPhysicalAttack", configUpgraded.get("startingPhysicalAttack"));
+											state.setCharacterProperty(name, "startingPhysicalAttackArea", configUpgraded.get("startingPhysicalAttackArea"));
+											state.setCharacterProperty(name, "startingPhysicalAttackSpeed", configUpgraded.get("startingPhysicalAttackSpeed"));
+											state.setCharacterProperty(name, "startingPhysicalDefence", configUpgraded.get("startingPhysicalDefence"));
+											state.setCharacterProperty(name, "startingMagicResistance", configUpgraded.get("startingMagicResistance"));
+											state.setCharacterProperty(name, "startingMovementSpeed", configUpgraded.get("startingMovementSpeed"));
+											state.setCharacterProperty(name, "basicPhysicalAttack",
+													((Number) configUpgraded.get("basicPhysicalAttack")).intValue()
+													+ ((Number) configUpgraded.get("basicPhysicalAttack-levelMultiplier")).intValue() * level);
+										} else {
+											state.setCharacterProperty(name, "bountyMoney", config.get("bountyMoney"));
+											state.setCharacterProperty(name, "startingHP",
+													((Number) config.get("startingHP")).intValue() + ((Number) config.get("startingHP-levelMultiplier")).intValue() * level);
+											state.setCharacterProperty(name, "startingMP", config.get("startingMP"));
+											state.setCharacterProperty(name, "startingPhysicalAttack", config.get("startingPhysicalAttack"));
+											state.setCharacterProperty(name, "startingPhysicalAttackArea", config.get("startingPhysicalAttackArea"));
+											state.setCharacterProperty(name, "startingPhysicalAttackSpeed", config.get("startingPhysicalAttackSpeed"));
+											state.setCharacterProperty(name, "startingPhysicalDefence", config.get("startingPhysicalDefence"));
+											state.setCharacterProperty(name, "startingMagicResistance", config.get("startingMagicResistance"));
+											state.setCharacterProperty(name, "startingMovementSpeed", config.get("startingMovementSpeed"));
+											state.setCharacterProperty(name, "basicPhysicalAttack",
+													((Number) config.get("basicPhysicalAttack")).intValue()
+													+ ((Number) config.get("basicPhysicalAttack-levelMultiplier")).intValue() * level);
 										}
-										state.setCharacterProperty(name, "level", teamCreepLevel.get(i).get(frontNumber).get(type.get("species")));
+//										state.setCharacterProperty(name, "level", teamCreepLevel.get(i).get(frontNumber).get(type.get("species")));
+										creep.initialise();
 									}
 							frontNumber++;
 						}
@@ -465,6 +504,8 @@ public class BasicGameMaster extends GameMaster {
 					break;
 				}
 				}
+				for (Map.Entry<String, GameCharacter> characterObject : state.getCharacters().entrySet())
+					characterObject.getValue().updateProperties();
 			}
 			break;
 		}

@@ -17,27 +17,46 @@
 			"startingPhysicalDefence" : 2,
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
-			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack" : 0,
+
+			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 1
 		},
 		"sentinelRangedCreep" : {
 			"characterImage" : "RangedCreep",
+			"bountyMoney" : 49,
 			"startingHP" : 300,
-			"startingHP-levelMultiplier" : 10,
+			"startingMP" : 300,
+			"startingPhysicalAttack" : 24,
+			"startingPhysicalAttackArea" : 3,
+			"startingPhysicalAttackSpeed" : 1.0,
+			"startingPhysicalDefence" : 0,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
+
+			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"sentinelSiegeCreep" : {
 			"characterImage" : "SiegeCreep",
+			"bountyMoney" : 74,
 			"startingHP" : 500,
-			"startingHP-levelMultiplier" : 10,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 40,
+			"startingPhysicalAttackArea" : 4,
+			"startingPhysicalAttackSpeed" : 0.7,
+			"startingPhysicalDefence" : 0,
+			"startingMagicResistance" : 100,
+			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
-			"basicPhysicalAttack-levelMultiplier" : 2,
+
+			"startingHP-levelMultiplier" : 10,
+			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"sentinelSuperMeleeCreep" : {
 			"characterImage" : "SuperMeleeCreep",
-			"bountyMoney" : 44,
+			"bountyMoney" : 22,
 			"boutyExp" : 62,
 			"startingMP" : 0,
 			"startingHP" : 700,
@@ -54,7 +73,15 @@
 		},
 		"sentinelSuperRangedCreep" : {
 			"characterImage" : "SuperRangedCreep",
+			"bountyMoney" : 24,
 			"startingHP" : 475,
+			"startingMP" : 300,
+			"startingPhysicalAttack" : 24,
+			"startingPhysicalAttackArea" : 3,
+			"startingPhysicalAttackSpeed" : 1.0,
+			"startingPhysicalDefence" : 1,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 20,
 
 			"basicPhysicalAttack-levelMultiplier" : 3,
@@ -62,35 +89,117 @@
 		},
 		"sentinelSuperSiegeCreep" : {
 			"characterImage" : "SuperSiegeCreep",
+			"bountyMoney" : 37,
 			"startingHP" : 725,
-			"basicPhysicalAttack" : 20,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 40,
+			"startingPhysicalAttackArea" : 4,
+			"startingPhysicalAttackSpeed" : 0.7,
+			"startingPhysicalDefence" : 1,
+			"startingMagicResistance" : 100,
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 16,
 
 			"basicPhysicalAttack-levelMultiplier" : 3,
 			"startingHP-levelMultiplier" : 18
 		},
 		"scourgeMeleeCreep" : {
 			"characterImage" : "MeleeCreep",
-			"startingHP-levelMultiplier" : 10
+			"bountyMoney" : 44,
+			"boutyExp" : 62,
+			"startingHP" : 550,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 21,
+			"startingPhysicalAttackArea" : 1,
+			"startingPhysicalAttackSpeed" : 0.9,
+			"startingPhysicalDefence" : 2,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 0,
+
+			"startingHP-levelMultiplier" : 10,
+			"basicPhysicalAttack-levelMultiplier" : 1
 		},
 		"scourgeRangedCreep" : {
 			"characterImage" : "RangedCreep",
-			"startingHP-levelMultiplier" : 10
+			"bountyMoney" : 49,
+			"startingHP" : 300,
+			"startingMP" : 300,
+			"startingPhysicalAttack" : 24,
+			"startingPhysicalAttackArea" : 3,
+			"startingPhysicalAttackSpeed" : 1.0,
+			"startingPhysicalDefence" : 0,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 0,
+
+			"startingHP-levelMultiplier" : 10,
+			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"scourgeSiegeCreep" : {
 			"characterImage" : "SiegeCreep",
-			"startingHP-levelMultiplier" : 10
+			"bountyMoney" : 74,
+			"startingHP" : 500,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 40,
+			"startingPhysicalAttackArea" : 4,
+			"startingPhysicalAttackSpeed" : 0.7,
+			"startingPhysicalDefence" : 0,
+			"startingMagicResistance" : 100,
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 0,
+
+			"startingHP-levelMultiplier" : 10,
+			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"scourgeSuperMeleeCreep" : {
 			"characterImage" : "SuperMeleeCreep",
-			"startingHP-levelMultiplier" : 10
+			"bountyMoney" : 22,
+			"boutyExp" : 62,
+			"startingMP" : 0,
+			"startingHP" : 700,
+			"startingPhysicalAttack" : 21,
+			"startingPhysicalAttackArea" : 1,
+			"startingPhysicalAttackSpeed" : 0.9,
+			"startingPhysicalDefence" : 3,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 19,
+
+			"startingHP-levelMultiplier" : 19,
+			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"scourgeSuperRangedCreep" : {
 			"characterImage" : "SuperRangedCreep",
-			"startingHP-levelMultiplier" : 10
+			"bountyMoney" : 24,
+			"startingHP" : 475,
+			"startingMP" : 300,
+			"startingPhysicalAttack" : 24,
+			"startingPhysicalAttackArea" : 3,
+			"startingPhysicalAttackSpeed" : 1.0,
+			"startingPhysicalDefence" : 1,
+			"startingMagicResistance" : 25,
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 20,
+
+			"basicPhysicalAttack-levelMultiplier" : 3,
+			"startingHP-levelMultiplier" : 18
 		},
 		"scourgeSuperSiegeCreep" : {
 			"characterImage" : "SuperSiegeCreep",
-			"startingHP-levelMultiplier" : 10
+			"bountyMoney" : 37,
+			"startingHP" : 725,
+			"startingMP" : 0,
+			"startingPhysicalAttack" : 40,
+			"startingPhysicalAttackArea" : 4,
+			"startingPhysicalAttackSpeed" : 0.7,
+			"startingPhysicalDefence" : 1,
+			"startingMagicResistance" : 100,
+			"startingMovementSpeed" : 325,
+			"basicPhysicalAttack" : 16,
+
+			"basicPhysicalAttack-levelMultiplier" : 3,
+			"startingHP-levelMultiplier" : 18
 		},
 		"neutralCreep" : {
 			"characterImage" : "NeutralCreep",
