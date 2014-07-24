@@ -46,7 +46,9 @@ public class HeroDatabase {
 		furion.setCharacterImage("Heroes", "furion");
 		furion.addSkill(SkillDatabase.getSkillSprout());
 		furion.addSkill(SkillDatabase.getSkillTeleportation());
+		furion.addSkill(SkillDatabase.getSkillNatureCall());
 		furion.addSkill(SkillDatabase.getSkillWrathOfNature());
+		furion.addSkill(SkillDatabase.getAttributeBonus());
 		
 		return furion;
 	}

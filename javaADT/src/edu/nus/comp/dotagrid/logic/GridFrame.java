@@ -50,9 +50,10 @@ public class GridFrame {
 	private static int previouslySelectedYPos = -1;
 	
 	// store terrain Images
-	public static Image[] terrain = new Image[100];
+	public static Image[] terrain = new Image[10];
 	
 	public static int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
+	public static boolean[][] treeMap = new boolean[ROW_NUMBER][COLUMN_NUMBER];
 	public static int[][] highlightedMap = new int[ROW_NUMBER][COLUMN_NUMBER];
 	public static int[][] sightMap = new int[ROW_NUMBER][COLUMN_NUMBER];
 	public static int[][] attackRangeMap = new int[ROW_NUMBER][COLUMN_NUMBER];
@@ -75,24 +76,21 @@ public class GridFrame {
 		
 		worldMapFile = new WorldMapFile();
 		
-		for (int y = 0; y < 10; y++) {
-			for (int x = 0; x < 10; x++) {
-				int z = x + (y * 10);
-				terrain[z] = new ImageIcon("res/WorldMap/terrian" + "/terrian" + z + ".png").getImage();
-			}
+		for (int i = 0; i < 10; i++) {
+			terrain[i] = new ImageIcon("res/WorldMap/terrian" + "/terrian" + i + ".png").getImage();
 		}		
 		
 		this.worldMap = worldMapFile.getWorldMap();
-		this.map = this.worldMap.map;
+		map = this.worldMap.map;
 		
 		displayGridOnScreen(g);
 		
-		initializeGridButtonsOnScreen();
+		initializeAllMapsOnScreen();
 		
 		displayGridButtonsOnScreen(g);
 	}
 
-	private void initializeGridButtonsOnScreen() {
+	private void initializeAllMapsOnScreen() {
 		// initialize grid buttons that can be displayed on screen
 		for (int x=0; x<ROW_NUMBER; x++) {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 
@@ -101,6 +99,10 @@ public class GridFrame {
 				highlightedMap[x][y] = -1;
 				attackRangeMap[x][y] = -1;
 				sightMap[x][y] = 1;
+				// initialize tree map
+				if (map[x][y] == 4) {
+					treeMap[x][y] = true;
+				}
 			}
 		}	
 	}
@@ -289,6 +291,7 @@ public class GridFrame {
 	
 	
 	public static void resetAllCharacterInfo() {
+		System.out.println("reset all character information!");
 		// clear all previously highlighted grids and prepare for new round of highlighting XD
 		// clear sight map for further refresh of information
 		for (int x=0; x<ROW_NUMBER; x++) {

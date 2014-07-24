@@ -625,7 +625,7 @@ public class AICharacter {
 	}
 
 	
-	private static boolean isChecked(ArrayList<int[]> checkedPosition, Queue<int[]> uncheckedPosition, int XPos, int YPos) {
+	public static boolean isChecked(ArrayList<int[]> checkedPosition, Queue<int[]> uncheckedPosition, int XPos, int YPos) {
 		// each int[] in checkedPosition stores a pair of xpos and ypos
 		boolean isChecked = false;
 		

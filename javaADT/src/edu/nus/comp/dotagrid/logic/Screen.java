@@ -77,8 +77,8 @@ public class Screen extends JPanel implements Runnable {
 				user = new User();
 				
 				// select player's hero's grid button
-				GridFrame.invokeLeftClickEvent((int)(7.5 * GridFrame.getGridWidth() + GameFrame.FRAME_BORDER_HEIGHT), 
-						(int)(6.5 * GridFrame.getGridHeight() + GameFrame.FRAME_BORDER_WIDTH));
+				GridFrame.invokeLeftClickEvent((int)((0.5 + user.playerStartingXPos - GridFrame.getCurrentGridXPos()) * GridFrame.getGridWidth() + GameFrame.FRAME_BORDER_HEIGHT), 
+						(int)((0.5 + user.playerStartingYPos - GridFrame.getCurrentGridYPos()) * GridFrame.getGridHeight() + GameFrame.FRAME_BORDER_WIDTH));
 				
 				isFrameInitialized = true;
 			} else {
@@ -144,7 +144,7 @@ public class Screen extends JPanel implements Runnable {
 	
 	public class KeyTyped {
 		public void keyESC() {
-			running = false;
+			MainMenu.confirmExit();
 		}
 
 		public void keySPACE() {

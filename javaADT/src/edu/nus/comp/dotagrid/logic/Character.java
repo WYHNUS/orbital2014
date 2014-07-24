@@ -41,9 +41,16 @@ public class Character {
 	private int maxActionPoint;
 	private int currentActionPoint;
 	
-	// attack priority from 1 - 10 : larger value means less likely to be attacked
-	private int startingAttackPriority;
-	private int currentAttackPriority;
+	// attack priority from 0 - 10 : larger value means less likely to be attacked
+	/* 
+	 * LineCreep : 3
+	 * SummonCharacter / NeutralCreep : 4
+	 * Hero : 5
+	 * Tower : 7
+	 * Building : 9
+	 */
+	private int startingAttackPriority = 10;
+	private int currentAttackPriority = 10;
 
 
 	/* 0 represents neutral 
@@ -541,7 +548,7 @@ public class Character {
 
 
 	public void setStartingAttackPriority(int startingAttackPriority) {
-		if (startingAttackPriority < 1 || startingAttackPriority > 10) {
+		if (startingAttackPriority < 0 || startingAttackPriority > 10) {
 			System.out.println("Out of attackPriority boundary!");
 		} else {
 			this.startingAttackPriority = startingAttackPriority;
@@ -555,7 +562,7 @@ public class Character {
 
 
 	public void setCurrentAttackPriority(int currentAttackPriority) {
-		if (currentAttackPriority < 1 || currentAttackPriority > 10) {
+		if (currentAttackPriority < 0 || currentAttackPriority > 10) {
 			System.out.println("Out of attackPriority boundary!");
 		} else {
 			this.currentAttackPriority = currentAttackPriority;

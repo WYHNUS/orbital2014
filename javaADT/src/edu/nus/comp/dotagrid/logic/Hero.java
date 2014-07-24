@@ -30,8 +30,16 @@ public class Hero extends Character{
 	private int level;
 	private int experience;
 
+	// skills and total attributes added from skills
 	public Skill[] skills;
 	private int unusedSkillCount = 1;
+	private double totalSkillAddStrength, totalSkillAddAgility, totalSkillAddIntelligence;
+	private int totalSkillAddHP, totalSkillAddMP;
+	private double totalSkillAddHPGainPerRound, totalSkillAddMPGainPerRound;
+	private double totalSkillAddPhysicalDefence, totalSkillAddMagicResistance;
+	private double totalSkillAddPhysicalAttack, totalSkillAddPhysicalAttackSpeed;
+	private int totalSkillAddPhysicalAttackArea;
+	private int totalSkillAddMovementSpeed;
 	
 	// items and total attributes added from items
 	public Item[] items;
@@ -227,30 +235,39 @@ public class Hero extends Character{
 		this.setBasicAgility(this.getStartingAgility() + (this.getLevel() - 1) * this.getAgilityGrowth());
 		this.setBasicIntelligence(this.getStartingIntelligence() + (this.getLevel() - 1) * this.getIntelligenceGrowth());
 		
-		this.setTotalStrength(this.getBasicStrength() + this.getTotalItemAddStrength());
-		this.setTotalAgility(this.getBasicAgility() + this.getTotalItemAddAgility());
-		this.setTotalIntelligence(this.getBasicIntelligence() + this.getTotalItemAddIntelligence());
+		this.setTotalStrength(this.getBasicStrength() + this.getTotalItemAddStrength() + this.getTotalSkillAddStrength());
+		this.setTotalAgility(this.getBasicAgility() + this.getTotalItemAddAgility() + this.getTotalSkillAddAgility());
+		this.setTotalIntelligence(this.getBasicIntelligence() + this.getTotalItemAddIntelligence() + this.getTotalSkillAddIntelligence());
 		
 		this.setBasicMainAttribute();
 		this.setTotalMainAttribute();
-		
-		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO + this.getTotalItemAddHP()));
-		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO + this.getTotalItemAddMP()));
-		
-		this.setHPGainPerRound(HeroHPGainPerRound + this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND + this.getTotalItemAddHPGainPerRound());
-		this.setMPGainPerRound(HeroMPGainPerRound + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND + this.getTotalItemAddMPGainPerRound());
+
+		this.setmaxHP((int) (this.getStartingHP() + this.getTotalStrength() * STRENGTH_ADD_HP_RATIO 
+				+ this.getTotalItemAddHP() + this.getTotalSkillAddHP()));
+		this.setmaxMP((int) (this.getStartingMP() + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_RATIO 
+				+ this.getTotalItemAddMP() + this.getTotalSkillAddMP()));
+
+		this.setHPGainPerRound(HeroHPGainPerRound + this.getTotalStrength() * STRENGTH_ADD_HP_PER_ROUND 
+				+ this.getTotalItemAddHPGainPerRound() + this.getTotalSkillAddHPGainPerRound());
+		this.setMPGainPerRound(HeroMPGainPerRound + this.getTotalIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND 
+				+ this.getTotalItemAddMPGainPerRound() +  + this.getTotalSkillAddMPGainPerRound());
 		
 		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed() + this.getTotalAgility() * AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO
-				+ this.getTotalItemAddPhysicalAttackSpeed());
-		this.setTotalPhysicalAttackArea(this.getStartingPhysicalAttackArea() + this.getTotalItemAddPhysicalAttackArea());
-		this.setTotalMagicResistance(this.getStartingMagicResistance() + this.getTotalItemAddMagicResistance());
-		this.setTotalMovementSpeed(this.getStartingMovementSpeed() + this.getTotalItemAddMovementSpeed());
+				+ this.getTotalItemAddPhysicalAttackSpeed() + this.getTotalSkillAddPhysicalAttackSpeed());
+		this.setTotalPhysicalAttackArea(this.getStartingPhysicalAttackArea() 
+				+ this.getTotalItemAddPhysicalAttackArea() + this.getTotalSkillAddPhysicalAttackArea());
+		this.setTotalMagicResistance(this.getStartingMagicResistance() 
+				+ this.getTotalItemAddMagicResistance() + this.getTotalSkillAddMagicResistance());
+		this.setTotalMovementSpeed(this.getStartingMovementSpeed() 
+				+ this.getTotalItemAddMovementSpeed() + this.getTotalSkillAddMovementSpeed());
 		
 		this.setBasicPhysicalDefence(this.getStartingPhysicalDefence() + this.getBasicAgility() * AGILITY_ADD_PHYSICAL_DEFENCE_RATIO);	
-		this.setTotalPhysicalDefence(this.getBasicPhysicalDefence() + this.getTotalItemAddPhysicalDefence());
+		this.setTotalPhysicalDefence(this.getBasicPhysicalDefence() + (this.getTotalAgility() - this.getBasicAgility()) * AGILITY_ADD_PHYSICAL_DEFENCE_RATIO
+				+ this.getTotalItemAddPhysicalDefence() + this.getTotalSkillAddPhysicalDefence());
 		
 		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack() + this.getBasicMainAttribute() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO);
-		this.setTotalPhysicalAttack(this.getBasicPhysicalAttack() + this.getTotalItemAddPhysicalAttack());
+		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack() + this.getTotalMainAttribute() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO
+				+ this.getTotalItemAddPhysicalAttack() + this.getTotalSkillAddPhysicalAttack());
 	}
 	
 
@@ -292,7 +309,7 @@ public class Hero extends Character{
 	}
 	
 	public double getBasicMainAttribute() {
-		return totalMainAttribute;
+		return basicMainAttribute;
 	}
 
 
@@ -602,7 +619,6 @@ public class Hero extends Character{
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
 			if (this.items[i] != null) {
 				this.totalItemAddHP += items[i].getAddHP();
-				this.totalItemAddHP += items[i].getAddStrength() * STRENGTH_ADD_HP_RATIO;
 			}
 		}
 		return this.totalItemAddHP;
@@ -613,7 +629,6 @@ public class Hero extends Character{
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
 			if (this.items[i] != null) {
 				this.totalItemAddMP += items[i].getAddMP();
-				this.totalItemAddMP += items[i].getAddIntelligence() * INTELLIGENCE_ADD_MP_RATIO;
 			}
 		}
 		return this.totalItemAddMP;
@@ -625,7 +640,6 @@ public class Hero extends Character{
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
 			if (this.items[i] != null) {
 				this.totalItemAddHPGainPerRound += items[i].getAddHPGainPerRound();
-				this.totalItemAddHPGainPerRound += items[i].getAddStrength() * STRENGTH_ADD_HP_PER_ROUND;
 			}
 		}
 		return this.totalItemAddHPGainPerRound;
@@ -637,7 +651,6 @@ public class Hero extends Character{
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
 			if (this.items[i] != null) {
 				this.totalItemAddMPGainPerRound += items[i].getAddMPGainPerRound();
-				this.totalItemAddMPGainPerRound += items[i].getAddIntelligence() * INTELLIGENCE_ADD_MP_PER_ROUND;
 			}
 		}
 		return this.totalItemAddMPGainPerRound;
@@ -649,7 +662,6 @@ public class Hero extends Character{
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
 			if (this.items[i] != null) {
 				this.totalItemAddPhysicalDefence += items[i].getAddPhysicalDefence();
-				this.totalItemAddPhysicalDefence += items[i].getAddAgility() * AGILITY_ADD_PHYSICAL_DEFENCE_RATIO;
 			}
 		}
 		return this.totalItemAddPhysicalDefence;
@@ -671,14 +683,6 @@ public class Hero extends Character{
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
 			if (this.items[i] != null) {
 				this.totalItemAddPhysicalAttack += items[i].getAddPhysicalAttack();
-				
-				if (this.getMainAttribute().equalsIgnoreCase("strength")) {
-					this.totalItemAddPhysicalAttack += items[i].getAddStrength() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO;					
-				} else if (this.getMainAttribute().equalsIgnoreCase("agility")){
-					this.totalItemAddPhysicalAttack += items[i].getAddAgility()  * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO;
-				} else {
-					this.totalItemAddPhysicalAttack += items[i].getAddIntelligence() * MAIN_ATTRIBUTE_ADD_PHYSICAL_ATTACK_RATIO;
-				}
 			}
 		}
 		return this.totalItemAddPhysicalAttack;
@@ -689,7 +693,6 @@ public class Hero extends Character{
 		for (int i=0; i<GameFrame.MAX_ITEM_NUMBER; i++) {
 			if (this.items[i] != null) {
 				this.totalItemAddPhysicalAttackSpeed += items[i].getAddPhysicalAttackSpeed();
-				this.totalItemAddPhysicalAttackSpeed += items[i].getAddAgility() * AGILITY_ADD_PHYSICAL_ATTACK_SPEED_RATIO;
 			}
 		}
 		return this.totalItemAddPhysicalAttackSpeed;
@@ -742,6 +745,244 @@ public class Hero extends Character{
 	}
 	
 	
+	// attributes contributed from skill
+
+	public void setTotalSkillAddStrength(double totalSkillAddStrength) {
+		this.totalSkillAddStrength = totalSkillAddStrength;
+	}
+
+
+
+	public void setTotalSkillAddAgility(double totalSkillAddAgility) {
+		this.totalSkillAddAgility = totalSkillAddAgility;
+	}
+
+
+
+	public void setTotalSkillAddIntelligence(double totalSkillAddIntelligence) {
+		this.totalSkillAddIntelligence = totalSkillAddIntelligence;
+	}
+
+
+
+	public double getTotalSkillAddStrength() {
+		this.totalSkillAddStrength = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null) {
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddStrength += skills[i].getAddStrength();
+			}
+		}
+		return this.totalSkillAddStrength;
+	}
+
+
+	public double getTotalSkillAddAgility() {
+		this.totalSkillAddAgility = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddAgility += skills[i].getAddAgility();
+		}
+		return this.totalSkillAddAgility;
+	}
+
+
+	public double getTotalSkillAddIntelligence() {
+		this.totalSkillAddIntelligence = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddIntelligence += skills[i].getAddIntelligence();
+		}
+		return this.totalSkillAddIntelligence;
+	}
+
+	
+	
+	public int getTotalSkillAddHP() {
+		this.totalSkillAddHP = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0) {
+					this.totalSkillAddHP += skills[i].getAddHP();
+				}
+		}
+		return this.totalSkillAddHP;
+	}
+
+
+
+	public void setTotalSkillAddHP(int totalSkillAddHP) {
+		this.totalSkillAddHP = totalSkillAddHP;
+	}
+
+
+
+	public int getTotalSkillAddMP() {
+		this.totalSkillAddMP = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddMP += skills[i].getAddMP();
+		}
+		return this.totalSkillAddMP;
+	}
+
+
+
+	public void setTotalSkillAddMP(int totalSkillAddMP) {
+		this.totalSkillAddMP = totalSkillAddMP;
+	}
+
+
+
+	public double getTotalSkillAddHPGainPerRound() {
+		this.totalSkillAddHPGainPerRound = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddHPGainPerRound += skills[i].getAddHPGainPerRound();
+		}
+		return this.totalSkillAddHPGainPerRound;
+	}
+
+
+
+	public void setTotalSkillAddHPGainPerRound(double totalSkillAddHPGainPerRound) {
+		this.totalSkillAddHPGainPerRound = totalSkillAddHPGainPerRound;
+	}
+
+
+
+	public double getTotalSkillAddMPGainPerRound() {
+		this.totalSkillAddMPGainPerRound = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddMPGainPerRound += skills[i].getAddMPGainPerRound();
+		}
+		return this.totalSkillAddMPGainPerRound;
+	}
+
+
+
+	public void setTotalSkillAddMPGainPerRound(double totalSkillAddMPGainPerRound) {
+		this.totalSkillAddMPGainPerRound = totalSkillAddMPGainPerRound;
+	}
+
+
+
+	public double getTotalSkillAddPhysicalDefence() {
+		this.totalSkillAddPhysicalDefence = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddPhysicalDefence += skills[i].getAddPhysicalDefence();
+		}
+		return this.totalSkillAddPhysicalDefence;
+	}
+
+
+
+	public void setTotalSkillAddPhysicalDefence(double totalSkillAddPhysicalDefence) {
+		this.totalSkillAddPhysicalDefence = totalSkillAddPhysicalDefence;
+	}
+
+
+
+	public double getTotalSkillAddMagicResistance() {
+		this.totalSkillAddMagicResistance = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddMagicResistance += skills[i].getAddMagicResistance();
+		}
+		return this.totalSkillAddMagicResistance;
+	}
+
+
+
+	public void setTotalSkillAddMagicResistance(double totalSkillAddMagicResistance) {
+		this.totalSkillAddMagicResistance = totalSkillAddMagicResistance;
+	}
+
+
+
+	public double getTotalSkillAddPhysicalAttack() {
+		this.totalSkillAddPhysicalAttack = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddPhysicalAttack += skills[i].getAddPhysicalAttack();
+		}
+		return this.totalSkillAddPhysicalAttack;
+	}
+
+
+
+	public void setTotalSkillAddPhysicalAttack(double totalSkillAddPhysicalAttack) {
+		this.totalSkillAddPhysicalAttack = totalSkillAddPhysicalAttack;
+	}
+
+
+
+	public double getTotalSkillAddPhysicalAttackSpeed() {
+		this.totalSkillAddPhysicalAttackSpeed = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddPhysicalAttackSpeed += skills[i].getAddPhysicalAttackSpeed();
+		}
+		return this.totalSkillAddPhysicalAttackSpeed;
+	}
+
+
+
+	public void setTotalSkillAddPhysicalAttackSpeed(
+			double totalSkillAddPhysicalAttackSpeed) {
+		this.totalSkillAddPhysicalAttackSpeed = totalSkillAddPhysicalAttackSpeed;
+	}
+
+
+
+	public int getTotalSkillAddPhysicalAttackArea() {
+		this.totalSkillAddPhysicalAttackArea = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddPhysicalAttackArea += skills[i].getAddPhysicalAttackArea();
+		}
+		return this.totalSkillAddPhysicalAttackArea;
+	}
+
+
+
+	public void setTotalSkillAddPhysicalAttackArea(
+			int totalSkillAddPhysicalAttackArea) {
+		this.totalSkillAddPhysicalAttackArea = totalSkillAddPhysicalAttackArea;
+	}
+
+
+
+	public int getTotalSkillAddMovementSpeed() {
+		this.totalSkillAddMovementSpeed = 0;
+		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++) {
+			if (this.skills[i] != null)
+				if (this.skills[i].getSkillType() == 5 && this.skills[i].getSkillLevel() > 0)
+					this.totalSkillAddMovementSpeed += skills[i].getAddMovementSpeed();
+		}
+		return this.totalSkillAddMovementSpeed;
+	}
+
+
+
+	public void setTotalSkillAddMovementSpeed(int totalSkillAddMovementSpeed) {
+		this.totalSkillAddMovementSpeed = totalSkillAddMovementSpeed;
+	}
+
+
+
 	// add in a skill
 	public void addSkill(Skill skill){
 		for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){

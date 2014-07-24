@@ -2,6 +2,8 @@ package edu.nus.comp.dotagrid.logic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Random;
 
 import javax.swing.JOptionPane;
@@ -147,15 +149,78 @@ public class CharacterActions {
 				
 			case 2 :
 				// summon creatures
-				summonCreatures();
+				summonStationaryCreatures();
 				break;
 				
 			case 3 :
 				// hit a maximum number of enemies in sight
 				attackAllEnemies();
 				break;
+				
+			case 4 :
+				// summon creatures by destroying trees
+				convertTreeToCreatures();
+				break;
 		}
 		
+	}
+
+
+	private void convertTreeToCreatures() {
+		// converting trees to creatures
+		Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
+		Skill castingSkill = new Skill(castingHero.skills[Player.invokedPlayerSkillIndex]);
+		int counter = 0;
+		boolean isCasted = false;
+
+		// convert nearest tree to creature until search end or enough number of creatures has been created
+		Queue<int[]> positionQueue = new LinkedList<int[]>();
+		int[] startingPos = {toXPos, toYPos};
+		positionQueue.add(startingPos);
+		ArrayList<int[]> checkedPosition = new ArrayList<int[]>();
+		while (!positionQueue.isEmpty()) {
+			int xPos = positionQueue.peek()[0];
+			int yPos = positionQueue.peek()[1];
+			int[][] dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+			for (int i=0; i<4; i++) {
+				int checkXPos = xPos + dirs[i][0];
+				int checkYPos = yPos + dirs[i][1];
+				if (!AICharacter.isChecked(checkedPosition, positionQueue, checkXPos, checkYPos)) {
+					if ((Math.abs(checkXPos - toXPos) + Math.abs(checkYPos - toYPos)) <= castingSkill.getSummonRange()) {
+						int[] newPos = {checkXPos, checkYPos};
+						positionQueue.add(newPos);
+					}
+				}
+			}
+			// check if should replace the tree
+			if (GridFrame.gridButtonMap[xPos][yPos].getCharacter() != null) {
+				if (GridFrame.gridButtonMap[xPos][yPos].getCharacter() instanceof Tree) {
+					isCasted = true;
+					// destroy tree in map
+					GridFrame.map[xPos][yPos] = 1;
+					if (counter < castingSkill.getNumberOfChara()){
+						// destroy tree and display summoned character
+						SummonCharacter chara = new SummonCharacter(castingSkill.getSkillCharacter());
+						chara.setTeamNumber(castingHero.getTeamNumber());
+						GridFrame.gridButtonMap[xPos][yPos] = new GridButton(chara);
+						// summon creature is controlled by player
+						GridFrame.gridButtonMap[xPos][yPos].setIsPlayer(true);
+						counter++;
+						System.out.println("summon character " + chara.getName() + " !!!");
+					} else {
+						GridFrame.gridButtonMap[xPos][yPos] = new GridButton(1);
+					}
+				}
+			}
+			checkedPosition.add(positionQueue.poll());
+		}
+		
+		if (isCasted) {
+			resetAttributes(castingSkill);
+		}
+		
+		// casting action ended
+		GameButtonActions.readyToCastSpell = false;	
 	}
 
 
@@ -189,10 +254,14 @@ public class CharacterActions {
 				}
 			}
 		}
+		
+		resetAttributes(castingSkill);
+		
+		// casting action ended
+		GameButtonActions.readyToCastSpell = false;	
 	}
 
-
-	private void summonCreatures() {
+	private void summonStationaryCreatures() {
 		// summon creatures centered at selected grid position
 		Hero castingHero = new Hero(((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()));
 		int teamNumber = castingHero.getTeamNumber();
@@ -222,16 +291,7 @@ public class CharacterActions {
 		
 		// check if the spell has been successfully casted!
 		if (isCasted) {
-			// reduce character's AP 
-			GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
-					GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - castingSkill.getUsedActionPoint());
-												
-			// reduce character's MP
-			GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentMP(
-					GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentMP() - castingSkill.getUsedMP());
-										
-			// reset current cooldown
-			((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).skills[Player.invokedPlayerSkillIndex].setCurrentCoolDownRound(castingSkill.getCoolDownRounds());		
+			resetAttributes(castingSkill);
 		}
 		
 		// casting action ended
@@ -257,18 +317,9 @@ public class CharacterActions {
 			// perform move action
 			GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
 			GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
-															
-			// reduce character's AP 
-			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentActionPoint(
-					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentActionPoint() - castingSkill.getUsedActionPoint());
-									
-			// reduce character's MP
-			GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentMP(
-					GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentMP() - castingSkill.getUsedMP());
-							
-			// reset current cooldown
-			((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).skills[Player.invokedPlayerSkillIndex].setCurrentCoolDownRound(castingSkill.getCoolDownRounds());
-							
+
+			resetAttributes(castingSkill);
+			
 			// if hero is player, change player's position
 			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
 				Screen.user.player.setXPos(toXPos);
@@ -281,6 +332,22 @@ public class CharacterActions {
 		
 		// casting action ended
 		GameButtonActions.readyToCastSpell = false;	
+	}
+
+
+
+	private void resetAttributes(Skill castingSkill) {
+		// reset hero's attributes
+		// reduce character's AP 
+		GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
+				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - castingSkill.getUsedActionPoint());
+
+		// reduce character's MP
+		GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentMP(
+				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentMP() - castingSkill.getUsedMP());
+
+		// reset current cooldown
+		((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).skills[Player.invokedPlayerSkillIndex].setCurrentCoolDownRound(castingSkill.getCoolDownRounds());		
 	}
 
 
@@ -481,7 +548,13 @@ public class CharacterActions {
 		// reduce character's AP 
 		GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
 				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);
-						
+				
+		// check if the target character is hero
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Hero) {
+			// if yes, set attacker's attack priority to 1
+			GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentAttackPriority(1);
+		}
+		
 		// check if the attacked target is dead
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAlive() == false) {
 				
@@ -608,10 +681,14 @@ public class CharacterActions {
 					
 
 					// if hero is player, change player's position
-					if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
-						System.out.println("Player has moved! Reset player's position!");
-						Screen.user.player.setXPos(toXPos);
-						Screen.user.player.setYPos(toYPos);
+					if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer()) {
+						System.out.println("Player has moved!");
+						// check if the character is player's hero
+						if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Hero) {
+							System.out.println("Reset player's hero's position!");
+							Screen.user.player.setXPos(toXPos);
+							Screen.user.player.setYPos(toYPos);
+						}
 					}
 								
 				} else {
