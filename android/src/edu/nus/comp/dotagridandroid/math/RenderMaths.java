@@ -7,7 +7,7 @@ public class RenderMaths {
 	public static float[] IdentityMatrix4x4 () {
 		return new float[] {1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1};
 	}
-	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] b) {
+	public static float[] FlatMatrix4x4Multiplication (final float[] a, final float[] b) {
 		if (a.length != 16 || b.length != 16)
 			throw new RuntimeException ("Wrong matrix size");
 		return new float[] {
@@ -29,14 +29,14 @@ public class RenderMaths {
 				a[12]*b[3] + a[13]*b[7] + a[14]*b[11] + a[15]*b[15]
 		};
 	}
-	public static float[] FlatMatrix4x4Multiplication (float[] a, float[] ...fs) {
+	public static float[] FlatMatrix4x4Multiplication (final float[] a, final float[] ...fs) {
 		final int len = fs.length;
 		float[] result = fs[len - 1];
 		for (int i = len - 2; i >= 0; i--)
 			result = FlatMatrix4x4Multiplication(fs[i], result);
 		return FlatMatrix4x4Multiplication(a, result);
 	}
-	public static float[] FlatMatrix4x4ScalarMultiplication (float a, float[] b) {
+	public static float[] FlatMatrix4x4ScalarMultiplication (final float a, final float[] b) {
 		if (b.length != 16)
 			throw new RuntimeException ("Wrong matrix size");
 		return new float[] {
@@ -46,7 +46,7 @@ public class RenderMaths {
 				a*b[12], a*b[13], a*b[14], a*b[15]
 		};
 	}
-	public static float[] FlatMatrix4x4Vector4Multiplication(float[] a, float[] b) {
+	public static float[] FlatMatrix4x4Vector4Multiplication(final float[] a, final float[] b) {
 		if (a.length != 16 || b.length != 4)
 			throw new RuntimeException ("Wrong sizes");
 		return new float[] {
@@ -56,12 +56,12 @@ public class RenderMaths {
 				a[12] * b[0] + a[13] * b[1] + a[14] * b[2] + a[15] * b[3]
 		};
 	}
-	public static float Vector4InnerProduct (float[] a, float[] b) {
+	public static float Vector4InnerProduct (final float[] a, final float[] b) {
 		if (a.length != 4 || b.length != 4)
 			throw new RuntimeException ("Wrong vector size");
 		return a[0]*b[0] + a[1]*b[1] + a[2]*b[2] + a[3]*b[3];
 	}
-	public static float[] FlatRotationMatrix4x4 (float angleRadians, float x, float y, float z) {
+	public static float[] FlatRotationMatrix4x4 (final float angleRadians, final float x, final float y, final float z) {
 		final float len = (float) Math.abs(Math.sqrt(x*x + y*y + z*z));
 		if (len < ERROR)
 			return IdentityMatrix4x4();
@@ -75,14 +75,14 @@ public class RenderMaths {
 				0, 0, 0, 1
 		};
 	}
-	public static float[] FlatTranslationMatrix4x4 (float x, float y, float z) {
+	public static float[] FlatTranslationMatrix4x4 (final float x, final float y, final float z) {
 		return new float[] {1,0,0,x,0,1,0,y,0,0,1,z,0,0,0,1};
 	}
 	public static float[] FlatScalingMatrix4x4 (float x, float y, float z) {
 		return new float[] {x, 0, 0, 0, 0, y, 0, 0, 0, 0, z, 0, 0, 0, 0, 1};
 	}
 	// Note: Projection Matrix Inverts Z Depth
-	public static float[] FlatPerspectiveMatrix4x4 (float near, float far, float left, float right, float top, float bottom) {
+	public static float[] FlatPerspectiveMatrix4x4 (final float near, final float far, final float left, final float right, final float top, final float bottom) {
 		return new float[] {
 				2 * near / (right - left), 0, (right + left) / (right - left), 0,
 				0, 2 * near / (top - bottom), (top + bottom) / (top - bottom), 0,
@@ -90,7 +90,7 @@ public class RenderMaths {
 				0, 0, -1, 0
 		};
 	}
-	public static float FlatMatrix4x4Determinant (float[] a) {
+	public static float FlatMatrix4x4Determinant (final float[] a) {
 		if (a.length != 16)
 			throw new RuntimeException ("Wrong matrix size");
 		return a[0]*a[5]*a[10]*a[15]+a[0]*a[6]*a[11]*a[13]+a[0]*a[7]*a[9]*a[14]-a[0]*a[7]*a[10]*a[13]-a[0]*a[6]*a[9]*a[15]-a[0]*a[5]*a[11]*a[14]
@@ -98,7 +98,7 @@ public class RenderMaths {
 				+a[2]*a[4]*a[9]*a[15]+a[2]*a[5]*a[11]*a[12]+a[2]*a[7]*a[8]*a[13]-a[2]*a[7]*a[9]*a[12]-a[2]*a[5]*a[8]*a[15]-a[2]*a[4]*a[11]*a[13]
 				-a[3]*a[4]*a[9]*a[14]-a[3]*a[5]*a[10]*a[12]-a[3]*a[6]*a[8]*a[13]+a[3]*a[6]*a[9]*a[12]+a[3]*a[5]*a[8]*a[14]+a[3]*a[4]*a[10]*a[13];
 	}
-	public static float[] FlatInverseMatrix4x4 (float[] a) {
+	public static float[] FlatInverseMatrix4x4 (final float[] a) {
 		// TODO: Check formulae
 		final float det = FlatMatrix4x4Determinant (a);
 		if (det != 0)
@@ -123,7 +123,7 @@ public class RenderMaths {
 		else
 			throw new RuntimeException ("Matrix not invertible");
 	}
-	public static float[] FlatMatrix4x4Transpose (float[] a) {
+	public static float[] FlatMatrix4x4Transpose (final float[] a) {
 		return new float[] {
 				a[0], a[4], a[8], a[12],
 				a[1], a[5], a[9], a[13],
@@ -131,17 +131,17 @@ public class RenderMaths {
 				a[3], a[7], a[11], a[15]
 		};
 	}
-	public static float FlatMatrix3x3Determinant (float[] a) {
+	public static float FlatMatrix3x3Determinant (final float[] a) {
 		if (a.length != 9)
 			throw new RuntimeException ("Wrong matrix size");
 		return a[0]*a[4]*a[8]+a[1]*a[5]*a[6]+a[2]*a[3]*a[7]-a[2]*a[4]*a[6]-a[1]*a[3]*a[8]-a[0]*a[5]*a[7];
 	}
-	public static float FlatMatrix2x2Determinant (float[] a) {
+	public static float FlatMatrix2x2Determinant (final float[] a) {
 		if (a.length != 4)
 			throw new RuntimeException ("Wrong matrix size");
 		return a[0] * a[3] - a[1] * a[2];
 	}
-	public static float[] Vector3CrossProduct(float[] a, float[] b) {
+	public static float[] Vector3CrossProduct(final float[] a, final float[] b) {
 		if (a.length != 3 || b.length != 3)
 			throw new RuntimeException ("Wrong vector size");
 		return new float[] {
@@ -150,7 +150,7 @@ public class RenderMaths {
 				a[0] * b[1] - a[1] * b[0]
 		};
 	}
-	public static float[] NormalisedVector3(float[] a) {
+	public static float[] NormalisedVector3(final float[] a) {
 		if (a.length != 3)
 			throw new RuntimeException("Wrong vector size");
 		final float len = (float) Math.sqrt(a[0]*a[0]+a[1]*a[1]+a[2]*a[2]);
@@ -159,23 +159,23 @@ public class RenderMaths {
 		else
 			return new float[] {0,0,0};
 	}
-	public static float[] Vector3Addition(float[] a, float[] b, float ka, float kb) {
+	public static float[] Vector3Addition(final float[] a, final float[] b, final float ka, final float kb) {
 		if (a.length != 3 || b.length != 3)
 			throw new RuntimeException("Wrong vector size");
 		return new float[]{a[0]*ka + b[0]*kb,a[1]*ka + b[1]*kb,a[2]*ka+b[2]*kb};
 	}
-	public static float[] Vector4Addition(float[] a, float[] b, float ka, float kb) {
+	public static float[] Vector4Addition(final float[] a, final float[] b, final float ka, final float kb) {
 		if (a.length != 4 || b.length != 4)
 			throw new RuntimeException("Wrong vector size");
 		return new float[]{a[0]*ka + b[0]*kb,a[1]*ka + b[1]*kb,a[2]*ka+b[2]*kb,a[3]*ka+b[3]*kb};
 	}
-	public static float Vector4CubicInterpolation (float[] f, float x) {
+	public static float Vector4CubicInterpolation (final float[] f, final float x) {
 		if (f.length != 4)
 			throw new RuntimeException("Wrong vector size");
 		// 0: f(0), 1: f(1), 2: f'(0), 3: f'(1)
 		return f[0] + x * (f[2] + x * (-3 * f[0] + 3 * f[1] - 2 * f[2] - f[3] + x * (2 * f[0] - 2 * f[1] + f[2] + f[3])));
 	}
-	public static float[] Vector4PerspectiveDivision(float[] a) {
+	public static float[] Vector4PerspectiveDivision(final float[] a) {
 		if (a.length != 4)
 			throw new RuntimeException("Wrong vector size");
 		if (Math.abs(a[3]) < ERROR)
