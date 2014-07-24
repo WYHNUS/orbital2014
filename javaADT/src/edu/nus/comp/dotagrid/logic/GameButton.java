@@ -61,6 +61,9 @@ public class GameButton{
 	
 	public void setImage(String imageName){
 		this.image = new ImageIcon("res/Game Icon/" + imageName + ".jpg").getImage();
+		if (!imageName.equals("")) {
+			this.setIsReadyToDrawImage(true);
+		}
 	}
 	
 	public Image getImage(){

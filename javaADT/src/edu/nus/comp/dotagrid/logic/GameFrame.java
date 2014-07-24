@@ -134,6 +134,7 @@ public class GameFrame{
 	
 	private void drawAllReadyImage(Graphics g) {
 		//display all ready images
+		System.out.println("display all ready game button images!");
 		for (int i=0; i<allGameButtons.size(); i++) {
 			// check if image is ready to draw
 			if (allGameButtons.get(i).getIsReadyToDrawImage()){
