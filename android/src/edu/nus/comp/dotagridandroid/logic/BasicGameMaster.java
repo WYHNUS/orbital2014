@@ -4,16 +4,19 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.*;
+
 import edu.nus.comp.dotagridandroid.appsupport.JsonConverter;
 
 @SuppressWarnings("unchecked")
 public class BasicGameMaster extends GameMaster {
 	private int[] terrainType;
 	private Map<Integer, Map<String, Object>> teamConfig;
-	private Map<Integer, Map<Integer, List<String>>> teamStrength;
+	private Map<Integer, Map<Integer, Set<String>>> teamStrength;
 	private Map<Integer, Map<Integer, Map<String, Integer>>> teamCreepLevel;
 	private Map<String, Object> stateData;
 	private Map<String, Object> charsConfig;
+	private Map<Integer, Map<String, Integer>> teamEnemyAttackPrioritised;
+	private int priorityDecreaseRounds;
 
 	@Override
 	public void serverNotify() {
@@ -23,6 +26,7 @@ public class BasicGameMaster extends GameMaster {
 	public void initialise() {
 		teamConfig = new HashMap<>();
 		stateData = new ConcurrentHashMap<>();
+		// TODO load character
 		state.addCharacter("MyHero", new Hero("MyHero", 1, 0, 200, 0, "strength",
 				100,
 				100,
@@ -82,6 +86,7 @@ public class BasicGameMaster extends GameMaster {
 		Arrays.fill(terrainType, GameState.TERRAIN_TYPE_FLAT);
 		try {
 			terrainConfig = JsonConverter.JsonToMap(new JSONObject(resourceManager.getTerrainConfiguration()));
+			priorityDecreaseRounds = ((Number) terrainConfig.get("priorityDecreaseRounds")).intValue();
 			Map<String, Object> terrain = (Map<String, Object>) terrainConfig.get("terrain");
 			int c = 0;
 			if (terrain.get("types") == null || "plain".equals(terrain.get("types")))
@@ -154,11 +159,13 @@ public class BasicGameMaster extends GameMaster {
 			e.printStackTrace();
 		}
 		// team & ancients
+		teamEnemyAttackPrioritised = new HashMap<>();
 		teamStrength = new HashMap<>();
 		try {
 			for (Map<String, Object> team : (List<Map<String, Object>>) terrainConfig.get("teams")) {
 				final int teamNumber = ((Number) team.get("team")).intValue();
 				teamConfig.put(teamNumber, team);
+				teamEnemyAttackPrioritised.put(teamNumber, new HashMap<String, Integer>());
 				final Map<String, Object> ancientConfig = (Map<String, Object>) team.get("ancient");
 				if (ancientConfig != null) {
 					final String name = (String) ancientConfig.get("name");
@@ -174,7 +181,7 @@ public class BasicGameMaster extends GameMaster {
 				}
 				// record team strength (tower)
 				if (teamNumber > 0) {
-					Map<Integer, List<String>> teamStrength = new HashMap<>();
+					Map<Integer, Set<String>> teamStrength = new HashMap<>();
 					for (Map<String, Object> tower : (List<Map<String, Object>>) terrainConfig.get("towers"))
 						if ((Integer) state.getCharacterProperty((String) tower.get("name"), "teamNumber") == teamNumber)
 							if (teamStrength.containsKey(state.getCharacterProperty((String) tower.get("name"), "front")))
@@ -182,7 +189,7 @@ public class BasicGameMaster extends GameMaster {
 							else
 								teamStrength.put(
 										(Integer) state.getCharacterProperty((String) tower.get("name"), "front"),
-										new ArrayList<String>(Arrays.asList((String) tower.get("name"))));
+										new HashSet<String>(Arrays.asList((String) tower.get("name"))));
 					this.teamStrength.put(teamNumber, teamStrength);
 				}
 			}
@@ -219,9 +226,9 @@ public class BasicGameMaster extends GameMaster {
 						((List<Number>) barrack.get("position")).get(1).intValue());
 				// count into strength
 				if (!teamStrength.containsKey(team))
-					teamStrength.put(team, new HashMap<Integer, List<String>>());
+					teamStrength.put(team, new HashMap<Integer, Set<String>>());
 				if (!teamStrength.get(team).containsKey(front))
-					teamStrength.get(team).put(front, new ArrayList<String>());
+					teamStrength.get(team).put(front, new HashSet<String>());
 				teamStrength.get(team).get(front).add(name);
 			}
 		} catch (Exception e) {
@@ -234,7 +241,6 @@ public class BasicGameMaster extends GameMaster {
 
 	@Override
 	public void applyRule(String character, String actionName, Map<String, Object> options) {
-
 		final int[]
 				prevPos = state.getCharacterPosition(state.getCurrentCharacterName()),
 				reqPos = state.getChosenGrid();
@@ -324,7 +330,7 @@ public class BasicGameMaster extends GameMaster {
 					if (!character.equals(state.getCurrentCharacterName()))
 						return;
 					System.out.println("Game action is move");
-					move (character);
+					move (character, state.getChosenGrid());
 					List<String> characters = Collections.singletonList(character);
 					updates = Collections.singletonMap("Characters", (Object) characters);
 					state.notifyUpdate(updates);
@@ -347,6 +353,9 @@ public class BasicGameMaster extends GameMaster {
 					break;
 				case "BeginRound": {
 					final int roundCount = state.getRoundCount();
+					for (Map.Entry<Integer, Map<String, Integer>> attackPriority : teamEnemyAttackPrioritised.entrySet())
+						for (Map.Entry<String, Integer> entry : attackPriority.getValue().entrySet())
+							entry.setValue(entry.getValue() - 1);
 					Map<String, Object> thisTeamConfig;
 					// spawn creeps
 					Set<Integer> teamsWithoutNeutral = new HashSet<Integer> (this.teamConfig.keySet());
@@ -450,8 +459,12 @@ public class BasicGameMaster extends GameMaster {
 													((Number) config.get("basicPhysicalAttack")).intValue()
 													+ ((Number) config.get("basicPhysicalAttack-levelMultiplier")).intValue() * level);
 										}
-//										state.setCharacterProperty(name, "level", teamCreepLevel.get(i).get(frontNumber).get(type.get("species")));
+										// IMPORTANT, must initialise
 										creep.initialise();
+										state.setCharacterProperty(name, "Automation-Checkpoints",
+												new LinkedList<String>((List<String>) type.get("checkpoints")));
+										state.setCharacterProperty(name, "Automation-Checkpoints-Radius",
+												((Number) type.get("checkpoints-radius")).intValue());
 									}
 							frontNumber++;
 						}
@@ -530,7 +543,12 @@ public class BasicGameMaster extends GameMaster {
 				return true;
 			}
 			case "Attack": {
-				final int[] targetGrid = state.getChosenGrid(), attackerGrid = state.getCharacterPosition(character);
+				final int[] targetGrid, attackerGrid = state.getCharacterPosition(character);
+				if (options.containsKey("TargetGrid")) {
+					final List<Number> pos = (List<Number>) options.get("TargetGrid");
+					targetGrid = new int[] {pos.get(0).intValue(), pos.get(1).intValue()};
+				} else
+					targetGrid = state.getChosenGrid();
 				final String targetCharacter = state.getCharacterAtPosition(targetGrid);
 				if (targetCharacter == null || state.getCharacterType(targetCharacter) == GameObject.GAMEOBJECT_TYPE_TREE)
 					return false;
@@ -538,13 +556,56 @@ public class BasicGameMaster extends GameMaster {
 					return false;
 				else if (targetGrid[0] >= state.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= state.getGridHeight() || targetGrid[1] < 0)
 					return false;
-				Hero hero = (Hero) state.getCharacters().get(character);
-				return state.getCharacterAtPosition(targetGrid) != null &&	// has hero, linecreep or tower
-						hero.getTotalPhysicalAttackArea() + hero.getTotalItemAddPhysicalAttackArea()
-						>= Math.abs(targetGrid[0] - attackerGrid[0])
-						+ Math.abs(targetGrid[1] - attackerGrid[1]) &&	// within attack area
-						hero.getCurrentActionPoint() > Hero.MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - hero.getTotalPhysicalAttackSpeed() / GameCharacter.MAX_PHYSICAL_ATTACK_SPEED)
-							* Hero.PHYSICAL_ATTACK_CONSUME_AP;	// has enough action points
+				else if ((Integer) state.getCharacterProperty(character, "teamNumber") == (Integer) state.getCharacterProperty(targetCharacter, "teamNumber"))
+					return false;	// no friendly fire
+				
+				// structure protection
+				switch (state.getCharacterType(targetCharacter)) {
+				case GameObject.GAMEOBJECT_TYPE_TOWER: {
+					final int team = (Integer) state.getCharacterProperty(targetCharacter, "teamNumber");
+					final int front = (Integer) state.getCharacterProperty(targetCharacter, "front");
+					final int order = (Integer) state.getCharacterProperty(targetCharacter, "order");
+					Set<String> strength = teamStrength.get(team).get(front);
+					for (String unit : strength)
+						if (state.getCharacterType(unit) == GameObject.GAMEOBJECT_TYPE_TOWER
+							&& (Boolean) state.getCharacterProperty(unit, "alive")
+							&& (Integer) state.getCharacterProperty(unit, "order") < order)
+							return false;
+					break;
+				}
+				case GameObject.GAMEOBJECT_TYPE_BARRACK: {
+					// only if the corresponding front has fallen
+					final int team = (Integer) state.getCharacterProperty(targetCharacter, "teamNumber");
+					final int front = (Integer) state.getCharacterProperty(targetCharacter, "front");
+					Set<String> strength = teamStrength.get(team).get(front);
+					for (String unit : strength)
+						if (state.getCharacterType(unit) == GameObject.GAMEOBJECT_TYPE_TOWER
+							&& (Boolean) state.getCharacterProperty(unit, "alive"))
+							return false;
+					break;
+				}
+				case GameObject.GAMEOBJECT_TYPE_ANCIENT: {
+					final int team = (Integer) state.getCharacterProperty(targetCharacter, "teamNumber");
+					final int front = (Integer) state.getCharacterProperty(targetCharacter, "front");
+					Set<String> strength = teamStrength.get(team).get(front);
+					for (String unit : strength)
+						if ((Boolean) state.getCharacterProperty(unit, "alive"))
+							return false;
+					break;
+				}
+				}
+				
+				switch (state.getCharacterType(character)) {
+				case GameObject.GAMEOBJECT_TYPE_HERO: {
+					final Hero hero = (Hero) state.getCharacters().get(character);
+					return state.getCharacterAtPosition(targetGrid) != null &&	// has hero, linecreep or tower
+							hero.getTotalPhysicalAttackArea() + hero.getTotalItemAddPhysicalAttackArea()
+							>= Math.abs(targetGrid[0] - attackerGrid[0])
+							+ Math.abs(targetGrid[1] - attackerGrid[1]) &&	// within attack area
+							hero.getCurrentActionPoint() > Hero.MIN_PHYSICAL_ATTACK_CONSUME_AP + (1 - hero.getTotalPhysicalAttackSpeed() / GameCharacter.MAX_PHYSICAL_ATTACK_SPEED)
+								* Hero.PHYSICAL_ATTACK_CONSUME_AP;	// has enough action points
+				}
+				}
 			}
 			}
 			break;
@@ -573,7 +634,7 @@ public class BasicGameMaster extends GameMaster {
 						prevPos[1] + dirs[i][1] < height && prevPos[1] + dirs[i][1] >= 0 &&
 						state.getCharacterAtPosition(prevPos[0] + dirs[i][0], prevPos[1] + dirs[i][1]) == null &&
 						terrainType[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * state.getGridWidth()] != GameState.TERRAIN_TYPE_CLIFF) {
-					final double APconsumed = APConsumptionPerGrid/*character.getAPUsedInMovingOneGrid()*/ +
+					final double APconsumed = APConsumptionPerGrid +
 							Math.max(0, terrain[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width] - terrain[prevPos[0] + prevPos[1] * width]) * TERRAIN_CONST;
 					if (APconsumed < map[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width]) {
 						map[prevPos[0] + dirs[i][0] + (prevPos[1] + dirs[i][1]) * width] = APconsumed;
@@ -587,15 +648,15 @@ public class BasicGameMaster extends GameMaster {
 	private int[] getNearestFreeGrid (int[] pos) {
 		final int limit = Math.max(pos[0], Math.max(state.getGridWidth() - pos[0], Math.max(pos[1], state.getGridHeight() - pos[1])));
 		for (int r = 1; r <= limit; r++)
-			for (int i = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth(), pos[0] + r); i < end; i++)
-				if (pos[1] + Math.abs(i - pos[0]) - r >= 0
-					&& state.getCharacterAtPosition(i, pos[1] + Math.abs(i - pos[0]) - r) == null)
+			for (int x = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); x <= end; x++)
+				if (pos[1] + Math.abs(x - pos[0]) - r >= 0
+					&& state.getCharacterAtPosition(x, pos[1] + Math.abs(x - pos[0]) - r) == null)
 					// below
-					return new int[] {i, pos[1] + Math.abs(i - pos[0]) - r};
-				else if (pos[1] - Math.abs(i - pos[0]) + r < state.getGridHeight()
-						&& state.getCharacterAtPosition(i, pos[1] - Math.abs(i - pos[0]) + r) == null)
+					return new int[] {x, pos[1] + Math.abs(x - pos[0]) - r};
+				else if (pos[1] - Math.abs(x - pos[0]) + r < state.getGridHeight()
+						&& state.getCharacterAtPosition(x, pos[1] - Math.abs(x - pos[0]) + r) == null)
 					// above
-					return new int[] {i, pos[1] - Math.abs(i - pos[0]) + r};
+					return new int[] {x, pos[1] - Math.abs(x - pos[0]) + r};
 		return null;
 	}
 	
@@ -609,7 +670,7 @@ public class BasicGameMaster extends GameMaster {
 			final int team = (Integer) state.getCharacterProperty(targetCharacter, "teamNumber");
 			final int front = (Integer) state.getCharacterProperty(targetCharacter, "front");
 			final int order = (Integer) state.getCharacterProperty(targetCharacter, "order");
-			List<String> strength = teamStrength.get(team).get(front);
+			Set<String> strength = teamStrength.get(team).get(front);
 			for (String unit : strength)
 				if (state.getCharacterType(unit) == GameObject.GAMEOBJECT_TYPE_TOWER
 						&& (Boolean) state.getCharacterProperty(unit, "alive")
@@ -621,7 +682,7 @@ public class BasicGameMaster extends GameMaster {
 			// only if the corresponding front has fallen
 			final int team = (Integer) state.getCharacterProperty(targetCharacter, "teamNumber");
 			final int front = (Integer) state.getCharacterProperty(targetCharacter, "front");
-			List<String> strength = teamStrength.get(team).get(front);
+			Set<String> strength = teamStrength.get(team).get(front);
 			for (String unit : strength)
 				if (state.getCharacterType(unit) == GameObject.GAMEOBJECT_TYPE_TOWER
 					&& (Boolean) state.getCharacterProperty(unit, "alive"))
@@ -631,7 +692,7 @@ public class BasicGameMaster extends GameMaster {
 		case GameObject.GAMEOBJECT_TYPE_ANCIENT: {
 			final int team = (Integer) state.getCharacterProperty(targetCharacter, "teamNumber");
 			final int front = (Integer) state.getCharacterProperty(targetCharacter, "front");
-			List<String> strength = teamStrength.get(team).get(front);
+			Set<String> strength = teamStrength.get(team).get(front);
 			for (String unit : strength)
 				if ((Boolean) state.getCharacterProperty(unit, "alive"))
 					return;
@@ -649,7 +710,7 @@ public class BasicGameMaster extends GameMaster {
 		state.setCharacterProperty(targetCharacter, "currentHP",
 				(Integer) state.getCharacterProperty(targetCharacter, "currentHP") - damage);
 		
-		characterDamageCheck (targetCharacter);
+		characterDamageCheck (character, targetCharacter);
 		if (!(Boolean) state.getCharacterProperty(targetCharacter, "alive")) {
 			// TODO check game ended
 			//
@@ -669,8 +730,8 @@ public class BasicGameMaster extends GameMaster {
 		}
 	}
 	
-	private void move (String character) {
-		final int[] target = state.getChosenGrid(), source = state.getCharacterPosition(character);
+	private void move (final String character, final int... target) {
+		final int[] source = state.getCharacterPosition(character);
 		if (state.getCharacterAtPosition(target) == null) {
 			// move
 			double[] map = getLowestMoveAPConsumptionMap(source, character);
@@ -683,15 +744,293 @@ public class BasicGameMaster extends GameMaster {
 		}
 	}
 	
-	private void characterDamageCheck (String targetCharacter) {
-		
+	private void characterDamageCheck (String characterAttacker, String targetCharacter) {
+		if (state.getCharacterType(targetCharacter) == GameObject.GAMEOBJECT_TYPE_HERO)
+			teamEnemyAttackPrioritised.get(state.getCharacterProperty(targetCharacter, "teamNumber")).put(characterAttacker, priorityDecreaseRounds);
 	}
+
+	// move to checkpoint
 	
 	private void autoHero(String character) {
 		
 	}
 	private void autoLineCreep(String character) {
-		
+		final int friendlyTeamNumber = state.getCharacters().get(character).getTeamNumber();
+		final List<String> friendlyNames = new LinkedList<>();
+		final Queue<Pair<Integer, Integer, String>> attackTargetPriorityQueue = new PriorityQueue<>(),
+				possibleTargetPriorityQueue = new PriorityQueue<>();
+		final int sight = (Integer) state.getCharacterProperty(character, "sight");
+		while (((Integer) state.getCharacterProperty(character, "currentActionPoint")) > 0) {
+			final int[] pos = state.getCharacterPosition(character);
+			// find enemy
+			for (int r = 1; r <= sight; r++)
+				for (int x = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); x <= end; x++) {
+					if (pos[1] + Math.abs(x - pos[0]) - r >= 0) {
+						final String target = state.getCharacterAtPosition(x, pos[1] + Math.abs(x - pos[0]) - r);
+						final Map<String, Object> actionOption = new HashMap<>();
+						actionOption.put("Action", "Attack");
+						actionOption.put("TargetGrid", Arrays.asList(x, pos[1] + Math.abs(x - pos[0]) - r));
+						if ((Integer) state.getCharacterProperty(target, "teamNumber") == friendlyTeamNumber)
+							continue;
+						// trees are exceptions
+						Pair<Integer, Integer, String> entry;
+						switch (state.getCharacterType(target)) {
+						case GameObject.GAMEOBJECT_TYPE_HERO:
+						case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+						case GameObject.GAMEOBJECT_TYPE_TOWER:
+						case GameObject.GAMEOBJECT_TYPE_BARRACK:
+						case GameObject.GAMEOBJECT_TYPE_ANCIENT:
+							entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+							&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+									new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+									: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+							if (requestActionPossible(character, "GameAction", actionOption))
+								attackTargetPriorityQueue.add(entry);
+							else
+								possibleTargetPriorityQueue.add(entry);
+							break;
+						}
+					}
+					// possible duplicate
+					if (Math.abs(x - pos[0]) < r && pos[1] - Math.abs(x - pos[0]) + r < state.getGridHeight()) {
+						final String target = state.getCharacterAtPosition(x, pos[1] - Math.abs(x - pos[0]) + r);
+						final Map<String, Object> actionOption = new HashMap<>();
+						actionOption.put("Action", "Attack");
+						actionOption.put("TargetGrid", Arrays.asList(x, pos[1] - Math.abs(x - pos[0]) + r));
+						if ((Integer) state.getCharacterProperty(target, "teamNumber") == friendlyTeamNumber)
+							continue;
+						// same routine here
+						Pair<Integer, Integer, String> entry;
+						switch (state.getCharacterType(target)) {
+						case GameObject.GAMEOBJECT_TYPE_HERO:
+						case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+						case GameObject.GAMEOBJECT_TYPE_TOWER:
+						case GameObject.GAMEOBJECT_TYPE_BARRACK:
+						case GameObject.GAMEOBJECT_TYPE_ANCIENT:
+							entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+							&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+									new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+									: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+							if (requestActionPossible(character, "GameAction", actionOption))
+								attackTargetPriorityQueue.add(entry);
+							else
+								possibleTargetPriorityQueue.add(entry);
+							break;
+						}
+					}
+				}
+			for (Pair<Integer, Integer, String> targetCharacter : attackTargetPriorityQueue)
+				while ((Integer) state.getCharacterProperty(character, "currentActionPoint") > 0)
+					attack(character, targetCharacter.data);
+			if ((Integer) state.getCharacterProperty(character, "currentActionPoint") > 0) {
+				// move to nearest possible target
+				final double[] apMap = getLowestMoveAPConsumptionMap(pos, character);
+				final int currentAPPoint = (Integer) state.getCharacterProperty(character, "currentActionPoint");
+				String targetCharacter;
+				int[] targetPos;
+				boolean engagingEnemy = false;
+				while (!possibleTargetPriorityQueue.isEmpty()) {
+					targetCharacter = possibleTargetPriorityQueue.poll().data;
+					targetPos = state.getCharacterPosition(targetCharacter);
+					if (targetPos == null)
+						continue;
+					engagingEnemy = true;
+					boolean searching = true;
+					final int limit = Math.max(pos[0], Math.max(state.getGridWidth() - pos[0], Math.max(pos[1], state.getGridHeight() - pos[1])));
+					for (int r = 1; searching && r <= limit; r++)
+						for (int x = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); searching && x <= end; x++)
+							if (pos[1] - Math.abs(x - pos[0]) + r >= 0
+									&& apMap[x + state.getGridWidth() * (pos[1] - Math.abs(x - pos[0]) + r)] <= currentAPPoint) {
+								move(character, x, pos[1] - Math.abs(x - pos[0]) + r);
+								searching = false;
+							} else if (pos[1] + Math.abs(x - pos[0]) - r < state.getGridHeight()
+									&& apMap[x + state.getGridWidth() * (pos[1] + Math.abs(x - pos[0]) - r)] <= currentAPPoint) {
+								move(character, x, pos[1] + Math.abs(x -pos[0]) + r);
+								searching = false;
+							}
+				}
+				if (!engagingEnemy) {
+					// move to checkpoint
+					final int[] characterPos = state.getCharacterPosition(character);
+					final List<String> targets = (List<String>) state.getCharacterProperty(character, "Automation-Checkpoints");
+					final int radius = (Integer) state.getCharacterProperty(character, "Automation-Checkpoints-Radius");
+					while (true) {
+						targetCharacter = targets.get(0);
+						targetPos = state.getCharacterPosition(targetCharacter);
+						if (targetPos == null || Math.abs(targetPos[0] - pos[0]) + Math.abs(targetPos[1] - pos[1]) <= radius) {
+							targets.remove(0);
+							continue;
+						}
+						final int limit = Math.max(targetPos[0], Math.max(state.getGridWidth() - targetPos[0], Math.max(targetPos[1], state.getGridHeight() - targetPos[1])));
+						boolean searching = true;
+						for (int r = 1; searching && r < limit; r++)
+							for (int x = Math.max(0, targetPos[0] - r), end = Math.min(state.getGridWidth() - 1, targetPos[0] + r); searching && x <= end; x++)
+								if (targetPos[1] - Math.abs(x - targetPos[0]) + r >= 0
+										&& apMap[x + state.getGridWidth() * (targetPos[1] - Math.abs(x - targetPos[0]) + r)] <= currentAPPoint) {
+									move(character, x, targetPos[1] - Math.abs(x - targetPos[0]) + r);
+									searching = false;
+								} else if (targetPos[1] + Math.abs(x - targetPos[0]) - r < state.getGridHeight()
+										&& apMap[x + state.getGridWidth() * (targetPos[1] + Math.abs(x - targetPos[0]) - r)] <= currentAPPoint) {
+									move(character, x, targetPos[1] + Math.abs(x - targetPos[0]) - r);
+									searching = false;
+								}
+						break;
+					}
+					break;
+				}
+			}
+		}
+	}
+	private boolean[] getFriendlySight(List<String> names) {
+		final int width = state.getGridWidth(), height = state.getGridHeight();
+		final boolean[] map = new boolean[width * height];
+		for (String name : names) {
+			SegmentNode<Double> shadow = null;
+			final int[] pos = state.getCharacterPosition(name);
+			if (pos != null) {
+				final int sight = (Integer) state.getCharacterProperty(name, "sight");
+				final double[] source = {pos[0] + .5, pos[1] + .5};
+				map[pos[0] + pos[1] * width] = true;
+				for (int radius = 1; radius <= sight; radius++) {
+					if (pos[1] >= radius) {
+						final int y = pos[1] - radius;
+						for (int x = Math.max(0, pos[0] - radius); x < Math.min(width, pos[0] + radius); x++)
+							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
+								map[x + y * width] |= shadow == null ? true :
+									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
+											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
+								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
+									// obstacle - will add to shadowMap
+									final List<Double> cornerAngles = Arrays.asList(
+											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
+											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
+									);
+									if (shadow == null)
+										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
+									else {
+										boolean completeShadow = true;
+										for (double angle : cornerAngles)
+											if (shadow.find(angle) == null) {
+												completeShadow = false;
+												break;
+											}
+										if (completeShadow)
+											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
+									}
+								}
+							}
+					}
+					
+					if (pos[0] + radius < width) {
+						final int x = pos[0] + radius;
+						for (int y = Math.max(0, pos[1] - radius); y < Math.min(height, pos[1] + radius); y++)
+							// same routine
+							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
+								map[x + y * width] |= shadow == null ? true :
+									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
+											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
+								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
+									// obstacle - will add to shadowMap
+									final List<Double> cornerAngles = Arrays.asList(
+											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
+											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
+									);
+									if (shadow == null)
+										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
+									else {
+										boolean completeShadow = true;
+										for (double angle : cornerAngles)
+											if (shadow.find(angle) == null) {
+												completeShadow = false;
+												break;
+											}
+										if (completeShadow)
+											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
+									}
+								}
+							}
+					}
+					
+					if (pos[1] + radius < height) {
+						final int y = pos[1] + radius;
+						for (int x = Math.min(width - 1, pos[0] + radius); x > Math.max(0, pos[0] - radius); x--)
+							// same routine
+							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
+								map[x + y * width] |= shadow == null ? true :
+									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
+											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
+								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
+									// obstacle - will add to shadowMap
+									final List<Double> cornerAngles = Arrays.asList(
+											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
+											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
+									);
+									if (shadow == null)
+										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
+									else {
+										boolean completeShadow = true;
+										for (double angle : cornerAngles)
+											if (shadow.find(angle) == null) {
+												completeShadow = false;
+												break;
+											}
+										if (completeShadow)
+											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
+									}
+								}
+							}
+					}
+					
+					if (pos[0] >= radius) {
+						final int x = pos[0] - radius;
+						for (int y = Math.min(height - 1, pos[1] + radius); y > Math.max(0, pos[1] - radius); y--)
+							// same routine
+							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
+								map[x + y * width] |= shadow == null ? true :
+									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
+											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
+								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
+									// obstacle - will add to shadowMap
+									final List<Double> cornerAngles = Arrays.asList(
+											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
+											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
+											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
+									);
+									if (shadow == null)
+										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
+									else {
+										boolean completeShadow = true;
+										for (double angle : cornerAngles)
+											if (shadow.find(angle) == null) {
+												completeShadow = false;
+												break;
+											}
+										if (completeShadow)
+											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
+									}
+								}
+							}
+					}
+				}
+			}
+		}
+		return map;
+	}
+	private static double getAngle(double sinVal, double cosVal) {
+		final double error = 1e-7;
+		if (Math.abs(sinVal) < error || Math.abs(cosVal) < error)
+			return 0;
+		if (sinVal > 0)
+			return Math.acos(cosVal);
+		else
+			return Math.PI * 2 - Math.acos(cosVal);
 	}
 	private void autoTower(String character) {
 		final int friendlyTeamNumber = state.getCharacters().get(character).getTeamNumber();
@@ -699,7 +1038,7 @@ public class BasicGameMaster extends GameMaster {
 		final Tower tower = (Tower) state.getCharacters().get(character);
 		final int[] pos = state.getCharacterPosition(character);
 		for (int r = 1; r <= tower.getTotalPhysicalAttackArea(); r++)
-			for (int i = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth(), pos[0] + r); i < end; i++) {
+			for (int i = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); i <= end; i++) {
 				if (pos[1] + Math.abs(i - pos[0]) - r >= 0) {
 					final String target = state.getCharacterAtPosition(i, pos[1] + Math.abs(i - pos[0]) - r);
 					if (state.getCharacterType(target) > 0
@@ -718,6 +1057,257 @@ public class BasicGameMaster extends GameMaster {
 			final GameCharacter targetCharacter = state.getCharacters().get(target);
 			while (targetCharacter.isAlive() && tower.getCurrentActionPoint() > 0)
 				attack(character, target);
+		}
+	}
+	private static class SegmentNode <T extends Comparable<T>>  {
+		private T start, end, max;
+		private int depth;
+		private SegmentNode<T> left, right, father;
+		private SegmentNode (T start, T end) {
+			if (start.compareTo(end) > 0)
+				throw new RuntimeException("SegmentNode: start > end!");
+			this.start = start; this.end = end; this.max = end;
+		}
+		private SegmentNode<T> insert(SegmentNode<T> node) {
+			if (node == null)
+				return this;
+			SegmentNode<T> father = this;
+			while (true)
+				if (father.end.compareTo(node.end) < 0 && father.left != null)
+					father = father.left;
+				else if (father.end.compareTo(node.end) >= 0 && father.right != null)
+					father = father.right;
+				else
+					break;
+			if (father.end.compareTo(node.end) < 0)
+				father.left = node;
+			else
+				father.right = node;
+			return balance(father);
+		}
+		private SegmentNode<T> delete(SegmentNode<T> node) {
+			if (left != node && right != node)
+				return null;
+			else if (left == node) {
+				// delete left node
+				if (node.left == null && node.right == null) {
+					left = null;
+					return balance(this);
+				} else if (node.right == null) {
+					SegmentNode<T> succ = node.left;
+					while (succ.right != null)
+						succ = succ.right;
+					succ.father.delete (succ);
+					succ.father = this;
+					succ.left = node.left;
+					succ.right = node.right;
+					left = succ;
+					return balance(succ);
+				} else {
+					SegmentNode<T> succ = node.right;
+					while (succ.left != null)
+						succ = succ.left;
+					succ.father.delete(succ);
+					succ.father = this;
+					succ.left = node.left;
+					succ.right = node.right;
+					left = succ;
+					return balance(succ);
+				}
+			} else {
+				if (node.left == null && node.right == null) {
+					right = null;
+					return balance(this);
+				} else if (node.right == null) {
+					SegmentNode<T> succ = node.left;
+					while (succ.right != null)
+						succ = succ.right;
+					succ.father.delete (succ);
+					succ.father = this;
+					succ.left = node.left;
+					succ.right = node.right;
+					right = succ;
+					return balance(succ);
+				} else {
+					SegmentNode<T> succ = node.right;
+					while (succ.left != null)
+						succ = succ.left;
+					succ.father.delete(succ);
+					succ.father = this;
+					succ.left = node.left;
+					succ.right = node.right;
+					right = succ;
+					return balance(succ);
+				}
+			}
+		}
+		private static <T extends Comparable<T>> SegmentNode<T> balance(SegmentNode<T> node) {
+			// balance node and its ancestors
+			while (true) {
+				if (node.father == null) {
+					// take custody
+					final int heavy = (node.left == null ? 0 : node.left.depth) - (node.right == null ? 0 : node.right.depth);
+					if (heavy > 1) {
+						// left heavy - rotate right
+						if ((node.left.right == null ? 0 : node.left.right.depth) > (node.left.left == null ? 0 : node.left.left.depth)) {
+							// rotate left first
+							SegmentNode<T> left = node.left.right;
+							node.left.right = left.left;
+							left.left = node.left;
+							node.left = left;
+							node.left.father = node;
+							node.left.left.father = node.left;
+							if (node.left.left.right != null)
+								node.left.left.right.father = node.left.left;
+							node.left.left.depth = Math.max(
+									node.left.left.left == null ? 0 : node.left.left.left.depth,
+									node.left.left.right == null ? 0 : node.left.left.right.depth) + 1;
+							node.left.left.max = node.left.left.right == null ? node.left.left.end : node.left.left.right.max;
+						}
+						SegmentNode<T> left = node.left;
+						node.left = left.right;
+						left.right = node;
+						node = left;
+						node.father = null;
+						node.right.father = node;
+						if (node.right.left != null)
+							node.right.left.father = node.right;
+						node.right.depth = Math.max(
+								node.right.left == null ? 0 : node.right.left.depth,
+								node.right.right == null ? 0 : node.right.right.depth) + 1;
+					} else if (heavy < -1) {
+						// right heavy
+						if ((node.right.left == null ? 0 : node.right.left.depth) > (node.right.right == null ? 0 : node.right.right.depth)) {
+							SegmentNode<T> right = node.right.left;
+							node.right.left = right.right;
+							right.right = node.right;
+							node.right = right;
+							node.right.father = node;
+							node.right.right.father = node.right;
+							if (node.right.right.left != null)
+								node.right.right.left.father = node.right.right;
+							node.right.right.depth = Math.max(
+									node.right.right.left == null ? 0 : node.right.right.left.depth,
+									node.right.right.right == null ? 0 : node.right.right.right.depth) + 1;
+							node.right.right.max = node.right.right.right == null ? node.right.right.end : node.right.right.right.max;
+						}
+						SegmentNode<T> right = node.right;
+						node.right = right.left;
+						right.left = node;
+						node = right;
+						node.father = null;
+						node.left.father = node;
+						if (node.left.right != null)
+							node.left.right.father = node.left;
+						node.left.depth = Math.max(
+								node.left.left == null ? 0 : node.left.left.depth,
+								node.left.right == null ? 0 : node.left.right.depth) + 1;
+					}
+					node.max = node.right == null ? node.end : node.right.max;
+					node.depth = Math.max(node.left == null ? 0 : node.left.depth, node.right == null ? 0 : node.right.depth) + 1;
+					break;
+				} else {
+					// rotations
+					final int heavy = (node.left == null ? 0 : node.left.depth) - (node.right == null ? 0 : node.right.depth);
+					if (heavy > 1) {
+						// left heavy - rotate right
+						if ((node.left.right == null ? 0 : node.left.right.depth) > (node.left.left == null ? 0 : node.left.left.depth)) {
+							// rotate left first
+							SegmentNode<T> left = node.left.right;
+							node.left.right = left.left;
+							left.left = node.left;
+							node.left = left;
+							node.left.father = node;
+							node.left.left.father = node.left;
+							if (node.left.left.right != null)
+								node.left.left.right.father = node.left.left;
+							node.left.left.depth = Math.max(
+									node.left.left.left == null ? 0 : node.left.left.left.depth,
+									node.left.left.right == null ? 0 : node.left.left.right.depth) + 1;
+							node.left.left.max = node.left.left.right == null ? node.left.left.end : node.left.left.right.max;
+						}
+						SegmentNode<T> left = node.left, father = node.father;
+						node.left = left.right;
+						left.right = node;
+						if (father.left == node)
+							father.left = left;
+						else
+							father.right = left;
+						node = left;
+						node.father = father;
+						node.right.father = node;
+						if (node.right.left != null)
+							node.right.left.father = node.right;
+						node.right.depth = Math.max(
+								node.right.left == null ? 0 : node.right.left.depth,
+								node.right.right == null ? 0 : node.right.right.depth) + 1;
+					} else if (heavy < -1) {
+						// right heavy
+						if ((node.right.left == null ? 0 : node.right.left.depth) > (node.right.right == null ? 0 : node.right.right.depth)) {
+							SegmentNode<T> right = node.right.left;
+							node.right.left = right.right;
+							right.right = node.right;
+							node.right = right;
+							node.right.father = node;
+							node.right.right.father = node.right;
+							if (node.right.right.left != null)
+								node.right.right.left.father = node.right.right;
+							node.right.right.depth = Math.max(
+									node.right.right.left == null ? 0 : node.right.right.left.depth,
+									node.right.right.right == null ? 0 : node.right.right.right.depth) + 1;
+							node.right.right.max = node.right.right.right == null ? node.right.right.end : node.right.right.right.max;
+						}
+						SegmentNode<T> right = node.right, father = node.father;
+						node.right = right.left;
+						right.left = node;
+						if (father.left == node)
+							father.left = right;
+						else
+							father.right = right;
+						node = right;
+						node.father = father;
+						node.left.father = node;
+						if (node.left.right != null)
+							node.left.right.father = node.left;
+						node.left.depth = Math.max(
+								node.left.left == null ? 0 : node.left.left.depth,
+								node.left.right == null ? 0 : node.left.right.depth) + 1;
+					}
+					node.max = node.right == null ? node.end : node.right.max;
+					node.depth = Math.max(node.left == null ? 0 : node.left.depth, node.right == null ? 0 : node.right.depth) + 1;
+					node = node.father;
+				}
+			}
+			return node;	// new root
+		}
+		private SegmentNode<T> find(T value) {
+			SegmentNode<T> result = this;
+			while (true)
+				if (value.compareTo(result.end) <= 0 && value.compareTo(result.start) >= 0)
+					return result;
+				else if (result.left != null && value.compareTo(result.left.max) <= 0)
+					result = left;
+				else if (result.right != null && value.compareTo(result.right.max) <= 0)
+					result = right;
+				else
+					return null;
+		}
+	}
+	private static class Pair <A extends Comparable<A>, B extends Comparable<B>, C> implements Comparable<Pair<A, B, C>> {
+		private A first;
+		private B second;
+		private C data;
+		private Pair(A first, B second, C data) {
+			this.first = first; this.second = second;
+			this.data = data;
+		}
+		@Override
+		public int compareTo(Pair<A, B, C> another) {
+			int comp = first.compareTo(another.first);
+			if(comp != 0)
+				return comp;
+			else
+				return second.compareTo(another.second);
 		}
 	}
 }
