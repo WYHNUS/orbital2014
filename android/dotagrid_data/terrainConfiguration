@@ -460,7 +460,7 @@
 		},
 
 		{
-			"name" : "sentinalGuardLeftTower",
+			"name" : "sentinelGuardLeftTower",
 			"team" : 1,
 			"front" : 5,
 			"order" : 0,
@@ -477,7 +477,7 @@
 			"sight" : 8
 		},
 		{
-			"name" : "sentinalGuardRightTower",
+			"name" : "sentinelGuardRightTower",
 			"team" : 1,
 			"front" : 5,
 			"order" : 0,
@@ -642,7 +642,7 @@
 		{
 			"team" : 1,
 			"ancient" : {
-				"name" : "sentinalAncient",
+				"name" : "sentinelAncient",
 				"front" : 5,
 				"position" : [14, 15],
 				"bountyMoney" : 0,
@@ -670,7 +670,9 @@
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
-							"increaseRound" : 200
+							"increaseRound" : 200,
+							"checkpoints" : ["sentinelTopTower1", "sentinelTopTower2", "sentinelTopTower3", "scourgeTopTower3", "scourgeTopTower2", "scourgeTopTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "ranged",
@@ -679,7 +681,9 @@
 							"round" : 10,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["sentinelTopTower1", "sentinelTopTower2", "sentinelTopTower3", "scourgeTopTower3", "scourgeTopTower2", "scourgeTopTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "siege",
@@ -688,7 +692,9 @@
 							"round" : 50,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["sentinelTopTower1", "sentinelTopTower2", "sentinelTopTower3", "scourgeTopTower3", "scourgeTopTower2", "scourgeTopTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						}
 					],
 					"creepUpgradeRound" : 100,
@@ -707,7 +713,9 @@
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
-							"increaseRound" : 200
+							"increaseRound" : 200,
+							"checkpoints" : ["sentinelMidTower1", "sentinelMidTower2", "sentinelMidTower3", "scourgeMidTower3", "scourgeMidTower2", "scourgeMidTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "ranged",
@@ -716,7 +724,9 @@
 							"round" : 10,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["sentinelMidTower1", "sentinelMidTower2", "sentinelMidTower3", "scourgeMidTower3", "scourgeMidTower2", "scourgeMidTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "siege",
@@ -725,7 +735,9 @@
 							"round" : 50,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["sentinelMidTower1", "sentinelMidTower2", "sentinelMidTower3", "scourgeMidTower3", "scourgeMidTower2", "scourgeMidTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						}
 					],
 					"creepUpgradeRound" : 100,
@@ -744,7 +756,9 @@
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
-							"increaseRound" : 200
+							"increaseRound" : 200,
+							"checkpoints" : ["sentinelMidTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "ranged",
@@ -753,7 +767,9 @@
 							"round" : 10,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["sentinelMidTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "siege",
@@ -762,7 +778,9 @@
 							"round" : 50,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["sentinelMidTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints-radius" : 10
 						}
 					],
 					"creepUpgradeRound" : 100,
@@ -798,7 +816,9 @@
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
-							"increaseRound" : 200
+							"increaseRound" : 200,
+							"checkpoints" : ["scourgeTopTower1", "scourgeTopTower2", "scourgeTopTower3", "sentinelTopTower3", "sentinelTopTower2", "sentinelTopTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "ranged",
@@ -807,7 +827,9 @@
 							"round" : 10,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["scourgeTopTower1", "scourgeTopTower2", "scourgeTopTower3", "sentinelTopTower3", "sentinelTopTower2", "sentinelTopTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "siege",
@@ -816,8 +838,10 @@
 							"round" : 50,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
-							}
+							"increaseRound" : 600,
+							"checkpoints" : ["scourgeTopTower1", "scourgeTopTower2", "scourgeTopTower3", "sentinelTopTower3", "sentinelTopTower2", "sentinelTopTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"],
+							"checkpoints-radius" : 10
+						}
 					],
 					"creepUpgradeRound" : 100,
 					"creepLevelUpRound" : 200,
@@ -835,7 +859,8 @@
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
-							"increaseRound" : 200
+							"increaseRound" : 200,
+							"checkpoints" : ["scourgeMidTower1", "scourgeMidTower2", "scourgeMidTower3", "sentinelMidTower3", "sentinelMidTower2", "sentinelMidTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"]
 						},
 						{
 							"species" : "ranged",
@@ -844,7 +869,8 @@
 							"round" : 10,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["scourgeMidTower1", "scourgeMidTower2", "scourgeMidTower3", "sentinelMidTower3", "sentinelMidTower2", "sentinelMidTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"]
 						},
 						{
 							"species" : "siege",
@@ -853,7 +879,8 @@
 							"round" : 50,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["scourgeMidTower1", "scourgeMidTower2", "scourgeMidTower3", "sentinelMidTower3", "sentinelMidTower2", "sentinelMidTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"]
 						}
 					],
 					"creepUpgradeRound" : 100,
@@ -872,7 +899,9 @@
 							"round" : 10,
 							"initial" : 3,
 							"maximum" : 6,
-							"increaseRound" : 200
+							"increaseRound" : 200,
+							"checkpoints" : ["scourgeBotTower1", "scourgeBotTower2", "scourgeBotTower3", "sentinelBotTower3", "sentinelBotTower2", "sentinelBotTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "ranged",
@@ -881,7 +910,9 @@
 							"round" : 10,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["scourgeBotTower1", "scourgeBotTower2", "scourgeBotTower3", "sentinelBotTower3", "sentinelBotTower2", "sentinelBotTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"],
+							"checkpoints-radius" : 10
 						},
 						{
 							"species" : "siege",
@@ -890,7 +921,9 @@
 							"round" : 50,
 							"initial" : 1,
 							"maximum" : 2,
-							"increaseRound" : 600
+							"increaseRound" : 600,
+							"checkpoints" : ["scourgeBotTower1", "scourgeBotTower2", "scourgeBotTower3", "sentinelBotTower3", "sentinelBotTower2", "sentinelBotTower1", "sentinelGuardLeftTower", "sentinelGuardRightTower", "sentinelAncient"],
+							"checkpoints-radius" : 10
 						}
 					],
 					"creepUpgradeRound" : 100,
@@ -899,5 +932,6 @@
 				}
 			]
 		}
-	]
+	],
+	"priorityDecreaseRounds" : 5
 }
