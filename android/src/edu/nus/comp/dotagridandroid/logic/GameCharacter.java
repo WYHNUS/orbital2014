@@ -70,35 +70,34 @@ public class GameCharacter extends GameObject {
 		
 		this.setStartingHP(startingHP);
 		this.setStartingMP(startingMP);
-		this.setMaxHP(this.getStartingHP());
-		this.setMaxMP(this.getStartingMP());
-		this.setCurrentHP(this.getMaxHP());
-		this.setCurrentMP(this.getMaxMP());
 		
 		this.setStartingPhysicalAttack(startingPhysicalAttack);
-		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
-		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
 		
 		this.setStartingPhysicalAttackArea(startingPhysicalAttackArea);
-		this.setTotalPhysicalAttackArea(this.getStartingPhysicalAttackArea());
 		
 		this.setStartingPhysicalAttackSpeed(startingPhysicalAttackSpeed);
-		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed());
 		
 		this.setStartingPhysicalDefence(startingPhysicalDefence);
-		this.setBasicPhysicalDefence(this.getStartingPhysicalDefence());
-		this.setTotalPhysicalDefence(this.getStartingPhysicalDefence());
 		
 		this.setStartingMagicResistance(startingMagicResistance);
-		this.setTotalMagicResistance(this.getStartingMagicResistance());
 		
 		this.setStartingMovementSpeed(startingMovementSpeed);
-		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
 		
 		this.setMaxActionPoint(maxActionPoint);
-		this.setCurrentActionPoint(this.getMaxActionPoint());
-		
-		this.setAlive(true);
+
+//		this.setMaxHP(this.getStartingHP());
+//		this.setMaxMP(this.getStartingMP());
+//		this.setCurrentHP(this.getMaxHP());
+//		this.setCurrentMP(this.getMaxMP());
+//		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
+//		this.setTotalMagicResistance(this.getStartingMagicResistance());
+//		this.setBasicPhysicalDefence(this.getStartingPhysicalDefence());
+//		this.setTotalPhysicalDefence(this.getStartingPhysicalDefence());
+//		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
+//		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
+//		this.setCurrentActionPoint(this.getMaxActionPoint());
+//		this.setTotalPhysicalAttackArea(this.getStartingPhysicalAttackArea());
+//		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed());
 	}
 	
 	public GameCharacter (GameCharacter that) {
@@ -109,37 +108,42 @@ public class GameCharacter extends GameObject {
 		
 		this.setStartingHP(that.startingHP);
 		this.setStartingMP(that.startingMP);
+		
+		this.setStartingPhysicalAttack(that.startingPhysicalAttack);
+		
+		this.setStartingPhysicalAttackArea(that.startingPhysicalAttackArea);
+		
+		this.setStartingPhysicalAttackSpeed(that.startingPhysicalAttackSpeed);
+		
+		this.setStartingPhysicalDefence(that.startingPhysicalDefence);
+		
+		this.setStartingMagicResistance(that.startingMagicResistance);
+		
+		this.setStartingMovementSpeed(that.startingMovementSpeed);
+		
+		this.setMaxActionPoint(that.maxActionPoint);
+		
+	}
+
+	public void initialise() {
 		this.setMaxHP(this.getStartingHP());
 		this.setMaxMP(this.getStartingMP());
 		this.setCurrentHP(this.getMaxHP());
 		this.setCurrentMP(this.getMaxMP());
-		
-		this.setStartingPhysicalAttack(that.startingPhysicalAttack);
-		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
-		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
-		
-		this.setStartingPhysicalAttackArea(that.startingPhysicalAttackArea);
-		this.setTotalPhysicalAttackArea(this.getStartingPhysicalAttackArea());
-		
-		this.setStartingPhysicalAttackSpeed(that.startingPhysicalAttackSpeed);
-		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed());
-		
-		this.setStartingPhysicalDefence(that.startingPhysicalDefence);
+		this.setCurrentActionPoint(this.getMaxActionPoint());
 		this.setBasicPhysicalDefence(this.getStartingPhysicalDefence());
 		this.setTotalPhysicalDefence(this.getStartingPhysicalDefence());
-		
-		this.setStartingMagicResistance(that.startingMagicResistance);
 		this.setTotalMagicResistance(this.getStartingMagicResistance());
-		
-		this.setStartingMovementSpeed(that.startingMovementSpeed);
 		this.setTotalMovementSpeed(this.getStartingMovementSpeed());
-		
-		this.setMaxActionPoint(that.maxActionPoint);
-		this.setCurrentActionPoint(this.getMaxActionPoint());
-		
-		this.setAlive(true);
+		this.setTotalPhysicalAttackSpeed(this.getStartingPhysicalAttackSpeed());
+		this.setBasicPhysicalAttack(this.getStartingPhysicalAttack());
+		this.setTotalPhysicalAttack(this.getStartingPhysicalAttack());
+		this.setTotalPhysicalAttackArea(this.getStartingPhysicalAttackArea());
 	}
-
+	
+	public void updateProperties() {
+		// void
+	}
 	
 	public String getCharacterImage() {
 		return characterImage;
