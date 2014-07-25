@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.*;
 
+import android.webkit.WebView.FindListener;
 import edu.nus.comp.dotagridandroid.appsupport.JsonConverter;
 
 @SuppressWarnings("unchecked")
@@ -43,7 +44,7 @@ public class BasicGameMaster extends GameMaster {
 				100,
 				100,
 				100,
-				100), false, false);
+				100), false, true);
 		state.addCharacter("MyHero2", new Hero("MyHero", 1, 0, 200, 0, "strength",
 				100,
 				100,
@@ -60,7 +61,7 @@ public class BasicGameMaster extends GameMaster {
 				100,
 				100,
 				100,
-				100), false, true);
+				100), false, false);
 		state.setCharacterPosition("MyHero", new int[]{0, 0});
 		state.setCharacterPosition("MyHero2", new int[]{19,19});
 		state.getCharacters().get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
@@ -116,6 +117,7 @@ public class BasicGameMaster extends GameMaster {
 				tree.setCharacterImage("Tree");	// TODO Change here!
 				state.addCharacter("Tree" + i, tree, false, false);
 				state.setCharacterPosition("Tree" + i, i % state.getGridWidth(), i / state.getGridWidth());
+				tree.initialise();
 				break;
 			}
 			case GameState.TERRAIN_TYPE_RIVER: {
@@ -154,6 +156,7 @@ public class BasicGameMaster extends GameMaster {
 					state.setCharacterProperty(name, "front", tower.get("front"));
 					state.setCharacterProperty(name, "characterImage", tower.get("model"));
 					state.setCharacterProperty(name, "sight", tower.get("sight"));
+					towerCharacter.initialise();
 				}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -175,6 +178,8 @@ public class BasicGameMaster extends GameMaster {
 					state.setCharacterProperty(name, "startingHP", ancientConfig.get("startingHP"));
 					state.setCharacterProperty(name, "startingPhysicalDefence", ancientConfig.get("startingPhysicalDefence"));
 					state.setCharacterProperty(name, "characterImage", ancientConfig.get("model"));
+					state.setCharacterProperty(name, "teamNumber", teamNumber);
+					state.setCharacterProperty(name, "front", ancientConfig.get("front"));
 					state.setCharacterPosition(name,
 							((List<Number>) ancientConfig.get("position")).get(0).intValue(),
 							((List<Number>) ancientConfig.get("position")).get(0).intValue());
@@ -208,7 +213,7 @@ public class BasicGameMaster extends GameMaster {
 					teamCreepLevel.put(team, new HashMap<Integer, Map<String, Integer>>());
 				if (!teamCreepLevel.get(team).containsKey(front))
 					teamCreepLevel.get(team).put(front, new HashMap<String, Integer>());
-				teamCreepLevel.get(team).get(front).put(type, -1);
+				teamCreepLevel.get(team).get(front).put(type, 1);
 				Barrack obj = new Barrack();
 				state.addCharacter(name, obj, false, false);
 				// load barrack data
@@ -224,6 +229,7 @@ public class BasicGameMaster extends GameMaster {
 				state.setCharacterPosition(name,
 						((List<Number>) barrack.get("position")).get(0).intValue(),
 						((List<Number>) barrack.get("position")).get(1).intValue());
+				obj.initialise();
 				// count into strength
 				if (!teamStrength.containsKey(team))
 					teamStrength.put(team, new HashMap<Integer, Set<String>>());
@@ -427,6 +433,8 @@ public class BasicGameMaster extends GameMaster {
 											state.setCharacterProperty(name, "startingPhysicalDefence", configUpgraded.get("startingPhysicalDefence"));
 											state.setCharacterProperty(name, "startingMagicResistance", configUpgraded.get("startingMagicResistance"));
 											state.setCharacterProperty(name, "startingMovementSpeed", configUpgraded.get("startingMovementSpeed"));
+											state.setCharacterProperty(name, "maxActionPoint", configUpgraded.get("maxActionPoint"));
+											state.setCharacterProperty(name, "sight", configUpgraded.get("sight"));
 											state.setCharacterProperty(name, "basicPhysicalAttack",
 													((Number) configUpgraded.get("basicPhysicalAttack")).intValue()
 													+ ((Number) configUpgraded.get("basicPhysicalAttack-levelMultiplier")).intValue() * level);
@@ -441,6 +449,8 @@ public class BasicGameMaster extends GameMaster {
 											state.setCharacterProperty(name, "startingPhysicalDefence", configUpgraded.get("startingPhysicalDefence"));
 											state.setCharacterProperty(name, "startingMagicResistance", configUpgraded.get("startingMagicResistance"));
 											state.setCharacterProperty(name, "startingMovementSpeed", configUpgraded.get("startingMovementSpeed"));
+											state.setCharacterProperty(name, "maxActionPoint", configUpgraded.get("maxActionPoint"));
+											state.setCharacterProperty(name, "sight", configUpgraded.get("sight"));
 											state.setCharacterProperty(name, "basicPhysicalAttack",
 													((Number) configUpgraded.get("basicPhysicalAttack")).intValue()
 													+ ((Number) configUpgraded.get("basicPhysicalAttack-levelMultiplier")).intValue() * level);
@@ -455,16 +465,23 @@ public class BasicGameMaster extends GameMaster {
 											state.setCharacterProperty(name, "startingPhysicalDefence", config.get("startingPhysicalDefence"));
 											state.setCharacterProperty(name, "startingMagicResistance", config.get("startingMagicResistance"));
 											state.setCharacterProperty(name, "startingMovementSpeed", config.get("startingMovementSpeed"));
+											state.setCharacterProperty(name, "maxActionPoint", configUpgraded.get("maxActionPoint"));
+											state.setCharacterProperty(name, "sight", configUpgraded.get("sight"));
 											state.setCharacterProperty(name, "basicPhysicalAttack",
 													((Number) config.get("basicPhysicalAttack")).intValue()
 													+ ((Number) config.get("basicPhysicalAttack-levelMultiplier")).intValue() * level);
 										}
 										// IMPORTANT, must initialise
-										creep.initialise();
+										state.setCharacterProperty(name, "teamNumber", i);
 										state.setCharacterProperty(name, "Automation-Checkpoints",
 												new LinkedList<String>((List<String>) type.get("checkpoints")));
 										state.setCharacterProperty(name, "Automation-Checkpoints-Radius",
 												((Number) type.get("checkpoints-radius")).intValue());
+										creep.initialise();
+										state.setCharacterPosition(name, getNearestFreeGrid(new int[]{
+												((List<Number>) front.get("creepSpawnPoint")).get(0).intValue(),
+												((List<Number>) front.get("creepSpawnPoint")).get(1).intValue()
+										}));
 									}
 							frontNumber++;
 						}
@@ -700,10 +717,10 @@ public class BasicGameMaster extends GameMaster {
 		}
 		}
 
-		int APused = (Integer) state.getCharacterProperty(character, "APUsedWhenAttack");
+		double APused = (Double) state.getCharacterProperty(character, "APUsedWhenAttack");
 		int damage = GameCharacter.getActualDamage(
-				(Integer) state.getCharacterProperty(targetCharacter, "totalPhysicalAttack"),
-				(Integer) state.getCharacterProperty(targetCharacter, "totalPhysicalDefence"));
+				(Double) state.getCharacterProperty(targetCharacter, "totalPhysicalAttack"),
+				(Double) state.getCharacterProperty(targetCharacter, "totalPhysicalDefence"));
 		
 		state.setCharacterProperty(character, "currentActionPoint",
 				(Integer) state.getCharacterProperty(character, "currentActionPoint") - APused);
@@ -745,8 +762,17 @@ public class BasicGameMaster extends GameMaster {
 	}
 	
 	private void characterDamageCheck (String characterAttacker, String targetCharacter) {
-		if (state.getCharacterType(targetCharacter) == GameObject.GAMEOBJECT_TYPE_HERO)
+		switch (state.getCharacterType(targetCharacter)) {
+		case GameObject.GAMEOBJECT_TYPE_HERO:
 			teamEnemyAttackPrioritised.get(state.getCharacterProperty(targetCharacter, "teamNumber")).put(characterAttacker, priorityDecreaseRounds);
+			break;
+		case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+			if (!state.getCharacters().get(targetCharacter).isAlive())
+				state.removeCharacter(targetCharacter);
+//		case GameObject.GAMEOBJECT_TYPE_TOWER:
+//			if (!state.getCharacters().get(targetCharacter).isAlive())
+//				state.setCharacterPosition(targetCharacter, null);
+		}
 	}
 
 	// move to checkpoint
@@ -767,55 +793,55 @@ public class BasicGameMaster extends GameMaster {
 				for (int x = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); x <= end; x++) {
 					if (pos[1] + Math.abs(x - pos[0]) - r >= 0) {
 						final String target = state.getCharacterAtPosition(x, pos[1] + Math.abs(x - pos[0]) - r);
-						final Map<String, Object> actionOption = new HashMap<>();
-						actionOption.put("Action", "Attack");
-						actionOption.put("TargetGrid", Arrays.asList(x, pos[1] + Math.abs(x - pos[0]) - r));
-						if ((Integer) state.getCharacterProperty(target, "teamNumber") == friendlyTeamNumber)
-							continue;
-						// trees are exceptions
-						Pair<Integer, Integer, String> entry;
-						switch (state.getCharacterType(target)) {
-						case GameObject.GAMEOBJECT_TYPE_HERO:
-						case GameObject.GAMEOBJECT_TYPE_LINECREEP:
-						case GameObject.GAMEOBJECT_TYPE_TOWER:
-						case GameObject.GAMEOBJECT_TYPE_BARRACK:
-						case GameObject.GAMEOBJECT_TYPE_ANCIENT:
-							entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
-							&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
-									new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
-									: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
-							if (requestActionPossible(character, "GameAction", actionOption))
-								attackTargetPriorityQueue.add(entry);
-							else
-								possibleTargetPriorityQueue.add(entry);
-							break;
+						if (target != null && (Integer) state.getCharacterProperty(target, "teamNumber") != friendlyTeamNumber) {
+							final Map<String, Object> actionOption = new HashMap<>();
+							actionOption.put("Action", "Attack");
+							actionOption.put("TargetGrid", Arrays.asList(x, pos[1] + Math.abs(x - pos[0]) - r));
+							// trees are exceptions
+							Pair<Integer, Integer, String> entry;
+							switch (state.getCharacterType(target)) {
+							case GameObject.GAMEOBJECT_TYPE_HERO:
+							case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+							case GameObject.GAMEOBJECT_TYPE_TOWER:
+							case GameObject.GAMEOBJECT_TYPE_BARRACK:
+							case GameObject.GAMEOBJECT_TYPE_ANCIENT:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								if (requestActionPossible(character, "GameAction", actionOption))
+									attackTargetPriorityQueue.add(entry);
+								else
+									possibleTargetPriorityQueue.add(entry);
+								break;
+							}
 						}
 					}
 					// possible duplicate
 					if (Math.abs(x - pos[0]) < r && pos[1] - Math.abs(x - pos[0]) + r < state.getGridHeight()) {
 						final String target = state.getCharacterAtPosition(x, pos[1] - Math.abs(x - pos[0]) + r);
-						final Map<String, Object> actionOption = new HashMap<>();
-						actionOption.put("Action", "Attack");
-						actionOption.put("TargetGrid", Arrays.asList(x, pos[1] - Math.abs(x - pos[0]) + r));
-						if ((Integer) state.getCharacterProperty(target, "teamNumber") == friendlyTeamNumber)
-							continue;
-						// same routine here
-						Pair<Integer, Integer, String> entry;
-						switch (state.getCharacterType(target)) {
-						case GameObject.GAMEOBJECT_TYPE_HERO:
-						case GameObject.GAMEOBJECT_TYPE_LINECREEP:
-						case GameObject.GAMEOBJECT_TYPE_TOWER:
-						case GameObject.GAMEOBJECT_TYPE_BARRACK:
-						case GameObject.GAMEOBJECT_TYPE_ANCIENT:
-							entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
-							&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
-									new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
-									: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
-							if (requestActionPossible(character, "GameAction", actionOption))
-								attackTargetPriorityQueue.add(entry);
-							else
-								possibleTargetPriorityQueue.add(entry);
-							break;
+						if (target != null && (Integer) state.getCharacterProperty(target, "teamNumber") != friendlyTeamNumber) {
+							final Map<String, Object> actionOption = new HashMap<>();
+							actionOption.put("Action", "Attack");
+							actionOption.put("TargetGrid", Arrays.asList(x, pos[1] - Math.abs(x - pos[0]) + r));
+							// same routine here
+							Pair<Integer, Integer, String> entry;
+							switch (state.getCharacterType(target)) {
+							case GameObject.GAMEOBJECT_TYPE_HERO:
+							case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+							case GameObject.GAMEOBJECT_TYPE_TOWER:
+							case GameObject.GAMEOBJECT_TYPE_BARRACK:
+							case GameObject.GAMEOBJECT_TYPE_ANCIENT:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								if (requestActionPossible(character, "GameAction", actionOption))
+									attackTargetPriorityQueue.add(entry);
+								else
+									possibleTargetPriorityQueue.add(entry);
+								break;
+							}
 						}
 					}
 				}
@@ -839,22 +865,22 @@ public class BasicGameMaster extends GameMaster {
 					final int limit = Math.max(pos[0], Math.max(state.getGridWidth() - pos[0], Math.max(pos[1], state.getGridHeight() - pos[1])));
 					for (int r = 1; searching && r <= limit; r++)
 						for (int x = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); searching && x <= end; x++)
-							if (pos[1] - Math.abs(x - pos[0]) + r >= 0
-									&& apMap[x + state.getGridWidth() * (pos[1] - Math.abs(x - pos[0]) + r)] <= currentAPPoint) {
-								move(character, x, pos[1] - Math.abs(x - pos[0]) + r);
-								searching = false;
-							} else if (pos[1] + Math.abs(x - pos[0]) - r < state.getGridHeight()
+							if (pos[1] + Math.abs(x - pos[0]) - r >= 0
 									&& apMap[x + state.getGridWidth() * (pos[1] + Math.abs(x - pos[0]) - r)] <= currentAPPoint) {
-								move(character, x, pos[1] + Math.abs(x -pos[0]) + r);
+								move(character, x, pos[1] + Math.abs(x - pos[0]) - r);
+								searching = false;
+							} else if (pos[1] - Math.abs(x - pos[0]) + r < state.getGridHeight()
+									&& apMap[x + state.getGridWidth() * (pos[1] - Math.abs(x - pos[0]) + r)] <= currentAPPoint) {
+								move(character, x, pos[1] - Math.abs(x -pos[0]) + r);
 								searching = false;
 							}
 				}
 				if (!engagingEnemy) {
 					// move to checkpoint
-					final int[] characterPos = state.getCharacterPosition(character);
+//					final int[] characterPos = state.getCharacterPosition(character);
 					final List<String> targets = (List<String>) state.getCharacterProperty(character, "Automation-Checkpoints");
 					final int radius = (Integer) state.getCharacterProperty(character, "Automation-Checkpoints-Radius");
-					while (true) {
+					while (!targets.isEmpty()) {
 						targetCharacter = targets.get(0);
 						targetPos = state.getCharacterPosition(targetCharacter);
 						if (targetPos == null || Math.abs(targetPos[0] - pos[0]) + Math.abs(targetPos[1] - pos[1]) <= radius) {
@@ -865,13 +891,13 @@ public class BasicGameMaster extends GameMaster {
 						boolean searching = true;
 						for (int r = 1; searching && r < limit; r++)
 							for (int x = Math.max(0, targetPos[0] - r), end = Math.min(state.getGridWidth() - 1, targetPos[0] + r); searching && x <= end; x++)
-								if (targetPos[1] - Math.abs(x - targetPos[0]) + r >= 0
-										&& apMap[x + state.getGridWidth() * (targetPos[1] - Math.abs(x - targetPos[0]) + r)] <= currentAPPoint) {
-									move(character, x, targetPos[1] - Math.abs(x - targetPos[0]) + r);
-									searching = false;
-								} else if (targetPos[1] + Math.abs(x - targetPos[0]) - r < state.getGridHeight()
+								if (targetPos[1] + Math.abs(x - targetPos[0]) - r >= 0
 										&& apMap[x + state.getGridWidth() * (targetPos[1] + Math.abs(x - targetPos[0]) - r)] <= currentAPPoint) {
 									move(character, x, targetPos[1] + Math.abs(x - targetPos[0]) - r);
+									searching = false;
+								} else if (targetPos[1] - Math.abs(x - targetPos[0]) + r < state.getGridHeight()
+										&& apMap[x + state.getGridWidth() * (targetPos[1] - Math.abs(x - targetPos[0]) + r)] <= currentAPPoint) {
+									move(character, x, targetPos[1] - Math.abs(x - targetPos[0]) + r);
 									searching = false;
 								}
 						break;
@@ -1037,6 +1063,7 @@ public class BasicGameMaster extends GameMaster {
 		final Queue<String> attackQueue = new LinkedList<>();
 		final Tower tower = (Tower) state.getCharacters().get(character);
 		final int[] pos = state.getCharacterPosition(character);
+		System.out.println("Tower automation by " + character);
 		for (int r = 1; r <= tower.getTotalPhysicalAttackArea(); r++)
 			for (int i = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); i <= end; i++) {
 				if (pos[1] + Math.abs(i - pos[0]) - r >= 0) {
@@ -1052,7 +1079,7 @@ public class BasicGameMaster extends GameMaster {
 						attackQueue.add(target);
 				}
 			}
-		while (tower.getCurrentActionPoint() > 0) {
+		while (tower.getCurrentActionPoint() > 0 && !attackQueue.isEmpty()) {
 			final String target = attackQueue.poll();
 			final GameCharacter targetCharacter = state.getCharacters().get(target);
 			while (targetCharacter.isAlive() && tower.getCurrentActionPoint() > 0)

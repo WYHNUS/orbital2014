@@ -11,6 +11,7 @@ public class Tower extends GameCharacter {
 	private int order;
 	
 	public Tower() {
+		setObjectType(GAMEOBJECT_TYPE_TOWER);
 	}
 
 	public Tower(String name, int bountyMoney, int startingHP, int startingMP,

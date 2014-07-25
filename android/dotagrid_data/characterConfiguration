@@ -18,6 +18,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 1
@@ -34,6 +36,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 2
@@ -50,6 +54,8 @@
 			"startingMagicResistance" : 100,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 2
@@ -67,6 +73,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 19,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 19,
 			"basicPhysicalAttack-levelMultiplier" : 2
@@ -83,6 +91,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 20,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"basicPhysicalAttack-levelMultiplier" : 3,
 			"startingHP-levelMultiplier" : 18
@@ -99,6 +109,8 @@
 			"startingMagicResistance" : 100,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 16,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"basicPhysicalAttack-levelMultiplier" : 3,
 			"startingHP-levelMultiplier" : 18
@@ -116,6 +128,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 1
@@ -132,6 +146,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 2
@@ -148,6 +164,8 @@
 			"startingMagicResistance" : 100,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 0,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 10,
 			"basicPhysicalAttack-levelMultiplier" : 2
@@ -165,6 +183,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 19,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"startingHP-levelMultiplier" : 19,
 			"basicPhysicalAttack-levelMultiplier" : 2
@@ -181,6 +201,8 @@
 			"startingMagicResistance" : 25,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 20,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"basicPhysicalAttack-levelMultiplier" : 3,
 			"startingHP-levelMultiplier" : 18
@@ -197,13 +219,17 @@
 			"startingMagicResistance" : 100,
 			"startingMovementSpeed" : 325,
 			"basicPhysicalAttack" : 16,
+			"maxActionPoint" : 100,
+			"sight" : 6,
 
 			"basicPhysicalAttack-levelMultiplier" : 3,
 			"startingHP-levelMultiplier" : 18
 		},
 		"neutralCreep" : {
 			"characterImage" : "NeutralCreep",
-			"startingHP-levelMultiplier" : 10
+			"startingHP-levelMultiplier" : 10,
+			"maxActionPoint" : 100,
+			"sight" : 6
 		}
 	},
 	"barrackConfiguration" : {

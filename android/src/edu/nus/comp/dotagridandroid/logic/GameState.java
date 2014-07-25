@@ -55,7 +55,6 @@ public class GameState implements Closeable {
 	}
 	public void initialise(String playerCharacter) {
 		this.playerCharacter = playerCharacter;
-		currentCharacter = playerCharacter;
 		if (initialised || server == null)
 			return;
 		// TODO change this part
@@ -84,11 +83,6 @@ public class GameState implements Closeable {
 		}
 		chosenGrid = new int[2];
 		// TODO load characters
-		// TODO round order
-		do {
-			roundFlagName = java.util.UUID.randomUUID().toString();
-		} while (chars.containsKey(roundFlagName));
-		roundOrder.addAll(Arrays.asList("MyHero", "MyHero2", roundFlagName));
 		// terrain
 		Map<String, Object> terrainConfig = null;
 		try {
@@ -122,7 +116,13 @@ public class GameState implements Closeable {
 			terrain = new float[gridWidth * gridHeight];
 		}
 		// end
+		// TODO round order
+		do {
+			roundFlagName = java.util.UUID.randomUUID().toString();
+		} while (chars.containsKey(roundFlagName));
 		gameMaster.initialise();
+		roundOrder.add(roundFlagName);
+		currentCharacter = roundOrder.peek();
 		gameMaster.applyRule(null, "GameAction", Collections.singletonMap("Action", (Object) "BeginRound"));
 		gameMaster.applyRule(null, "GameAction", Collections.singletonMap("Action", (Object) "BeginTurn"));
 		chosenGrid = objPositions.get(playerCharacter).clone();
@@ -412,7 +412,9 @@ public class GameState implements Closeable {
 	}
 	
 	public synchronized void setCharacterPosition(String name, int... position) {
-		if (chars.containsKey(name)) {
+		if (name == null)
+			return;
+		else if (chars.containsKey(name)) {
 			if (position != null) {
 				if (position[0] >= getGridWidth() || position[0] < 0 || position[1] >= getGridHeight() || position[1] < 0)
 					return;	// failed
@@ -437,7 +439,7 @@ public class GameState implements Closeable {
 	}
 	
 	public void addCharacter(String name, GameCharacter character, boolean automated, boolean controlled) {
-		if (chars.containsKey(name) || roundFlagName.equals(name))
+		if (name == null || chars.containsKey(name) || roundFlagName.equals(name))
 			return;
 		chars.put(name, character);
 		setCharacterProperty(name, "automated", automated);
@@ -447,13 +449,14 @@ public class GameState implements Closeable {
 	
 	public GameCharacter removeCharacter(String name) {
 		roundOrder.remove(name);
+		setCharacterPosition(name, null);
 		return chars.remove(name);
 	}
 	
 	public int getCharacterType (String name) {
 		if (roundFlagName.equals(name))
 			return GameObject.GAMEOBJECT_TYPE_ROUNDFLAG;
-		else if (chars.containsKey(name))
+		else if (name != null && chars.containsKey(name))
 			return chars.get(name).getObjectType();
 		else
 			return -1;
@@ -469,23 +472,22 @@ public class GameState implements Closeable {
 		charsTurned.add(currentCharacter);
 		while (true)
 			if (roundFlagName.equals(roundOrder.peek())) {
-				gameMaster.applyRule(null, "GameAction", Collections.singletonMap("EndRound", null));
-				roundOrder.add(roundOrder.poll());
+				gameMaster.applyRule(null, "GameAction", Collections.singletonMap("Action", (Object) "EndRound"));
+				roundOrder.add(currentCharacter = roundOrder.poll());
 				roundCount++;
-				gameMaster.applyRule(null, "GameAction", Collections.singletonMap("BeginRound", null));
-			} else if (chars.get(roundOrder.peek()).isAlive())
+				gameMaster.applyRule(null, "GameAction", Collections.singletonMap("Action", (Object) "BeginRound"));
+			} else if (chars.get(currentCharacter = roundOrder.peek()).isAlive())
 				break;
 			else
-				roundOrder.add(roundOrder.poll());
-		currentCharacter = roundOrder.peek();
+				roundOrder.add(currentCharacter = roundOrder.poll());
 		charsTurned.add(currentCharacter);
 		if (chars.get(currentCharacter).isAutomated()) {
 			Thread t = new Thread() {
 				@Override
 				public void run() {
-					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
+					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("Action", (Object) "BeginTurn"));
 					String character = currentCharacter;
-					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("Automation", null));
+					gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("Action", (Object) "Automation"));
 					// force nextRound
 					if (character.equals(currentCharacter))
 						nextTurn();
@@ -494,7 +496,7 @@ public class GameState implements Closeable {
 			t.start();
 			automatonThread = t;
 		} else {
-			gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("BeginTurn", null));
+			gameMaster.applyRule(currentCharacter, "GameAction", Collections.singletonMap("Action", (Object) "BeginTurn"));
 			automatonThread = null;
 		}
 	}
