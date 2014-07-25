@@ -78,6 +78,7 @@ public class Hero extends Character{
 	public static int heroSight = 7;
 	
 	public static final int HERO_ATTACK_PRIORITY = 5;
+	public static final int HERO_PER_ROUND_MONEY_INCREASE = 10;
 	
 	
 	// constructor
@@ -1008,6 +1009,15 @@ public class Hero extends Character{
 			System.out.println("unusedSkillCount cannnot go below 0!");
 		} else {
 			this.unusedSkillCount = unusedSkillCount;
+		}
+	}
+
+
+
+	public static void addPerTurnMoney(Hero hero) {
+		// add money to hero's account every round starting from round 10 onwards
+		if (GameFrame.turn >= 10) {
+			hero.setMoney(hero.getMoney() + HERO_PER_ROUND_MONEY_INCREASE);
 		}
 	}
 

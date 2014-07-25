@@ -27,7 +27,7 @@ public class NeutralCreep extends Character{
 		this.setMPGainPerRound(MPGainPerRound);
 		
 		// set image
-		this.setCharacterImage("NeutralCreeps", this.getName());		
+		this.setCharacterImage("Neutral Creeps", this.getName());		
 		
 	}
 

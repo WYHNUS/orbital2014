@@ -139,6 +139,7 @@ public class Skill {
 		
 		this.setSkillType(skill.getSkillType());
 		this.setSkillName(skill.getSkillName());
+		this.setSkillLevel(skill.getSkillLevel());
 		this.setImage();
 		
 		this.setSkillCharacter(skill.getSkillCharacter());

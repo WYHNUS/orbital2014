@@ -14,6 +14,8 @@ public class GameButtonActions {
 	public static boolean readyToUpgradeSkill = false;
 	public static boolean readyToUseItem = false;
 	
+	public static String heroDamageLog = "<html>";
+	
 	private int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
 	private int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
 	
@@ -245,12 +247,16 @@ public class GameButtonActions {
 
 					readyToUpgradeSkill = false;
 					
+					// display a panel to inform the user skill has been upgraded
+					Skill tempSkill = new Skill(((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex]);
+					JOptionPane.showMessageDialog(null, "You have upgrade the skill : " + tempSkill.getSkillName() + " from level " 
+							+ (tempSkill.getSkillLevel() - 1) + " to level " + tempSkill.getSkillLevel() + " !");
+					
 					if (!((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).skills[playerSkillIndex].isCastable()) {
 						// select player's hero's grid button
 						System.out.println("reselect player's hero!");
 						GridFrame.invokeLeftClickEvent((int)((0.5 + Screen.user.player.getXPos() - GridFrame.getCurrentGridXPos()) * GridFrame.getGridWidth() + GameFrame.FRAME_BORDER_HEIGHT), 
 								(int)((0.5 + Screen.user.player.getYPos() - GridFrame.getCurrentGridYPos()) * GridFrame.getGridHeight() + GameFrame.FRAME_BORDER_WIDTH));
-					
 					}
 					
 				} else {
@@ -333,28 +339,6 @@ public class GameButtonActions {
 		System.out.println();
 		System.out.println("Turn Number :  " + GameFrame.turn);
 		
-		// update reviveQueue
-		for (Iterator<Pair<Hero, Integer>> iterator = Hero.reviveQueue.iterator(); iterator.hasNext();) {
-			Pair<Hero, Integer> element = iterator.next();
-			element.setSecond(element.getSecond() - 1);
-			if (element.getSecond() <= 0) {
-				// hero revive from its original spawning position
-				GridFrame.gridButtonMap[element.getFirst().getHeroSpawningXPos()][element.getFirst().getHeroSpawningYPos()]
-						= new GridButton(element.getFirst());
-				
-				// check if the revived hero is player's hero
-				if (element.getFirst().getHeroSpawningXPos() == Screen.user.playerStartingXPos
-						&& element.getFirst().getHeroSpawningYPos() == Screen.user.playerStartingYPos) {
-					GridFrame.gridButtonMap[element.getFirst().getHeroSpawningXPos()][element.getFirst().getHeroSpawningYPos()].setIsPlayer(true);
-				}
-				
-				iterator.remove();
-			}
-		}
-		
-		// revive trees
-		Tree.treeRevive();
-		
 		// AI's turn
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
@@ -382,10 +366,6 @@ public class GameButtonActions {
 			}
 		}
 
-		// spawn a new wave of creeps
-		LineCreepSpawnPoint.spawnNewWave();
-		NeutralCreepSpawnPoint.spawnNewWave();
-		
 		// reset all attributes
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
@@ -442,7 +422,9 @@ public class GameButtonActions {
 					}
 					
 					// if character is hero, reset all hero's skills' current cooldown round
-					if (GridFrame.gridButtonMap[x][y].getIsHero() == true) {
+					if (GridFrame.gridButtonMap[x][y].getIsHero()) {
+						// add money to hero's account
+						Hero.addPerTurnMoney((Hero)GridFrame.gridButtonMap[x][y].getCharacter());
 						for (int i=0; i<GameFrame.MAX_SKILL_NUMBER; i++){
 							// check if skill exists
 							if (((Hero)GridFrame.gridButtonMap[x][y].getCharacter()).skills[i] != null){
@@ -453,8 +435,42 @@ public class GameButtonActions {
 						
 				}
 			}
-		}	
+		}	// reset attributes ended
 		
+
+		// update reviveQueue
+		for (Iterator<Pair<Hero, Integer>> iterator = Hero.reviveQueue.iterator(); iterator.hasNext();) {
+			Pair<Hero, Integer> element = iterator.next();
+			element.setSecond(element.getSecond() - 1);
+			Hero.addPerTurnMoney(element.getFirst());
+			if (element.getSecond() <= 0) {
+				// hero revive from its original spawning position
+				GridFrame.gridButtonMap[element.getFirst().getHeroSpawningXPos()][element.getFirst().getHeroSpawningYPos()]
+						= new GridButton(element.getFirst());
+				
+				// check if the revived hero is player's hero
+				if (element.getFirst().getHeroSpawningXPos() == Screen.user.playerStartingXPos
+						&& element.getFirst().getHeroSpawningYPos() == Screen.user.playerStartingYPos) {
+					GridFrame.gridButtonMap[element.getFirst().getHeroSpawningXPos()][element.getFirst().getHeroSpawningYPos()].setIsPlayer(true);
+				}
+				
+				iterator.remove();
+			}
+		}
+		
+		// revive trees
+		Tree.treeRevive();
+
+		// spawn a new wave of creeps
+		LineCreepSpawnPoint.spawnNewWave();
+		NeutralCreepSpawnPoint.spawnNewWave();
+		
+		
+		heroDamageLog += "</html>";
+		if (heroDamageLog.length() >= 14) 
+				JOptionPane.showMessageDialog(null, heroDamageLog);
+		
+		heroDamageLog = "<html>";
 		// reselect the grid
 		GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
 		System.out.println("End Round!");
