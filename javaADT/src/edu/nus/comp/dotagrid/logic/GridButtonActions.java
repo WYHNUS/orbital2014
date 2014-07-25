@@ -43,7 +43,7 @@ public class GridButtonActions {
 
 	public void updateWhenSomeActionsInvoked() {
 		// only one of the readyToMove / readyToAttack / readyToCastSpell can be true at each time interval (use if{} else if{} to save time)
-
+		boolean isMoveSuc = false;
 		// check to execute move action
 		if (GameButtonActions.readyToMove) {
 			
@@ -51,7 +51,7 @@ public class GridButtonActions {
 			if (isWithinMovableRange()) {
 				// move!
 				new CharacterActions(1, fromXPos, fromYPos, toXPos, toYPos);
-				
+				isMoveSuc = true;
 			} else {
 				JOptionPane.showMessageDialog(null, "Out Of Movable Range!");
 			}
@@ -61,9 +61,15 @@ public class GridButtonActions {
 			
 			// player's action ended
 			GameButtonActions.readyToAct = false;
-			
-			// reselect position which the character has been moved to
-			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+
+			if (isMoveSuc) {
+				// reselect position which the character has been moved to if the character has moved successfully
+				GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			} else {
+				// reselect the original position
+				System.out.println("move unseccessful, reset to character's original position");
+				GridFrame.invokeLeftClickEvent(GridFrame.getPreviouslySelectedXCoodinatePos(), GridFrame.getPreviouslySelectedYCoodinatePos());
+			}
 		}
 		
 		
@@ -81,9 +87,9 @@ public class GridButtonActions {
 						if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().isAttackable()) {
 							// can only attack if character has enough AP
 							if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - (int)(GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().APUsedWhenAttack()) >= 0){
-								// attack!
-								new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);} 
-							
+									// attack!
+									new CharacterActions(2, fromXPos, fromYPos, toXPos, toYPos);
+								} 
 							else {			
 								JOptionPane.showMessageDialog(null, "not enough action point to attack!");
 							}
@@ -107,7 +113,7 @@ public class GridButtonActions {
 			GameButtonActions.readyToAct = false;
 			
 			// select position which has been attacked
-			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			GridFrame.invokeLeftClickEvent(GridFrame.getPreviouslySelectedXCoodinatePos(), GridFrame.getPreviouslySelectedYCoodinatePos());
 		}
 		
 		// check to execute cast spell (hero's skill) action
@@ -288,11 +294,11 @@ public class GridButtonActions {
 		GameFrame.allCharacterInfoGameButtons.get(3).setString("MP : " + hero.getCurrentMP() + " / " + hero.getmaxMP());
 		
 		GameFrame.allCharacterInfoGameButtons.get(4).setString("Strength : " + hero.getStartingStrength()
-				+ " + " + (hero.getTotalStrength() - hero.getStartingStrength()));
+				+ " + " + String.format("%.2f", (hero.getTotalStrength() - hero.getStartingStrength())));
 		GameFrame.allCharacterInfoGameButtons.get(5).setString("Agility : " + hero.getStartingAgility()
-				+ " + " + (hero.getTotalAgility() - hero.getStartingAgility()));
+				+ " + " + String.format("%.2f", (hero.getTotalAgility() - hero.getStartingAgility())));
 		GameFrame.allCharacterInfoGameButtons.get(6).setString("Intelligence : " + hero.getStartingIntelligence()
-				+ " + " + (hero.getTotalIntelligence() - hero.getStartingIntelligence()));
+				+ " + " + String.format("%.2f", (hero.getTotalIntelligence() - hero.getStartingIntelligence())));
 		
 		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + hero.getBasicPhysicalAttack() 
 				+ " + " + (hero.getTotalPhysicalAttack() - hero.getBasicPhysicalAttack()));

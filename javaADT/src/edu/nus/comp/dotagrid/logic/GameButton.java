@@ -14,6 +14,7 @@ public class GameButton{
 	
 	private boolean isClicked;
 	private boolean isReadyToDrawImage;
+	private boolean isNeededToHighlight;
 	
 	private int actionNumber;
 	
@@ -31,9 +32,6 @@ public class GameButton{
 		this.yPos = yPos;
 		this.width = width;
 		this.height = height;
-		
-		isClicked = false;
-		isReadyToDrawImage = false;
 	}
 	
 	
@@ -83,9 +81,32 @@ public class GameButton{
 	}
 	
 	
+	public boolean isClicked() {
+		return isClicked;
+	}
+
+
+	public void setClicked(boolean isClicked) {
+		this.isClicked = isClicked;
+	}
+
+
+	public boolean isNeededToHighlight() {
+		return isNeededToHighlight;
+	}
+
+
+	public void setNeededToHighlight(boolean isNeededToHighlight) {
+		this.isNeededToHighlight = isNeededToHighlight;
+	}
+
+
 	// other methods
-	public void fillRect(Graphics g){
+	public void fillRect(Graphics g, Color color){
+		Color originColor = g.getColor();
+		g.setColor(color);
 		g.fillRect(xPos, yPos, width, height);
+		g.setColor(originColor);
 	}
 	
 	

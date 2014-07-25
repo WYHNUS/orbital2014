@@ -116,8 +116,8 @@ public class GameFrame{
 	
 	public void updateGameFrame(Graphics g){
 		// draw game frame
-		drawAllReadyImage(g);
 		displayAllButtons(g);
+		drawAllReadyImage(g);
 		
 	}
 
@@ -127,6 +127,10 @@ public class GameFrame{
 		
 		//display allGameButtons
 		for (int i=0; i<allGameButtons.size(); i++) {
+			if (allGameButtons.get(i).isNeededToHighlight()) {
+				allGameButtons.get(i).fillRect(g, Color.RED);
+				allGameButtons.get(i).setNeededToHighlight(false);
+			}
 			allGameButtons.get(i).drawString(g);
 		}
 	}
@@ -403,6 +407,7 @@ public class GameFrame{
 		for (int i=0; i<allGameButtons.size(); i++) {
 			if (allGameButtons.get(i).checkEvent(handXPos, handYPos)) {
 				allGameButtons.get(i).resetBoolean();
+				allGameButtons.get(i).setNeededToHighlight(true);
 				allGameButtons.get(i).actionPerformed(allGameButtons.get(i).getActionNumber());
 				break;
 			}

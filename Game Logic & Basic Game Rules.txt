@@ -338,6 +338,12 @@ Neutral creeps will spawn after every 20 rounds if there is no characters within
 
 
 
+9.0 Player's Money will increase every round from round 10 onwards
+
+
+
+
+
 
 
 

@@ -40,6 +40,9 @@ public class GridFrame {
 	private static double gridHeight = 1.0;
 	
 	// grid position that is to be highlighted
+	private static int previouslySelectedXCoodinatePos = -1;
+	private static int previouslySelectedYCoodinatePos = -1;
+	
 	private static int selectedXCoodinatePos = -1;
 	private static int selectedYCoodinatePos = -1;
 	
@@ -266,6 +269,8 @@ public class GridFrame {
 	// method to check and invoke grid frame event
 	public static void invokeLeftClickEvent(int handXPos, int handYPos){
 		MouseHandler.isClicked = true;
+		int tempXPos = getSelectedXCoodinatePos();
+		int tempYPos = getSelectedYCoodinatePos();
 		setSelectedXCoodinatePos(handXPos);
 		setSelectedYCoodinatePos(handYPos);
 		
@@ -273,7 +278,8 @@ public class GridFrame {
 				&& handYPos > GameFrame.FRAME_BORDER_HEIGHT && handYPos < (GameFrame.FRAME_BORDER_HEIGHT + gameFrameHeight));
 		
 		// check if the selected position is within grid frame
-		if (isWithinGridFrame || (ItemShop.shouldUpdateItemInFo == true)) {	
+		if (isWithinGridFrame || ItemShop.shouldUpdateItemInFo) {
+			
 			// reset all character info!
 			resetAllCharacterInfo();			
 			
@@ -283,6 +289,10 @@ public class GridFrame {
 				previouslySelectedYPos = selectedYPos;			
 				selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);
 				selectedYPos = currentGridYPos + (int) ((handYPos - GameFrame.FRAME_BORDER_HEIGHT) / gridHeight);
+				
+				// set previous coodinate position
+				setPreviouslySelectedXCoodinatePos((int)((previouslySelectedXPos - currentGridXPos + 1) * gridWidth + GameFrame.FRAME_BORDER_WIDTH));
+				setPreviouslySelectedYCoodinatePos((int)((previouslySelectedYPos - currentGridYPos + 1) * gridHeight + GameFrame.FRAME_BORDER_HEIGHT));
 			}
 			
 			gridButtonMap[selectedXPos][selectedYPos].actionPerformed();
@@ -429,6 +439,24 @@ public class GridFrame {
 		GridFrame.selectedYCoodinatePos = selectedYCoodinatePos;
 	}
 	
+
+	public static int getPreviouslySelectedXCoodinatePos() {
+		return previouslySelectedXCoodinatePos;
+	}
+
+	public static void setPreviouslySelectedXCoodinatePos(
+			int preciouslySelectedXCoodinatePos) {
+		GridFrame.previouslySelectedXCoodinatePos = preciouslySelectedXCoodinatePos;
+	}
+
+	public static int getPreviouslySelectedYCoodinatePos() {
+		return previouslySelectedYCoodinatePos;
+	}
+
+	public static void setPreviouslySelectedYCoodinatePos(
+			int previouslySelectedYCoodinatePos) {
+		GridFrame.previouslySelectedYCoodinatePos = previouslySelectedYCoodinatePos;
+	}
 
 	public static double getGridWidth() {
 		return gridWidth;

@@ -313,13 +313,13 @@ public class CharacterActions {
 		// can only teleport to non-occupied and movable grid
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable()
 				&& GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() == null) {
-							
+
+			resetAttributes(castingSkill);
+			
 			// perform move action
 			GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(GridFrame.gridButtonMap[fromXPos][fromYPos]); 
 			GridFrame.gridButtonMap[fromXPos][fromYPos] = new GridButton(1);
 
-			resetAttributes(castingSkill);
-			
 			// if hero is player, change player's position
 			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
 				Screen.user.player.setXPos(toXPos);
@@ -544,10 +544,26 @@ public class CharacterActions {
 		// perform attack action
 		GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP((int) (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
 				- attack));
+		
+		// check if the attacker is hero's unit, if yes, show attacker's damage done
+		if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsPlayer()) 
+			JOptionPane.showMessageDialog(null, "You have done " + String.format("%.2f", attack) + " damage to " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getName());
 								
 		// reduce character's AP 
 		GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
 				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);
+		
+		// check if the target is player's character
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer()) {
+			if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Hero) 
+				GameButtonActions.heroDamageLog += "player's hero : ";
+			else
+				GameButtonActions.heroDamageLog += "player's summoned creature : ";
+			
+			GameButtonActions.heroDamageLog = GameButtonActions.heroDamageLog + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getName()
+					+ " has taken " + String.format("%.2f", attack) + " damage from " 
+					+ GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getName() + "<br>";
+		}
 				
 		// check if the target character is hero
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() instanceof Hero) {
@@ -568,13 +584,19 @@ public class CharacterActions {
 			AICharacter.isAttack = false;
 						
 			// if the attacker is hero, add bounty money and bounty Exp into hero's account
-			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {
-							
+			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {						
 				// add money
 				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
 						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
-						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
-							
+						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());							
+			}
+			
+			// hard code!!!!!!!!
+			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsPlayer() && GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter() instanceof SummonCharacter) {						
+				// add money to player
+				((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).setMoney(
+						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney()
+						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());							
 			}
 			
 			// check if nearby has non-friendly hero

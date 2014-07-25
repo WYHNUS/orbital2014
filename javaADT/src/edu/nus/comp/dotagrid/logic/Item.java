@@ -124,7 +124,7 @@ public class Item {
 	}
 
 	public void setItemImage() {
-		this.itemImage = new ImageIcon("res/Items/" + itemName + ".jpg");
+		this.itemImage = new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/Items/" + itemName + ".jpg"));
 	}
 	
 	public String getItemName() {
