@@ -1,13 +1,14 @@
 package edu.nus.comp.dotagrid.logic;
 
 import java.awt.Image;
+import java.util.ResourceBundle;
 
 import javax.swing.ImageIcon;
 
 public class Character {
 	
 	// character compose of : LineCreeps, hero, tower and other buildings
-	
+	private ResourceBundle imageBundle;
 	private Image characterImage;
 	
 	private String name;
@@ -124,7 +125,8 @@ public class Character {
 
 
 	public void setCharacterImage(String characterType, String characterName) {
-		this.characterImage = new ImageIcon("res/" + characterType + "/" + characterName + ".jpg").getImage();
+		System.out.println("/edu/nus/comp/dotagrid/res/" + characterType + "/" + characterName + ".jpg");
+		this.characterImage = new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/" + characterType + "/" + characterName + ".jpg")).getImage();
 	}
 	
 	

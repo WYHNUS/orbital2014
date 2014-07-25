@@ -76,9 +76,11 @@ public class GridFrame {
 		
 		worldMapFile = new WorldMapFile();
 		
-		for (int i = 0; i < 10; i++) {
-			terrain[i] = new ImageIcon("res/WorldMap/terrian" + "/terrian" + i + ".png").getImage();
-		}		
+		for (int i = 0; i < 10; i++)
+			if (getClass().getResource("/edu/nus/comp/dotagrid/res/WorldMap/terrian" + "/terrian" + i + ".png") != null) {
+				terrain[i] = new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/WorldMap/terrian" + "/terrian" + i + ".png")).getImage();
+			} else
+				terrain[i] = new ImageIcon().getImage();
 		
 		this.worldMap = worldMapFile.getWorldMap();
 		map = this.worldMap.map;

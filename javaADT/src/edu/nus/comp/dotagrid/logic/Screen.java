@@ -48,7 +48,7 @@ public class Screen extends JPanel implements Runnable {
 			g.setColor(Color.BLUE);
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 			
-			g.drawImage(new ImageIcon("res/Loading Image/" + "Furion" + ".jpg").getImage(), 0, 0, this.frame.getWidth(), this.frame.getHeight(), null);
+			g.drawImage(new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/Loading Image/" + "Furion" + ".jpg")).getImage(), 0, 0, this.frame.getWidth(), this.frame.getHeight(), null);
 	
 			new BuildingDatabase();
 			new SkillDatabase();

@@ -26,7 +26,7 @@ public class Building  extends Character {
 				buildingMagicResistance, buildingMovementSpeed, buildingActionPoint, BUILDING_ATTACK_PRIORITY, teamNumber);
 
 
-		this.setCharacterImage("buildings", this.getName());
+		this.setCharacterImage("Buildings", this.getName());
 	}
 
 	public Building(Building building) {

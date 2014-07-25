@@ -8,7 +8,7 @@ public class Tree extends Character{
 		super("Tree", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		// Tree has all zero attribute
 		this.setAttackable(false);
-		this.setCharacterImage("WorldMap/terrian/", "Tree");
+		this.setCharacterImage("WorldMap/terrian", "Tree");
 	}
 	
 	public static void treeRevive(){

@@ -59,8 +59,8 @@ public class GameButton{
 		this.image = image;
 	}
 	
-	public void setImage(String imageName){
-		this.image = new ImageIcon("res/Game Icon/" + imageName + ".jpg").getImage();
+	public void setImage(String imageName) {
+		this.image = new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/Game Icon/" + imageName + ".jpg")).getImage();
 		if (!imageName.equals("")) {
 			this.setIsReadyToDrawImage(true);
 		}

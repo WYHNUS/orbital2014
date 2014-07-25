@@ -256,7 +256,7 @@ public class Skill {
 	}
 
 	public void setImage() {
-		this.skillImage = new ImageIcon("res/Skills/" + skillName + ".gif");
+		this.skillImage = new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/Skills/" + skillName + ".gif"));
 	}
 
 	

@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.util.Scanner;
 
 public class WorldMapFile {
-	FileInputStream file;
 	InputStreamReader reader;
 	
 	Scanner scanner;
@@ -15,8 +14,7 @@ public class WorldMapFile {
 	
 	public WorldMap getWorldMap(){
 		try{
-			file = new FileInputStream("res/WorldMap/Map/worldMap.dota");
-			reader = new InputStreamReader(file);
+			reader = new InputStreamReader(getClass().getResourceAsStream("/edu/nus/comp/dotagrid/res/WorldMap/Map/worldMap.dota"));
 			
 			scanner = new Scanner(reader);
 			
@@ -39,7 +37,7 @@ public class WorldMapFile {
 			
 			return worldMap;
 			
-		} catch(FileNotFoundException e) {
+		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
