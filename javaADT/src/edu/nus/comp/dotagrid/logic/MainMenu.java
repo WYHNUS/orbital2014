@@ -21,19 +21,9 @@ public class MainMenu {
 			}
 		});
 
-		help.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				helpList();
-			}
-		});
+		help.addActionListener(new OpenURLAction("http://wangyanhao1993.wix.com/nus-c-dota#!game-help/c1p9k"));
 
-		acknowledgement.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				acknowledgementList();
-			}
-		});
+		acknowledgement.addActionListener(new OpenURLAction("http://wangyanhao1993.wix.com/nus-c-dota#!acknowledgement/c18wc"));
 		
 		exit.addActionListener(new ActionListener() {
 			@Override
@@ -59,15 +49,6 @@ public class MainMenu {
 		new Frame();
 	}
 
-	protected void helpList() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	protected void acknowledgementList() {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	public static void confirmExit() {
 		final JFrame frame = new JFrame("Exit");

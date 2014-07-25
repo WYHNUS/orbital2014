@@ -3,7 +3,6 @@ package edu.nus.comp.dotagrid.logic;
 import java.awt.*;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class Screen extends JPanel implements Runnable {
@@ -12,9 +11,6 @@ public class Screen extends JPanel implements Runnable {
 
 	Frame frame;
 	public static User user;
-	
-
-	private int fps = 0;
 
 	// control the states of the game
 	public int scene;
@@ -91,9 +87,6 @@ public class Screen extends JPanel implements Runnable {
 			g.fillRect(0, 0, this.frame.getWidth(), this.frame.getHeight());
 		}
 
-		// FPS at the bottom -> paint then clear the rectangle
-		g.drawString(fps + "", 10, 10);
-
 	} // end override method paintComponent
 
 
@@ -110,8 +103,6 @@ public class Screen extends JPanel implements Runnable {
 
 	@Override
 	public void run() {
-		long lastFrame = System.currentTimeMillis();
-		int frames = 0;
 
 		loadGame();
 		
@@ -120,27 +111,12 @@ public class Screen extends JPanel implements Runnable {
 			if (MouseHandler.isClicked) {
 				repaint();
 				MouseHandler.isClicked = false;
-			} else {
-				frames++;
-
-				if (System.currentTimeMillis() - 1000 >= lastFrame) {
-					// has passed at least 1 second
-					fps = frames;
-					frames = 0;
-					lastFrame = System.currentTimeMillis();
-				}
-
-				try {
-					// to control the repaint rate
-					Thread.sleep(2);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
 			}
 		}
 
 		System.exit(0);
 	} // end method run
+	
 	
 	public class KeyTyped {
 		public void keyESC() {

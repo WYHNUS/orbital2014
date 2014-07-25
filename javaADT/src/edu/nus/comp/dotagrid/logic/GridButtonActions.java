@@ -296,8 +296,10 @@ public class GridButtonActions {
 		
 		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + hero.getBasicPhysicalAttack() 
 				+ " + " + (hero.getTotalPhysicalAttack() - hero.getBasicPhysicalAttack()));
+		
+		int addDefence = ((int)(hero.getTotalPhysicalDefence() - hero.getStartingPhysicalDefence() - hero.getBasicAgility() * Hero.AGILITY_ADD_PHYSICAL_DEFENCE_RATIO) * 100);
 		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", hero.getStartingPhysicalDefence())
-				+ " + " + String.format("%.2f", (hero.getTotalPhysicalDefence() - hero.getStartingPhysicalDefence() - hero.getBasicAgility() * Hero.AGILITY_ADD_PHYSICAL_DEFENCE_RATIO)));
+				+ " + " + String.format("%.2f", addDefence/100.0));
 		
 		GameFrame.allCharacterInfoGameButtons.get(9).setString("Level : " + hero.getLevel());
 		GameFrame.allCharacterInfoGameButtons.get(10).setString("Exp : " + hero.getExperience());
