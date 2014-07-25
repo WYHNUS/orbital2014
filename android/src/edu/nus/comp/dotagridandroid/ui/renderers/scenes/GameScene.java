@@ -72,11 +72,12 @@ public class GameScene implements SceneRenderer {
 
 	@Override
 	public void setRenderReady() {
-		manager.setCurrentGameState("Current");
+		if (manager.getCurrentGameState() == null)
+			manager.setCurrentGameState("Current");
 		// TODO select character
 		manager.getCurrentGameState().initialise("MyHero");
 		manager.getCurrentGameState().setCurrentSceneRenderer(this);
-		state = (GameState) manager.getGameState("Current");
+		state = manager.getGameState("Current");
 		grid = new GridRenderer(state.getGridWidth(), state.getGridHeight(), state.getTerrain());
 		status = new StatusRenderer(state, landscape);
 		status.setAspectRatio(ratio);
@@ -105,6 +106,10 @@ public class GameScene implements SceneRenderer {
 		hasDialog = false;
 		if (updates.containsKey("Dialog"))
 			prepareDialog((String) updates.get("Dialog"), updates);
+		else if ("Win".equals(updates.get("GameResult")))
+			mainRenderer.switchScene("Statistics", Collections.singletonMap("GameResult", (Object) "Win"));
+		else if ("Lost".equals(updates.get("GameResult")))
+			mainRenderer.switchScene("Statistics", Collections.singletonMap("GameResult", (Object) "Lost"));
 		grid.notifyUpdate(updates);
 		status.notifyUpdate(updates);
 	}
@@ -379,7 +384,7 @@ public class GameScene implements SceneRenderer {
 	}
 
 	@Override
-	public void onTransferToView(SceneConfiguration configuration) {
+	public void onTransferToView(Map<String, Object> configuration) {
 	}
 
 }

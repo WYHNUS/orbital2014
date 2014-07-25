@@ -443,6 +443,11 @@ Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setProject
 }
 
 JNIEXPORT void JNICALL
+Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_clearDrawable (JNIEnv *env, jobject obj, jlong ptr) {
+	((GridRendererGraphicsImpl*) ptr)->clearDrawable();
+}
+
+JNIEXPORT void JNICALL
 Java_edu_nus_comp_dotagridandroid_appsupport_GridRendererGraphicsImpl_setDrawable (JNIEnv *env, jobject obj, jlong ptr, jstring name, jint textureHandler, jint modelHandler, jint modelSize, jfloatArray modelMatrix, jintArray pos) {
 	float *modelMatrixParam = env->GetFloatArrayElements(modelMatrix, 0);
 	int *posParam = env->GetIntArrayElements(pos, 0);

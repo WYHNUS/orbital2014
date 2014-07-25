@@ -372,9 +372,10 @@ public class GridRenderer implements Renderer {
 		}
 	}
 	private void prepareObjects() {
+//		graphicsImpl.clearDrawable();
 		final GameState state = manager.getCurrentGameState();
 		final Map<String, GameCharacter> chars = state.getCharacters();
-		final String mainCharacter = state.getCurrentCharacterName();
+		final String mainCharacter = state.getPlayerCharacterName();
 		final int mainCharacterTeamNumber = chars.get(mainCharacter).getTeamNumber();
 		// TODO draw character
 		// if friendly, always display
@@ -445,6 +446,8 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
 		highlightedGridIndex = null;
+		if ("CLEAR-DRAWABLE".equals((String) updates.get("APPLICATION")))
+			graphicsImpl.clearDrawable();
 		if (updates.containsKey("Characters"))
 			prepareObjects();
 		if (updates.containsKey("HighlightGrid")) {

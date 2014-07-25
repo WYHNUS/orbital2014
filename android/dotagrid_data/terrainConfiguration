@@ -113,7 +113,7 @@
 	},
 	"towers" : [
 		{
-			"name" : "sentinelTopTower3",
+			"name" : "sentinelTopTower1",
 			"team" : 1,
 			"front" : 0,
 			"order" : 0,
@@ -130,11 +130,11 @@
 			"sight" : 8
 		},
 		{
-			"name" : "sentinelMidTower3",
+			"name" : "sentinelMidTower1",
 			"team" : 1,
 			"front" : 1,
 			"order" : 0,
-			"position" : [26, 36],
+			"position" : [25, 26],
 			"model" : "Tower",
 			"bountyMoney" : 350,
 			"startingHP" : 1600,
@@ -147,11 +147,11 @@
 			"sight" : 8
 		},
 		{
-			"name" : "sentinelBotTower3",
+			"name" : "sentinelBotTower1",
 			"team" : 1,
 			"front" : 2,
 			"order" : 0,
-			"position" : [32, 9],
+			"position" : [31, 9],
 			"model" : "Tower",
 			"bountyMoney" : 350,
 			"startingHP" : 1600,
@@ -217,7 +217,7 @@
 		},
 		
 		{
-			"name" : "sentinelTopTower1",
+			"name" : "sentinelTopTower3",
 			"team" : 1,
 			"front" : 0,
 			"order" : 2,
@@ -234,7 +234,7 @@
 			"sight" : 8
 		},
 		{
-			"name" : "sentinelMidTower1",
+			"name" : "sentinelMidTower3",
 			"team" : 1,
 			"front" : 1,
 			"order" : 2,
@@ -251,7 +251,7 @@
 			"sight" : 8
 		},
 		{
-			"name" : "sentinelBotTower1",
+			"name" : "sentinelBotTower3",
 			"team" : 1,
 			"front" : 2,
 			"order" : 2,
@@ -269,7 +269,7 @@
 		},
 
 		{
-			"name" : "scourgeTopTower3",
+			"name" : "scourgeTopTower1",
 			"team" : 2,
 			"front" : 0,
 			"order" : 0,
@@ -286,7 +286,7 @@
 			"sight" : 8
 		},
 		{
-			"name" : "scourgeMidTower3",
+			"name" : "scourgeMidTower1",
 			"team" : 2,
 			"front" : 1,
 			"order" : 0,
@@ -303,7 +303,7 @@
 			"sight" : 8
 		},
 		{
-			"name" : "scourgeBotTower3",
+			"name" : "scourgeBotTower1",
 			"team" : 2,
 			"front" : 2,
 			"order" : 0,
@@ -373,7 +373,7 @@
 		},
 		
 		{
-			"name" : "scourgeTopTower1",
+			"name" : "scourgeTopTower3",
 			"team" : 2,
 			"front" : 0,
 			"order" : 2,
@@ -390,7 +390,7 @@
 			"sight" : 8
 		},
 		{
-			"name" : "scourgeMidTower1",
+			"name" : "scourgeMidTower3",
 			"team" : 2,
 			"front" : 1,
 			"order" : 2,
@@ -407,7 +407,7 @@
 			"sight" : 8
 		},
 		{
-			"name" : "scourgeBotTower1",
+			"name" : "scourgeBotTower3",
 			"team" : 2,
 			"front" : 2,
 			"order" : 2,
@@ -757,7 +757,7 @@
 							"initial" : 3,
 							"maximum" : 6,
 							"increaseRound" : 200,
-							"checkpoints" : ["sentinelMidTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints" : ["sentinelBotTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
 							"checkpoints-radius" : 10
 						},
 						{
@@ -768,7 +768,7 @@
 							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600,
-							"checkpoints" : ["sentinelMidTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints" : ["sentinelBotTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
 							"checkpoints-radius" : 10
 						},
 						{
@@ -779,7 +779,7 @@
 							"initial" : 1,
 							"maximum" : 2,
 							"increaseRound" : 600,
-							"checkpoints" : ["sentinelMidTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
+							"checkpoints" : ["sentinelBotTower1", "sentinelBotTower2", "sentinelBotTower3", "scourgeBotTower3", "scourgeBotTower2", "scourgeBotTower1", "scourgeGuardLeftTower", "scourgeGuardRightTower", "scourgeAncient"],
 							"checkpoints-radius" : 10
 						}
 					],

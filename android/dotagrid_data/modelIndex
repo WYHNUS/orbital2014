@@ -2,3 +2,9 @@ MyHeroModel dotagrid.obj
 Tree dotagridTreeSimplified.obj
 Fountain cube.obj
 Tower tower.obj
+MeleeCreep cube.obj
+RangedCreep cube.obj
+SiegeCreep cube.obj
+SuperMeleeCreep cube.obj
+SuperRangedCreep cube.obj
+SuperSiegeCreep cube.obj

@@ -78,6 +78,7 @@ public class GameLogicManager implements Closeable {
 	
 	@Override
 	public void close() {
+		System.out.println("GameLogicManager close");
 		// app will close, save states
 		for (GameState state : gameStates.values())
 			state.close();

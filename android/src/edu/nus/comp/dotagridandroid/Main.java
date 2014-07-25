@@ -15,12 +15,14 @@ public class Main extends Activity {
 	public static final String applicationDir = "/sdcard/dotagrid";
 	public static final String pathToDefaultPkg = "/sdcard/dotagrid/default.zip";
 	private GameLogicManager logicManager;
+	private boolean initialised = false;
 	public Main() {
 		super();
 		logicManager = new GameLogicManager(this);
 	}
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		System.out.println("Main onCreate");
 		// Activity is created here
 		// Proceed to MainSurfaceView for more details
 		super.onCreate(savedInstanceState);
@@ -55,10 +57,10 @@ public class Main extends Activity {
 	
 	@Override
 	protected void onDestroy() {
+		System.out.println("Main onDestroy");
 		super.onDestroy();
 		// save game state
 		logicManager.saveGame();
-		logicManager.close();
 	}
 	
 	@Override
@@ -81,14 +83,20 @@ public class Main extends Activity {
 	
 	@Override
 	public void onStart() {
+		System.out.println("Main onStart");
 		super.onStart();
 	}
 	
 	@Override
 	public void onResume() {
+		System.out.println("Main onResume");
 		super.onResume();
-		logicManager = new GameLogicManager(this);
-		logicManager.initiateSoundEngine();
+		if (!initialised) {
+			logicManager = new GameLogicManager(this);
+			logicManager.initiateSoundEngine();
+			initialised = true;
+		} else if (logicManager.getCurrentGameState() != null)
+			logicManager.getCurrentGameState().refreshResource();
 	}
 	
 	@Override
@@ -104,13 +112,15 @@ public class Main extends Activity {
 	
 	@Override
 	public void onPause() {
+		System.out.println("Main onPause");
 		super.onPause();
-		logicManager.close();
 	}
 	
 	@Override
 	public void onStop() {
+		System.out.println("Main onStop");
 		super.onStop();
+		logicManager.close();
 	}
 	
 	@Override

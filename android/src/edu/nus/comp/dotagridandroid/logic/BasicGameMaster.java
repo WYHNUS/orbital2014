@@ -14,6 +14,7 @@ public class BasicGameMaster extends GameMaster {
 	private Map<Integer, Map<String, Object>> teamConfig;
 	private Map<Integer, Map<Integer, Set<String>>> teamStrength;
 	private Map<Integer, Map<Integer, Map<String, Integer>>> teamCreepLevel;
+	private Map<Integer, BitSet> teamSharedSight;
 	private Map<String, Object> stateData;
 	private Map<String, Object> charsConfig;
 	private Map<Integer, Map<String, Integer>> teamEnemyAttackPrioritised;
@@ -25,6 +26,7 @@ public class BasicGameMaster extends GameMaster {
 
 	@Override
 	public void initialise() {
+		teamSharedSight = new HashMap<>();
 		teamConfig = new HashMap<>();
 		stateData = new ConcurrentHashMap<>();
 		// TODO load character
@@ -243,6 +245,7 @@ public class BasicGameMaster extends GameMaster {
 		
 		for (Map.Entry<String, GameCharacter> characterObject : state.getCharacters().entrySet())
 			characterObject.getValue().initialise();
+		refreshSightMaps();
 	}
 
 	@Override
@@ -305,18 +308,15 @@ public class BasicGameMaster extends GameMaster {
 				case "Automation": {
 					if (!character.equals(state.getCurrentCharacterName()))
 						return;
-					System.out.println("Automation " + character);
+//					System.out.println("Automation " + character);
 					switch (state.getCharacters().get(character).getObjectType()) {
 					case GameObject.GAMEOBJECT_TYPE_HERO:
-						System.out.println("Hero automation not implemented");
 						autoHero(character);
 						break;
 					case GameObject.GAMEOBJECT_TYPE_LINECREEP:
-						System.out.println("Linecreep automation not implemented");
 						autoLineCreep(character);
 						break;
 					case GameObject.GAMEOBJECT_TYPE_TOWER:
-						System.out.println("Tower automation not implemented");
 						autoTower(character);
 						break;
 					}
@@ -329,17 +329,17 @@ public class BasicGameMaster extends GameMaster {
 					// apply game rule
 					attack(character, state.getCharacterAtPosition(state.getChosenGrid()));
 					// notify
-					updates.put("Characters", Collections.singleton("ALL"));
-					state.notifyUpdate(Collections.unmodifiableMap(updates));
+//					updates.put("Characters", Collections.singleton("ALL"));
+//					state.notifyUpdate(Collections.unmodifiableMap(updates));
 					return;
 				case "Move": {
 					if (!character.equals(state.getCurrentCharacterName()))
 						return;
 					System.out.println("Game action is move");
 					move (character, state.getChosenGrid());
-					List<String> characters = Collections.singletonList(character);
-					updates = Collections.singletonMap("Characters", (Object) characters);
-					state.notifyUpdate(updates);
+//					List<String> characters = Collections.singletonList(character);
+//					updates = Collections.singletonMap("Characters", (Object) characters);
+//					state.notifyUpdate(updates);
 					return;
 				}
 				case "BuyItem": {
@@ -355,8 +355,23 @@ public class BasicGameMaster extends GameMaster {
 				}
 				case "BeginTurn":
 					break;
-				case "EndTurn":
+				case "EndTurn": {
+					final String playerName = state.getPlayerCharacterName();
+					final int playerTeamNumber = (Integer) state.getCharacterProperty(playerName, "teamNumber");
+					final String ancientName = (String) ((Map) teamConfig.get(playerTeamNumber).get("ancient")).get("name");
+					if (ancientName != null)
+						if (!state.getCharacters().get(ancientName).isAlive()) {
+							state.notifyUpdate(Collections.singletonMap("GameResult", (Object) "Lost"));
+							return;
+						}
+					for (Map.Entry<String, GameCharacter> otherAncientEntry : state.getCharacters().entrySet())
+						if (otherAncientEntry.getValue().getTeamNumber() != playerTeamNumber
+							&& otherAncientEntry.getValue().getObjectType() == GameObject.GAMEOBJECT_TYPE_ANCIENT
+							&& otherAncientEntry.getValue().isAlive())
+							return;
+					state.notifyUpdate(Collections.singletonMap("GameResult", (Object) "Win"));
 					break;
+				}
 				case "BeginRound": {
 					final int roundCount = state.getRoundCount();
 					for (Map.Entry<Integer, Map<String, Integer>> attackPriority : teamEnemyAttackPrioritised.entrySet())
@@ -561,13 +576,19 @@ public class BasicGameMaster extends GameMaster {
 			}
 			case "Attack": {
 				final int[] targetGrid, attackerGrid = state.getCharacterPosition(character);
+				final String targetCharacter;
 				if (options.containsKey("TargetGrid")) {
 					final List<Number> pos = (List<Number>) options.get("TargetGrid");
 					targetGrid = new int[] {pos.get(0).intValue(), pos.get(1).intValue()};
-				} else
+					targetCharacter = state.getCharacterAtPosition(targetGrid);
+				} else if (options.containsKey("TargetCharacter")) {
+					targetCharacter = (String) options.get("TargetCharacter");
+					targetGrid = state.getCharacterPosition(targetCharacter);
+				} else {
 					targetGrid = state.getChosenGrid();
-				final String targetCharacter = state.getCharacterAtPosition(targetGrid);
-				if (targetCharacter == null || state.getCharacterType(targetCharacter) == GameObject.GAMEOBJECT_TYPE_TREE)
+					targetCharacter = state.getCharacterAtPosition(targetGrid);
+				}
+				if (targetCharacter == null || targetGrid == null || state.getCharacterType(targetCharacter) == GameObject.GAMEOBJECT_TYPE_TREE)
 					return false;
 				else if (!character.equals(state.getCurrentCharacterName()))
 					return false;
@@ -678,7 +699,7 @@ public class BasicGameMaster extends GameMaster {
 	}
 	
 	private void attack (String character, String targetCharacter) {
-		if ("OutOfBound".equals(targetCharacter) || targetCharacter == null)
+		if ("OutOfBound".equals(targetCharacter) || state.getCharacterType(targetCharacter) <= 0)
 			return;
 		
 		// TODO structure protection
@@ -727,8 +748,9 @@ public class BasicGameMaster extends GameMaster {
 		state.setCharacterProperty(targetCharacter, "currentHP",
 				(Integer) state.getCharacterProperty(targetCharacter, "currentHP") - damage);
 		
+//		System.out.println("Attacked " + targetCharacter + ", damage=" + damage + ", hp=" + state.getCharacterProperty(targetCharacter, "currentHP"));
 		characterDamageCheck (character, targetCharacter);
-		if (!(Boolean) state.getCharacterProperty(targetCharacter, "alive")) {
+		if (state.getCharacterType(targetCharacter) > 0 && !(Boolean) state.getCharacterProperty(targetCharacter, "alive")) {
 			// TODO check game ended
 			//
 			switch (state.getCharacterType(character)) {
@@ -745,6 +767,7 @@ public class BasicGameMaster extends GameMaster {
 			// TODO reset character position
 			state.setCharacterPosition(targetCharacter, null);
 		}
+		state.notifyUpdate(Collections.singletonMap("Characters", (Object)Collections.singleton("ALL")));
 	}
 	
 	private void move (final String character, final int... target) {
@@ -758,10 +781,16 @@ public class BasicGameMaster extends GameMaster {
 						(Integer) state.getCharacterProperty(character, "currentActionPoint") - map[target[0] + target[1] * state.getGridWidth()]
 						);
 			}
+			state.notifyUpdate(Collections.singletonMap("Characters", (Object) Collections.singleton(character)));
 		}
 	}
 	
 	private void characterDamageCheck (String characterAttacker, String targetCharacter) {
+		if (targetCharacter == null)
+			return;
+		GameCharacter target = state.getCharacters().get(targetCharacter);
+		if (target == null)
+			return;
 		switch (state.getCharacterType(targetCharacter)) {
 		case GameObject.GAMEOBJECT_TYPE_HERO:
 			teamEnemyAttackPrioritised.get(state.getCharacterProperty(targetCharacter, "teamNumber")).put(characterAttacker, priorityDecreaseRounds);
@@ -773,6 +802,20 @@ public class BasicGameMaster extends GameMaster {
 //			if (!state.getCharacters().get(targetCharacter).isAlive())
 //				state.setCharacterPosition(targetCharacter, null);
 		}
+//		if (!target.isAlive())
+//			refreshSightMaps();
+	}
+	
+	private void refreshSightMaps() {
+		Set<Integer> teams = new HashSet<>(teamConfig.keySet());
+		teams.remove(0);
+		for (int teamNumber : teamConfig.keySet())
+			if (teamSharedSight.containsKey(teamNumber))
+				teamSharedSight.get(teamNumber).clear();
+			else
+				teamSharedSight.put(teamNumber, new BitSet());
+		for (Map.Entry<String, GameCharacter> entry : state.getCharacters().entrySet())
+			teamSharedSight.get(entry.getValue().getTeamNumber()).or(getSight(entry.getKey()));
 	}
 
 	// move to checkpoint
@@ -845,9 +888,16 @@ public class BasicGameMaster extends GameMaster {
 						}
 					}
 				}
-			for (Pair<Integer, Integer, String> targetCharacter : attackTargetPriorityQueue)
-				while ((Integer) state.getCharacterProperty(character, "currentActionPoint") > 0)
+			for (Pair<Integer, Integer, String> targetCharacter : attackTargetPriorityQueue) {
+				Map<String, Object> attackOption = new HashMap<>();
+				attackOption.put("Action", "Attack");
+				attackOption.put("TargetCharacter", targetCharacter.data);
+				while ((Integer) state.getCharacterProperty(character, "currentActionPoint") > 0
+						&& requestActionPossible(character, "GameAction", attackOption)
+						&& state.getCharacterType(targetCharacter.data) > 0
+						&& (Boolean) state.getCharacterProperty(targetCharacter.data, "alive"))
 					attack(character, targetCharacter.data);
+			}
 			if ((Integer) state.getCharacterProperty(character, "currentActionPoint") > 0) {
 				// move to nearest possible target
 				final double[] apMap = getLowestMoveAPConsumptionMap(pos, character);
@@ -907,143 +957,79 @@ public class BasicGameMaster extends GameMaster {
 			}
 		}
 	}
-	private boolean[] getFriendlySight(List<String> names) {
+	
+	private SegmentNode<Double> sightCalc(int width, int height, int x, int y, int sight, int[] pos, int radius, double[] source, SegmentNode<Double> shadow, BitSet map) {
+		if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
+			if (shadow == null)
+				map.set(x + y * width);
+			else if (shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
+					(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null)
+				map.set(x + y * width);
+			if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
+				// obstacle - will add to shadowMap
+				final List<Double> cornerAngles = Arrays.asList(
+						getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
+						getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
+						getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
+						getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
+				);
+				final double maxAngle = Collections.max(cornerAngles), minAngle = Collections.min(cornerAngles);
+				if (shadow == null)
+					shadow = (maxAngle - minAngle > Math.PI) ? 
+							new SegmentNode<Double>(0., minAngle).insert(new SegmentNode<Double>(maxAngle, 2 * Math.PI)) :
+							new SegmentNode<Double>(minAngle, maxAngle);
+				else {
+					boolean completeShadow = true;
+					for (double angle : cornerAngles)
+						if (shadow.find(angle) == null) {
+							completeShadow = false;
+							break;
+						}
+					if (completeShadow)
+						shadow = (maxAngle - minAngle > Math.PI) ? 
+								new SegmentNode<Double>(0., minAngle).insert(new SegmentNode<Double>(maxAngle, 2 * Math.PI)) :
+								new SegmentNode<Double>(minAngle, maxAngle);
+				}
+			}
+		}
+		return shadow;
+	}
+	
+	private BitSet getSight(String name) {
 		final int width = state.getGridWidth(), height = state.getGridHeight();
-		final boolean[] map = new boolean[width * height];
-		for (String name : names) {
-			SegmentNode<Double> shadow = null;
-			final int[] pos = state.getCharacterPosition(name);
-			if (pos != null) {
-				final int sight = (Integer) state.getCharacterProperty(name, "sight");
-				final double[] source = {pos[0] + .5, pos[1] + .5};
-				map[pos[0] + pos[1] * width] = true;
-				for (int radius = 1; radius <= sight; radius++) {
-					if (pos[1] >= radius) {
-						final int y = pos[1] - radius;
-						for (int x = Math.max(0, pos[0] - radius); x < Math.min(width, pos[0] + radius); x++)
-							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
-								map[x + y * width] |= shadow == null ? true :
-									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
-											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
-								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
-									// obstacle - will add to shadowMap
-									final List<Double> cornerAngles = Arrays.asList(
-											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
-											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
-									);
-									if (shadow == null)
-										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
-									else {
-										boolean completeShadow = true;
-										for (double angle : cornerAngles)
-											if (shadow.find(angle) == null) {
-												completeShadow = false;
-												break;
-											}
-										if (completeShadow)
-											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
-									}
-								}
-							}
-					}
-					
-					if (pos[0] + radius < width) {
-						final int x = pos[0] + radius;
-						for (int y = Math.max(0, pos[1] - radius); y < Math.min(height, pos[1] + radius); y++)
-							// same routine
-							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
-								map[x + y * width] |= shadow == null ? true :
-									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
-											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
-								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
-									// obstacle - will add to shadowMap
-									final List<Double> cornerAngles = Arrays.asList(
-											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
-											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
-									);
-									if (shadow == null)
-										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
-									else {
-										boolean completeShadow = true;
-										for (double angle : cornerAngles)
-											if (shadow.find(angle) == null) {
-												completeShadow = false;
-												break;
-											}
-										if (completeShadow)
-											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
-									}
-								}
-							}
-					}
-					
-					if (pos[1] + radius < height) {
-						final int y = pos[1] + radius;
-						for (int x = Math.min(width - 1, pos[0] + radius); x > Math.max(0, pos[0] - radius); x--)
-							// same routine
-							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
-								map[x + y * width] |= shadow == null ? true :
-									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
-											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
-								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
-									// obstacle - will add to shadowMap
-									final List<Double> cornerAngles = Arrays.asList(
-											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
-											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
-									);
-									if (shadow == null)
-										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
-									else {
-										boolean completeShadow = true;
-										for (double angle : cornerAngles)
-											if (shadow.find(angle) == null) {
-												completeShadow = false;
-												break;
-											}
-										if (completeShadow)
-											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
-									}
-								}
-							}
-					}
-					
-					if (pos[0] >= radius) {
-						final int x = pos[0] - radius;
-						for (int y = Math.min(height - 1, pos[1] + radius); y > Math.max(0, pos[1] - radius); y--)
-							// same routine
-							if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
-								map[x + y * width] |= shadow == null ? true :
-									shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
-											(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null;
-								if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
-									// obstacle - will add to shadowMap
-									final List<Double> cornerAngles = Arrays.asList(
-											getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
-											getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
-											getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
-									);
-									if (shadow == null)
-										shadow = new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles));
-									else {
-										boolean completeShadow = true;
-										for (double angle : cornerAngles)
-											if (shadow.find(angle) == null) {
-												completeShadow = false;
-												break;
-											}
-										if (completeShadow)
-											shadow = shadow.insert(new SegmentNode<Double>(Collections.min(cornerAngles), Collections.max(cornerAngles)));
-									}
-								}
-							}
-					}
+		final BitSet map = new BitSet();
+		SegmentNode<Double> shadow = null;
+		final int[] pos = state.getCharacterPosition(name);
+		if (pos != null) {
+			final int sight = (Integer) state.getCharacterProperty(name, "sight");
+			final double[] source = {pos[0] + .5, pos[1] + .5};
+			map.set(pos[0] + pos[1] * width);
+			for (int radius = 1; radius <= sight; radius++) {
+				if (pos[1] >= radius) {
+					final int y = pos[1] - radius;
+					for (int x = Math.max(0, pos[0] - radius); x < Math.min(width, pos[0] + radius); x++)
+						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
+				}
+				
+				if (pos[0] + radius < width) {
+					final int x = pos[0] + radius;
+					for (int y = Math.max(0, pos[1] - radius); y < Math.min(height, pos[1] + radius); y++)
+						// same routine
+						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
+				}
+				
+				if (pos[1] + radius < height) {
+					final int y = pos[1] + radius;
+					for (int x = Math.min(width - 1, pos[0] + radius); x > Math.max(0, pos[0] - radius); x--)
+						// same routine
+						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
+				}
+				
+				if (pos[0] >= radius) {
+					final int x = pos[0] - radius;
+					for (int y = Math.min(height - 1, pos[1] + radius); y > Math.max(0, pos[1] - radius); y--)
+						// same routine
+						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
 				}
 			}
 		}
@@ -1063,7 +1049,6 @@ public class BasicGameMaster extends GameMaster {
 		final Queue<String> attackQueue = new LinkedList<>();
 		final Tower tower = (Tower) state.getCharacters().get(character);
 		final int[] pos = state.getCharacterPosition(character);
-		System.out.println("Tower automation by " + character);
 		for (int r = 1; r <= tower.getTotalPhysicalAttackArea(); r++)
 			for (int i = Math.max(0, pos[0] - r), end = Math.min(state.getGridWidth() - 1, pos[0] + r); i <= end; i++) {
 				if (pos[1] + Math.abs(i - pos[0]) - r >= 0) {
@@ -1082,7 +1067,7 @@ public class BasicGameMaster extends GameMaster {
 		while (tower.getCurrentActionPoint() > 0 && !attackQueue.isEmpty()) {
 			final String target = attackQueue.poll();
 			final GameCharacter targetCharacter = state.getCharacters().get(target);
-			while (targetCharacter.isAlive() && tower.getCurrentActionPoint() > 0)
+			while (targetCharacter != null && targetCharacter.isAlive() && tower.getCurrentActionPoint() > 0)
 				attack(character, target);
 		}
 	}

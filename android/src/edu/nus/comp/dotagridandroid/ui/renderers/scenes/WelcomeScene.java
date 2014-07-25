@@ -127,7 +127,7 @@ public class WelcomeScene implements SceneRenderer {
 	}
 
 	@Override
-	public void onTransferToView(SceneConfiguration configuration) {
+	public void onTransferToView(Map<String, Object> configuration) {
 	}
 
 	@Override

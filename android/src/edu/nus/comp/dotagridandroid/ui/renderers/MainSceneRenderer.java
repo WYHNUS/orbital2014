@@ -87,7 +87,7 @@ public class MainSceneRenderer implements Renderer {
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {}	// should be passed to SceneRenderers, not here
 	
-	public void switchScene(String name, SceneConfiguration configuration) {
+	public void switchScene(String name, Map<String, Object> configuration) {
 		SceneRenderer scene = null;
 		switch (name) {
 		case "Welcome":
@@ -98,6 +98,7 @@ public class MainSceneRenderer implements Renderer {
 			scene = new SelectGameSaveScene();
 			break;
 		case "Statistics":
+			scene = new GameStatisticsScene();
 			break;
 		case "About":
 			break;

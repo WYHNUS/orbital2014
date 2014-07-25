@@ -32,6 +32,7 @@ public class GridRendererGraphicsImpl implements Closeable {
 	
 	private native static void setLight(long ptr, String name, float[] lightSrc, boolean lightOn, int[] pos, int range);
 	private native static void setLightOn (long ptr, String name, boolean lightOn);
+	private native static void clearDrawable(long ptr);
 	private native static void setDrawable(long ptr, String name, int textureHandler, int modelHandler, int modelSize, float[] modelMatrix, int[] pos);
 	private native static void setDrawableVisible(long ptr, String name, boolean visible);
 	
@@ -94,6 +95,10 @@ public class GridRendererGraphicsImpl implements Closeable {
 				terrainBuffer,
 				terrainNormalMap,
 				lightProjection);
+	}
+	
+	public void clearDrawable() {
+		clearDrawable(ptr);
 	}
 	
 	public void setDrawable(String name, int textureHandler, int modelHandler, int modelSize, float[] modelMatrix, int[] pos) {

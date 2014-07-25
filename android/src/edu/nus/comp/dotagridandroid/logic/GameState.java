@@ -54,10 +54,12 @@ public class GameState implements Closeable {
 		return server;
 	}
 	public void initialise(String playerCharacter) {
-		this.playerCharacter = playerCharacter;
-		if (initialised || server == null)
+		if (initialised) {
+			refreshResource();
 			return;
-		// TODO change this part
+		}
+		this.playerCharacter = playerCharacter;
+		System.out.println("GameState initialise");
 		roundCount = 1;
 		chars = new ConcurrentHashMap<>();
 		charsTurned = Collections.synchronizedSet(new HashSet<String>());
@@ -128,7 +130,11 @@ public class GameState implements Closeable {
 		chosenGrid = objPositions.get(playerCharacter).clone();
 		initialised = true;
 	}
-	
+	public void refreshResource() {
+		if (initialised)
+			// necessary for OpenGL reload
+			resMan = AppNativeAPI.createResourceManager(packagePath);
+	}
 	@Override
 	public void close() {
 		if (!initialised)
@@ -228,12 +234,12 @@ public class GameState implements Closeable {
 		try {
 			return character.getClass().getMethod(methodName, new Class[]{}).invoke(character);
 		} catch (Exception e) {
-			System.out.println("Property getter of '" + name + "' is not available. Trying boolean.");
+//			System.out.println("Property getter of '" + name + "' is not available. Trying boolean.");
 		}
 		try {
 			return character.getClass().getMethod(booleanMethodName, new Class[]{}).invoke(character);
 		} catch (Exception e) {
-			System.out.println("Boolean property getter of '" + name + "' is not available. Use GameObject data");
+//			System.out.println("Boolean property getter of '" + name + "' is not available. Use GameObject data");
 		}
 		// extended
 		return character.getExtendedProperty(name);
@@ -402,8 +408,8 @@ public class GameState implements Closeable {
 		if (!setterSuccess) {
 			// extended
 			character.setExtendedProperty(name, value);
-			if (!resMan.isExtensionEnabled())
-				System.out.println("Property '" + name + "' is unknown. Looks like you are writing a custom property. Are you sure?");
+//			if (!resMan.isExtensionEnabled())
+//				System.out.println("Property '" + name + "' is unknown. Looks like you are writing a custom property. Are you sure?");
 		}
 	}
 	
@@ -450,7 +456,9 @@ public class GameState implements Closeable {
 	public GameCharacter removeCharacter(String name) {
 		roundOrder.remove(name);
 		setCharacterPosition(name, null);
-		return chars.remove(name);
+		GameCharacter character = chars.remove(name);
+		notifyUpdate(Collections.singletonMap("APPLICATION", (Object) "CLEAR-DRAWABLE"));
+		return character;
 	}
 	
 	public int getCharacterType (String name) {

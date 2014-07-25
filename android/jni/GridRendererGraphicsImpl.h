@@ -11,12 +11,14 @@
 #include <map>
 #include <string>
 #include <GLES2/gl2.h>
+#include <mutex>
 
 enum {
 	SHADOW_MAP_TEXTURE_DIMENSION = 1024
 };
 
 class GridRendererGraphicsImpl {
+	std::mutex mutex;
 	typedef std::vector<float> Matrix4x4;
 
 	int rows, columns, resolution;
@@ -53,6 +55,7 @@ public:
 			GLuint terrainBuffer,
 			GLuint terrainNormalMap,
 			float *lightProjection);
+	void clearDrawable();
 	void setDrawable(const std::string &name, GLuint textureHandler, GLuint modelHandler, GLuint modelSize, const Matrix4x4 &modelMatrix, const std::vector<int> &pos);
 	void setDrawableVisible(const std::string &name, bool visible);
 

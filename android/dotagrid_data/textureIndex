@@ -3,3 +3,9 @@ MyHeroModel dotagridSampleTexture.png
 Tree dotagridtreeTexture.png
 Tower Tower.png
 Fountain fountain.png
+MeleeCreep fountain.png
+RangedCreep fountain.png
+SiegeCreep fountain.png
+SuperMeleeCreep fountain.png
+SuperRangedCreep fountain.png
+SuperSiegeCreep fountain.png

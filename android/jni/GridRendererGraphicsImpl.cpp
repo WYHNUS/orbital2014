@@ -106,18 +106,23 @@ void GridRendererGraphicsImpl::initialise(
 }
 
 void GridRendererGraphicsImpl::setModelMatrix (const float * mat) {
+	std::lock_guard<std::mutex> guard(mutex);
 	model.insert(model.begin(), mat, mat + 16);
 }
 
 void GridRendererGraphicsImpl::setViewMatrix (const float * mat) {
+	std::lock_guard<std::mutex> guard(mutex);
 	view.insert(view.begin(), mat, mat + 16);
 }
 
 void GridRendererGraphicsImpl::setProjectionMatrix (const float * mat) {
+	std::lock_guard<std::mutex> guard(mutex);
 	projection.insert(projection.begin(), mat, mat + 16);
 }
 
 void GridRendererGraphicsImpl::configureShadow(const std::string &name) {
+	std::lock_guard<std::mutex> guard(mutex);
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "ConfigureShadow Begin");
 	if (shadowMaps.find(name) == shadowMaps.end()) {
 		// generate texture
 		GLuint v[1];
@@ -132,6 +137,8 @@ void GridRendererGraphicsImpl::configureShadow(const std::string &name) {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+	if (lightSrc.find(name) == lightSrc.end() || lightGridPosition.find(name) == lightGridPosition.end())
+		return;
 	const std::vector<float> &lightConfig = lightSrc[name];
 	const Matrix4x4 &lightView = FlatTranslationMatrix4x4(-lightConfig[0], -lightConfig[1], -lightConfig[2]);
 	lightViews[name] = lightView;
@@ -160,6 +167,9 @@ void GridRendererGraphicsImpl::configureShadow(const std::string &name) {
 	// drawables
 	for (auto entry : drawableModelHandlers)
 		if (drawableVisible[entry.first]
+		        && drawableGridPositions.find(entry.first) != drawableGridPositions.end()
+		        && drawableModels.find(entry.first) != drawableModels.end()
+		        && drawableModelSizes.find(entry.first) != drawableModelSizes.end()
 				&& pow(lightGridPosition[name][0] - drawableGridPositions[entry.first][0], 2)
 						+ pow(lightGridPosition[name][1] - drawableGridPositions[entry.first][1], 2) <= pow(lightGridRange[name], 2)) {
 			glUniformMatrix4fv(mModel, 1, false, &FlatMatrix4x4Multiplication(model, drawableModels[entry.first])[0]);
@@ -170,44 +180,59 @@ void GridRendererGraphicsImpl::configureShadow(const std::string &name) {
 			glDisableVertexAttribArray(vPosition);
 		}
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "ConfigureShadow Success");
 }
 
 void GridRendererGraphicsImpl::setDrawable(const std::string &name, GLuint textureHandler, GLuint modelHandler, GLuint modelSize, const Matrix4x4 &modelMatrix, const std::vector<int> &pos) {
+	mutex.lock();
 	drawableModelHandlers[name] = modelHandler;
 	drawableModelSizes[name] = modelSize;
 	drawableModels[name] = modelMatrix;
 	drawableGridPositions[name] = pos;
 	drawableTextures[name] = textureHandler;
+	mutex.unlock();
 }
 
 void GridRendererGraphicsImpl::setDrawableVisible(const std::string &name, bool visible) {
+	mutex.lock();
 	drawableVisible[name] = visible;
+	mutex.unlock();
 }
 
 void GridRendererGraphicsImpl::setLight(const std::string &name, const std::vector<float> &lightSrc, bool lightOn, const std::vector<int> &pos, int range) {
+	mutex.lock();
 	this->lightSrc[name] = lightSrc;
 	this->lightOn[name] = lightOn;
 	this->lightGridPosition[name] = pos;
 	this->lightGridRange[name] = range;
+	mutex.unlock();
 }
 
 void GridRendererGraphicsImpl::setLightOn(const std::string &name, bool lightOn) {
+	mutex.lock();
 	this->lightOn[name] = lightOn;
+	mutex.unlock();
 }
 
 void GridRendererGraphicsImpl::setSelectGrid(bool hasSelectedGrid, const std::vector<int> &pos) {
+	mutex.lock();
 	hasSelection = hasSelectedGrid;
 	if (hasSelectedGrid)
 		orgGridIndex = pos;
+	mutex.unlock();
 }
 
 void GridRendererGraphicsImpl::setHighlightedGrid(bool hasHighlightedGrid, const std::vector<std::vector<int>> &pos) {
+	mutex.lock();
 	hasHighlights = hasHighlightedGrid;
 	if (hasHighlightedGrid)
 		highlightedGrids = pos;
+	mutex.unlock();
 }
 
 void GridRendererGraphicsImpl::draw() {
+	std::lock_guard<std::mutex> guard(mutex);
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "Draw begin");
 	glGetError();
 	const Matrix4x4 &matMVP = FlatMatrix4x4Multiplication(projection, view, model);
 	std::map<std::string, bool> lightOnScreen;
@@ -265,9 +290,10 @@ void GridRendererGraphicsImpl::draw() {
 	glEnableVertexAttribArray(textureCoord);
 	glEnableVertexAttribArray(normalCoord);
 	for (const auto &entry : lightSrc)
-		if (lightOn[entry.first] && lightOnScreen[entry.first]) {
+		if (lightOn[entry.first] && lightOnScreen[entry.first] && lightViews.find(entry.first) != lightViews.end()) {
 			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_2D, shadowMaps[entry.first]);
+			__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "%s", entry.first.c_str());
 			const std::vector<float> &config = entry.second;
 			glUniformMatrix4fv(mLight, 1, false, &FlatMatrix4x4Multiplication(lightProjection, lightViews[entry.first])[0]);
 			glUniform3f(cameraPosition, lightObserver[0] + config[0], lightObserver[1] + config[1], lightObserver[2] + config[2]);
@@ -282,6 +308,7 @@ void GridRendererGraphicsImpl::draw() {
 				firstTime = false;
 			}
 		}
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "2");
 	glDisableVertexAttribArray(vPosition);
 	glDisableVertexAttribArray(textureCoord);
 	glDisableVertexAttribArray(normalCoord);
@@ -306,7 +333,9 @@ void GridRendererGraphicsImpl::draw() {
 	glUniformMatrix4fv(mView, 1, false, &view[0]);
 	glUniformMatrix4fv(mProjection, 1, false, &projection[0]);
 	for (const auto &entry : drawableModelHandlers)
-		if (drawableVisible[entry.first]) {
+		if (drawableVisible[entry.first]
+			&& drawableModels.find(entry.first) != drawableModels.end()
+			&& drawableGridPositions.find(entry.first) != drawableGridPositions.end()) {
 			const Matrix4x4 &centrePoint = FlatMatrix4x4Vector4Multiplication(
 					matMVP,
 					std::vector<float>({
@@ -334,6 +363,9 @@ void GridRendererGraphicsImpl::draw() {
 			glUniform1i(shadowLocation, 1);
 			for (const auto &lightEntry : lightSrc)
 				if (lightOn[lightEntry.first] && lightOnScreen[lightEntry.first]
+				   && lightGridPosition.find(lightEntry.first) != lightGridPosition.end()
+				   && lightGridRange.find(lightEntry.first) != lightGridRange.end()
+				   && lightViews.find(lightEntry.first) != lightViews.end()
 				   && pow(lightGridPosition[lightEntry.first][0] - drawableGridPositions[entry.first][0], 2)
 				   + pow(lightGridPosition[lightEntry.first][1] - drawableGridPositions[entry.first][1], 2) <= pow(lightGridRange[lightEntry.first], 2)) {
 					glActiveTexture(GL_TEXTURE1);
@@ -356,6 +388,7 @@ void GridRendererGraphicsImpl::draw() {
 			glDisableVertexAttribArray(vNormal);
 			glDisableVertexAttribArray(textureCoord);
 		}
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "3");
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// grid program
@@ -413,6 +446,25 @@ void GridRendererGraphicsImpl::draw() {
 		}
 	}
 	glDisableVertexAttribArray(vPosition);
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "Draw success");
+}
+
+
+void GridRendererGraphicsImpl::clearDrawable() {
+	std::lock_guard<std::mutex> guard(mutex);
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "Clear begin");
+	drawableGridPositions.clear();
+	drawableModelHandlers.clear();
+	drawableModelSizes.clear();
+	drawableTextures.clear();
+	drawableVisible.clear();
+	lightGridPosition.clear();
+	lightGridRange.clear();
+	lightObserver.clear();
+	lightOn.clear();
+	lightSrc.clear();
+	lightViews.clear();
+	__android_log_print(ANDROID_LOG_DEBUG, "Graphics", "Clear success");
 }
 
 void GridRendererGraphicsImpl::close() {
