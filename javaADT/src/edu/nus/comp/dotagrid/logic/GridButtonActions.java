@@ -64,7 +64,7 @@ public class GridButtonActions {
 
 			if (isMoveSuc) {
 				// reselect position which the character has been moved to if the character has moved successfully
-				GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+				GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoordinatePos(), GridFrame.getSelectedYCoordinatePos());
 			} else {
 				// reselect the original position
 				System.out.println("move unseccessful, reset to character's original position");
@@ -159,7 +159,7 @@ public class GridButtonActions {
 			GameButtonActions.readyToAct = false;
 			
 			// select position which the spell has casted on
-			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoordinatePos(), GridFrame.getSelectedYCoordinatePos());
 		}
 		
 		// check to execute use item action
@@ -180,7 +180,7 @@ public class GridButtonActions {
 			GameButtonActions.readyToAct = false;
 			
 			// select position which the spell has casted on
-			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoordinatePos(), GridFrame.getSelectedYCoordinatePos());
 		}
 	}
 	
@@ -303,9 +303,9 @@ public class GridButtonActions {
 		GameFrame.allCharacterInfoGameButtons.get(7).setString("Attack : " + hero.getBasicPhysicalAttack() 
 				+ " + " + (hero.getTotalPhysicalAttack() - hero.getBasicPhysicalAttack()));
 		
-		int addDefence = ((int)(hero.getTotalPhysicalDefence() - hero.getStartingPhysicalDefence() - hero.getBasicAgility() * Hero.AGILITY_ADD_PHYSICAL_DEFENCE_RATIO) * 100);
+		int addDefence = ((int)((hero.getTotalPhysicalDefence() - hero.getStartingPhysicalDefence() - hero.getBasicAgility() * Hero.AGILITY_ADD_PHYSICAL_DEFENCE_RATIO) * 100));
 		GameFrame.allCharacterInfoGameButtons.get(8).setString("Defence : " + String.format("%.2f", hero.getStartingPhysicalDefence())
-				+ " + " + String.format("%.2f", addDefence/100.0));
+				+ " + " + String.format("%.2f", 1.0 * addDefence / 100.0));
 		
 		GameFrame.allCharacterInfoGameButtons.get(9).setString("Level : " + hero.getLevel());
 		GameFrame.allCharacterInfoGameButtons.get(10).setString("Exp : " + hero.getExperience());

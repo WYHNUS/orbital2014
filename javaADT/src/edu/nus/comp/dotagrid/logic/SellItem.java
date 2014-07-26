@@ -87,7 +87,7 @@ public class SellItem{
 			
 			// reselect the grid
 			ItemShop.shouldUpdateItemInFo = true;
-			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+			GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoordinatePos(), GridFrame.getSelectedYCoordinatePos());
 			
 			buttons[buttonIdex].setIcon(null);
 			buttons[buttonIdex].setText(null);

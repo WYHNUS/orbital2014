@@ -115,14 +115,16 @@ public class GameFrame{
 	
 	
 	public void updateGameFrame(Graphics g){
+		System.out.println("Update Game Frame!");
 		// draw game frame
-		displayAllButtons(g);
 		drawAllReadyImage(g);
+		displayAllButtons(g);
 		
 	}
 
 	
 	private void displayAllButtons(Graphics g) {
+		System.out.println("Display all buttons!");
 		g.setColor(defaultColor);
 		
 		//display allGameButtons
@@ -138,7 +140,7 @@ public class GameFrame{
 	
 	private void drawAllReadyImage(Graphics g) {
 		//display all ready images
-		System.out.println("display all ready game button images!");
+		System.out.println("Display all ready game button images!");
 		for (int i=0; i<allGameButtons.size(); i++) {
 			// check if image is ready to draw
 			if (allGameButtons.get(i).getIsReadyToDrawImage()){

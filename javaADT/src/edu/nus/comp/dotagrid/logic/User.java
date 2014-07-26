@@ -15,6 +15,8 @@ public class User {
 	public Player player;
 	
 	public User() {
+		System.out.println("initialize user!");
+		
 		// randomly select a hero from hero database for player to control
 		Random random = new Random();
 		Hero character = HeroDatabase.heroDatabase[random.nextInt(HeroDatabase.totalHeroNumber)];
@@ -32,6 +34,7 @@ public class User {
 	}
 	
 	public void createPlayer(){
+		System.out.println("Create a new player!");
 		this.player = new Player(playerStartingXPos, playerStartingYPos);
 	}
 

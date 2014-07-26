@@ -5,7 +5,7 @@ public class Tree extends Character{
 	public static final int TREE_REVIVE_TIME = 100;
 
 	public Tree() {
-		super("Tree", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		super("Tree", 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
 		// Tree has all zero attribute
 		this.setAttackable(false);
 		this.setCharacterImage("WorldMap/terrian", "Tree");

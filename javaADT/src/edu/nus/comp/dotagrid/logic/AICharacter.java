@@ -17,6 +17,7 @@ public class AICharacter {
 	private int attackRange;
 	private int movement;
 	private int sight;
+	private boolean[][] AISightMap;
 	
 	public static final int LINE_CREEP_TARGET_RANGE = 3;
 	public static final int NEUTRAL_CREEP_ATTACK_RANGE = 4;
@@ -25,7 +26,7 @@ public class AICharacter {
 	
 	LinkedList<int[]> inSightEnemyPos = new LinkedList<int[]>();
 	private int[] nearestEnemyPos = new int[2];
-	private int enemyCounter;
+	private int enemyCounter = 0;
 	
 	
 	public AICharacter(int XPos, int YPos) {
@@ -35,6 +36,7 @@ public class AICharacter {
 		attackRange = GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getTotalPhysicalAttackArea();
 		movement = GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getNumberOfMovableGrid();
 		sight = GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getSight();
+		AISightMap = new boolean[2 * sight + 1][2 * sight + 1];
 		isAttack = false;
 		
 		if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof LineCreep){
@@ -47,8 +49,17 @@ public class AICharacter {
 				
 				boolean prepareForAttack = false;
 				// line creep AI
+				updateAISightMap();
 				searchForInSightEnemies();
-				sortInSightEnemiesList();
+				sortEnemiesList(inSightEnemyPos);
+				
+				if (!inSightEnemyPos.isEmpty()){
+					System.out.println("print attack priority queue! = " );
+					for (int[] coordinate : inSightEnemyPos) {
+						System.out.println(GridFrame.gridButtonMap[coordinate[0]][coordinate[1]].getCharacter().getName() + " with attack priority = "
+								+ GridFrame.gridButtonMap[coordinate[0]][coordinate[1]].getCharacter().getCurrentAttackPriority() + " ");
+					}
+				}
 				
 				// check if there is any enemy within sight
 				while (!inSightEnemyPos.isEmpty() && !endRound) {
@@ -90,6 +101,7 @@ public class AICharacter {
 				boolean prepareForAttack = false;
 				
 				// check and attack enemy
+				updateAISightMap();
 				searchEnemiesForNeutralCreep();
 				
 				while (!inSightEnemyPos.isEmpty() && !endRound) {
@@ -130,9 +142,69 @@ public class AICharacter {
 
 
 
-	private void sortInSightEnemiesList() {
+	private void updateAISightMap() {
+		// update sight map for AI
+		
+		Queue<int[]> alleyList = new LinkedList<int[]>();
+		
+		// travel through the map and update alley list and blocked list
+		for (int i=startingXPos-sight; i<=startingXPos+sight; i++) {
+			for (int j=startingYPos-sight; j<=startingYPos+sight; j++) {
+				if (isWithinRange(sight, i, j)) {
+					// check if character exists
+					if (GridFrame.gridButtonMap[i][j].getCharacter() != null) {
+						// check if the character is alley
+						if (GridFrame.gridButtonMap[i][j].getCharacter().getTeamNumber() == teamNumber) {
+							int[] tempPos = {i, j};
+							alleyList.add(tempPos);
+						}
+					}
+				}
+			}
+		}
+		
+		// for each element in the alley list, update sight map
+		for (int[] alleyPos : alleyList) {
+			int alleySight = GridFrame.gridButtonMap[alleyPos[0]][alleyPos[1]].getCharacter().getSight();
+			
+			// block list notes down all the blocking element
+			ArrayList<Pair<double[], double[]>> blockedList = new ArrayList<Pair<double[], double[]>>();
+			
+			for (int i=alleyPos[0]-alleySight; i<=alleyPos[0]+alleySight; i++) {
+				for (int j=alleyPos[1]-alleySight; j<=alleyPos[1]+alleySight; j++) {
+					// check if the grid is within AI's sight map
+					if (isWithinRange(sight, i, j)) {
+						// check if the character is blocking element (i.e. tree)
+						if (GridFrame.gridButtonMap[i][j].isBlockSight()) {
+							Pair<double[], double[]> blockingElementAngles = CharacterActions.calculateAngles(alleyPos[0]+0.5, alleyPos[1]+0.5, i, j);
+							blockedList.add(blockingElementAngles);
+						}
+					}
+				}
+			}
+			
+			for (int i=alleyPos[0]-alleySight; i<=alleyPos[0]+alleySight; i++) {
+				for (int j=alleyPos[1]-alleySight; j<=alleyPos[1]+alleySight; j++) {
+					// check if the grid is within AI's sight map
+					if (isWithinRange(sight, i, j)) {
+						if (Math.abs(i - alleyPos[0]) + Math.abs(j - alleyPos[1]) <= alleySight) {
+							if (!CharacterActions.checkIsBlocked(blockedList, i, j, alleyPos[0], alleyPos[1])) {
+								// if not blocked, set the sight map into true
+								AISightMap[i-startingXPos+sight][j-startingYPos+sight] = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	}
+
+
+
+	private void sortEnemiesList(LinkedList<int[]> enemyPos) {
 		// sort the inSightEnemyPos to arrange enemies based on their attackPriority
-		Collections.sort(inSightEnemyPos, new Comparator<int[]>() {
+		Collections.sort(enemyPos, new Comparator<int[]>() {
 			@Override
 			public int compare(int[] char1Pos, int[] char2Pos) {
 				// compare current attack priority for characters at position char1Pos and char2Pos
@@ -530,6 +602,7 @@ public class AICharacter {
 		LinkedList<int[]> enemyList = new LinkedList<int[]>();
 		
 		findNearbyEnmeies(startingPosition, checkedPosition, attackRange, enemyList);
+		sortEnemiesList(enemyList);
 		
 		// check if there is any enemy within attack range
 		if (!enemyList.isEmpty()) {
@@ -552,7 +625,7 @@ public class AICharacter {
 		// find the coordinates for nearest enemy within attack range, store its coordinates in an int[], if there isn't any enemy, return {-1, -1}
 
 		// base case : 
-		if (uncheckedPosition.isEmpty() == true) {
+		if (uncheckedPosition.isEmpty()) {
 			return;
 		} else {
 			
@@ -593,12 +666,17 @@ public class AICharacter {
 			if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter() != null) {
 				// check if the character is attackable
 				if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter().isAttackable()) {
-					System.out.println("name : " + GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter().getName());
 					// check if the character is enemy's character
 					if (GridFrame.gridButtonMap[uncheckedPosition.peek()[0]][uncheckedPosition.peek()[1]].getCharacter().getTeamNumber() != this.teamNumber){
-						// add enemy's position in to inSightEnemyPos ArrayList
-						int[] temp = {uncheckedPosition.peek()[0], uncheckedPosition.poll()[1]};
-						enemyStoreList.add(temp);
+						// check if the enemy is within sight map
+						if (AISightMap[uncheckedPosition.peek()[0]-startingXPos+sight][uncheckedPosition.peek()[1]-startingYPos+sight]) {
+							// add enemy's position in to inSightEnemyPos ArrayList
+							int[] temp = {uncheckedPosition.peek()[0], uncheckedPosition.poll()[1]};
+							enemyStoreList.add(temp);
+						} else {
+							// discard the position
+							uncheckedPosition.poll();
+						}
 					} else {
 						// discard the position
 						uncheckedPosition.poll();
@@ -621,37 +699,33 @@ public class AICharacter {
 
 	private boolean isWithinRange(int checkRange, int xPos, int yPos) {
 		// check if position xPos, yPos is within attackRange from character with coordinates [startingXPos, startingYPos]
-		return (Math.abs(xPos - startingXPos) + Math.abs(yPos - startingYPos) <= checkRange);
+		// XPos and YPos need to be within range
+		if (xPos >= 0 && xPos <GridFrame.COLUMN_NUMBER 
+				&& yPos >= 0 && yPos <GridFrame.ROW_NUMBER){
+			return (Math.abs(xPos - startingXPos) + Math.abs(yPos - startingYPos) <= checkRange);
+		} else {
+			return false;
+		}
 	}
 
 	
 	public static boolean isChecked(ArrayList<int[]> checkedPosition, Queue<int[]> uncheckedPosition, int XPos, int YPos) {
 		// each int[] in checkedPosition stores a pair of xpos and ypos
-		boolean isChecked = false;
-		
-		// XPos and YPos need to be within range
-		if (XPos >= 0 && XPos <GridFrame.COLUMN_NUMBER 
-				&& YPos >= 0 && YPos <GridFrame.ROW_NUMBER){
-			// check if the position has been visited before
-			for (int[] element : checkedPosition){
-				if (element[0] == XPos && element[1] == YPos){
-					isChecked = true;
-					break;
-				}
+
+		// check if the position has been visited before
+		for (int[] element : checkedPosition){
+			if (element[0] == XPos && element[1] == YPos){
+				return true;
 			}
-			
-			for (int[] element : uncheckedPosition){
-				if (element[0] == XPos && element[1] == YPos){
-					isChecked = true;
-					break;
-				}
-			}
-		} else{
-			// not within range! unable to visit!
-			isChecked = true;
 		}
-				
-		return isChecked;
+
+		for (int[] element : uncheckedPosition){
+			if (element[0] == XPos && element[1] == YPos){
+				return true;
+			}
+		}
+
+		return false;
 	}
 	
 }

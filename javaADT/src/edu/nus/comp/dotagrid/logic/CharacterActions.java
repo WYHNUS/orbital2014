@@ -232,6 +232,8 @@ public class CharacterActions {
 		int magicalDamage = castingSkill.getMagicalDamage();
 		int counter = 0;
 		
+		String skillDamageLog = "<html>";
+		
 		// check through the map for enemies
 		for (int y=0; y<GridFrame.COLUMN_NUMBER; y++){
 			for (int x=0; x<GridFrame.ROW_NUMBER; x++){
@@ -248,6 +250,23 @@ public class CharacterActions {
 							int actualDamage = Character.getMangicalDamage(magicalDamage, GridFrame.gridButtonMap[y][x].getCharacter().getTotalMagicResistance());
 							GridFrame.gridButtonMap[y][x].getCharacter().setCurrentHP((int) (GridFrame.gridButtonMap[y][x].getCharacter().getCurrentHP() 
 									- actualDamage));
+							
+							skillDamageLog = skillDamageLog + castingSkill.getSkillName() + " has cause " + actualDamage + " damage to " 
+									+ GridFrame.gridButtonMap[y][x].getCharacter().getName() + "<br>";
+							
+							// check if the attacked target is dead
+							if (GridFrame.gridButtonMap[y][x].getCharacter().isAlive() == false) {
+								
+								// if the attacker is hero, add bounty money and bounty Exp into hero's account
+								checkToAddMoneyAndExp(y, x);
+									
+								// if the hero is dead
+								checkIfHeroIsDead(y, x);
+											
+								// character is dead, reset the grid which the dead character was at 
+								GridFrame.gridButtonMap[y][x] = new GridButton(1);
+							}
+							
 							counter++;
 						}
 					}
@@ -255,6 +274,14 @@ public class CharacterActions {
 			}
 		}
 		
+		System.out.println(skillDamageLog);
+		if (skillDamageLog.length() > 6) {
+			skillDamageLog += "</html>";
+			JOptionPane.showMessageDialog(null, skillDamageLog);
+		} else {
+			JOptionPane.showMessageDialog(null, "You have none 0 damage!");
+		}
+
 		resetAttributes(castingSkill);
 		
 		// casting action ended
@@ -381,94 +408,8 @@ public class CharacterActions {
 					// x + y need to be within the number of sight grid
 					if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= sightRange) {
 						
-						// check if the selected grid can be set to visible 
-						Pair<double[], double[]> selectedGridAngles = calculateAngles(toXPos+0.5, toYPos+0.5, x, y);
-						double selectedGridAverageAngle; 
-						
-						// special condition : selected grid is directly at the right of the starting grid
-						if (y == toYPos && x > toXPos) {
-							selectedGridAverageAngle = 0;
-						} else {
-							selectedGridAverageAngle = (selectedGridAngles.getFirst()[0] + selectedGridAngles.getFirst()[3]) / 2.0;
-						}
-						
 						// check if the grid has been blocked by any element in the list
-						boolean isBlocked = false;
-						boolean needCheck = false;
-						
-						for (Pair<double[], double[]> element : blockedAngleList) {
-							
-							// boolean is used to check if the selected grid is within blocked angle's check range
-							if (element.getSecond()[0] > toXPos && element.getSecond()[1] > toYPos) {
-								// 1st quadrant
-								if (x >= element.getSecond()[0] && y >= element.getSecond()[1]) {
-									needCheck = true;
-								}
-								
-							} else if (element.getSecond()[0] < toXPos && element.getSecond()[1] > toYPos) {
-								// 2nd quadrant
-								if (x <= element.getSecond()[0] && y >= element.getSecond()[1]) {
-									needCheck = true;
-								}
-								
-							} else if (element.getSecond()[0] < toXPos && element.getSecond()[1] < toYPos) {
-								// 3rd quadrant
-								if (x <= element.getSecond()[0] && y <= element.getSecond()[1]) {
-									needCheck = true;
-								}
-								
-							} else if (element.getSecond()[0] > toXPos && element.getSecond()[1] < toYPos) {
-								// 4th quadrant
-								if (x >= element.getSecond()[0] && y <= element.getSecond()[1]) {
-									needCheck = true;
-								}
-								
-							} else if (element.getSecond()[0] > toXPos && element.getSecond()[1] == toYPos) {
-								// directly on the right
-								if (x >= element.getSecond()[0]) {
-									needCheck = true;
-								}
-								
-							} else if (element.getSecond()[0] < toXPos && element.getSecond()[1] == toYPos) {
-								// directly on the left
-								if (x <= element.getSecond()[0]) {
-									needCheck = true;
-								}
-								
-							} else if (element.getSecond()[0] == toXPos && element.getSecond()[1] > toYPos) {
-								// directly on the top
-								if (y >= element.getSecond()[1]) {
-									needCheck = true;
-								}
-								
-							} else if (element.getSecond()[0] == toXPos && element.getSecond()[1] < toYPos) {
-								// directly on the bottom
-								if (y <= element.getSecond()[1]) {
-									needCheck = true;
-								}
-							} 
-							
-							if (x == element.getSecond()[0] && y == element.getSecond()[1]) {
-								needCheck = false;
-							}
-							
-							
-							if (needCheck) {
-								// special case : grid is directly on the right of the starting grid
-								if (element.getSecond()[0] > toXPos && element.getSecond()[1] == toYPos) {
-									if (selectedGridAverageAngle <= element.getFirst()[1] || selectedGridAverageAngle >= element.getFirst()[2]) {
-										// within range! remove from the sight map
-										isBlocked = true;
-									}
-								}
-								// check if the average angle of the selected grid is within the blocking element angle's range
-								else if (selectedGridAverageAngle >= element.getFirst()[0] && selectedGridAverageAngle <= element.getFirst()[3]) {
-									// within range! remove from the sight map
-									isBlocked = true;
-								}
-							}
-							
-						}
+						boolean isBlocked = checkIsBlocked(blockedAngleList, x, y, toXPos, toYPos);
 						
 						// only set grid to visible if it is not blocked by any other grid
 						if (!isBlocked) {
@@ -477,11 +418,106 @@ public class CharacterActions {
 					}
 				}
 			}
-		}
-
+		} // end for loop
 	}
 
-	private Pair<double[], double[]> calculateAngles(double startingX, double startingY, double blockingX, double blockingY) {
+	public static boolean checkIsBlocked(
+			ArrayList<Pair<double[], double[]>> blockedAngleList, 
+			int checkedXPos, int checkedYPos, int startingXPos, int startingYPos) {
+
+		// check if the selected grid can be set to visible 
+		Pair<double[], double[]> selectedGridAngles = calculateAngles(startingXPos+0.5, startingYPos+0.5, checkedXPos, checkedYPos);
+		double selectedGridAverageAngle; 
+		
+		// special condition : selected grid is directly at the right of the starting grid
+		if (checkedYPos == startingYPos && checkedXPos > startingXPos) {
+			selectedGridAverageAngle = 0;
+		} else {
+			selectedGridAverageAngle = (selectedGridAngles.getFirst()[0] + selectedGridAngles.getFirst()[3]) / 2.0;
+		}
+		
+		boolean isBlocked = false;
+		boolean needCheck = false;
+		
+		for (Pair<double[], double[]> element : blockedAngleList) {
+			
+			// boolean is used to check if the selected grid is within blocked angle's check range
+			if (element.getSecond()[0] > startingXPos && element.getSecond()[1] > startingYPos) {
+				// 1st quadrant
+				if (checkedXPos >= element.getSecond()[0] && checkedYPos >= element.getSecond()[1]) {
+					needCheck = true;
+				}
+				
+			} else if (element.getSecond()[0] < startingXPos && element.getSecond()[1] > startingYPos) {
+				// 2nd quadrant
+				if (checkedXPos <= element.getSecond()[0] && checkedYPos >= element.getSecond()[1]) {
+					needCheck = true;
+				}
+				
+			} else if (element.getSecond()[0] < startingXPos && element.getSecond()[1] < startingYPos) {
+				// 3rd quadrant
+				if (checkedXPos <= element.getSecond()[0] && checkedYPos <= element.getSecond()[1]) {
+					needCheck = true;
+				}
+				
+			} else if (element.getSecond()[0] > startingXPos && element.getSecond()[1] < startingYPos) {
+				// 4th quadrant
+				if (checkedXPos >= element.getSecond()[0] && checkedYPos <= element.getSecond()[1]) {
+					needCheck = true;
+				}
+				
+			} else if (element.getSecond()[0] > startingXPos && element.getSecond()[1] == startingYPos) {
+				// directly on the right
+				if (checkedXPos >= element.getSecond()[0]) {
+					needCheck = true;
+				}
+				
+			} else if (element.getSecond()[0] < startingXPos && element.getSecond()[1] == startingYPos) {
+				// directly on the left
+				if (checkedXPos <= element.getSecond()[0]) {
+					needCheck = true;
+				}
+				
+			} else if (element.getSecond()[0] == startingXPos && element.getSecond()[1] > startingYPos) {
+				// directly on the top
+				if (checkedYPos >= element.getSecond()[1]) {
+					needCheck = true;
+				}
+				
+			} else if (element.getSecond()[0] == startingXPos && element.getSecond()[1] < startingYPos) {
+				// directly on the bottom
+				if (checkedYPos <= element.getSecond()[1]) {
+					needCheck = true;
+				}
+			} 
+			
+			if (checkedXPos == element.getSecond()[0] && checkedYPos == element.getSecond()[1]) {
+				needCheck = false;
+			}
+			
+			
+			if (needCheck) {
+				// special case : grid is directly on the right of the starting grid
+				if (element.getSecond()[0] > startingXPos && element.getSecond()[1] == startingYPos) {
+					if (selectedGridAverageAngle <= element.getFirst()[1] || selectedGridAverageAngle >= element.getFirst()[2]) {
+						// within range! remove from the sight map
+						isBlocked = true;
+					}
+				}
+				// check if the average angle of the selected grid is within the blocking element angle's range
+				else if (selectedGridAverageAngle >= element.getFirst()[0] && selectedGridAverageAngle <= element.getFirst()[3]) {
+					// within range! remove from the sight map
+					isBlocked = true;
+				}
+			}
+			
+		}
+		
+		return isBlocked;
+	}
+
+
+	public static Pair<double[], double[]> calculateAngles(double startingX, double startingY, double blockingX, double blockingY) {
 		// calculate both the maximum and minimum angle from (startingX, startingY) to grid at (blockingX, blockingY)
 		
 		double angle1 = getAngle(startingX, startingY, blockingX, blockingY);
@@ -498,7 +534,7 @@ public class CharacterActions {
 	}
 
 
-	private double getAngle(double startingX, double startingY, double blockingX, double blockingY) {
+	private static double getAngle(double startingX, double startingY, double blockingX, double blockingY) {
 		// calculate angle between (startingX, startingY) and (blockingX, blockingY)
 
 		// angle modifier changes the coordinate of the angle from (-PI/2, PI/2) to (0, 2PI), first quadrant no need to modify
@@ -584,12 +620,7 @@ public class CharacterActions {
 			AICharacter.isAttack = false;
 						
 			// if the attacker is hero, add bounty money and bounty Exp into hero's account
-			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {						
-				// add money
-				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
-						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
-						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());							
-			}
+			checkToAddMoneyAndExp(toXPos, toYPos);
 			
 			// hard code!!!!!!!!
 			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsPlayer() && GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter() instanceof SummonCharacter) {						
@@ -598,78 +629,9 @@ public class CharacterActions {
 						((Hero)GridFrame.gridButtonMap[Screen.user.player.getXPos()][Screen.user.player.getYPos()].getCharacter()).getMoney()
 						+ GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());							
 			}
-			
-			// check if nearby has non-friendly hero
-			ArrayList<Hero> addExpHero = new ArrayList<Hero>();
-			for (int i=-EXP_GAIN_RANGE; i<=EXP_GAIN_RANGE; i++) {
-				for (int j=-EXP_GAIN_RANGE; j<=EXP_GAIN_RANGE; j++) {
-					// check if within range
-					if (Math.abs(i) + Math.abs(j) <= EXP_GAIN_RANGE) {
-						// check if within grid frame
-						if (withinBoundary(toXPos+i, toYPos+j)) {
-							// check if has character
-							if (GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter() != null) {
-								// check if the character is non-friendly hero
-								if ((GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter() instanceof Hero) &&
-										(GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter().getTeamNumber() == 
-										GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber())) {
-									// add the hero into the temp hero arraylist for future sharing of experience
-									addExpHero.add((Hero) GridFrame.gridButtonMap[toXPos+i][toYPos+j].getCharacter());
-								}
-							}
-						}
-					}
-				}
-			}
-			
-			if (!addExpHero.isEmpty()){
-				double sharedExp = (1.0 * GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyExp()) / addExpHero.size();
-				// add exp to each hero in the arraylist
-				for (Hero element : addExpHero) {
-					element.setExperience((int) (element.getExperience() + sharedExp));
-				}
-			}
-			
-						
-			// if the hero is dead
-			if (GridFrame.gridButtonMap[toXPos][toYPos].getIsHero()) {
-				// deduct dead hero's money
-				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setMoney(
-						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getMoney() 
-						- GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getBountyMoney());
-				
-				// reset hero's HP
-				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setCurrentHP(
-						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getmaxHP());
 							
-				// reset hero's MP
-				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setCurrentMP(
-						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getmaxMP());
-				
-				// add hero's death
-				((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).setDeath(
-						((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getDeath() + 1);
-				
-				// check if the dead hero is player's hero
-				if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer() == true) {
-					JOptionPane.showMessageDialog(null, "You have been slaved.");
-					Screen.user.player.setXPos(Screen.user.playerStartingXPos);
-					Screen.user.player.setYPos(Screen.user.playerStartingYPos);
-				}
-				
-				// check if the attacker if a hero
-				if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {
-					// add kill
-					((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setKill(
-							((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getKill() + 1);				
-				}
-				
-				// update reviveQueue
-				Pair<Hero, Integer> dead = new Pair<Hero, Integer>((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter(), 
-						CalculateLevelInfo.calculateDeathCount(((Hero)GridFrame.gridButtonMap[toXPos][toYPos].getCharacter()).getLevel()));
-				Hero.reviveQueue.add(dead);
-				
-			}	
+			// if the hero is dead
+			checkIfHeroIsDead(toXPos, toYPos);
 						
 			// character is dead, reset the grid which the dead character was at 
 			GridFrame.gridButtonMap[toXPos][toYPos] = new GridButton(1);
@@ -680,6 +642,95 @@ public class CharacterActions {
 	}
 
 	
+	private void checkToAddMoneyAndExp(int xPos, int yPos) {
+		// check and add money and Exp to hero if the attacker is a hero
+		
+		if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {						
+			// add money
+			((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setMoney(
+					((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getMoney()
+					+ GridFrame.gridButtonMap[xPos][yPos].getCharacter().getBountyMoney());							
+		}
+
+		// add exp!
+		// check if nearby has non-friendly hero
+		ArrayList<Hero> addExpHero = new ArrayList<Hero>();
+		for (int i=-EXP_GAIN_RANGE; i<=EXP_GAIN_RANGE; i++) {
+			for (int j=-EXP_GAIN_RANGE; j<=EXP_GAIN_RANGE; j++) {
+				// check if within range
+				if (Math.abs(i) + Math.abs(j) <= EXP_GAIN_RANGE) {
+					// check if within grid frame
+					if (withinBoundary(xPos+i, yPos+j)) {
+						// check if has character
+						if (GridFrame.gridButtonMap[xPos+i][yPos+j].getCharacter() != null) {
+							// check if the character is non-friendly hero
+							if ((GridFrame.gridButtonMap[xPos+i][yPos+j].getCharacter() instanceof Hero) &&
+									(GridFrame.gridButtonMap[xPos+i][yPos+j].getCharacter().getTeamNumber() == 
+									GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getTeamNumber())) {
+								// add the hero into the temp hero arraylist for future sharing of experience
+								addExpHero.add((Hero) GridFrame.gridButtonMap[xPos+i][yPos+j].getCharacter());
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (!addExpHero.isEmpty()){
+			double sharedExp = (1.0 * GridFrame.gridButtonMap[xPos][yPos].getCharacter().getBountyExp()) / addExpHero.size();
+			// add exp to each hero in the arraylist
+			for (Hero element : addExpHero) {
+				element.setExperience((int) (element.getExperience() + sharedExp));
+			}
+		}
+		
+	}
+
+
+	private void checkIfHeroIsDead(int xPos, int yPos) {
+		// do actions if the attacked hero is dead
+		
+		if (GridFrame.gridButtonMap[xPos][yPos].getIsHero()) {
+			// deduct dead hero's money
+			((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).setMoney(
+					((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).getMoney() 
+					- GridFrame.gridButtonMap[xPos][yPos].getCharacter().getBountyMoney());
+			
+			// reset hero's HP
+			((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).setCurrentHP(
+					((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).getmaxHP());
+						
+			// reset hero's MP
+			((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).setCurrentMP(
+					((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).getmaxMP());
+			
+			// add hero's death
+			((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).setDeath(
+					((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).getDeath() + 1);
+			
+			// check if the dead hero is player's hero
+			if (GridFrame.gridButtonMap[xPos][yPos].getIsPlayer() == true) {
+				JOptionPane.showMessageDialog(null, "You have been slaved.");
+				Screen.user.player.setXPos(Screen.user.playerStartingXPos);
+				Screen.user.player.setYPos(Screen.user.playerStartingYPos);
+			}
+			
+			// check if the attacker if a hero
+			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsHero()) {
+				// add kill
+				((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).setKill(
+						((Hero)GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter()).getKill() + 1);				
+			}
+			
+			// update reviveQueue
+			Pair<Hero, Integer> dead = new Pair<Hero, Integer>((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter(), 
+					CalculateLevelInfo.calculateDeathCount(((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).getLevel()));
+			Hero.reviveQueue.add(dead);
+			
+		}	
+	}
+
+
 	private void move() {				
 		// can only move on non-occupied and movable grid
 		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsMovable()
@@ -741,9 +792,10 @@ public class CharacterActions {
 		
 		int numberOfGridsMoved = tempPath.findShortestPath(previouslySelectedXPos, previouslySelectedYPos, selectedXPos, selectedYPos);
 		
-		int[][] tempPathMap = tempPath.getPath();
 		
 		/*
+		int[][] tempPathMap = tempPath.getPath();
+		
 		for (int i=0; i<tempPathMap.length; i++) {
 			for (int j=0; j<tempPathMap.length; j++) {
 				System.out.printf("%3s", tempPathMap[j][i]);

@@ -40,11 +40,11 @@ public class GridFrame {
 	private static double gridHeight = 1.0;
 	
 	// grid position that is to be highlighted
-	private static int previouslySelectedXCoodinatePos = -1;
-	private static int previouslySelectedYCoodinatePos = -1;
+	private static int previouslySelectedXCoordinatePos = -1;
+	private static int previouslySelectedYCoordinatePos = -1;
 	
-	private static int selectedXCoodinatePos = -1;
-	private static int selectedYCoodinatePos = -1;
+	private static int selectedXCoordinatePos = -1;
+	private static int selectedYCoordinatePos = -1;
 	
 	private static int selectedXPos = -1;
 	private static int selectedYPos = -1;
@@ -113,6 +113,7 @@ public class GridFrame {
 	}
 
 	private void displayGridOnScreen(Graphics g) {
+		System.out.println("Display Grid on Screen!");
 		
 		for (int x=0; x<gridColNumberInScreen; x++) {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
@@ -132,6 +133,7 @@ public class GridFrame {
 	}
 	
 	private void displayGridButtonsOnScreen(Graphics g) {
+		System.out.println("Display Grid Buttons on Screen");
 		
 		for (int x=0; x<gridColNumberInScreen; x++) {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
@@ -152,6 +154,7 @@ public class GridFrame {
 	
 	// display all highlighted grid on screen if there is any
 	private void displayHighlightGrid(Graphics g) {
+		System.out.println("Display Hightlighted Grids!");
 		
 		// prepare to draw transparent grids
 		Graphics2D g2d = (Graphics2D) g;
@@ -216,6 +219,8 @@ public class GridFrame {
 	
 	// display sight map
 	private void displaySightMap(Graphics g) {
+		System.out.println("Display sight map!");
+		
 		// prepare to draw transparent grids
 		Graphics2D g2d = (Graphics2D) g;
 		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.8f); 
@@ -269,10 +274,8 @@ public class GridFrame {
 	// method to check and invoke grid frame event
 	public static void invokeLeftClickEvent(int handXPos, int handYPos){
 		MouseHandler.isClicked = true;
-		int tempXPos = getSelectedXCoodinatePos();
-		int tempYPos = getSelectedYCoodinatePos();
-		setSelectedXCoodinatePos(handXPos);
-		setSelectedYCoodinatePos(handYPos);
+		setSelectedXCoordinatePos(handXPos);
+		setSelectedYCoordinatePos(handYPos);
 		
 		boolean isWithinGridFrame = (handXPos > GameFrame.FRAME_BORDER_WIDTH && handXPos < (GameFrame.FRAME_BORDER_WIDTH + gameFrameWidth)
 				&& handYPos > GameFrame.FRAME_BORDER_HEIGHT && handYPos < (GameFrame.FRAME_BORDER_HEIGHT + gameFrameHeight));
@@ -290,7 +293,7 @@ public class GridFrame {
 				selectedXPos = currentGridXPos + (int) ((handXPos - GameFrame.FRAME_BORDER_WIDTH) / gridWidth);
 				selectedYPos = currentGridYPos + (int) ((handYPos - GameFrame.FRAME_BORDER_HEIGHT) / gridHeight);
 				
-				// set previous coodinate position
+				// set previous coordinate position
 				setPreviouslySelectedXCoodinatePos((int)((previouslySelectedXPos - currentGridXPos + 1) * gridWidth + GameFrame.FRAME_BORDER_WIDTH));
 				setPreviouslySelectedYCoodinatePos((int)((previouslySelectedYPos - currentGridYPos + 1) * gridHeight + GameFrame.FRAME_BORDER_HEIGHT));
 			}
@@ -303,7 +306,7 @@ public class GridFrame {
 	
 	
 	public static void resetAllCharacterInfo() {
-		System.out.println("reset all character information!");
+		System.out.println("Reset all character information!");
 		// clear all previously highlighted grids and prepare for new round of highlighting XD
 		// clear sight map for further refresh of information
 		for (int x=0; x<ROW_NUMBER; x++) {
@@ -423,39 +426,39 @@ public class GridFrame {
 		}
 	}
 
-	public static int getSelectedXCoodinatePos() {
-		return selectedXCoodinatePos;
+	public static int getSelectedXCoordinatePos() {
+		return selectedXCoordinatePos;
 	}
 
-	public static void setSelectedXCoodinatePos(int selectedXCoodinatePos) {
-		GridFrame.selectedXCoodinatePos = selectedXCoodinatePos;
+	public static void setSelectedXCoordinatePos(int selectedXCoodinatePos) {
+		GridFrame.selectedXCoordinatePos = selectedXCoodinatePos;
 	}
 
-	public static int getSelectedYCoodinatePos() {
-		return selectedYCoodinatePos;
+	public static int getSelectedYCoordinatePos() {
+		return selectedYCoordinatePos;
 	}
 
-	public static void setSelectedYCoodinatePos(int selectedYCoodinatePos) {
-		GridFrame.selectedYCoodinatePos = selectedYCoodinatePos;
+	public static void setSelectedYCoordinatePos(int selectedYCoodinatePos) {
+		GridFrame.selectedYCoordinatePos = selectedYCoodinatePos;
 	}
 	
 
 	public static int getPreviouslySelectedXCoodinatePos() {
-		return previouslySelectedXCoodinatePos;
+		return previouslySelectedXCoordinatePos;
 	}
 
 	public static void setPreviouslySelectedXCoodinatePos(
 			int preciouslySelectedXCoodinatePos) {
-		GridFrame.previouslySelectedXCoodinatePos = preciouslySelectedXCoodinatePos;
+		GridFrame.previouslySelectedXCoordinatePos = preciouslySelectedXCoodinatePos;
 	}
 
 	public static int getPreviouslySelectedYCoodinatePos() {
-		return previouslySelectedYCoodinatePos;
+		return previouslySelectedYCoordinatePos;
 	}
 
 	public static void setPreviouslySelectedYCoodinatePos(
 			int previouslySelectedYCoodinatePos) {
-		GridFrame.previouslySelectedYCoodinatePos = previouslySelectedYCoodinatePos;
+		GridFrame.previouslySelectedYCoordinatePos = previouslySelectedYCoodinatePos;
 	}
 
 	public static double getGridWidth() {

@@ -91,7 +91,7 @@ public class ItemShop implements ActionListener{
 				
 				// reselect the grid
 				shouldUpdateItemInFo = true;
-				GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+				GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoordinatePos(), GridFrame.getSelectedYCoordinatePos());
 				
 				System.out.println("Player has bought an item : " + itemDtabase.itemDatabase[itemNumber].getItemName());
 				

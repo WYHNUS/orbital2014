@@ -1,8 +1,10 @@
 package edu.nus.comp.dotagrid.logic;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
@@ -104,9 +106,17 @@ public class GameButton{
 	// other methods
 	public void fillRect(Graphics g, Color color){
 		Color originColor = g.getColor();
-		g.setColor(color);
-		g.fillRect(xPos, yPos, width, height);
-		g.setColor(originColor);
+		
+		Graphics2D g2d = (Graphics2D) g;
+		AlphaComposite ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0.3f); 
+		
+		g2d.setComposite(ac);
+		g2d.setColor(color);
+		g2d.fillRect(xPos, yPos, width, height);
+		
+		ac = AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1.0f); 
+		g2d.setComposite(ac);
+		g2d.setColor(originColor);
 	}
 	
 	

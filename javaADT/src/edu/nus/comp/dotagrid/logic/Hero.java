@@ -990,7 +990,7 @@ public class Hero extends Character{
 			if(this.skills[i] == null){
 				this.skills[i] = new Skill(skill);
 				GameFrame.allCharacterInfoGameButtons.get(17 + i).setImage(skill.getImage().getImage());
-				System.out.println("Player has learnt a new skill!");
+				System.out.println("Add a new skill " + skill.getSkillName() + " to list!");
 				break;
 			}
 		}

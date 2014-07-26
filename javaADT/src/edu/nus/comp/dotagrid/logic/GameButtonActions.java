@@ -472,7 +472,7 @@ public class GameButtonActions {
 		
 		heroDamageLog = "<html>";
 		// reselect the grid
-		GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoodinatePos(), GridFrame.getSelectedYCoodinatePos());
+		GridFrame.invokeLeftClickEvent(GridFrame.getSelectedXCoordinatePos(), GridFrame.getSelectedYCoordinatePos());
 		System.out.println("End Round!");
 	}	
 

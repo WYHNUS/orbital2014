@@ -46,10 +46,6 @@ public class Screen extends JPanel implements Runnable {
 			
 			g.drawImage(new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/Loading Image/" + "Furion" + ".jpg")).getImage(), 0, 0, this.frame.getWidth(), this.frame.getHeight(), null);
 	
-			new BuildingDatabase();
-			new SkillDatabase();
-			new NeutralCreepDatabase();
-
 		} else if (scene == 1) {
 			// start game!				
 			g.setColor(Color.BLACK);	

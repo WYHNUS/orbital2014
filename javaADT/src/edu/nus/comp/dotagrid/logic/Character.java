@@ -55,6 +55,7 @@ public class Character {
 	/* 0 represents neutral 
 	 * 1 represents Sentinel 
 	 * 2 represents Scourge
+	 * 3 represents tree
 	 * */
 	private int teamNumber;
 
@@ -500,7 +501,7 @@ public class Character {
 	}
 
 	public static int getMangicalDamage(double magicalAttack, double magicalResis){
-		return (int)(magicalAttack * (100 - magicalResis));
+		return (int)(magicalAttack * (100 - magicalResis) / 100);
 	}
 
 	public int getBountyMoney() {
