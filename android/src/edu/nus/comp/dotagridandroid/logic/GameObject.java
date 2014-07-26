@@ -10,6 +10,8 @@ public class GameObject {
 	public static final int GAMEOBJECT_TYPE_TREE = 6;
 	public static final int GAMEOBJECT_TYPE_BARRACK = 8;
 	public static final int GAMEOBJECT_TYPE_ANCIENT = 9;
+	public static final int GAMEOBJECT_TYPE_SUMMONCREEP = 10;
+	public static final int GAMEOBJECT_TYPE_NEUTRALCREEP = 11;
 	private final Map<String, Object> extendedProperties = new HashMap<>();
 	private int type;
 	public GameObject(int type) {

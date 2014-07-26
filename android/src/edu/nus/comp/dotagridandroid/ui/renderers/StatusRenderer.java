@@ -319,7 +319,6 @@ public class StatusRenderer implements Renderer {
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
 		if (updates.containsKey("ChosenGrid") || updates.containsKey("Characters")) {
-			System.out.println("Update buttons");
 			// attack button
 			((ButtonRenderer) ((ScrollRenderer) controls.get("Scroll")).getRenderer("Attack")).setTapEnabled(
 					manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Attack"))).get("GameAction")

@@ -34,7 +34,7 @@ public class BasicGameMaster extends GameMaster {
 				100,
 				100,
 				100,
-				2,
+				20,
 				100,
 				100,
 				100,
@@ -177,6 +177,7 @@ public class BasicGameMaster extends GameMaster {
 					Ancient ancient = new Ancient();
 					state.addCharacter(name, ancient, false, false);
 					state.setCharacterProperty(name, "bountyMoney", ancientConfig.get("bountyMoney"));
+					state.setCharacterProperty(name, "sight", ancientConfig.get("sight"));
 					state.setCharacterProperty(name, "startingHP", ancientConfig.get("startingHP"));
 					state.setCharacterProperty(name, "startingPhysicalDefence", ancientConfig.get("startingPhysicalDefence"));
 					state.setCharacterProperty(name, "characterImage", ancientConfig.get("model"));
@@ -245,7 +246,6 @@ public class BasicGameMaster extends GameMaster {
 		
 		for (Map.Entry<String, GameCharacter> characterObject : state.getCharacters().entrySet())
 			characterObject.getValue().initialise();
-		refreshSightMaps();
 	}
 
 	@Override
@@ -268,10 +268,21 @@ public class BasicGameMaster extends GameMaster {
 			final int gridWidth = state.getGridWidth(), gridHeight = state.getGridHeight();
 			final int totalAttackArea = (Integer) state.getCharacterProperty(character, "totalPhysicalAttackArea")
 					+ (Integer) state.getCharacterProperty(character, "totalItemAddPhysicalAttackArea");
-			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
-				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
-					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0)
-						allowed.add(Arrays.asList(prevPos[0] + i, prevPos[1] + j));
+			final BitSet sight = teamSharedSight.get(state.getCharacters().get(character).getTeamNumber());
+			if (sight == null)
+				return;
+			for (int r = 1; r <= totalAttackArea; r++)
+				for (int x = Math.max(0, prevPos[0] - r), end = Math.min(gridWidth - 1, prevPos[0] + r); x <= end; x++) {
+					if (prevPos[1] + Math.abs(x - prevPos[0]) - r >= 0 && sight.get(x + gridWidth * (prevPos[1] + Math.abs(x - prevPos[0]) - r)))
+						allowed.add(Arrays.asList(x, prevPos[1] + Math.abs(x - prevPos[0]) - r));
+					if (prevPos[1] - Math.abs(x - prevPos[0]) + r < gridHeight && sight.get(x + gridWidth * (prevPos[1] - Math.abs(x - prevPos[0]) + r)))
+						allowed.add(Arrays.asList(x, prevPos[1] - Math.abs(x - prevPos[0]) + r));
+				}
+//			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
+//				for (int j = -totalAttackArea + Math.abs(i); j <= totalAttackArea - Math.abs(i); j++)
+//					if ((i != 0 || j != 0) && prevPos[0] + i < gridWidth && prevPos[0] + i >= 0 && prevPos[1] + j < gridHeight && prevPos[1] + j >= 0
+//							&& sight.get(prevPos[0] + i + gridWidth * (prevPos[1] + j)))
+//						allowed.add(Arrays.asList(prevPos[0] + i, prevPos[1] + j));
 			state.notifyUpdate(Collections.singletonMap("HighlightGrid", (Object) Collections.unmodifiableList(allowed)));
 			return;
 		}
@@ -353,8 +364,10 @@ public class BasicGameMaster extends GameMaster {
 					state.nextTurn();
 					break;
 				}
-				case "BeginTurn":
+				case "BeginTurn": {
+					refreshSightMaps();
 					break;
+				}
 				case "EndTurn": {
 					final String playerName = state.getPlayerCharacterName();
 					final int playerTeamNumber = (Integer) state.getCharacterProperty(playerName, "teamNumber");
@@ -570,7 +583,9 @@ public class BasicGameMaster extends GameMaster {
 				final int[] targetGrid = state.getChosenGrid(), heroGrid = state.getCharacterPosition(character);
 				if (!character.equals(state.getCurrentCharacterName()))
 					return false;
-				if (targetGrid[0] >= state.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= state.getGridHeight() || targetGrid[1] < 0)
+				else if (targetGrid[0] >= state.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= state.getGridHeight() || targetGrid[1] < 0)
+					return false;
+				else if ((Integer) state.getCharacterProperty(character, "currentActionPoint") <= 0)
 					return false;
 				return true;
 			}
@@ -592,7 +607,11 @@ public class BasicGameMaster extends GameMaster {
 					return false;
 				else if (!character.equals(state.getCurrentCharacterName()))
 					return false;
+				else if ((Integer) state.getCharacterProperty(character, "currentActionPoint") <= 0)
+						return false;
 				else if (targetGrid[0] >= state.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= state.getGridHeight() || targetGrid[1] < 0)
+					return false;
+				else if (!teamSharedSight.get(state.getCharacters().get(character).getTeamNumber()).get(targetGrid[0] + targetGrid[1] * state.getGridWidth()))
 					return false;
 				else if ((Integer) state.getCharacterProperty(character, "teamNumber") == (Integer) state.getCharacterProperty(targetCharacter, "teamNumber"))
 					return false;	// no friendly fire
@@ -749,24 +768,7 @@ public class BasicGameMaster extends GameMaster {
 				(Integer) state.getCharacterProperty(targetCharacter, "currentHP") - damage);
 		
 //		System.out.println("Attacked " + targetCharacter + ", damage=" + damage + ", hp=" + state.getCharacterProperty(targetCharacter, "currentHP"));
-		characterDamageCheck (character, targetCharacter);
-		if (state.getCharacterType(targetCharacter) > 0 && !(Boolean) state.getCharacterProperty(targetCharacter, "alive")) {
-			// TODO check game ended
-			//
-			switch (state.getCharacterType(character)) {
-			case GameObject.GAMEOBJECT_TYPE_HERO:
-				state.setCharacterProperty(character, "money",
-						(Integer) state.getCharacterProperty(character, "money") +
-						(Integer) state.getCharacterProperty(targetCharacter, "bountyMoney")
-						);
-				state.setCharacterProperty(character, "experience",
-						(Integer) state.getCharacterProperty(character, "experience") +
-						(Integer) state.getCharacterProperty(targetCharacter, "bountyExp")
-						);
-			}
-			// TODO reset character position
-			state.setCharacterPosition(targetCharacter, null);
-		}
+		checkCharacterDamage (character, targetCharacter);
 		state.notifyUpdate(Collections.singletonMap("Characters", (Object)Collections.singleton("ALL")));
 	}
 	
@@ -783,9 +785,10 @@ public class BasicGameMaster extends GameMaster {
 			}
 			state.notifyUpdate(Collections.singletonMap("Characters", (Object) Collections.singleton(character)));
 		}
+		refreshSightMaps();
 	}
 	
-	private void characterDamageCheck (String characterAttacker, String targetCharacter) {
+	private void checkCharacterDamage (String characterAttacker, String targetCharacter) {
 		if (targetCharacter == null)
 			return;
 		GameCharacter target = state.getCharacters().get(targetCharacter);
@@ -794,19 +797,46 @@ public class BasicGameMaster extends GameMaster {
 		switch (state.getCharacterType(targetCharacter)) {
 		case GameObject.GAMEOBJECT_TYPE_HERO:
 			teamEnemyAttackPrioritised.get(state.getCharacterProperty(targetCharacter, "teamNumber")).put(characterAttacker, priorityDecreaseRounds);
+			switch (state.getCharacterType(characterAttacker)) {
+			case GameObject.GAMEOBJECT_TYPE_HERO:
+				state.setCharacterProperty(characterAttacker, "money",
+						(Integer) state.getCharacterProperty(targetCharacter, "money") +
+						(Integer) state.getCharacterProperty(targetCharacter, "bountyMoney")
+						);
+				state.setCharacterProperty(characterAttacker, "experience",
+						(Integer) state.getCharacterProperty(targetCharacter, "experience") +
+						(Integer) state.getCharacterProperty(targetCharacter, "bountyExp")
+						);
+			}
 			break;
 		case GameObject.GAMEOBJECT_TYPE_LINECREEP:
 			if (!state.getCharacters().get(targetCharacter).isAlive())
 				state.removeCharacter(targetCharacter);
-//		case GameObject.GAMEOBJECT_TYPE_TOWER:
-//			if (!state.getCharacters().get(targetCharacter).isAlive())
-//				state.setCharacterPosition(targetCharacter, null);
+			switch (state.getCharacterType(characterAttacker)) {
+			case GameObject.GAMEOBJECT_TYPE_HERO:
+				state.setCharacterProperty(characterAttacker, "money", (Integer) state.getCharacterProperty(targetCharacter, "bountyMoney"));
+				state.setCharacterProperty(characterAttacker, "experience", (Integer) state.getCharacterProperty(targetCharacter, "bountyExp"));
+				break;
+			}
+			break;
 		}
-//		if (!target.isAlive())
-//			refreshSightMaps();
+		switch (state.getCharacterType(characterAttacker)) {
+		case GameObject.GAMEOBJECT_TYPE_HERO:
+			state.setCharacterProperty(characterAttacker, "money",
+					(Integer) state.getCharacterProperty(targetCharacter, "money") +
+					(Integer) state.getCharacterProperty(targetCharacter, "bountyMoney")
+					);
+			state.setCharacterProperty(characterAttacker, "experience",
+					(Integer) state.getCharacterProperty(targetCharacter, "experience") +
+					(Integer) state.getCharacterProperty(targetCharacter, "bountyExp")
+					);
+		}
+		if (!target.isAlive())
+			refreshSightMaps();
 	}
 	
 	private void refreshSightMaps() {
+		long time = System.currentTimeMillis();
 		Set<Integer> teams = new HashSet<>(teamConfig.keySet());
 		teams.remove(0);
 		for (int teamNumber : teamConfig.keySet())
@@ -815,7 +845,9 @@ public class BasicGameMaster extends GameMaster {
 			else
 				teamSharedSight.put(teamNumber, new BitSet());
 		for (Map.Entry<String, GameCharacter> entry : state.getCharacters().entrySet())
-			teamSharedSight.get(entry.getValue().getTeamNumber()).or(getSight(entry.getKey()));
+			if (state.getCharacterType(entry.getKey()) != GameObject.GAMEOBJECT_TYPE_TREE)
+				teamSharedSight.get(entry.getValue().getTeamNumber()).or(getSight(entry.getKey()));
+		System.out.println("SightMap took " + (System.currentTimeMillis() - time) + "ms");
 	}
 
 	// move to checkpoint
@@ -841,23 +873,41 @@ public class BasicGameMaster extends GameMaster {
 							actionOption.put("Action", "Attack");
 							actionOption.put("TargetGrid", Arrays.asList(x, pos[1] + Math.abs(x - pos[0]) - r));
 							// trees are exceptions
-							Pair<Integer, Integer, String> entry;
+							Pair<Integer, Integer, String> entry = null;
 							switch (state.getCharacterType(target)) {
-							case GameObject.GAMEOBJECT_TYPE_HERO:
 							case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								break;
+							case GameObject.GAMEOBJECT_TYPE_HERO:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(2, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								break;
 							case GameObject.GAMEOBJECT_TYPE_TOWER:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(3, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								break;
 							case GameObject.GAMEOBJECT_TYPE_BARRACK:
 							case GameObject.GAMEOBJECT_TYPE_ANCIENT:
 								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
 								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
 										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
-										: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
-								if (requestActionPossible(character, "GameAction", actionOption))
-									attackTargetPriorityQueue.add(entry);
-								else
-									possibleTargetPriorityQueue.add(entry);
+										: new Pair<Integer, Integer, String>(4, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
 								break;
+							default:
+								continue;
 							}
+							if (requestActionPossible(character, "GameAction", actionOption))
+								attackTargetPriorityQueue.add(entry);
+							else
+								possibleTargetPriorityQueue.add(entry);
+							break;
 						}
 					}
 					// possible duplicate
@@ -868,23 +918,41 @@ public class BasicGameMaster extends GameMaster {
 							actionOption.put("Action", "Attack");
 							actionOption.put("TargetGrid", Arrays.asList(x, pos[1] - Math.abs(x - pos[0]) + r));
 							// same routine here
-							Pair<Integer, Integer, String> entry;
+							Pair<Integer, Integer, String> entry = null;
 							switch (state.getCharacterType(target)) {
-							case GameObject.GAMEOBJECT_TYPE_HERO:
 							case GameObject.GAMEOBJECT_TYPE_LINECREEP:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								break;
+							case GameObject.GAMEOBJECT_TYPE_HERO:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(2, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								break;
 							case GameObject.GAMEOBJECT_TYPE_TOWER:
+								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
+								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
+										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
+										: new Pair<Integer, Integer, String>(3, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
+								break;
 							case GameObject.GAMEOBJECT_TYPE_BARRACK:
 							case GameObject.GAMEOBJECT_TYPE_ANCIENT:
 								entry = teamEnemyAttackPrioritised.get(friendlyTeamNumber).containsKey(target)
 								&& teamEnemyAttackPrioritised.get(friendlyTeamNumber).get(target) > 0 ?
 										new Pair<Integer, Integer, String>(0, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target)
-										: new Pair<Integer, Integer, String>(1, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
-								if (requestActionPossible(character, "GameAction", actionOption))
-									attackTargetPriorityQueue.add(entry);
-								else
-									possibleTargetPriorityQueue.add(entry);
+										: new Pair<Integer, Integer, String>(4, Math.abs(x - pos[0]) + Math.abs(r - x + pos[0]), target);
 								break;
+							default:
+								continue;
 							}
+							if (requestActionPossible(character, "GameAction", actionOption))
+								attackTargetPriorityQueue.add(entry);
+							else
+								possibleTargetPriorityQueue.add(entry);
+							break;
 						}
 					}
 				}
@@ -957,40 +1025,48 @@ public class BasicGameMaster extends GameMaster {
 			}
 		}
 	}
-	
-	private SegmentNode<Double> sightCalc(int width, int height, int x, int y, int sight, int[] pos, int radius, double[] source, SegmentNode<Double> shadow, BitSet map) {
-		if (Math.hypot(x - pos[0], y - pos[1]) <= sight) {
-			if (shadow == null)
-				map.set(x + y * width);
-			else if (shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
-					(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))) == null)
-				map.set(x + y * width);
-			if (state.getCharacterAtPosition(x, pos[1] - radius) != null) {
-				// obstacle - will add to shadowMap
-				final List<Double> cornerAngles = Arrays.asList(
-						getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
-						getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
-						getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
-						getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
-				);
-				final double maxAngle = Collections.max(cornerAngles), minAngle = Collections.min(cornerAngles);
-				if (shadow == null)
-					shadow = (maxAngle - minAngle > Math.PI) ? 
-							new SegmentNode<Double>(0., minAngle).insert(new SegmentNode<Double>(maxAngle, 2 * Math.PI)) :
-							new SegmentNode<Double>(minAngle, maxAngle);
-				else {
-					boolean completeShadow = true;
-					for (double angle : cornerAngles)
-						if (shadow.find(angle) == null) {
-							completeShadow = false;
-							break;
-						}
-					if (completeShadow)
-						shadow = (maxAngle - minAngle > Math.PI) ? 
-								new SegmentNode<Double>(0., minAngle).insert(new SegmentNode<Double>(maxAngle, 2 * Math.PI)) :
-								new SegmentNode<Double>(minAngle, maxAngle);
+	private static double[] calcLargestArc(final double[] angles) {
+		double maxDifference = 0;
+		final double[] retVal = new double[2];
+		for (int i = 0; i < angles.length; i++)
+			for (int j = i + 1; j < angles.length; j++) {
+				final double arc = Math.abs(angles[i] - angles[j]);
+				final double minorArc = arc > Math.PI ? 2 * Math.PI - arc : arc;
+				if (minorArc > maxDifference) {
+					retVal[0] = Math.min(angles[i], angles[j]);
+					retVal[1] = Math.max(angles[i], angles[j]);
+					maxDifference = minorArc;
 				}
 			}
+		return retVal;
+	}
+	private SegmentNode<Double> sightCalc(int width, int height, int x, int y, int sight, int radius, double[] source, SegmentNode<Double> shadow, BitSet map) {
+		if (shadow == null)
+			map.set(x + y * width);
+		else if (shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
+				(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))).isEmpty())
+			map.set(x + y * width);
+		if (state.getCharacterAtPosition(x, y) != null) {
+			// obstacle - will add to shadowMap
+			final double[] cornerAngles = {
+					getAngle((y - source[1]) / Math.hypot(x - source[0], y - source[1]), (x - source[0]) / Math.hypot(x - source[0], y - source[1])),
+					getAngle((y + 1 - source[1]) / Math.hypot(x - source[0], y + 1 - source[1]), (x - source[0]) / Math.hypot(x - source[0], y + 1 - source[1])),
+					getAngle((y - source[1]) / Math.hypot(x + 1 - source[0], y - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y - source[1])),
+					getAngle((y + 1 - source[1]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]), (x + 1 - source[0]) / Math.hypot(x + 1 - source[0], y + 1 - source[1]))
+			};
+			final double[] shadowAngles = calcLargestArc(cornerAngles);
+			if (shadow == null)
+				shadow = (shadowAngles[1] - shadowAngles[0] > Math.PI) ?
+						new SegmentNode<Double>(0., shadowAngles[0]).insert(new SegmentNode<Double>(shadowAngles[1], 2 * Math.PI)) :
+						new SegmentNode<Double>(shadowAngles[0], shadowAngles[1]);
+			else
+				for (double angle : cornerAngles)
+					if (shadow.find(angle).isEmpty()) {
+						shadow = (shadowAngles[1] - shadowAngles[0] > Math.PI) ? 
+								shadow.insert(new SegmentNode<Double>(0., shadowAngles[0])).insert(new SegmentNode<Double>(shadowAngles[1], 2 * Math.PI)) :
+								shadow.insert(new SegmentNode<Double>(shadowAngles[0], shadowAngles[1]));
+						break;
+					}
 		}
 		return shadow;
 	}
@@ -1008,38 +1084,39 @@ public class BasicGameMaster extends GameMaster {
 				if (pos[1] >= radius) {
 					final int y = pos[1] - radius;
 					for (int x = Math.max(0, pos[0] - radius); x < Math.min(width, pos[0] + radius); x++)
-						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
+						if (Math.hypot(x - pos[0], y - pos[1]) <= sight)
+							shadow = sightCalc(width, height, x, y, sight, radius, source, shadow, map);
 				}
 				
 				if (pos[0] + radius < width) {
 					final int x = pos[0] + radius;
 					for (int y = Math.max(0, pos[1] - radius); y < Math.min(height, pos[1] + radius); y++)
+						if (Math.hypot(x - pos[0], y - pos[1]) <= sight)
 						// same routine
-						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
+							shadow = sightCalc(width, height, x, y, sight, radius, source, shadow, map);
 				}
 				
 				if (pos[1] + radius < height) {
 					final int y = pos[1] + radius;
 					for (int x = Math.min(width - 1, pos[0] + radius); x > Math.max(0, pos[0] - radius); x--)
+						if (Math.hypot(x - pos[0], y - pos[1]) <= sight)
 						// same routine
-						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
+							shadow = sightCalc(width, height, x, y, sight, radius, source, shadow, map);
 				}
 				
 				if (pos[0] >= radius) {
 					final int x = pos[0] - radius;
 					for (int y = Math.min(height - 1, pos[1] + radius); y > Math.max(0, pos[1] - radius); y--)
+						if (Math.hypot(x - pos[0], y - pos[1]) <= sight)
 						// same routine
-						shadow = sightCalc(width, height, x, y, sight, pos, radius, source, shadow, map);
+							shadow = sightCalc(width, height, x, y, sight, radius, source, shadow, map);
 				}
 			}
 		}
 		return map;
 	}
 	private static double getAngle(double sinVal, double cosVal) {
-		final double error = 1e-7;
-		if (Math.abs(sinVal) < error || Math.abs(cosVal) < error)
-			return 0;
-		if (sinVal > 0)
+		if (sinVal >= 0)
 			return Math.acos(cosVal);
 		else
 			return Math.PI * 2 - Math.acos(cosVal);
@@ -1072,29 +1149,32 @@ public class BasicGameMaster extends GameMaster {
 		}
 	}
 	private static class SegmentNode <T extends Comparable<T>>  {
-		private T start, end, max;
-		private int depth;
+		private T start, end, min;
+		private int depth = 1;
 		private SegmentNode<T> left, right, father;
 		private SegmentNode (T start, T end) {
 			if (start.compareTo(end) > 0)
 				throw new RuntimeException("SegmentNode: start > end!");
-			this.start = start; this.end = end; this.max = end;
+			this.start = start; this.end = end; this.min = start;
 		}
 		private SegmentNode<T> insert(SegmentNode<T> node) {
 			if (node == null)
 				return this;
 			SegmentNode<T> father = this;
 			while (true)
-				if (father.end.compareTo(node.end) < 0 && father.left != null)
+				if (father.end.compareTo(node.end) > 0 && father.left != null)
 					father = father.left;
-				else if (father.end.compareTo(node.end) >= 0 && father.right != null)
+				else if (father.end.compareTo(node.end) <= 0 && father.right != null)
 					father = father.right;
 				else
 					break;
-			if (father.end.compareTo(node.end) < 0)
+			if (father.end.compareTo(node.end) > 0) {
 				father.left = node;
-			else
+				node.father = father;
+			} else {
 				father.right = node;
+				node.father = father;
+			}
 			return balance(father);
 		}
 		private SegmentNode<T> delete(SegmentNode<T> node) {
@@ -1174,7 +1254,14 @@ public class BasicGameMaster extends GameMaster {
 							node.left.left.depth = Math.max(
 									node.left.left.left == null ? 0 : node.left.left.left.depth,
 									node.left.left.right == null ? 0 : node.left.left.right.depth) + 1;
-							node.left.left.max = node.left.left.right == null ? node.left.left.end : node.left.left.right.max;
+							if (node.left.left.left == null && node.left.left.right == null)
+								node.left.left.min = node.left.left.start;
+							else if (node.left.left.left == null)
+								node.left.left.min = Collections.min(Arrays.asList(node.left.left.start, node.left.left.right.min));
+							else if (node.left.left.right == null)
+								node.left.left.min = Collections.min(Arrays.asList(node.left.left.start, node.left.left.left.min));
+							else
+								node.left.left.min = Collections.min(Arrays.asList(node.left.left.start, node.left.left.left.min, node.left.left.right.min));
 						}
 						SegmentNode<T> left = node.left;
 						node.left = left.right;
@@ -1187,6 +1274,7 @@ public class BasicGameMaster extends GameMaster {
 						node.right.depth = Math.max(
 								node.right.left == null ? 0 : node.right.left.depth,
 								node.right.right == null ? 0 : node.right.right.depth) + 1;
+						// TODO min
 					} else if (heavy < -1) {
 						// right heavy
 						if ((node.right.left == null ? 0 : node.right.left.depth) > (node.right.right == null ? 0 : node.right.right.depth)) {
@@ -1201,7 +1289,14 @@ public class BasicGameMaster extends GameMaster {
 							node.right.right.depth = Math.max(
 									node.right.right.left == null ? 0 : node.right.right.left.depth,
 									node.right.right.right == null ? 0 : node.right.right.right.depth) + 1;
-							node.right.right.max = node.right.right.right == null ? node.right.right.end : node.right.right.right.max;
+							if (node.right.right.left == null && node.right.right.right == null)
+								node.right.right.min = node.right.right.start;
+							else if (node.right.right.left == null)
+								node.right.right.min = Collections.min(Arrays.asList(node.right.right.start, node.right.right.right.min));
+							else if (node.right.right.right == null)
+								node.right.right.min = Collections.min(Arrays.asList(node.right.right.start, node.right.right.left.min));
+							else
+								node.right.right.min = Collections.min(Arrays.asList(node.right.right.start, node.right.right.left.min, node.right.right.right.min));
 						}
 						SegmentNode<T> right = node.right;
 						node.right = right.left;
@@ -1215,7 +1310,14 @@ public class BasicGameMaster extends GameMaster {
 								node.left.left == null ? 0 : node.left.left.depth,
 								node.left.right == null ? 0 : node.left.right.depth) + 1;
 					}
-					node.max = node.right == null ? node.end : node.right.max;
+					if (node.left == null && node.right == null)
+						node.min = node.start;
+					else if (node.left == null)
+						node.min = Collections.min(Arrays.asList(node.start, node.right.min));
+					else if (node.right == null)
+						node.min = Collections.min(Arrays.asList(node.start, node.left.min));
+					else
+						node.min = Collections.min(Arrays.asList(node.start, node.left.min, node.right.min));
 					node.depth = Math.max(node.left == null ? 0 : node.left.depth, node.right == null ? 0 : node.right.depth) + 1;
 					break;
 				} else {
@@ -1236,7 +1338,14 @@ public class BasicGameMaster extends GameMaster {
 							node.left.left.depth = Math.max(
 									node.left.left.left == null ? 0 : node.left.left.left.depth,
 									node.left.left.right == null ? 0 : node.left.left.right.depth) + 1;
-							node.left.left.max = node.left.left.right == null ? node.left.left.end : node.left.left.right.max;
+							if (node.left.left.left == null && node.left.left.right == null)
+								node.left.left.min = node.left.left.start;
+							else if (node.left.left.left == null)
+								node.left.left.min = Collections.min(Arrays.asList(node.left.left.start, node.left.left.right.min));
+							else if (node.left.left.right == null)
+								node.left.left.min = Collections.min(Arrays.asList(node.left.left.start, node.left.left.left.min));
+							else
+								node.left.left.min = Collections.min(Arrays.asList(node.left.left.start, node.left.left.left.min, node.left.left.right.min));
 						}
 						SegmentNode<T> left = node.left, father = node.father;
 						node.left = left.right;
@@ -1267,7 +1376,14 @@ public class BasicGameMaster extends GameMaster {
 							node.right.right.depth = Math.max(
 									node.right.right.left == null ? 0 : node.right.right.left.depth,
 									node.right.right.right == null ? 0 : node.right.right.right.depth) + 1;
-							node.right.right.max = node.right.right.right == null ? node.right.right.end : node.right.right.right.max;
+							if (node.right.right.left == null && node.right.right.right == null)
+								node.right.right.min = node.right.right.start;
+							else if (node.right.right.left == null)
+								node.right.right.min = Collections.min(Arrays.asList(node.right.right.start, node.right.right.right.min));
+							else if (node.right.right.right == null)
+								node.right.right.min = Collections.min(Arrays.asList(node.right.right.start, node.right.right.left.min));
+							else
+								node.right.right.min = Collections.min(Arrays.asList(node.right.right.start, node.right.right.left.min, node.right.right.right.min));
 						}
 						SegmentNode<T> right = node.right, father = node.father;
 						node.right = right.left;
@@ -1285,24 +1401,29 @@ public class BasicGameMaster extends GameMaster {
 								node.left.left == null ? 0 : node.left.left.depth,
 								node.left.right == null ? 0 : node.left.right.depth) + 1;
 					}
-					node.max = node.right == null ? node.end : node.right.max;
+					if (node.left == null && node.right == null)
+						node.min = node.start;
+					else if (node.left == null)
+						node.min = Collections.min(Arrays.asList(node.start, node.right.min));
+					else if (node.right == null)
+						node.min = Collections.min(Arrays.asList(node.start, node.left.min));
+					else
+						node.min = Collections.min(Arrays.asList(node.start, node.left.min, node.right.min));
 					node.depth = Math.max(node.left == null ? 0 : node.left.depth, node.right == null ? 0 : node.right.depth) + 1;
 					node = node.father;
 				}
 			}
 			return node;	// new root
 		}
-		private SegmentNode<T> find(T value) {
-			SegmentNode<T> result = this;
-			while (true)
-				if (value.compareTo(result.end) <= 0 && value.compareTo(result.start) >= 0)
-					return result;
-				else if (result.left != null && value.compareTo(result.left.max) <= 0)
-					result = left;
-				else if (result.right != null && value.compareTo(result.right.max) <= 0)
-					result = right;
-				else
-					return null;
+		private Set<SegmentNode<T>> find(T value) {
+			Set<SegmentNode<T>> results = new HashSet();
+			if (value.compareTo(end) <= 0 && value.compareTo(start) >= 0)
+				results.add(this);
+			if (left != null && value.compareTo(left.min) >= 0)
+				results.addAll(left.find(value));
+			if (right != null && value.compareTo(right.min) >= 0)
+				results.addAll(right.find(value));
+			return results;
 		}
 	}
 	private static class Pair <A extends Comparable<A>, B extends Comparable<B>, C> implements Comparable<Pair<A, B, C>> {
