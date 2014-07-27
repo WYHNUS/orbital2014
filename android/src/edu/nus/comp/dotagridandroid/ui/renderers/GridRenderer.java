@@ -412,10 +412,22 @@ public class GridRenderer implements Renderer {
 							LIGHT_HEIGHT_OFFSET + terrain[pos[0] + pos[1] * columns],	// 1 should be changed
 							1});
 			if (chars.get(name).getTeamNumber() == mainCharacterTeamNumber) {
-				lightSrc.put(name, new float[]{
+				final float[] config = {
 						lightPos[0] / lightPos[3], lightPos[1] / lightPos[3], lightPos[2] / lightPos[3],
 						1, 1, 1,	// TODO change to hero's color and sight
-						5, 2, chars.get(name).getSight() / (float) (rows > columns ? rows : columns)});
+						5, 2, chars.get(name).getSight() / (float) (rows > columns ? rows : columns)};
+				final float hpRatio = chars.get(name).getCurrentHP() / (float) chars.get(name).getMaxHP();
+				if (hpRatio > .5f)
+					config[5] = hpRatio * 2 - 1;
+				else if (hpRatio > .3f) {
+					config[4] = (hpRatio - .3f) / .2f;
+					config[5] = 0;
+				} else {
+					config[3] = hpRatio / .3f;
+					config[4] = 0;
+					config[5] = 0;
+				}
+				lightSrc.put(name, config);
 				lightOn.put(name, chars.get(name).isAlive());
 				lightGridPosition.put(name, pos);
 				lightGridRange.put(name, chars.get(name).getSight());
@@ -446,7 +458,7 @@ public class GridRenderer implements Renderer {
 		GameState state = manager.getCurrentGameState();
 		final int[] pos = state.getCharacterPosition(state.getPlayerCharacterName());
 		highlightedGridIndex = null;
-		if ("CLEAR-DRAWABLE".equals((String) updates.get("APPLICATION")))
+		if ("CLEAR-DRAWABLE".equals(updates.get("APPLICATION")))
 			graphicsImpl.clearDrawable();
 		if (updates.containsKey("Characters"))
 			prepareObjects();

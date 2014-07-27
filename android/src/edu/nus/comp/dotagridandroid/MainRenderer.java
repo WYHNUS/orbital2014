@@ -65,6 +65,9 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		texture2d.put("DefaultButton", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.button)));
 		image.recycle();
 		System.gc();
+		texture2d.put("WelcomeBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dota2bg)));
+		image.recycle();
+		System.gc();
 		manager.setGraphicsResponder(new GraphicsResponder());
 		r.setGLResourceManager(vBufMan);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));

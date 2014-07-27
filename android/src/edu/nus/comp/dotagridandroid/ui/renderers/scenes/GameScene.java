@@ -13,7 +13,7 @@ public class GameScene implements SceneRenderer {
 	private static final int CELLS_PER_ROW = 3;
 	private static final float CELL_MARGIN = .1f;
 	private static final int MAX_LOG_LENGTH = 10;
-	private static final int MAX_LOG_WIDTH = 50;
+	private static final int MAX_LOG_WIDTH = 60;
 	
 	private static final int MESSAGE_CHAR_PER_ROW = 20;
 	private float[] waitPromptMat;
@@ -71,10 +71,10 @@ public class GameScene implements SceneRenderer {
 		landscape = ratio > 1;
 		if (landscape)
 			waitPromptMat = FlatMatrix4x4Multiplication(
-					FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.1f, .1f * ratio, 1));
+					FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.6f, .6f * ratio, 1));
 		else
 			waitPromptMat = FlatMatrix4x4Multiplication(
-					FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.1f / ratio, .1f, 1));
+					FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.6f / ratio, .6f, 1));
 	}
 
 	@Override
@@ -137,17 +137,6 @@ public class GameScene implements SceneRenderer {
 							FlatScalingMatrix4x4(1f / MAX_LOG_WIDTH / ratio, 1f / MAX_LOG_WIDTH, 1)), null, null);
 		waitLabel.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 		waitLabel.setRenderReady();
-		waitLabel.setText("Processing...");
-		if (landscape)
-			waitLabel.setMVP(
-					FlatMatrix4x4Multiplication(
-							FlatTranslationMatrix4x4(-.05f, -.05f * waitLabel.getYExtreme() / waitLabel.getXExtreme() * ratio, -1),
-							FlatScalingMatrix4x4(.1f / waitLabel.getXExtreme(), .1f / waitLabel.getXExtreme() * ratio, 1)), null, null);
-		else
-			waitLabel.setMVP(
-					FlatMatrix4x4Multiplication(
-							FlatTranslationMatrix4x4(-.05f / ratio, -.05f * waitLabel.getYExtreme() / waitLabel.getXExtreme(), -1),
-							FlatScalingMatrix4x4(.1f / waitLabel.getXExtreme() / ratio, .1f / waitLabel.getXExtreme(), 1)), null, null);
 	}
 	
 	@Override
@@ -366,7 +355,8 @@ public class GameScene implements SceneRenderer {
 		if (hasDialog)
 			drawDialog();
 		log.draw();
-		if (manager.getLongProcessingEventState())
+		if (manager.getLongProcessingEventState() ||
+				!manager.getCurrentGameState().getCurrentCharacterName().equals(manager.getCurrentGameState().getPlayerCharacterName()))
 			drawWait();
 	}
 	
@@ -429,12 +419,27 @@ public class GameScene implements SceneRenderer {
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
+		// configure waitLabel
+		if (state.getPlayerCharacterName().equals(state.getCurrentCharacterName()))
+			waitLabel.setText("Processing...");
+		else
+			waitLabel.setTexts("Wait for your turn,", state.getCurrentCharacterName(),"is playing");
+		if (landscape)
+			waitLabel.setMVP(
+					FlatMatrix4x4Multiplication(
+							FlatTranslationMatrix4x4(-.3f, .3f * waitLabel.getYExtreme() / waitLabel.getXExtreme() * ratio, -1),
+							FlatScalingMatrix4x4(.6f / waitLabel.getXExtreme(), .6f / waitLabel.getXExtreme() * ratio, 1)), null, null);
+		else
+			waitLabel.setMVP(
+					FlatMatrix4x4Multiplication(
+							FlatTranslationMatrix4x4(-.3f / ratio, .3f * waitLabel.getYExtreme() / waitLabel.getXExtreme(), -1),
+							FlatScalingMatrix4x4(.6f / waitLabel.getXExtreme() / ratio, .6f / waitLabel.getXExtreme(), 1)), null, null);
 		waitLabel.draw();
 		new Thread() {
 			@Override
 			public void run() {
 				try {
-					Thread.sleep(200);
+					Thread.sleep(40);
 					responder.updateGraphics();
 				} catch (Exception e) {
 					e.printStackTrace();

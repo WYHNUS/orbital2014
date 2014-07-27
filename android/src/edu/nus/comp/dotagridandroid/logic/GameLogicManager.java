@@ -21,6 +21,8 @@ public class GameLogicManager implements Closeable {
 	private SceneRenderer applicationSceneRenderer;
 	private boolean longProcessingEvent = false;
 	private GraphicsResponder responder;
+	private Map<String, Map<String, Object>> sceneConfigs = new HashMap<>();
+	private String currentSceneKey;
 
 	public GameLogicManager(Context context) {
 		this.context = context;
@@ -92,6 +94,21 @@ public class GameLogicManager implements Closeable {
 	
 	public void setApplicationSceneRenderer(SceneRenderer scene) {
 		applicationSceneRenderer = scene;
+	}
+	
+	public String getCurrentScene() {
+		return currentSceneKey;
+	}
+	
+	public Map<String, Object> getCurrentSceneConfiguration(String name) {
+		return sceneConfigs.get(name);
+	}
+	
+	public void setCurrentScene(String name, Map<String, Object> config) {
+		if (name != null) {
+			sceneConfigs.put(name, config);
+			currentSceneKey = name;
+		}
 	}
 
 	public void processEvent(ControlEvent e) {

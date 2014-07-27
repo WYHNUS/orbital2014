@@ -21,7 +21,6 @@ public class BasicGameMaster extends GameMaster {
 	private Map<String, Object> charsConfig;
 	private Map<Integer, Map<String, Integer>> teamEnemyAttackPrioritised;
 	private int priorityDecreaseRounds;
-	private volatile boolean blockSightMapUpdate = false;
 
 	@Override
 	public void serverNotify() {
@@ -615,7 +614,7 @@ public class BasicGameMaster extends GameMaster {
 					return false;
 				else if (!teamSharedSight.get(state.getCharacters().get(character).getTeamNumber())[targetGrid[0] + targetGrid[1] * state.getGridWidth()])
 					return false;
-				else if ((Integer) state.getCharacterProperty(character, "teamNumber") == (Integer) state.getCharacterProperty(targetCharacter, "teamNumber"))
+				else if ((int) state.getCharacterProperty(character, "teamNumber") == (int) state.getCharacterProperty(targetCharacter, "teamNumber"))
 					return false;	// no friendly fire
 				
 				// structure protection
@@ -807,46 +806,48 @@ public class BasicGameMaster extends GameMaster {
 			if (!target.isAlive()) {
 				state.notifyUpdate(Collections.singletonMap("Log", (Object) ((String) state.getCharacterProperty(targetCharacter, "name") + " was killed.")));
 				state.setCharacterProperty(targetCharacter, "roundsToRevive", 1 + 2 * convertHeroExpToLevel((Integer) state.getCharacterProperty(targetCharacter, "experience")));
+				switch (state.getCharacterType(characterAttacker)) {
+				case GameObject.GAMEOBJECT_TYPE_HERO: {
+					final int level = convertHeroExpToLevel((Integer) state.getCharacterProperty(targetCharacter, "experience"));
+					state.setCharacterProperty(characterAttacker, "money",
+							(Integer) state.getCharacterProperty(characterAttacker, "money") +
+							(Integer) state.getCharacterProperty(targetCharacter, "bountyMoney")
+							);
+					state.setCharacterProperty(characterAttacker, "experience",
+							(Integer) state.getCharacterProperty(characterAttacker, "experience") +
+							level == 1 ? 100 : level == 2 ? 120 : level == 3 ? 160 : level == 4 ? 220 : level == 5 ? 300 : 300 + (level - 5) * 100
+							);
+				}
+				}
 			}
 			teamEnemyAttackPrioritised.get(state.getCharacterProperty(targetCharacter, "teamNumber")).put(characterAttacker, priorityDecreaseRounds);
-			switch (state.getCharacterType(characterAttacker)) {
-			case GameObject.GAMEOBJECT_TYPE_HERO: {
-				final int level = convertHeroExpToLevel((Integer) state.getCharacterProperty(targetCharacter, "experience"));
-				state.setCharacterProperty(characterAttacker, "money",
-						(Integer) state.getCharacterProperty(targetCharacter, "money") +
-						(Integer) state.getCharacterProperty(targetCharacter, "bountyMoney")
-						);
-				state.setCharacterProperty(characterAttacker, "experience",
-						(Integer) state.getCharacterProperty(targetCharacter, "experience") +
-						level == 1 ? 100 : level == 2 ? 120 : level == 3 ? 160 : level == 4 ? 220 : level == 5 ? 300 : 300 + (level - 5) * 100
-//						(Integer) state.getCharacterProperty(targetCharacter, "bountyExp")
-						);
-			}
-			}
 			break;
 		case GameObject.GAMEOBJECT_TYPE_LINECREEP:
 			if (!state.getCharacters().get(targetCharacter).isAlive()) {
 				state.notifyUpdate(Collections.singletonMap("Log", (Object) ((String) state.getCharacterProperty(targetCharacter, "name") + " was killed.")));
+				switch (state.getCharacterType(characterAttacker)) {
+				case GameObject.GAMEOBJECT_TYPE_HERO:
+					state.setCharacterProperty(characterAttacker, "money", (Integer) state.getCharacterProperty(targetCharacter, "bountyMoney"));
+					state.setCharacterProperty(characterAttacker, "experience", (Integer) state.getCharacterProperty(targetCharacter, "bountyExp"));
+					break;
+				}
 				state.removeCharacter(targetCharacter);
 			}
-			switch (state.getCharacterType(characterAttacker)) {
-			case GameObject.GAMEOBJECT_TYPE_HERO:
-				state.setCharacterProperty(characterAttacker, "money", (Integer) state.getCharacterProperty(targetCharacter, "bountyMoney"));
-				state.setCharacterProperty(characterAttacker, "experience", (Integer) state.getCharacterProperty(targetCharacter, "bountyExp"));
-				break;
-			}
 			break;
-		}
-		switch (state.getCharacterType(characterAttacker)) {
-		case GameObject.GAMEOBJECT_TYPE_HERO:
-			state.setCharacterProperty(characterAttacker, "money",
-					(Integer) state.getCharacterProperty(targetCharacter, "money") +
-					(Integer) state.getCharacterProperty(targetCharacter, "bountyMoney")
-					);
-			state.setCharacterProperty(characterAttacker, "experience",
-					(Integer) state.getCharacterProperty(targetCharacter, "experience") +
-					(Integer) state.getCharacterProperty(targetCharacter, "bountyExp")
-					);
+		case GameObject.GAMEOBJECT_TYPE_TOWER:
+		case GameObject.GAMEOBJECT_TYPE_BARRACK:
+		case GameObject.GAMEOBJECT_TYPE_ANCIENT:
+			if (!state.getCharacters().get(targetCharacter).isAlive()) {
+				state.setCharacterProperty(targetCharacter, "roundsToRevive", -1);
+				state.notifyUpdate(Collections.singletonMap("Log", (Object) ((String) state.getCharacterProperty(targetCharacter, "name") + " was destroyed.")));
+				switch (state.getCharacterType(characterAttacker)) {
+				case GameObject.GAMEOBJECT_TYPE_HERO:
+					state.setCharacterProperty(characterAttacker, "money", (Integer) state.getCharacterProperty(targetCharacter, "bountyMoney"));
+					state.setCharacterProperty(characterAttacker, "experience", (Integer) state.getCharacterProperty(targetCharacter, "bountyExp"));
+					break;
+				}
+				// don't remove
+			}
 		}
 		if (!target.isAlive())
 			refreshSightMaps();
@@ -861,12 +862,30 @@ public class BasicGameMaster extends GameMaster {
 			else
 				teamSharedSight.put(teamNumber, new boolean[state.getGridHeight() * state.getGridWidth()]);
 		int count = 0;
+		final Thread[] pool = new Thread[3];
 		for (Map.Entry<String, GameCharacter> entry : state.getCharacters().entrySet())
 			if (entry.getValue().getObjectType() != GameObject.GAMEOBJECT_TYPE_TREE) {
+				if (count == pool.length)
+					count = 0;
+				if (pool[count] != null)
+					try {pool[count].join();} catch (InterruptedException e){}
+				pool[count] = new Thread() {
+					private String name;
+					private boolean[] map;
+					@Override
+					public void run() {
+						getSight(name, map);
+					}
+					public Thread initiate(String name, boolean[] map) {
+						this.name = name; this.map = map;
+						start();
+						return this;
+					}
+				}.initiate(entry.getKey(), teamSharedSight.get(entry.getValue().getTeamNumber()));
+//				getSight(entry.getKey(), teamSharedSight.get(entry.getValue().getTeamNumber()));
 				count++;
-				getSight(entry.getKey(), teamSharedSight.get(entry.getValue().getTeamNumber()));
 			}
-		System.out.println("SightMap took " + (System.currentTimeMillis() - time) + "ms, count=" + count);
+		System.out.println("SightMap took " + (System.currentTimeMillis() - time));
 	}
 
 	// move to checkpoint
@@ -1099,9 +1118,7 @@ public class BasicGameMaster extends GameMaster {
 	}
 	
 	private void getSight(String name, boolean[] map) {
-		long time = System.currentTimeMillis();
 		final int width = state.getGridWidth(), height = state.getGridHeight();
-//		final BitSet map = new BitSet();
 		SegmentNode<Double> shadow = null;
 		final int[] pos = state.getCharacterPosition(name);
 		if (pos != null) {
@@ -1142,7 +1159,6 @@ public class BasicGameMaster extends GameMaster {
 				}
 			}
 		}
-		System.out.println("getSight " + name + " =" + (System.currentTimeMillis() - time));
 	}
 	private static double getAngle(double sinVal, double cosVal) {
 		if (sinVal >= 0)
