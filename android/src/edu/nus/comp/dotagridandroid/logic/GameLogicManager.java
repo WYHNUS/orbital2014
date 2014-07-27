@@ -5,6 +5,8 @@ import java.util.concurrent.*;
 
 import android.content.Context;
 import edu.nus.comp.dotagridandroid.Closeable;
+import edu.nus.comp.dotagridandroid.MainRenderer;
+import edu.nus.comp.dotagridandroid.MainRenderer.GraphicsResponder;
 import edu.nus.comp.dotagridandroid.appsupport.*;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
@@ -17,6 +19,8 @@ public class GameLogicManager implements Closeable {
 	private SoundEngine se;
 	private GameServer currentServer;
 	private SceneRenderer applicationSceneRenderer;
+	private boolean longProcessingEvent = false;
+	private GraphicsResponder responder;
 
 	public GameLogicManager(Context context) {
 		this.context = context;
@@ -93,10 +97,20 @@ public class GameLogicManager implements Closeable {
 	public void processEvent(ControlEvent e) {
 		if ((e.type & ControlEvent.TYPE_INTERPRETED) == 0)
 			return;
+		longProcessingEvent  = true;
+		responder.updateGraphics();
 		if ("APPLICATION".equals(e.extendedType)) {
 			// application data
 			applicationSceneRenderer.notifyUpdate(Collections.singletonMap("APPLICATION", (Object) e.data.extendedData));
 		} else if (currentState != null)
 			currentState.processEvent(e);
+		longProcessingEvent = false;
+	}
+	
+	public boolean getLongProcessingEventState() {
+		return longProcessingEvent;
+	}
+	public void setGraphicsResponder(MainRenderer.GraphicsResponder responder) {
+		this.responder = responder;
 	}
 }

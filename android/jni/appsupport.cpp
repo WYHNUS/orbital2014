@@ -26,35 +26,6 @@ void testSoundEngine() {
 	SoundEngine::Destroy(se);
 }
 
-/*void testGL() {
-	GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-	GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-	char const *vsSrc = "attribute vec4 vPosition;void main() {gl_Position=vPosition;}",
-			*fsSrc = "precision mediump float;void main(){gl_FragColor=vec4(1,1,1,1);}";
-	glShaderSource(vs, 1, &vsSrc,NULL);
-	glShaderSource(fs, 1, &fsSrc,NULL);
-	glCompileShader(vs); glCompileShader(fs);
-	GLuint prog = glCreateProgram();
-	glAttachShader(prog,vs); glAttachShader(prog,fs);
-	glLinkProgram(prog);
-	glUseProgram(prog);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	GLuint pos = glGetAttribLocation(prog,"vPosition");
-	const float vertices[] = {
-			-.5,-.5,1,1,
-			-.5,.5,1,1,
-			.5,-.5,1,1,
-			.5,.5,1,1
-	};
-	glVertexAttribPointer(pos,4,GL_FLOAT,false,0,vertices);
-	glEnableVertexAttribArray(pos);
-	glDrawArrays(GL_TRIANGLE_STRIP,0,4);
-	glDisableVertexAttribArray(pos);
-	glDeleteProgram(prog);
-	glDeleteShader(vs);
-	glDeleteShader(fs);
-}*/
-
 void setupExtensionCallback(JNIEnv *env, jobject obj, ExtensionEngine *ee) {
 	ee->notifyUpdateCallback = [=](const std::string &update) {
 		jclass clazz = env->FindClass("edu/nus/comp/dotagridandroid/appsupport/ExtensionEngine");

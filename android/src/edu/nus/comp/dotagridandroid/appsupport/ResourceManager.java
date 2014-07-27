@@ -26,23 +26,38 @@ public class ResourceManager implements Closeable{
 	}
 	
 	public int getTexture(String name) {
-		return (int) getTextureHandler(ptr, name);
+		if (name == null)
+			return 0;
+		else
+			return (int) getTextureHandler(ptr, name);
 	}
 	
 	public int getTextureWidth(String name) {
-		return (int) getTextureWidth(ptr, name);
+		if (name == null)
+			return 0;
+		else
+			return (int) getTextureWidth(ptr, name);
 	}
 
 	public int getTextureHeight(String name) {
-		return (int) getTextureHeight(ptr, name);
+		if (name == null)
+			return 0;
+		else
+			return (int) getTextureHeight(ptr, name);
 	}
 	
 	public int getModel(String name) {
-		return (int) getModelHandler(ptr, name);
+		if (name == null)
+			return 0;
+		else
+			return (int) getModelHandler(ptr, name);
 	}
 	
 	public int getModelSize(String name) {
-		return (int) getModelSize(ptr, name);
+		if (name == null)
+			return 0;
+		else
+			return (int) getModelSize(ptr, name);
 	}
 	
 	public String getAllScript() {

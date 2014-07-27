@@ -372,7 +372,6 @@ public class GridRenderer implements Renderer {
 		}
 	}
 	private void prepareObjects() {
-//		graphicsImpl.clearDrawable();
 		final GameState state = manager.getCurrentGameState();
 		final Map<String, GameCharacter> chars = state.getCharacters();
 		final String mainCharacter = state.getPlayerCharacterName();
@@ -399,7 +398,6 @@ public class GridRenderer implements Renderer {
 			final float scalingFactor = Math.min(1f / columns, 1f / rows);
 			drawableModels.put(name, FlatMatrix4x4Multiplication(
 					FlatTranslationMatrix4x4(2f / columns * pos[0] - 1,2f / rows * pos[1] - 1, terrain[pos[0] + pos[1] * columns]),
-//					FlatScalingMatrix4x4(1f / columns, 1f / rows, .1f),
 					scalingFactor < BOARD_Z_COORD / 2 ? FlatScalingMatrix4x4(scalingFactor, scalingFactor, scalingFactor / BOARD_Z_COORD / 2) : FlatScalingMatrix4x4(BOARD_Z_COORD / 2, BOARD_Z_COORD / 2, .5f),
 					FlatTranslationMatrix4x4(1,1,1)));
 			graphicsImpl.setDrawable(name, state.getModelTexture(drawableTextures.get(name)).getTexture(),
@@ -446,7 +444,7 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
 		GameState state = manager.getCurrentGameState();
-		final int[] pos = state.getCharacterPosition(state.getCurrentCharacterName());
+		final int[] pos = state.getCharacterPosition(state.getPlayerCharacterName());
 		highlightedGridIndex = null;
 		if ("CLEAR-DRAWABLE".equals((String) updates.get("APPLICATION")))
 			graphicsImpl.clearDrawable();
@@ -455,8 +453,7 @@ public class GridRenderer implements Renderer {
 		if (updates.containsKey("HighlightGrid")) {
 			int c;
 			List<Object> grids = (List<Object>) updates.get("HighlightGrid");
-			if (state.getPlayerCharacterName().equals(state.getCurrentCharacterName())
-					&& pos != null) {
+			if (pos != null) {
 				highlightedGridIndex = new int[grids.size() + 1][2];
 				highlightedGridIndex[0][0] = pos[0];
 				highlightedGridIndex[0][1] = pos[1];
@@ -471,8 +468,7 @@ public class GridRenderer implements Renderer {
 				c++;
 			}
 			graphicsImpl.setHighlightedGrid(true, highlightedGridIndex);
-		} else if (state.getPlayerCharacterName().equals(state.getCurrentCharacterName())
-					&& pos != null)
+		} else if (pos != null)
 			graphicsImpl.setHighlightedGrid(true, new int[][]{pos});
 		else
 			graphicsImpl.setHighlightedGrid(false, null);
@@ -520,8 +516,8 @@ public class GridRenderer implements Renderer {
 			}
 		return true;
 	}
-	// draw functions
-	/*private void drawGrid() {
+	/*// draw functions
+	private void drawGrid() {
 		int vOffset = vBufMan.getVertexBufferOffset("GridPointBuffer"),
 			iOffset = vBufMan.getIndexBufferOffset("GridPointMeshIndex");
 		int vPosition = glGetAttribLocation(gridProgram.getProgramId(), "vPosition"),
@@ -723,7 +719,8 @@ public class GridRenderer implements Renderer {
 			}
 		}
 		glDisableVertexAttribArray(vPosition);
-	}*/
+	}
+	*/
 	@Override
 	public void draw() {
 //		drawMap();
@@ -1027,7 +1024,6 @@ public class GridRenderer implements Renderer {
 				};
 		hasSelection = (orgGridIndex[0] >= 0 && orgGridIndex[0] < columns && orgGridIndex[1] >= 0 && orgGridIndex[1] < rows);
 		graphicsImpl.setSelectedGrid(hasSelection, orgGridIndex);
-		// TODO Move hero
 		if (hasSelection) {
 			ControlEvent newevt = new ControlEvent(ControlEvent.TYPE_INTERPRETED, e.data);
 			newevt.extendedType = "ChooseGrid";
@@ -1043,7 +1039,7 @@ public class GridRenderer implements Renderer {
 	@Override
 	public void close() {
 		// delete buffers
-		graphicsImpl.close();
+//		graphicsImpl.close();
 		mapProgram.close();
 		gridProgram.close();
 		shadowProgram.close();

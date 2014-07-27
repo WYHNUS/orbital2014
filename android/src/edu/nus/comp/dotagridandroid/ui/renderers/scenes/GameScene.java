@@ -16,6 +16,7 @@ public class GameScene implements SceneRenderer {
 	private static final int MAX_LOG_WIDTH = 50;
 	
 	private static final int MESSAGE_CHAR_PER_ROW = 20;
+	private float[] waitPromptMat;
 	
 	private MainSceneRenderer mainRenderer;
 	private GameLogicManager manager;
@@ -26,7 +27,7 @@ public class GameScene implements SceneRenderer {
 	private GLResourceManager vBufMan;
 	// resources
 	private Renderer grid, status, eventCapturer;
-	private TextRenderer log;
+	private TextRenderer log, waitLabel;
 	private final Map<String, Renderer> dialogControl = new LinkedHashMap<>();	// IMPORTANT: necessary to maintain order of drawing
 	private float[] dialogMat;
 	private GenericProgram dialogProgram;
@@ -37,6 +38,7 @@ public class GameScene implements SceneRenderer {
 	public GameScene () {
 		dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
 		log = new TextRenderer();
+		waitLabel = new TextRenderer();
 	}
 	
 	@Override
@@ -48,6 +50,7 @@ public class GameScene implements SceneRenderer {
 	public void setGLResourceManager(GLResourceManager manager) {
 		this.vBufMan = manager;
 		log.setGLResourceManager(manager);
+		waitLabel.setGLResourceManager(manager);
 	}
 
 	@Override
@@ -57,25 +60,35 @@ public class GameScene implements SceneRenderer {
 	public void setTexture2D(Map<String, Texture2D> textures) {
 		this.textures = textures;
 		log.setTexture2D(textures);
+		waitLabel.setTexture2D(textures);
 	}
 
 	@Override
 	public void setAspectRatio(float ratio) {
 		this.ratio = ratio;
 		log.setAspectRatio(ratio);
+		waitLabel.setAspectRatio(ratio);
 		landscape = ratio > 1;
+		if (landscape)
+			waitPromptMat = FlatMatrix4x4Multiplication(
+					FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.1f, .1f * ratio, 1));
+		else
+			waitPromptMat = FlatMatrix4x4Multiplication(
+					FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.1f / ratio, .1f, 1));
 	}
 
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {
 		this.manager = manager;
 		log.setGameLogicManager(manager);
+		waitLabel.setGameLogicManager(manager);
 	}
 
 	@Override
 	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {
 		this.responder = mainRenderer;
 		log.setGraphicsResponder(mainRenderer);
+		waitLabel.setGraphicsResponder(mainRenderer);
 	}
 
 	@Override
@@ -116,12 +129,25 @@ public class GameScene implements SceneRenderer {
 			log.setMVP(
 					FlatMatrix4x4Multiplication(
 							FlatTranslationMatrix4x4(-1, 1, -1),
-							FlatScalingMatrix4x4(ratio/ MAX_LOG_WIDTH, 1f / MAX_LOG_WIDTH, 1)), null, null);
+							FlatScalingMatrix4x4(1f / MAX_LOG_WIDTH, 1f / MAX_LOG_WIDTH * ratio, 1)), null, null);
 		else
 			log.setMVP(
 					FlatMatrix4x4Multiplication(
 							FlatTranslationMatrix4x4(-1, 1, -1),
-							FlatScalingMatrix4x4(1f / MAX_LOG_WIDTH, 1f / MAX_LOG_WIDTH / ratio, 1)), null, null);
+							FlatScalingMatrix4x4(1f / MAX_LOG_WIDTH / ratio, 1f / MAX_LOG_WIDTH, 1)), null, null);
+		waitLabel.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		waitLabel.setRenderReady();
+		waitLabel.setText("Processing...");
+		if (landscape)
+			waitLabel.setMVP(
+					FlatMatrix4x4Multiplication(
+							FlatTranslationMatrix4x4(-.05f, -.05f * waitLabel.getYExtreme() / waitLabel.getXExtreme() * ratio, -1),
+							FlatScalingMatrix4x4(.1f / waitLabel.getXExtreme(), .1f / waitLabel.getXExtreme() * ratio, 1)), null, null);
+		else
+			waitLabel.setMVP(
+					FlatMatrix4x4Multiplication(
+							FlatTranslationMatrix4x4(-.05f / ratio, -.05f * waitLabel.getYExtreme() / waitLabel.getXExtreme(), -1),
+							FlatScalingMatrix4x4(.1f / waitLabel.getXExtreme() / ratio, .1f / waitLabel.getXExtreme(), 1)), null, null);
 	}
 	
 	@Override
@@ -337,44 +363,86 @@ public class GameScene implements SceneRenderer {
 	public void draw() {
 		grid.draw();
 		status.draw();
-		drawDialog();
+		if (hasDialog)
+			drawDialog();
 		log.draw();
+		if (manager.getLongProcessingEventState())
+			drawWait();
 	}
 	
 	private void drawDialog() {
 		// draw background
-		if (hasDialog) {
-			final int
-				vPosition = glGetAttribLocation(dialogProgram.getProgramId(), "vPosition"),
-				textureCoord = glGetAttribLocation(dialogProgram.getProgramId(), "textureCoord"),
-				textureLocation = glGetUniformLocation(dialogProgram.getProgramId(), "texture"),
-				mModel = glGetUniformLocation(dialogProgram.getProgramId(), "model"),
-				mView = glGetUniformLocation(dialogProgram.getProgramId(), "view"),
-				mProjection = glGetUniformLocation(dialogProgram.getProgramId(), "projection"),
-				vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
-				vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
-				iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
-			glUseProgram(dialogProgram.getProgramId());
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, textures.get("DialogBackground").getTexture());
-			glUniform1i(textureLocation, 0);
-			glUniformMatrix4fv(mModel, 1, false, dialogMat, 0);
-			glUniformMatrix4fv(mView, 1, false, IdentityMatrix4x4(), 0);
-			glUniformMatrix4fv(mProjection, 1, false, IdentityMatrix4x4(), 0);
-			glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
-			glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
-			glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
-			glEnableVertexAttribArray(vPosition);
-			glEnableVertexAttribArray(textureCoord);
-			glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
-			glDisableVertexAttribArray(vPosition);
-			glDisableVertexAttribArray(textureCoord);
-			for (Renderer r : dialogControl.values())
-				r.draw();
-		}
+		final int
+			vPosition = glGetAttribLocation(dialogProgram.getProgramId(), "vPosition"),
+			textureCoord = glGetAttribLocation(dialogProgram.getProgramId(), "textureCoord"),
+			textureLocation = glGetUniformLocation(dialogProgram.getProgramId(), "texture"),
+			mModel = glGetUniformLocation(dialogProgram.getProgramId(), "model"),
+			mView = glGetUniformLocation(dialogProgram.getProgramId(), "view"),
+			mProjection = glGetUniformLocation(dialogProgram.getProgramId(), "projection"),
+			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
+			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
+			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
+		glUseProgram(dialogProgram.getProgramId());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures.get("DialogBackground").getTexture());
+		glUniform1i(textureLocation, 0);
+		glUniformMatrix4fv(mModel, 1, false, dialogMat, 0);
+		glUniformMatrix4fv(mView, 1, false, IdentityMatrix4x4(), 0);
+		glUniformMatrix4fv(mProjection, 1, false, IdentityMatrix4x4(), 0);
+		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
+		glEnableVertexAttribArray(vPosition);
+		glEnableVertexAttribArray(textureCoord);
+		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+		glDisableVertexAttribArray(vPosition);
+		glDisableVertexAttribArray(textureCoord);
+		for (Renderer r : dialogControl.values())
+			r.draw();
 	}
 
+	private void drawWait() {
+		final int
+			vPosition = glGetAttribLocation(dialogProgram.getProgramId(), "vPosition"),
+			textureCoord = glGetAttribLocation(dialogProgram.getProgramId(), "textureCoord"),
+			textureLocation = glGetUniformLocation(dialogProgram.getProgramId(), "texture"),
+			mModel = glGetUniformLocation(dialogProgram.getProgramId(), "model"),
+			mView = glGetUniformLocation(dialogProgram.getProgramId(), "view"),
+			mProjection = glGetUniformLocation(dialogProgram.getProgramId(), "projection"),
+			vOffset = vBufMan.getVertexBufferOffset("GenericFullSquare"),
+			vTOffset = vBufMan.getVertexBufferOffset("GenericFullSquareTextureYInverted"),
+			iOffset = vBufMan.getIndexBufferOffset("GenericFullSquareIndex");
+		glUseProgram(dialogProgram.getProgramId());
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textures.get("DialogBackground").getTexture());
+		glUniform1i(textureLocation, 0);
+		glUniformMatrix4fv(mModel, 1, false, waitPromptMat, 0);
+		glUniformMatrix4fv(mView, 1, false, IdentityMatrix4x4(), 0);
+		glUniformMatrix4fv(mProjection, 1, false, IdentityMatrix4x4(), 0);
+		glBindBuffer(GL_ARRAY_BUFFER, vBufMan.getVertexBuffer());
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vBufMan.getIndexBuffer());
+		glVertexAttribPointer(vPosition, 4, GL_FLOAT, false, 0, vOffset);
+		glVertexAttribPointer(textureCoord, 2, GL_FLOAT, false, 0, vTOffset);
+		glEnableVertexAttribArray(vPosition);
+		glEnableVertexAttribArray(textureCoord);
+		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
+		glDisableVertexAttribArray(vPosition);
+		glDisableVertexAttribArray(textureCoord);
+		waitLabel.draw();
+		new Thread() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(200);
+					responder.updateGraphics();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}.start();
+	}
+	
 	@Override
 	public boolean passEvent(ControlEvent e) {
 		if (eventCapturer == null) {
@@ -407,8 +475,6 @@ public class GameScene implements SceneRenderer {
 			grid.close();
 		if (status != null)
 			status.close();
-//		if (manager != null)
-//			manager.getCurrentGameState().close();
 		dialogProgram.close();
 	}
 

@@ -56,19 +56,16 @@ public class MainRenderer implements GLSurfaceView.Renderer, Closeable {
 		// TODO: change resource name
 		// TODO: allow decoding from network, stream, files etc (to be done in GameState)
 		Bitmap image;
-		texture2d.put("GridMapBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.reimu_original)));
-		image.recycle();
-		System.gc();
 		texture2d.put("DefaultTextFontMap", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.textmap)));
 		image.recycle();
 		System.gc();
-		texture2d.put("StatusControlBackground", texture2d.get("GridMapBackground"));//new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dota2bg)));
-		texture2d.put("DialogBackground", texture2d.get("GridMapBackground"));
+		texture2d.put("DialogBackground", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.dialogbg)));
 //		image.recycle();
 		System.gc();
 		texture2d.put("DefaultButton", new Texture2D(image = BitmapFactory.decodeResource(context.getResources(), R.drawable.button)));
 		image.recycle();
 		System.gc();
+		manager.setGraphicsResponder(new GraphicsResponder());
 		r.setGLResourceManager(vBufMan);
 		r.setTexture2D(Collections.unmodifiableMap(texture2d));
 		r.setGameLogicManager(manager);
