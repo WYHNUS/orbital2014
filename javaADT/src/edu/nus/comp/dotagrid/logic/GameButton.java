@@ -60,9 +60,11 @@ public class GameButton{
 	}
 	
 	public void setImage(String imageName) {
-		this.image = new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/Game Icon/" + imageName + ".jpg")).getImage();
 		if (!imageName.equals("")) {
 			this.setIsReadyToDrawImage(true);
+			this.image = new ImageIcon(getClass().getResource("/edu/nus/comp/dotagrid/res/Game Icon/" + imageName + ".jpg")).getImage();
+		} else {
+			this.image = null;
 		}
 	}
 	

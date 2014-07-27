@@ -576,7 +576,14 @@ public class CharacterActions {
 		
 		// get the AP required for one physical attack
 		int usedAP = calculateAttackUsedAP();
-				
+
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer()) {
+			System.out.println("hero current hp = " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP());
+			System.out.println("attack = " + attack);
+			System.out.println("set current hp = " + (int) (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() - attack));
+			System.out.println("hero max hp = " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getmaxHP());
+		}
+		
 		// perform attack action
 		GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP((int) (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
 				- attack));
@@ -699,6 +706,9 @@ public class CharacterActions {
 			// reset hero's HP
 			((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).setCurrentHP(
 					((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).getmaxHP());
+			
+			// set player's alive status
+			((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).setAlive(true);
 						
 			// reset hero's MP
 			((Hero)GridFrame.gridButtonMap[xPos][yPos].getCharacter()).setCurrentMP(
@@ -710,7 +720,7 @@ public class CharacterActions {
 			
 			// check if the dead hero is player's hero
 			if (GridFrame.gridButtonMap[xPos][yPos].getIsPlayer() == true) {
-				JOptionPane.showMessageDialog(null, "You have been slaved.");
+				JOptionPane.showMessageDialog(null, "You have been slayed.");
 				Screen.user.player.setXPos(Screen.user.playerStartingXPos);
 				Screen.user.player.setYPos(Screen.user.playerStartingYPos);
 			}

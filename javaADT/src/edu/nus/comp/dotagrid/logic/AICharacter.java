@@ -39,6 +39,8 @@ public class AICharacter {
 		AISightMap = new boolean[2 * sight + 1][2 * sight + 1];
 		isAttack = false;
 		
+		updateAISightMap();
+		
 		if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof LineCreep){
 			System.out.println("LineCreep AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
 			System.out.println("Starting Position :  XPos = " + startingXPos + "     YPos = " + startingYPos);
@@ -49,7 +51,6 @@ public class AICharacter {
 				
 				boolean prepareForAttack = false;
 				// line creep AI
-				updateAISightMap();
 				searchForInSightEnemies();
 				sortEnemiesList(inSightEnemyPos);
 				
@@ -101,7 +102,6 @@ public class AICharacter {
 				boolean prepareForAttack = false;
 				
 				// check and attack enemy
-				updateAISightMap();
 				searchEnemiesForNeutralCreep();
 				
 				while (!inSightEnemyPos.isEmpty() && !endRound) {
