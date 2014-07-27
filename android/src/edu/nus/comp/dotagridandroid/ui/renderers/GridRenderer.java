@@ -445,22 +445,36 @@ public class GridRenderer implements Renderer {
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
+		GameState state = manager.getCurrentGameState();
+		final int[] pos = state.getCharacterPosition(state.getCurrentCharacterName());
 		highlightedGridIndex = null;
 		if ("CLEAR-DRAWABLE".equals((String) updates.get("APPLICATION")))
 			graphicsImpl.clearDrawable();
 		if (updates.containsKey("Characters"))
 			prepareObjects();
 		if (updates.containsKey("HighlightGrid")) {
+			int c;
 			List<Object> grids = (List<Object>) updates.get("HighlightGrid");
-			highlightedGridIndex = new int[grids.size()][2];
-			int c = 0;
+			if (state.getPlayerCharacterName().equals(state.getCurrentCharacterName())
+					&& pos != null) {
+				highlightedGridIndex = new int[grids.size() + 1][2];
+				highlightedGridIndex[0][0] = pos[0];
+				highlightedGridIndex[0][1] = pos[1];
+				c = 1;
+			} else {
+				highlightedGridIndex = new int[grids.size()][2];
+				c = 0;
+			}
 			for (Object grid : grids) {
 				highlightedGridIndex[c][0] = ((Number) ((List<Object>) grid).get(0)).intValue();
 				highlightedGridIndex[c][1] = ((Number) ((List<Object>) grid).get(1)).intValue();
 				c++;
 			}
 			graphicsImpl.setHighlightedGrid(true, highlightedGridIndex);
-		} else
+		} else if (state.getPlayerCharacterName().equals(state.getCurrentCharacterName())
+					&& pos != null)
+			graphicsImpl.setHighlightedGrid(true, new int[][]{pos});
+		else
 			graphicsImpl.setHighlightedGrid(false, null);
 		responder.updateGraphics();
 	}

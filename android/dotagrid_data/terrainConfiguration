@@ -6,7 +6,7 @@
 		"type" : "fixed",
 		"heights": [
 		],
-		"types":[/*
+		"types":[
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
@@ -106,7 +106,7 @@
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
 			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,
-			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4*/
+			4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4
 		],
 		"treeModel" : "Tree",
 		"treeClusteredModel" : "TreeClustered"
@@ -536,7 +536,7 @@
 			"front" : 0,
 			"type" : "melee",
 			"position" : [5, 31],
-			"model" : "MeleeBarrack"
+			"model" : "SentinelMeleeBarrack"
 		},
 		{
 			"name" : "sentinelMidMeleeBarrack",
@@ -544,7 +544,7 @@
 			"front" : 1,
 			"type" : "melee",
 			"position" : [20, 27],
-			"model" : "MeleeBarrack"
+			"model" : "SentinelMeleeBarrack"
 		},
 		{
 			"name" : "sentinelBotMeleeBarrack",
@@ -552,7 +552,7 @@
 			"front" : 2,
 			"type" : "melee",
 			"position" : [29, 12],
-			"model" : "MeleeBarrack"
+			"model" : "SentinelMeleeBarrack"
 		},
 		{
 			"name" : "sentinelTopRangedBarrack",
@@ -560,7 +560,7 @@
 			"front" : 0,
 			"type" : "ranged",
 			"position" : [11, 31],
-			"model" : "RangedBarrack"
+			"model" : "SentinelRangedBarrack"
 		},
 		{
 			"name" : "sentinelMidRangedBarrack",
@@ -568,7 +568,7 @@
 			"front" : 1,
 			"type" : "ranged",
 			"position" : [26, 21],
-			"model" : "RangedBarrack"
+			"model" : "SentinelRangedBarrack"
 		},
 		{
 			"name" : "sentinelBotRangedBarrack",
@@ -576,7 +576,7 @@
 			"front" : 2,
 			"type" : "ranged",
 			"position" : [29, 6],
-			"model" : "RangedBarrack"
+			"model" : "SentinelRangedBarrack"
 		},
 
 		{
@@ -585,7 +585,7 @@
 			"front" : 0,
 			"type" : "melee",
 			"position" : [70, 93],
-			"model" : "MeleeBarrack"
+			"model" : "ScourgeMeleeBarrack"
 		},
 		{
 			"name" : "scourgeMidMeleeBarrack",
@@ -593,7 +593,7 @@
 			"front" : 1,
 			"type" : "melee",
 			"position" : [73, 78],
-			"model" : "MeleeBarrack"
+			"model" : "ScourgeMeleeBarrack"
 		},
 		{
 			"name" : "scourgeBotMeleeBarrack",
@@ -601,7 +601,7 @@
 			"front" : 2,
 			"type" : "melee",
 			"position" : [88, 68],
-			"model" : "MeleeBarrack"
+			"model" : "ScourgeMeleeBarrack"
 		},
 		{
 			"name" : "scourgeTopRangedBarrack",
@@ -609,7 +609,7 @@
 			"front" : 0,
 			"type" : "ranged",
 			"position" : [70, 87],
-			"model" : "RangedBarrack"
+			"model" : "ScourgeRangedBarrack"
 		},
 		{
 			"name" : "scourgeMidRangedBarrack",
@@ -617,7 +617,7 @@
 			"front" : 1,
 			"type" : "ranged",
 			"position" : [79, 72],
-			"model" : "RangedBarrack"
+			"model" : "ScourgeRangedBarrack"
 		},
 		{
 			"name" : "scourgeBotRangedBarrack",
@@ -625,7 +625,7 @@
 			"front" : 2,
 			"type" : "ranged",
 			"position" : [94, 68],
-			"model" : "RangedBarrack"
+			"model" : "ScourgeRangedBarrack"
 		}
 	],
 	"teams" : [
@@ -650,7 +650,7 @@
 				"startingHP" : 4250,
 				"startingPhysicalDefence" : 15,
 				"type" : "ancient",
-				"model" : "AncientBuilding"
+				"model" : "SentinelAncientBuilding"
 			},
 			"heroSpawnPoint" : [7, 8],
 			"fountain" : "sentinelFountain",
@@ -801,7 +801,7 @@
 				"startingHP" : 4250,
 				"startingPhysicalDefence" : 15,
 				"type" : "base",
-				"model" : "AncientBuilding"
+				"model" : "ScourgeAncientBuilding"
 			},
 			"heroSpawnPoint" : [92, 91],
 			"fountain" : "scougeFountain",

@@ -1,12 +1,13 @@
 {
 	"heroConfiguration" : {
 		"MyHero" : {
-			"characterImage" : "MyHeroModel"
+			"characterImage" : "MyHeroModel",
+			"characterThumbnail" : "SampleThumbnail"
 		}
 	},
 	"creepConfiguration" : {
 		"sentinelMeleeCreep" : {
-			"characterImage" : "MeleeCreep",
+			"characterImage" : "SentinelMeleeCreep",
 			"bountyMoney" : 44,
 			"boutyExp" : 62,
 			"startingHP" : 550,
@@ -25,7 +26,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 1
 		},
 		"sentinelRangedCreep" : {
-			"characterImage" : "RangedCreep",
+			"characterImage" : "SentinelRangedCreep",
 			"bountyMoney" : 49,
 			"startingHP" : 300,
 			"startingMP" : 300,
@@ -43,7 +44,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"sentinelSiegeCreep" : {
-			"characterImage" : "SiegeCreep",
+			"characterImage" : "SentinelSiegeCreep",
 			"bountyMoney" : 74,
 			"startingHP" : 500,
 			"startingMP" : 0,
@@ -61,7 +62,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"sentinelSuperMeleeCreep" : {
-			"characterImage" : "SuperMeleeCreep",
+			"characterImage" : "SentinelSuperMeleeCreep",
 			"bountyMoney" : 22,
 			"boutyExp" : 62,
 			"startingMP" : 0,
@@ -80,7 +81,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"sentinelSuperRangedCreep" : {
-			"characterImage" : "SuperRangedCreep",
+			"characterImage" : "SentinelSuperRangedCreep",
 			"bountyMoney" : 24,
 			"startingHP" : 475,
 			"startingMP" : 300,
@@ -98,7 +99,7 @@
 			"startingHP-levelMultiplier" : 18
 		},
 		"sentinelSuperSiegeCreep" : {
-			"characterImage" : "SuperSiegeCreep",
+			"characterImage" : "SentinelSuperSiegeCreep",
 			"bountyMoney" : 37,
 			"startingHP" : 725,
 			"startingMP" : 0,
@@ -116,7 +117,7 @@
 			"startingHP-levelMultiplier" : 18
 		},
 		"scourgeMeleeCreep" : {
-			"characterImage" : "MeleeCreep",
+			"characterImage" : "ScourgeMeleeCreep",
 			"bountyMoney" : 44,
 			"boutyExp" : 62,
 			"startingHP" : 550,
@@ -135,7 +136,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 1
 		},
 		"scourgeRangedCreep" : {
-			"characterImage" : "RangedCreep",
+			"characterImage" : "ScourgeRangedCreep",
 			"bountyMoney" : 49,
 			"startingHP" : 300,
 			"startingMP" : 300,
@@ -153,7 +154,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"scourgeSiegeCreep" : {
-			"characterImage" : "SiegeCreep",
+			"characterImage" : "ScourgeSiegeCreep",
 			"bountyMoney" : 74,
 			"startingHP" : 500,
 			"startingMP" : 0,
@@ -171,7 +172,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"scourgeSuperMeleeCreep" : {
-			"characterImage" : "SuperMeleeCreep",
+			"characterImage" : "ScourgeSuperMeleeCreep",
 			"bountyMoney" : 22,
 			"boutyExp" : 62,
 			"startingMP" : 0,
@@ -190,7 +191,7 @@
 			"basicPhysicalAttack-levelMultiplier" : 2
 		},
 		"scourgeSuperRangedCreep" : {
-			"characterImage" : "SuperRangedCreep",
+			"characterImage" : "ScourgeSuperRangedCreep",
 			"bountyMoney" : 24,
 			"startingHP" : 475,
 			"startingMP" : 300,
@@ -208,7 +209,7 @@
 			"startingHP-levelMultiplier" : 18
 		},
 		"scourgeSuperSiegeCreep" : {
-			"characterImage" : "SuperSiegeCreep",
+			"characterImage" : "ScourgeSuperSiegeCreep",
 			"bountyMoney" : 37,
 			"startingHP" : 725,
 			"startingMP" : 0,

@@ -33,7 +33,8 @@ public class GameState implements Closeable {
 	private Map<String, int[]> objPositions;
 	private Map<GridPointIndex, String> posReverseLookup;
 	private Map<String, Item> itemShop;
-	private Map<String, Texture2D> objTextures, objThumbnail;
+	private Map<String, Texture2D> objTextures;
+	private Map<String, String> objThumbnail;
 	private Map<String, Object> charsConfig;
 	private ResourceManager resMan;
 	private ExtensionEngine extensionEngine;
@@ -152,9 +153,8 @@ public class GameState implements Closeable {
 		objPositions = null;
 		for (Texture2D tex : objTextures.values())
 			tex.close();
-		for (Texture2D tex : objThumbnail.values())
-			tex.close();
-		objThumbnail = objTextures = null;
+		objThumbnail = null;
+		objTextures = null;
 		itemShop = null;
 		initialised = false;
 	}
@@ -413,6 +413,14 @@ public class GameState implements Closeable {
 		}
 	}
 	
+	public String getCharacterThumbnail(String charName) {
+		return objThumbnail.get(charName);
+	}
+	
+	public void setCharacterThumbnail(String charName, String textureName) {
+		objThumbnail.put(charName, textureName);
+	}
+	
 	public int[] getCharacterPosition(String name) {
 		return objPositions.get(name);
 	}
@@ -438,7 +446,7 @@ public class GameState implements Closeable {
 	}
 	
 	public String getCharacterAtPosition (int... position) {
-		if (position[0] >=0 && position[0] < gridWidth && position[1] >= 0 && position[1] < gridHeight)
+		if (position != null && position[0] >=0 && position[0] < gridWidth && position[1] >= 0 && position[1] < gridHeight)
 			return posReverseLookup.get(new GridPointIndex(position));
 		else
 			return "OutOfBound";
@@ -527,10 +535,6 @@ public class GameState implements Closeable {
 		return new Texture2D(resMan.getTexture(name), resMan.getTextureWidth(name), resMan.getTextureHeight(name));
 	}
 	
-	public Texture2D getModelThumbnail(String name) {
-		return objThumbnail.get(name);
-	}
-	
 	// items
 	public void setItemInShop (String name, Item item) {
 		itemShop.put(name, item);
@@ -567,7 +571,8 @@ public class GameState implements Closeable {
 		// interface
 		case "ChooseGrid":
 			this.chosenGrid = (int[]) e.data.extendedData.get("Coordinates");
-			gameMaster.applyRule(playerCharacter, "ChooseGrid", e.data.extendedData);
+			gameMaster.applyRule(playerCharacter, "ChosenGrid", e.data.extendedData);
+			notifyUpdate(Collections.singletonMap("ChosenGrid", (Object) Arrays.asList(chosenGrid[0], chosenGrid[1])));
 			break;
 		case "RequestAttackArea":
 			gameMaster.applyRule(playerCharacter, "RequestAttackArea", null);

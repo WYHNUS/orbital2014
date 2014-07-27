@@ -16,13 +16,15 @@ public class ButtonRenderer implements Renderer {
 	
 	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
-	private String textureName = "DefaultButton";
+//	private String textureName = "DefaultButton";
 	private GameLogicManager manager;
 	private String tapEventName, longPressEventName;
 	private Map<String, Object> tapExtendedData, longPressExtendedData;
 	private float ratio;
 	
 	private boolean tapEnabled = false, longPressEnabled = false;
+	private int textureHandler = 0;
+	
 	public ButtonRenderer () {
 		model = view = projection = IdentityMatrix4x4();
 	}
@@ -80,7 +82,12 @@ public class ButtonRenderer implements Renderer {
 	
 	public void setButtonTexture(String name) {
 		if (textures.containsKey(name))
-			textureName = name;
+//			textureName = name;
+			textureHandler = textures.get(name).getTexture();
+	}
+	
+	public void setButtonTexture(int handler) {
+		textureHandler = handler;
 	}
 	
 	public void setTapEnabled(boolean enabled) {
@@ -131,7 +138,10 @@ public class ButtonRenderer implements Renderer {
 		glUniformMatrix4fv(mView, 1, false, view, 0);
 		glUniformMatrix4fv(mProjection, 1, false, projection, 0);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textures.get(textureName).getTexture());
+		if (textureHandler > 0)
+			glBindTexture(GL_TEXTURE_2D, textureHandler);//textures.get(textureName).getTexture());
+		else
+			glBindTexture(GL_TEXTURE_2D, textures.get("DefaultButton").getTexture());
 		glUniform1i(textureLocation, 0);
 		if (tapEnabled)
 			glUniform4f(textureTone, 0, 0, 0, 0);

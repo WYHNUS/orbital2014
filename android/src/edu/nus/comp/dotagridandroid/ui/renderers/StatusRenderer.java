@@ -43,6 +43,8 @@ public class StatusRenderer implements Renderer {
 		controls.put("SkillLabel", new TextRenderer());
 		controls.put("NextTurn", new ButtonRenderer());
 		controls.put("NextTurnLabel", new TextRenderer());
+		controls.put("ThumbnailButton", new ButtonRenderer());
+		controls.put("ThumbnailLabel", new TextRenderer());
 	}
 
 	@Override
@@ -217,6 +219,24 @@ public class StatusRenderer implements Renderer {
 				landscape ? FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, -.25f, 0), FlatScalingMatrix4x4(1, .75f, 1)) :
 					FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(.25f, 0, 0), FlatScalingMatrix4x4(.75f, 1, 1)),
 				null, null);
+		// Thumbnail Button
+		button = (ButtonRenderer) controls.get("ThumbnailButton");
+		button.setTapEnabled(true);
+		button.setTapRespondData(Collections.EMPTY_MAP);
+		button.setTapRespondName("");
+		button.setMVP(
+				landscape ? FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(0, .85f, 0), FlatScalingMatrix4x4(.5f, .15f, 1)) :
+					FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(-.75f, .3f, 0), FlatScalingMatrix4x4(.2f, .7f, 1)), null, null);
+		button.setRenderReady();
+		// Thumbnail
+		text = (TextRenderer) controls.get("ThumbnailLabel");
+		text.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		text.setRenderReady();
+		text.setYAligned(true);
+		text.setText("Test");
+		text.setMVP(
+				landscape ? FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(-1, .7f, 0), FlatScalingMatrix4x4(.2f / text.getYExtreme(), .2f / text.getYExtreme(), 1)) :
+					FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(-1, -.4f, 0), FlatScalingMatrix4x4(.15f / text.getYExtreme(), .6f / text.getYExtreme(), 1)), null, null);
 		if (landscape)
 			scroll.setScrollLimit(0f, 0f, 0f, 5f);
 		else
@@ -265,7 +285,7 @@ public class StatusRenderer implements Renderer {
 		glEnableVertexAttribArray(vPosition);
 		glEnableVertexAttribArray(textureCoord);
 		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture("GridMapBackground").getTexture());//textures.get("StatusControlBackground").getTexture());
+		glBindTexture(GL_TEXTURE_2D, manager.getCurrentGameState().getModelTexture("StatusControlBackground").getTexture());//textures.get("StatusControlBackground").getTexture());
 		glUniform1i(texture, 0);
 		glUniformMatrix4fv(mModel, 1, false, model, 0);
 		glUniformMatrix4fv(mView, 1, false, identity, 0);
@@ -327,6 +347,22 @@ public class StatusRenderer implements Renderer {
 			((ButtonRenderer) ((ScrollRenderer) controls.get("Scroll")).getRenderer("Move")).setTapEnabled(
 					manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Move"))).get("GameAction")
 					);
+			final String targetCharacter = state.getCharacterAtPosition(state.getChosenGrid());
+			if (targetCharacter != null) {
+				// update thumbnail
+				ButtonRenderer button = (ButtonRenderer) controls.get("ThumbnailButton");
+				button.setButtonTexture(state.getModelTexture(state.getCharacterThumbnail(targetCharacter)).getTexture());
+				TextRenderer text = (TextRenderer) controls.get("ThumbnailLabel");
+				text.setText(targetCharacter);
+				text.setMVP(
+						landscape ? FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(-1, .7f, 0), FlatScalingMatrix4x4(.2f / text.getYExtreme(), .2f / text.getYExtreme(), 1)) :
+							FlatMatrix4x4Multiplication(model, FlatTranslationMatrix4x4(-1, -.4f, 0), FlatScalingMatrix4x4(.15f / text.getYExtreme(), .6f / text.getYExtreme(), 1)), null, null);
+			} else {
+				ButtonRenderer button = (ButtonRenderer) controls.get("ThumbnailButton");
+				button.setButtonTexture(0);
+				TextRenderer text = (TextRenderer) controls.get("ThumbnailLabel");
+				text.setText(" ");
+			}
 		}
 	}
 

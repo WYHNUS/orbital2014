@@ -14,10 +14,11 @@ public class BasicGameMaster extends GameMaster {
 	private Map<Integer, Map<String, Object>> teamConfig;
 	private Map<Integer, Map<Integer, Set<String>>> teamStrength;
 	private Map<Integer, Map<Integer, Map<String, Integer>>> teamCreepLevel;
-	private Map<Integer, BitSet> teamSharedSight;
+	private Map<Integer, boolean[]> teamSharedSight;
 	private Map<String, Object> stateData;
 	private Map<String, Object> charsConfig;
 	private Map<Integer, Map<String, Integer>> teamEnemyAttackPrioritised;
+	private Queue<Thread> sightMapWaitQueue;
 	private int priorityDecreaseRounds;
 
 	@Override
@@ -26,6 +27,7 @@ public class BasicGameMaster extends GameMaster {
 
 	@Override
 	public void initialise() {
+		sightMapWaitQueue = new LinkedList<>();
 		teamSharedSight = new HashMap<>();
 		teamConfig = new HashMap<>();
 		stateData = new ConcurrentHashMap<>();
@@ -64,10 +66,12 @@ public class BasicGameMaster extends GameMaster {
 				100,
 				100,
 				100), false, false);
-		state.setCharacterPosition("MyHero", new int[]{0, 0});
+		state.setCharacterPosition("MyHero", new int[]{10, 12});
 		state.setCharacterPosition("MyHero2", new int[]{19,19});
 		state.getCharacters().get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
 		state.getCharacters().get("MyHero2").setCharacterImage("MyHeroModel");
+		state.setCharacterThumbnail("MyHero", "SampleThumbnail");
+		state.setCharacterThumbnail("MyHero2", "SampleThumbnail");
 		Item itm = new Item("TestItem", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		itm.setItemImage("DefaultButton");
 		state.setItemInShop("TestItem", itm);
@@ -158,6 +162,7 @@ public class BasicGameMaster extends GameMaster {
 					state.setCharacterProperty(name, "front", tower.get("front"));
 					state.setCharacterProperty(name, "characterImage", tower.get("model"));
 					state.setCharacterProperty(name, "sight", tower.get("sight"));
+					state.setCharacterThumbnail(name, "SampleThumbnail");
 					towerCharacter.initialise();
 				}
 		} catch (Exception e) {
@@ -186,6 +191,7 @@ public class BasicGameMaster extends GameMaster {
 					state.setCharacterPosition(name,
 							((List<Number>) ancientConfig.get("position")).get(0).intValue(),
 							((List<Number>) ancientConfig.get("position")).get(0).intValue());
+					state.setCharacterThumbnail(name, "SampleThumbnail");
 				}
 				// record team strength (tower)
 				if (teamNumber > 0) {
@@ -232,6 +238,7 @@ public class BasicGameMaster extends GameMaster {
 				state.setCharacterPosition(name,
 						((List<Number>) barrack.get("position")).get(0).intValue(),
 						((List<Number>) barrack.get("position")).get(1).intValue());
+				state.setCharacterThumbnail(name, "SampleThumbnail");
 				obj.initialise();
 				// count into strength
 				if (!teamStrength.containsKey(team))
@@ -257,7 +264,7 @@ public class BasicGameMaster extends GameMaster {
 		case "ChooseGrid": {
 			if (!character.equals(state.getCurrentCharacterName()))
 				return;
-			state.notifyUpdate(Collections.singletonMap("ChosenGrid", options.get("Coordinate")));
+//			state.notifyUpdate(Collections.singletonMap("ChosenGrid", options.get("Coordinate")));
 			break;
 		}
 		case "RequestAttackArea": {
@@ -268,14 +275,15 @@ public class BasicGameMaster extends GameMaster {
 			final int gridWidth = state.getGridWidth(), gridHeight = state.getGridHeight();
 			final int totalAttackArea = (Integer) state.getCharacterProperty(character, "totalPhysicalAttackArea")
 					+ (Integer) state.getCharacterProperty(character, "totalItemAddPhysicalAttackArea");
-			final BitSet sight = teamSharedSight.get(state.getCharacters().get(character).getTeamNumber());
+			final boolean[] sight = teamSharedSight.get(state.getCharacters().get(character).getTeamNumber());
 			if (sight == null)
 				return;
+			synchroniseSightMaps();
 			for (int r = 1; r <= totalAttackArea; r++)
 				for (int x = Math.max(0, prevPos[0] - r), end = Math.min(gridWidth - 1, prevPos[0] + r); x <= end; x++) {
-					if (prevPos[1] + Math.abs(x - prevPos[0]) - r >= 0 && sight.get(x + gridWidth * (prevPos[1] + Math.abs(x - prevPos[0]) - r)))
+					if (prevPos[1] + Math.abs(x - prevPos[0]) - r >= 0 && sight[x + gridWidth * (prevPos[1] + Math.abs(x - prevPos[0]) - r)])
 						allowed.add(Arrays.asList(x, prevPos[1] + Math.abs(x - prevPos[0]) - r));
-					if (prevPos[1] - Math.abs(x - prevPos[0]) + r < gridHeight && sight.get(x + gridWidth * (prevPos[1] - Math.abs(x - prevPos[0]) + r)))
+					if (prevPos[1] - Math.abs(x - prevPos[0]) + r < gridHeight && sight[x + gridWidth * (prevPos[1] - Math.abs(x - prevPos[0]) + r)])
 						allowed.add(Arrays.asList(x, prevPos[1] - Math.abs(x - prevPos[0]) + r));
 				}
 //			for (int i = -totalAttackArea; i <= totalAttackArea; i++)
@@ -319,7 +327,7 @@ public class BasicGameMaster extends GameMaster {
 				case "Automation": {
 					if (!character.equals(state.getCurrentCharacterName()))
 						return;
-//					System.out.println("Automation " + character);
+					System.out.println("Automation " + character);
 					switch (state.getCharacters().get(character).getObjectType()) {
 					case GameObject.GAMEOBJECT_TYPE_HERO:
 						autoHero(character);
@@ -510,6 +518,7 @@ public class BasicGameMaster extends GameMaster {
 												((List<Number>) front.get("creepSpawnPoint")).get(0).intValue(),
 												((List<Number>) front.get("creepSpawnPoint")).get(1).intValue()
 										}));
+										state.setCharacterThumbnail(name, "SampleThumbnail");
 									}
 							frontNumber++;
 						}
@@ -603,6 +612,7 @@ public class BasicGameMaster extends GameMaster {
 					targetGrid = state.getChosenGrid();
 					targetCharacter = state.getCharacterAtPosition(targetGrid);
 				}
+				synchroniseSightMaps();
 				if (targetCharacter == null || targetGrid == null || state.getCharacterType(targetCharacter) == GameObject.GAMEOBJECT_TYPE_TREE)
 					return false;
 				else if (!character.equals(state.getCurrentCharacterName()))
@@ -611,7 +621,7 @@ public class BasicGameMaster extends GameMaster {
 						return false;
 				else if (targetGrid[0] >= state.getGridWidth() || targetGrid[0] < 0 || targetGrid[1] >= state.getGridHeight() || targetGrid[1] < 0)
 					return false;
-				else if (!teamSharedSight.get(state.getCharacters().get(character).getTeamNumber()).get(targetGrid[0] + targetGrid[1] * state.getGridWidth()))
+				else if (!teamSharedSight.get(state.getCharacters().get(character).getTeamNumber())[targetGrid[0] + targetGrid[1] * state.getGridWidth()])
 					return false;
 				else if ((Integer) state.getCharacterProperty(character, "teamNumber") == (Integer) state.getCharacterProperty(targetCharacter, "teamNumber"))
 					return false;	// no friendly fire
@@ -835,18 +845,45 @@ public class BasicGameMaster extends GameMaster {
 			refreshSightMaps();
 	}
 	
+	private void synchroniseSightMaps() {
+		Iterator<Thread> itr = sightMapWaitQueue.iterator();
+		while (itr.hasNext())
+			try {
+				itr.next().join();
+				itr.remove();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+	}
 	private void refreshSightMaps() {
 		long time = System.currentTimeMillis();
 		Set<Integer> teams = new HashSet<>(teamConfig.keySet());
-		teams.remove(0);
-		for (int teamNumber : teamConfig.keySet())
-			if (teamSharedSight.containsKey(teamNumber))
-				teamSharedSight.get(teamNumber).clear();
-			else
-				teamSharedSight.put(teamNumber, new BitSet());
+//		teams.remove(0);
+		for (int teamNumber : teams)
+			teamSharedSight.put(teamNumber, new boolean[state.getGridHeight() * state.getGridWidth()]);
 		for (Map.Entry<String, GameCharacter> entry : state.getCharacters().entrySet())
-			if (state.getCharacterType(entry.getKey()) != GameObject.GAMEOBJECT_TYPE_TREE)
-				teamSharedSight.get(entry.getValue().getTeamNumber()).or(getSight(entry.getKey()));
+			if (entry.getValue().getObjectType() != GameObject.GAMEOBJECT_TYPE_TREE) {
+			Thread t = new Thread() {
+				private boolean[] map;
+				private String name;
+				@Override
+				public void run() {
+					try {
+						getSight(name, map);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+				public Thread initialise(boolean[] map, String name) {
+					this.map = map;
+					this.name = name;
+					return this;
+				}
+			}.initialise(teamSharedSight.get(entry.getValue().getTeamNumber()), entry.getKey());
+			t.start();
+			sightMapWaitQueue.add(t);
+		}
+//			teamSharedSight.get(entry.getValue().getTeamNumber()).or(getSight(entry.getKey()));
 		System.out.println("SightMap took " + (System.currentTimeMillis() - time) + "ms");
 	}
 
@@ -1040,12 +1077,12 @@ public class BasicGameMaster extends GameMaster {
 			}
 		return retVal;
 	}
-	private SegmentNode<Double> sightCalc(int width, int height, int x, int y, int sight, int radius, double[] source, SegmentNode<Double> shadow, BitSet map) {
+	private SegmentNode<Double> sightCalc(int width, int height, int x, int y, int sight, int radius, double[] source, SegmentNode<Double> shadow, boolean[] map) {
 		if (shadow == null)
-			map.set(x + y * width);
+			map[x + y * width] = true;
 		else if (shadow.find(getAngle((y + .5 - source[1]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]),
 				(x + .5 - source[0]) / Math.hypot(x + .5 - source[0], y + .5 - source[1]))).isEmpty())
-			map.set(x + y * width);
+			map[x + y * width] = true;
 		if (state.getCharacterAtPosition(x, y) != null) {
 			// obstacle - will add to shadowMap
 			final double[] cornerAngles = {
@@ -1071,15 +1108,15 @@ public class BasicGameMaster extends GameMaster {
 		return shadow;
 	}
 	
-	private BitSet getSight(String name) {
+	private void getSight(String name, boolean[] map) {
 		final int width = state.getGridWidth(), height = state.getGridHeight();
-		final BitSet map = new BitSet();
+//		final BitSet map = new BitSet();
 		SegmentNode<Double> shadow = null;
 		final int[] pos = state.getCharacterPosition(name);
 		if (pos != null) {
 			final int sight = (Integer) state.getCharacterProperty(name, "sight");
 			final double[] source = {pos[0] + .5, pos[1] + .5};
-			map.set(pos[0] + pos[1] * width);
+			map[pos[0] + pos[1] * width] = true;
 			for (int radius = 1; radius <= sight; radius++) {
 				if (pos[1] >= radius) {
 					final int y = pos[1] - radius;
@@ -1113,7 +1150,6 @@ public class BasicGameMaster extends GameMaster {
 				}
 			}
 		}
-		return map;
 	}
 	private static double getAngle(double sinVal, double cosVal) {
 		if (sinVal >= 0)
@@ -1416,7 +1452,7 @@ public class BasicGameMaster extends GameMaster {
 			return node;	// new root
 		}
 		private Set<SegmentNode<T>> find(T value) {
-			Set<SegmentNode<T>> results = new HashSet();
+			Set<SegmentNode<T>> results = new HashSet<>();
 			if (value.compareTo(end) <= 0 && value.compareTo(start) >= 0)
 				results.add(this);
 			if (left != null && value.compareTo(left.min) >= 0)

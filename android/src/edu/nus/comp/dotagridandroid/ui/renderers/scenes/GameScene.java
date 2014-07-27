@@ -12,6 +12,8 @@ import static edu.nus.comp.dotagridandroid.math.RenderMaths.*;
 public class GameScene implements SceneRenderer {
 	private static final int CELLS_PER_ROW = 3;
 	private static final float CELL_MARGIN = .1f;
+	private static final int MAX_LOG_LENGTH = 10;
+	private static final int MAX_LOG_WIDTH = 50;
 	
 	private static final int MESSAGE_CHAR_PER_ROW = 20;
 	
@@ -24,15 +26,17 @@ public class GameScene implements SceneRenderer {
 	private GLResourceManager vBufMan;
 	// resources
 	private Renderer grid, status, eventCapturer;
+	private TextRenderer log;
 	private final Map<String, Renderer> dialogControl = new LinkedHashMap<>();	// IMPORTANT: necessary to maintain order of drawing
 	private float[] dialogMat;
 	private GenericProgram dialogProgram;
 	private boolean landscape;
 	private boolean hasDialog;
+	private LinkedList<String> logQueue = new LinkedList<>();
 	
 	public GameScene () {
 		dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
-		
+		log = new TextRenderer();
 	}
 	
 	@Override
@@ -43,6 +47,7 @@ public class GameScene implements SceneRenderer {
 	@Override
 	public void setGLResourceManager(GLResourceManager manager) {
 		this.vBufMan = manager;
+		log.setGLResourceManager(manager);
 	}
 
 	@Override
@@ -51,21 +56,27 @@ public class GameScene implements SceneRenderer {
 	@Override
 	public void setTexture2D(Map<String, Texture2D> textures) {
 		this.textures = textures;
+		log.setTexture2D(textures);
 	}
 
 	@Override
 	public void setAspectRatio(float ratio) {
 		this.ratio = ratio;
+		log.setAspectRatio(ratio);
 		landscape = ratio > 1;
 	}
 
 	@Override
 	public void setGameLogicManager(GameLogicManager manager) {
 		this.manager = manager;
+		log.setGameLogicManager(manager);
 	}
 
 	@Override
-	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {this.responder = mainRenderer;}
+	public void setGraphicsResponder(MainRenderer.GraphicsResponder mainRenderer) {
+		this.responder = mainRenderer;
+		log.setGraphicsResponder(mainRenderer);
+	}
 
 	@Override
 	public void setMVP(float[] model, float[] view, float[] projection) {}
@@ -99,17 +110,34 @@ public class GameScene implements SceneRenderer {
 					FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, .1f/ratio-1, -1), FlatScalingMatrix4x4(1,.1f/ratio,1)),
 					null, null);	// portrait model - bottom side 20%
 		status.setRenderReady(); grid.setRenderReady();
+		log.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
+		log.setRenderReady();
+		if (landscape)
+			log.setMVP(
+					FlatMatrix4x4Multiplication(
+							FlatTranslationMatrix4x4(-1, 1, -1),
+							FlatScalingMatrix4x4(ratio/ MAX_LOG_WIDTH, 1f / MAX_LOG_WIDTH, 1)), null, null);
+		else
+			log.setMVP(
+					FlatMatrix4x4Multiplication(
+							FlatTranslationMatrix4x4(-1, 1, -1),
+							FlatScalingMatrix4x4(1f / MAX_LOG_WIDTH, 1f / MAX_LOG_WIDTH / ratio, 1)), null, null);
 	}
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
 		hasDialog = false;
-		if (updates.containsKey("Dialog"))
-			prepareDialog((String) updates.get("Dialog"), updates);
-		else if ("Win".equals(updates.get("GameResult")))
+		if ("Win".equals(updates.get("GameResult")))
 			mainRenderer.switchScene("Statistics", Collections.singletonMap("GameResult", (Object) "Win"));
 		else if ("Lost".equals(updates.get("GameResult")))
 			mainRenderer.switchScene("Statistics", Collections.singletonMap("GameResult", (Object) "Lost"));
+		else if (updates.containsKey("Dialog"))
+			prepareDialog((String) updates.get("Dialog"), updates);
+		if (updates.containsKey("Log"))
+			logQueue.add((String) updates.get("Log"));
+		if (logQueue.size() > MAX_LOG_LENGTH)
+			logQueue.poll();
+		log.setTexts(logQueue.toArray(new String[logQueue.size()]));
 		grid.notifyUpdate(updates);
 		status.notifyUpdate(updates);
 	}
@@ -299,7 +327,7 @@ public class GameScene implements SceneRenderer {
 	
 	@Override
 	public boolean getReadyState() {
-		boolean success = grid.getReadyState() && status.getReadyState();
+		boolean success = grid.getReadyState() && status.getReadyState() && log.getReadyState();
 		for (Renderer r : dialogControl.values())
 			success &= r.getReadyState();
 		return success;
@@ -310,6 +338,7 @@ public class GameScene implements SceneRenderer {
 		grid.draw();
 		status.draw();
 		drawDialog();
+		log.draw();
 	}
 	
 	private void drawDialog() {
