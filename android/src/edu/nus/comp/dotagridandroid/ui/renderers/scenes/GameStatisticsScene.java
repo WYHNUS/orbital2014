@@ -84,7 +84,7 @@ public class GameStatisticsScene implements SceneRenderer {
 		else
 			text.setText("You lost the  battle");
 		text.setMVP(FlatMatrix4x4Multiplication(
-				FlatScalingMatrix4x4(1.2f, 1.2f, 1),
+				FlatScalingMatrix4x4(.8f, .2f, 1),
 				FlatTranslationMatrix4x4(-.5f, text.getYExtreme() / 2, -.9f),
 				FlatScalingMatrix4x4(1 / text.getXExtreme(), 1, 1)), null, null);
 		cancelButton.setMVP(FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, -.8f, -.9f), FlatScalingMatrix4x4(.4f, .2f, 1)), null, null);
@@ -97,8 +97,10 @@ public class GameStatisticsScene implements SceneRenderer {
 
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {
-		if (updates.containsKey("BackToWelcome"))
+		if (((Map<String, Object>) updates.get("APPLICATION")).containsKey("BackToWelcome")) {
+			manager.setCurrentGameState(null);
 			mainRenderer.switchScene("Welcome", null);
+		}
 	}
 
 	@Override

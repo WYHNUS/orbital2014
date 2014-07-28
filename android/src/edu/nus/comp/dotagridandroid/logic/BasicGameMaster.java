@@ -36,10 +36,10 @@ public class BasicGameMaster extends GameMaster {
 		state.addCharacter("MyHero", new Hero("MyHero", 1, 0, 20, 0, "strength",
 				100,
 				100,
-				100,
+				3e20,
 				20,
 				100,
-				100,
+				0,
 				100,
 				10000,
 				1,
@@ -54,9 +54,9 @@ public class BasicGameMaster extends GameMaster {
 				100,
 				100,
 				100,
-				2,
+				20,
 				100,
-				100,
+				0,
 				100,
 				10000,
 				2,
@@ -768,7 +768,7 @@ public class BasicGameMaster extends GameMaster {
 
 		double APused = (Double) state.getCharacterProperty(character, "APUsedWhenAttack");
 		int damage = GameCharacter.getActualDamage(
-				(Double) state.getCharacterProperty(targetCharacter, "totalPhysicalAttack"),
+				(Double) state.getCharacterProperty(character, "totalPhysicalAttack"),
 				(Double) state.getCharacterProperty(targetCharacter, "totalPhysicalDefence"));
 		
 		state.setCharacterProperty(character, "currentActionPoint",

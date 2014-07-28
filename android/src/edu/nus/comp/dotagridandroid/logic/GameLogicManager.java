@@ -13,7 +13,7 @@ import edu.nus.comp.dotagridandroid.ui.renderers.scenes.SceneRenderer;
 
 public class GameLogicManager implements Closeable {
 	private Map<String, Object> gameSetting = new ConcurrentHashMap<>();
-	private Map<String, GameState> gameStates = new ConcurrentHashMap<>();
+	private Map<String, GameState> gameStates = new HashMap<>();
 	private GameState currentState;
 	private Context context;
 	private SoundEngine se;
