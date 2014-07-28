@@ -21,7 +21,7 @@ public class GridButtonActions {
 	public void updateWhenNoActionInvoked() {
 		
 		// display the selected position's character icon on the characterIcon if within player's sight
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null && GridFrame.sightMap[toXPos][toYPos] == 1) {
+		if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null && GridFrame.sightMap[toXPos][toYPos]) {
 			System.out.println("A character has been selected!");
 			// change allCharacterInfoGameButtons in game frame to the selected character's info
 			displayCharacterInfoOnGameFrame(GridFrame.gridButtonMap[toXPos][toYPos].getCharacter());
@@ -33,7 +33,7 @@ public class GridButtonActions {
 		} else {
 			System.out.println("A non-character grid has been selected!");
 			// highlight the selected position if no character is on the grid
-			GridFrame.highlightedMap[toXPos][toYPos] = 1;
+			GridFrame.highlightedMap[toXPos][toYPos] = true;
 			
 			// display world map icon
 			GameFrame.allCharacterInfoGameButtons.get(0).setImage(GridFrame.terrain[GridFrame.map[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()]]);
@@ -78,7 +78,7 @@ public class GridButtonActions {
 			boolean isWithinAttackRange = calculateWithinAttackRange();
 			
 			// check if within attackable range
-			if (isWithinAttackRange && GridFrame.sightMap[toXPos][toYPos] == 1) {
+			if (isWithinAttackRange && GridFrame.sightMap[toXPos][toYPos]) {
 				// can only attack on occupied grid
 				if (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter() != null) {
 					// can only attack non-friendly units
@@ -199,7 +199,7 @@ public class GridButtonActions {
 		// calculate if the selected grid is within movable range
 		FindPath.highlightMovableGrids(fromXPos, fromYPos, GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getNumberOfMovableGrid());
 		
-		return GridFrame.highlightedMap[toXPos][toYPos] == 1;
+		return GridFrame.highlightedMap[toXPos][toYPos];
 	}
 
 	private boolean calculateWithinAttackRange() {
@@ -221,7 +221,7 @@ public class GridButtonActions {
 					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
 						// x + y need to be within the number of attackable grid
 						if (Math.abs(toXPos - x) + Math.abs(toYPos - y) <= physicalAttackArea) {
-							GridFrame.attackRangeMap[x][y] = 1;
+							GridFrame.attackRangeMap[x][y] = true;
 						}
 					}
 				}

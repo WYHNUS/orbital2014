@@ -5,7 +5,7 @@ public class SummonCharacter extends Character {
 	private int duration;
 	private int currentDuration;
 	
-	public static final int LINE_CREEP_ATTACK_PRIORITY = 4;
+	public static final int LINE_CREEP_ATTACK_PRIORITY = 3;
 	
 	public SummonCharacter(String name, int bountyExp, int bountyMoney, int sight, 
 			int startingHP, int startingMP,

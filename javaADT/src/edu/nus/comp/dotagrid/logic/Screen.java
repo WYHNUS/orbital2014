@@ -13,7 +13,7 @@ public class Screen extends JPanel implements Runnable {
 	public static User user;
 
 	// control the states of the game
-	public int scene;
+	public static int scene;
 
 	private boolean running = false;
 	private boolean isFrameInitialized = false;
@@ -26,7 +26,7 @@ public class Screen extends JPanel implements Runnable {
 	public Screen(Frame frame) {
 		this.frame = frame;
 		
-		this.frame.addKeyListener(new KeyHandler(this));
+		this.frame.addKeyListener(new KeyHandler());
 		this.frame.addMouseListener(new MouseHandler());
 			
 		thread.start();
@@ -71,6 +71,8 @@ public class Screen extends JPanel implements Runnable {
 				// select player's hero's grid button
 				GridFrame.invokeLeftClickEvent((int)((0.5 + user.playerStartingXPos - GridFrame.getCurrentGridXPos()) * GridFrame.getGridWidth() + GameFrame.FRAME_BORDER_HEIGHT), 
 						(int)((0.5 + user.playerStartingYPos - GridFrame.getCurrentGridYPos()) * GridFrame.getGridHeight() + GameFrame.FRAME_BORDER_WIDTH));
+				GridFrame.invokeLeftClickEvent((int)((0.5 + user.playerStartingXPos - GridFrame.getCurrentGridXPos()) * GridFrame.getGridWidth() + GameFrame.FRAME_BORDER_HEIGHT), 
+						(int)((0.5 + user.playerStartingYPos - GridFrame.getCurrentGridYPos()) * GridFrame.getGridHeight() + GameFrame.FRAME_BORDER_WIDTH));
 				
 				isFrameInitialized = true;
 			} else {
@@ -92,8 +94,8 @@ public class Screen extends JPanel implements Runnable {
 		running = true;
 	}
 
-	public void startGame() {
-		this.scene = 1; // enter game!
+	public static void startGame() {
+		scene = 1; // enter game!
 		MouseHandler.isClicked = true; // repaint
 	}
 
@@ -104,24 +106,14 @@ public class Screen extends JPanel implements Runnable {
 		
 		// game loop
 		while (running) {
-			if (MouseHandler.isClicked) {
+			if (MouseHandler.isClicked || KeyHandler.isPressed) {
 				repaint();
 				MouseHandler.isClicked = false;
+				KeyHandler.isPressed = false;
 			}
 		}
 
 		System.exit(0);
 	} // end method run
 	
-	
-	public class KeyTyped {
-		public void keyESC() {
-			MainMenu.confirmExit();
-		}
-
-		public void keySPACE() {
-			startGame();
-		}
-	} // end inner class KeyTyped
-
 }

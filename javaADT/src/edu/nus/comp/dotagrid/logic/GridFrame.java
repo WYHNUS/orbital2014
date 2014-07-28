@@ -25,6 +25,7 @@ public class GridFrame {
 	
 	private static int gridRowNumberInScreen = 14;
 	private static int gridColNumberInScreen = 20;
+	public static boolean isMaxMapShown;
 		
 	// default starting position: left bottom corner of the map
 	private static int currentGridXPos = 0;
@@ -57,9 +58,9 @@ public class GridFrame {
 	
 	public static int[][] map = new int[ROW_NUMBER][COLUMN_NUMBER];
 	public static boolean[][] treeMap = new boolean[ROW_NUMBER][COLUMN_NUMBER];
-	public static int[][] highlightedMap = new int[ROW_NUMBER][COLUMN_NUMBER];
-	public static int[][] sightMap = new int[ROW_NUMBER][COLUMN_NUMBER];
-	public static int[][] attackRangeMap = new int[ROW_NUMBER][COLUMN_NUMBER];
+	public static boolean[][] highlightedMap = new boolean[ROW_NUMBER][COLUMN_NUMBER];
+	public static boolean[][] sightMap = new boolean[ROW_NUMBER][COLUMN_NUMBER];
+	public static boolean[][] attackRangeMap = new boolean[ROW_NUMBER][COLUMN_NUMBER];
 	
 	public static GridButton[][] gridButtonMap = new GridButton[ROW_NUMBER][COLUMN_NUMBER];
 	
@@ -100,10 +101,6 @@ public class GridFrame {
 		for (int x=0; x<ROW_NUMBER; x++) {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 
 				gridButtonMap[x][y] = new GridButton(map[x][y]);
-				// initialize all maps
-				highlightedMap[x][y] = -1;
-				attackRangeMap[x][y] = -1;
-				sightMap[x][y] = 1;
 				// initialize tree map
 				if (map[x][y] == 4) {
 					treeMap[x][y] = true;
@@ -139,7 +136,7 @@ public class GridFrame {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
 				
 				if (gridButtonMap[x + currentGridXPos][y + currentGridYPos].getCharacter() != null
-						&& sightMap[x + currentGridXPos][y + currentGridYPos] != -1) {
+						&& sightMap[x + currentGridXPos][y + currentGridYPos]) {
 					g.drawImage(gridButtonMap[x + currentGridXPos][y + currentGridYPos].getCharacter().getCharacterImage(),
 							(int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
 							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
@@ -165,7 +162,7 @@ public class GridFrame {
 			for (int y=0; y<gridRowNumberInScreen; y++) {
 				
 				// condition to highlight a button
-				if (highlightedMap[x + currentGridXPos][y + currentGridYPos] == 1){
+				if (highlightedMap[x + currentGridXPos][y + currentGridYPos]){
 					g2d.setColor(Color.BLACK);
 					g2d.fillRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
 							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
@@ -173,7 +170,7 @@ public class GridFrame {
 				}
 				
 				// condition to highlight a button within attackable range
-				if (attackRangeMap[x + currentGridXPos][y + currentGridYPos] == 1){
+				if (attackRangeMap[x + currentGridXPos][y + currentGridYPos]){
 					g2d.setColor(Color.BLUE);
 					g2d.setStroke(new BasicStroke(10));
 					g2d.drawRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
@@ -194,7 +191,7 @@ public class GridFrame {
 		// reset sight map first
 		for (int x=0; x<ROW_NUMBER-1; x++) {
 			for (int y=0; y<COLUMN_NUMBER-1; y++) {
-				sightMap[x][y] = -1;
+				sightMap[x][y] = false;
 			}
 		}
 		
@@ -232,7 +229,7 @@ public class GridFrame {
 		// display sight map
 		for (int x=0; x<gridColNumberInScreen; x++) {
 			for (int y=0; y<gridRowNumberInScreen; y++) { 
-				if (sightMap[x + currentGridXPos][y + currentGridYPos] == -1) {					
+				if (sightMap[x + currentGridXPos][y + currentGridYPos] == false) {					
 					g2d.fillRect((int)(GameFrame.FRAME_BORDER_WIDTH + x * gridWidth),
 							(int)(GameFrame.FRAME_BORDER_HEIGHT + y * gridHeight), (int) gridWidth,
 							(int) gridHeight);
@@ -311,8 +308,8 @@ public class GridFrame {
 		// clear sight map for further refresh of information
 		for (int x=0; x<ROW_NUMBER; x++) {
 			for (int y=0; y<COLUMN_NUMBER; y++) { 
-				highlightedMap[x][y] = -1;
-				attackRangeMap[x][y] = -1;
+				highlightedMap[x][y] = false;
+				attackRangeMap[x][y] = false;
 			}
 		}	
 				

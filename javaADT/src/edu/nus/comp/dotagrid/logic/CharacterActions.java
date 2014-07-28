@@ -203,10 +203,12 @@ public class CharacterActions {
 						SummonCharacter chara = new SummonCharacter(castingSkill.getSkillCharacter());
 						chara.setTeamNumber(castingHero.getTeamNumber());
 						GridFrame.gridButtonMap[xPos][yPos] = new GridButton(chara);
+						
 						// summon creature is controlled by player
 						GridFrame.gridButtonMap[xPos][yPos].setIsPlayer(true);
+						// increase counter
 						counter++;
-						System.out.println("summon character " + chara.getName() + " !!!");
+						//System.out.println("summon character " + chara.getName() + " !!!");
 					} else {
 						GridFrame.gridButtonMap[xPos][yPos] = new GridButton(1);
 					}
@@ -239,7 +241,7 @@ public class CharacterActions {
 			for (int x=0; x<GridFrame.ROW_NUMBER; x++){
 				// check if the grid has character and is within sight map
 				if (GridFrame.gridButtonMap[y][x].getCharacter() != null &&
-						GridFrame.sightMap[y][x] == 1) {
+						GridFrame.sightMap[y][x]) {
 					// check if the character is enemy and attackable
 					if (GridFrame.gridButtonMap[y][x].getCharacter().getTeamNumber() != teamNumber &&
 							GridFrame.gridButtonMap[y][x].getCharacter().getTotalMagicResistance() != 100 &&
@@ -413,7 +415,7 @@ public class CharacterActions {
 						
 						// only set grid to visible if it is not blocked by any other grid
 						if (!isBlocked) {
-							GridFrame.sightMap[x][y] = 1;
+							GridFrame.sightMap[x][y] = true;
 						}
 					}
 				}
@@ -576,22 +578,20 @@ public class CharacterActions {
 		
 		// get the AP required for one physical attack
 		int usedAP = calculateAttackUsedAP();
-
-		if (GridFrame.gridButtonMap[toXPos][toYPos].getIsPlayer()) {
-			System.out.println("hero current hp = " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP());
-			System.out.println("attack = " + attack);
-			System.out.println("set current hp = " + (int) (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() - attack));
-			System.out.println("hero max hp = " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getmaxHP());
-		}
 		
 		// perform attack action
 		GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().setCurrentHP((int) (GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getCurrentHP() 
 				- attack));
 		
 		// check if the attacker is hero's unit, if yes, show attacker's damage done
-		if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsPlayer()) 
-			JOptionPane.showMessageDialog(null, "You have done " + String.format("%.2f", attack) + " damage to " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getName());
-								
+		if (GridFrame.gridButtonMap[fromXPos][fromYPos].getIsPlayer()) {
+			if (GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter() instanceof Hero)
+				JOptionPane.showMessageDialog(null, "You have done " + String.format("%.2f", attack) + " damage to " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getName());
+			else 
+				JOptionPane.showMessageDialog(null, "Your summoned creature " + GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getName()
+						+ " have done " + String.format("%.2f", attack) + " damage to " + GridFrame.gridButtonMap[toXPos][toYPos].getCharacter().getName());
+		}
+		
 		// reduce character's AP 
 		GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().setCurrentActionPoint(
 				GridFrame.gridButtonMap[fromXPos][fromYPos].getCharacter().getCurrentActionPoint() - usedAP);

@@ -6,9 +6,11 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import javax.swing.JOptionPane;
+
 public class AICharacter {
-	public static boolean isAttack = false;
-	private boolean endRound = false;
+	public static boolean isAttack;
+	private boolean endRound;
 	
 	private int teamNumber;
 	private int startingXPos;
@@ -57,9 +59,10 @@ public class AICharacter {
 				if (!inSightEnemyPos.isEmpty()){
 					System.out.println("print attack priority queue! = " );
 					for (int[] coordinate : inSightEnemyPos) {
-						System.out.println(GridFrame.gridButtonMap[coordinate[0]][coordinate[1]].getCharacter().getName() + " with attack priority = "
+						System.out.print(GridFrame.gridButtonMap[coordinate[0]][coordinate[1]].getCharacter().getName() + " with attack priority = "
 								+ GridFrame.gridButtonMap[coordinate[0]][coordinate[1]].getCharacter().getCurrentAttackPriority() + " ");
 					}
+					System.out.println();
 				}
 				
 				// check if there is any enemy within sight
@@ -84,7 +87,6 @@ public class AICharacter {
 			}
 			
 			System.out.println("end AI round");
-			System.out.println();
 		}
 		
 		
@@ -117,7 +119,6 @@ public class AICharacter {
 			}
 			
 			System.out.println("end AI round");
-			System.out.println();
 		}
 		
 		
@@ -130,9 +131,42 @@ public class AICharacter {
 			AIAttack();
 			
 			System.out.println("end AI round");
-			System.out.println();
 		}
 		
+		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof SummonCharacter){
+			// summon character AI
+			System.out.println("Summon Character AI:   " + GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getName());
+			System.out.println("Starting Position :  XPos = " + startingXPos + "     YPos = " + startingYPos);
+			
+			// summon characters only will be controlled by AI if the player has not perform any actions on it
+			if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getCurrentActionPoint() == 
+					GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter().getMaxActionPoint()){
+				
+				// summon characters AI
+				searchForInSightEnemies();
+				sortEnemiesList(inSightEnemyPos);
+				
+				if (!inSightEnemyPos.isEmpty()){
+					System.out.println("print attack priority queue! = " );
+					for (int[] coordinate : inSightEnemyPos) {
+						System.out.print(GridFrame.gridButtonMap[coordinate[0]][coordinate[1]].getCharacter().getName() + " with attack priority = "
+								+ GridFrame.gridButtonMap[coordinate[0]][coordinate[1]].getCharacter().getCurrentAttackPriority() + " ");
+					}
+					System.out.println();
+				}
+				
+				// check if there is any enemy within sight
+				while (!inSightEnemyPos.isEmpty() && !endRound) {
+					System.out.println("move to attack");
+					// if yes, move towards the enemy until it's within the attack range
+					moveTowardsEnemy();
+					// then attack!
+					AIAttack();
+				} 
+				
+				System.out.println("end Summon Character AI round");
+			}
+		}
 		
 		else if (GridFrame.gridButtonMap[startingXPos][startingYPos].getCharacter() instanceof Hero){
 			// comp Hero AI

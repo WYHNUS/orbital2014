@@ -42,8 +42,8 @@ public class Character {
 	
 	// attack priority from 0 - 10 : larger value means less likely to be attacked
 	/* 
-	 * LineCreep : 3
-	 * SummonCharacter / NeutralCreep : 4
+	 * SummonCharacter / LineCreep : 3
+	 * NeutralCreep : 4
 	 * Hero : 5
 	 * Tower : 7
 	 * Building : 9
@@ -164,8 +164,8 @@ public class Character {
 
 
 	public void setCurrentHP(int currentHP) {
-		// if currentHP goes below 0, the character is dead
-		if (currentHP < 0) {
+		// due to rounding, if currentHP goes below 1, the character is dead
+		if (currentHP < 1) {
 			this.currentHP = 0;
 			this.setAlive(false);
 		} else if (currentHP > this.getmaxHP()) {

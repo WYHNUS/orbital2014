@@ -51,34 +51,34 @@ public class FindPath {
 		} else {
 			// recursive call 
 			
-			if (GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsMovable() == true 
+			if (GridFrame.gridButtonMap[startingXPos-1][startingYPos].getIsMovable()
 				&& GridFrame.gridButtonMap[startingXPos-1][startingYPos].getCharacter() == null) {
 				
-					GridFrame.highlightedMap[startingXPos-1][startingYPos] = 1;
+					GridFrame.highlightedMap[startingXPos-1][startingYPos] = true;
 					highlightMovableGrids(startingXPos - 1, startingYPos, movementPoint - 1);
 				
 			}
 				
-			if (GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsMovable() == true 
+			if (GridFrame.gridButtonMap[startingXPos][startingYPos-1].getIsMovable()
 				&& GridFrame.gridButtonMap[startingXPos][startingYPos-1].getCharacter() == null) {
 				
-					GridFrame.highlightedMap[startingXPos][startingYPos-1] = 1;
+					GridFrame.highlightedMap[startingXPos][startingYPos-1] = true;
 					highlightMovableGrids(startingXPos, startingYPos - 1, movementPoint - 1);
 				
 			}
 			
-			if (GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsMovable() == true 
+			if (GridFrame.gridButtonMap[startingXPos][startingYPos+1].getIsMovable()
 				&& GridFrame.gridButtonMap[startingXPos][startingYPos+1].getCharacter() == null) {
 				
-					GridFrame.highlightedMap[startingXPos][startingYPos+1] = 1;
+					GridFrame.highlightedMap[startingXPos][startingYPos+1] = true;
 					highlightMovableGrids(startingXPos, startingYPos + 1, movementPoint - 1);
 				
 			} 
 			
-			if (GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsMovable() == true 
+			if (GridFrame.gridButtonMap[startingXPos+1][startingYPos].getIsMovable()
 				&& GridFrame.gridButtonMap[startingXPos+1][startingYPos].getCharacter() == null) {
 				
-					GridFrame.highlightedMap[startingXPos+1][startingYPos] = 1;
+					GridFrame.highlightedMap[startingXPos+1][startingYPos] = true;
 					highlightMovableGrids(startingXPos + 1, startingYPos, movementPoint - 1);
 				
 			}

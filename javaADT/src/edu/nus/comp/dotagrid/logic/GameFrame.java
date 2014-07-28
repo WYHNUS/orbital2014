@@ -32,7 +32,7 @@ public class GameFrame{
 	
 	
 	// an ArrayList of GameButton which store all the GameButtons on the GameFrame
-	private static ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
+	public static ArrayList<GameButton> allGameButtons = new ArrayList<GameButton>();
 	
 	// an ArrayList of GameButton which store all the GameButtons that displays character's information
 	public static ArrayList<GameButton> allCharacterInfoGameButtons = new ArrayList<GameButton>();

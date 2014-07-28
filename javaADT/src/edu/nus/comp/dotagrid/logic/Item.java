@@ -312,8 +312,8 @@ public class Item {
 		// reset attack map and highlighted map
 		for (int x=0; x<GridFrame.ROW_NUMBER; x++) {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
-				GridFrame.highlightedMap[x][y] = -1;
-				GridFrame.attackRangeMap[x][y] = -1;
+				GridFrame.highlightedMap[x][y] = false;
+				GridFrame.attackRangeMap[x][y] = false;
 			}
 		}	
 					
@@ -325,7 +325,7 @@ public class Item {
 					if (y>=0 && y <= GridFrame.ROW_NUMBER-1) {
 						// x + y need to be within the number of attackable grid
 						if (Math.abs(heroXPos - x) + Math.abs(heroYPos - y) <= this.getCastingRange()) {
-							GridFrame.highlightedMap[x][y] = 1;
+							GridFrame.highlightedMap[x][y] = true;
 						}
 					}
 				}

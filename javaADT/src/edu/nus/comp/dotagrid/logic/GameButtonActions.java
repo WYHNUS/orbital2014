@@ -16,10 +16,10 @@ public class GameButtonActions {
 	
 	public static String heroDamageLog = "<html>";
 	
-	private int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
-	private int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
+	private static int moveRowNumberOfGrid = (int) (GridFrame.getGridRowNumberInScreen() / 2.0);
+	private static int moveHeightNumberOfGrid = (int) (GridFrame.getGridColNumberInScreen() / 2.0);
 	
-	private double zoomFactor = 2.0;
+	private static double zoomFactor = 2.0;
 
 	public GameButtonActions(int actionNumber) {
 		/**
@@ -332,7 +332,7 @@ public class GameButtonActions {
 	}
 
 
-	private void endRound() {
+	public static void endRound() {
 		GameFrame.turn++;
 		GameFrame.allCharacterInfoGameButtons.get(25).setString("Turn : " + GameFrame.turn);
 
@@ -344,19 +344,23 @@ public class GameButtonActions {
 			for (int y=0; y<GridFrame.COLUMN_NUMBER; y++) { 
 				if (GridFrame.gridButtonMap[x][y].getCharacter() != null){
 					// only non-player controlled character need AI to perform action
-					if (!GridFrame.gridButtonMap[x][y].getIsPlayer()){
+					if (!(GridFrame.gridButtonMap[x][y].getIsPlayer() && GridFrame.gridButtonMap[x][y].getCharacter() instanceof Hero)){
 						// check if the character is summon character
 						if (GridFrame.gridButtonMap[x][y].getCharacter() instanceof SummonCharacter) {
+							// AI action!
+							new AICharacter(x, y);
 							
-							// reduce the current duration for summon character
-							((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).setCurrentDuration(
-									((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).getCurrentDuration() - 1);
-							// check if the duration is below 0
-							if (((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).getCurrentDuration() <= 0) {
-								// discard the summon character
-								GridFrame.gridButtonMap[x][y] = new GridButton(1);
+							if (GridFrame.gridButtonMap[x][y].getCharacter() != null) {
+								// reduce the current duration for summon character
+								((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).setCurrentDuration(
+										((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).getCurrentDuration() - 1);
+								
+								// check if the duration is below 0
+								if (((SummonCharacter)GridFrame.gridButtonMap[x][y].getCharacter()).getCurrentDuration() <= 0) {
+									// discard the summon character
+									GridFrame.gridButtonMap[x][y] = new GridButton(1);
+								}
 							}
-							
 						} else {
 							// AI action!
 							new AICharacter(x, y);
@@ -477,7 +481,7 @@ public class GameButtonActions {
 	}	
 
 	
-	private void readyToAttack() {
+	public static void readyToAttack() {
 		// get ready for player's hero to perform physical attack if player's character is selected
 		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer() == true){
 			readyToAct = true;
@@ -489,7 +493,7 @@ public class GameButtonActions {
 	}
 
 
-	private void readyToMove() {
+	public static void readyToMove() {
 		// get ready for player's hero to move
 		if (GridFrame.gridButtonMap[GridFrame.getSelectedXPos()][GridFrame.getSelectedYPos()].getIsPlayer() == true){
 			readyToAct = true;
@@ -510,11 +514,13 @@ public class GameButtonActions {
 		
 		// x-axis position has gone beyond the maximum column number
 		if(GridFrame.getCurrentGridXPos() + GridFrame.getGridColNumberInScreen() >= GridFrame.COLUMN_NUMBER) {
+			GridFrame.isMaxMapShown = true;
 			GridFrame.setCurrentGridXPos((int) (GridFrame.COLUMN_NUMBER - GridFrame.getGridColNumberInScreen()));
 		}
 		
 		// y-axis position has gone beyond the maximum row number
 		if(GridFrame.getCurrentGridYPos() + GridFrame.getGridRowNumberInScreen() >= GridFrame.ROW_NUMBER) {
+			GridFrame.isMaxMapShown = true;
 			GridFrame.setCurrentGridYPos((int) (GridFrame.ROW_NUMBER - GridFrame.getGridRowNumberInScreen()));
 		}
 		
@@ -523,32 +529,39 @@ public class GameButtonActions {
 
 
 	private void zoomInGameGrid() {
-		// zoom in game grid screen
-		GridFrame.setGridColNumberInScreen((int) (GridFrame.getGridColNumberInScreen() / zoomFactor));
-		GridFrame.setGridRowNumberInScreen((int) (GridFrame.getGridRowNumberInScreen() / zoomFactor));
+		if (GridFrame.isMaxMapShown) {
+			// hard code to adjust the screen display
+			GridFrame.setGridColNumberInScreen(80);
+			GridFrame.setGridRowNumberInScreen(56);
+			GridFrame.isMaxMapShown = false;
+		} else {
+			// zoom in game grid screen
+			GridFrame.setGridColNumberInScreen((int) (GridFrame.getGridColNumberInScreen() / zoomFactor));
+			GridFrame.setGridRowNumberInScreen((int) (GridFrame.getGridRowNumberInScreen() / zoomFactor));
+		}
 		System.out.println("zoomInGameGrid has been invoked!");
 	}
 
 
-	private void gameGridMoveRight() {
+	public static void gameGridMoveRight() {
 		// change currentGridXPos
 		GridFrame.setCurrentGridXPos(GridFrame.getCurrentGridXPos() + moveHeightNumberOfGrid);
 		System.out.println("gameGridMoveRight has been invoked!");
 	}
 
-	private void gameGridMoveLeft() {
+	public static void gameGridMoveLeft() {
 		// change currentGridXPos
 		GridFrame.setCurrentGridXPos(GridFrame.getCurrentGridXPos() - moveHeightNumberOfGrid);
 		System.out.println("gameGridMoveLeft has been invoked!");
 	}
 
-	private void gameGridMoveDown() {
+	public static void gameGridMoveDown() {
 		// change currentGridYPos
 		GridFrame.setCurrentGridYPos(GridFrame.getCurrentGridYPos() + moveRowNumberOfGrid);
 		System.out.println("gameGridMoveDown has been invoked!");
 	}
 
-	private void gameGridMoveUp() {
+	public static void gameGridMoveUp() {
 		// change currentGridYPos
 		GridFrame.setCurrentGridYPos(GridFrame.getCurrentGridYPos() - moveRowNumberOfGrid);
 		System.out.println("gameGridMoveUp has been invoked!");
