@@ -1,21 +1,22 @@
 package edu.nus.comp.dotagridandroid.ui.renderers;
 
 import java.util.*;
-
+import java.util.concurrent.locks.*;
 import edu.nus.comp.dotagridandroid.MainRenderer;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
 import edu.nus.comp.dotagridandroid.ui.event.ControlEvent;
 import edu.nus.comp.dotagridandroid.ui.renderers.scenes.*;
 
 public class MainSceneRenderer implements Renderer {
-	
+	private final ReentrantLock lock = new ReentrantLock();
 	private GLResourceManager vBufMan;
 	private Map<String, Texture2D> textures;
 	private float ratio;
 	private GameLogicManager manager;
 	private MainRenderer.GraphicsResponder responder;
 	private SceneRenderer scene;
-	private volatile boolean loading = false;
+	private boolean ready = false, calledSetRenderReady = false;
+	private String readyState;
 
 	public MainSceneRenderer () {
 		// TODO: Change to scene flows
@@ -63,24 +64,47 @@ public class MainSceneRenderer implements Renderer {
 		else
 			switchScene(manager.getCurrentScene(), manager.getCurrentSceneConfiguration(manager.getCurrentScene()));
 	}
-
+	// synchronization is necessary
 	@Override
 	public boolean getReadyState() {
-		return scene != null && scene.getReadyState();
+		lock.lock();
+		if (readyState == null || "readyStateNotTested".equals(readyState)) {
+			// setRenderReady requires OpenGL context
+			if ("readyStateNotTested".equals(readyState)) {
+				final boolean result = scene.getReadyState();
+				readyState = "Verified";
+				responder.updateGraphics();
+				lock.unlock();
+				return result;
+			} else {
+				scene.setRenderReady();
+				readyState = "readyStateNotTested";
+				responder.updateGraphics();
+				lock.unlock();
+				return false;	// please come back again
+			}
+		}
+		else {
+			final boolean result = scene != null && scene.getReadyState();
+			lock.unlock();
+			return result;
+		}
 	}
 
 	@Override
-	public void draw() {
-		if (loading)
-			;
-		else
+	public synchronized void draw() {
+		lock.lock();
+		if (getReadyState())
 			scene.draw();
+		lock.unlock();
 	}
 
 	@Override
 	public boolean passEvent(ControlEvent e) {
-		if (!loading)
+		lock.lock();
+		if ("Verified".equals(readyState))
 			scene.passEvent(e);
+		lock.unlock();
 		return false;	// top of event chain - no bubbling up already
 	}
 	
@@ -88,7 +112,8 @@ public class MainSceneRenderer implements Renderer {
 	public void notifyUpdate(Map<String, Object> updates) {}	// should be passed to SceneRenderers, not here
 	
 	public void switchScene(String name, Map<String, Object> configuration) {
-		loading = true;
+		lock.lock();
+		readyState = null;
 		if (this.scene != null)
 			scene.close();
 		manager.setCurrentScene(name, configuration);
@@ -110,9 +135,6 @@ public class MainSceneRenderer implements Renderer {
 		case "Game":
 			scene = new GameScene();
 		}
-		manager.setApplicationSceneRenderer(scene);
-		scene.onTransferToView(configuration);
-		this.scene = scene;
 		scene.setGLResourceManager(vBufMan);
 		scene.setTexture2D(textures);
 		scene.setAspectRatio(ratio);
@@ -120,14 +142,16 @@ public class MainSceneRenderer implements Renderer {
 		scene.setGraphicsResponder(responder);
 		scene.setMainSceneRenderer(this);
 		scene.onTransferToView(configuration);
-		scene.setRenderReady();	// TODO problematic
-		loading = false;
+		this.scene = scene;
+		manager.setApplicationSceneRenderer(scene);
 		responder.updateGraphics();
+		lock.unlock();
 	}
 
 	@Override
 	public void close() {
 		// TODO Auto-generated method stub
-		scene.close();
+		if (ready)
+			scene.close();
 	}
 }

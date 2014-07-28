@@ -1,6 +1,7 @@
 package edu.nus.comp.dotagridandroid.ui.renderers.scenes;
 
 import java.util.*;
+
 import static android.opengl.GLES20.*;
 import edu.nus.comp.dotagridandroid.MainRenderer.GraphicsResponder;
 import edu.nus.comp.dotagridandroid.logic.GameLogicManager;
@@ -19,6 +20,7 @@ public class WelcomeScene implements SceneRenderer {
 	private boolean landscape, ready = false;
 	private Map<String, Renderer> ui = new LinkedHashMap<>();
 	private Renderer eventCapturer;
+	private boolean closed = false;
 	
 	public WelcomeScene () {
 		ui.put("Background", new ButtonRenderer());
@@ -148,19 +150,21 @@ public class WelcomeScene implements SceneRenderer {
 
 	@Override
 	public void draw() {
-		glClearColor(1, 1, 1, 1);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		for (Map.Entry<String, Renderer> r : ui.entrySet())
-			r.getValue().draw();
+		if (!closed) {
+			glClearColor(1, 1, 1, 1);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			for (Map.Entry<String, Renderer> r : ui.entrySet())
+				r.getValue().draw();
+		}
 	}
 
 	@Override
 	public boolean passEvent(ControlEvent e) {
-		if (eventCapturer != null && eventCapturer.passEvent(e))
+		if (!closed && eventCapturer != null && eventCapturer.passEvent(e))
 			return true;
 		else {
 			for (Map.Entry<String, Renderer> r : ui.entrySet())
-				if ((eventCapturer = r.getValue()).passEvent(e))
+				if (!closed && (eventCapturer = r.getValue()).passEvent(e))
 					return true;
 			return false;
 		}
@@ -168,6 +172,7 @@ public class WelcomeScene implements SceneRenderer {
 
 	@Override
 	public void close() {
+		closed  = true;
 		for (Map.Entry<String, Renderer> r : ui.entrySet())
 			r.getValue().close();
 	}

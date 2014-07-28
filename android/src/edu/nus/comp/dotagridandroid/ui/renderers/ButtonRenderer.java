@@ -22,7 +22,7 @@ public class ButtonRenderer implements Renderer {
 	private Map<String, Object> tapExtendedData, longPressExtendedData;
 	private float ratio;
 	
-	private boolean tapEnabled = false, longPressEnabled = false;
+	private boolean tapEnabled = false, longPressEnabled = false, ready = false;
 	private int textureHandler = 0;
 	
 	public ButtonRenderer () {
@@ -32,11 +32,6 @@ public class ButtonRenderer implements Renderer {
 	@Override
 	public void setGLResourceManager(GLResourceManager manager) {
 		vBufMan = manager;
-		buttonProgram = manager.getProgram("identityTexturedWithTone");
-		if (buttonProgram == null) {
-			buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED_TONED);
-			manager.setProgram("identityTexturedWithTone", buttonProgram);
-		}
 	}
 
 	@Override
@@ -116,11 +111,21 @@ public class ButtonRenderer implements Renderer {
 
 	@Override
 	public boolean getReadyState() {
+		if (!ready) {
+			buttonProgram = vBufMan.getProgram("identityTexturedWithTone");
+			if (buttonProgram == null) {
+				buttonProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED_TONED);
+				vBufMan.setProgram("identityTexturedWithTone", buttonProgram);
+			}
+			ready = true;
+		}
 		return true;
 	}
 
 	@Override
 	public void draw() {
+		if (!ready)
+			getReadyState();
 		final int
 			vPosition = glGetAttribLocation(buttonProgram.getProgramId(), "vPosition"),
 			mModel = glGetUniformLocation(buttonProgram.getProgramId(), "model"),

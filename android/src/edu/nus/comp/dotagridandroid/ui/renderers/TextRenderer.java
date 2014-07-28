@@ -22,7 +22,7 @@ public class TextRenderer implements Renderer {
 	private TextFont font;
 	private List<String> text = Collections.emptyList();
 	private float[] textColour = {1,-1,-1,0};
-	private boolean yAligned = false;
+	private boolean yAligned = false, ready = false;
 	private float xExtreme, yExtreme;
 	public TextRenderer () {
 	}
@@ -86,6 +86,8 @@ public class TextRenderer implements Renderer {
 	public void draw() {
 		if (text == null)
 			return;
+		if (!ready)
+			getReadyState();
 		final int
 			vPosition = glGetAttribLocation(textProgram.getProgramId(), "vPosition"),
 			vTexture = glGetAttribLocation(textProgram.getProgramId(), "textureCoord"),
@@ -162,17 +164,22 @@ public class TextRenderer implements Renderer {
 	@Override
 	public void setGLResourceManager(GLResourceManager manager) {
 		vBufMan = manager;
-		textProgram = vBufMan.getProgram("textProgram");
-		if (textProgram == null) {
-			textProgram = new GenericProgram(
-					CommonShaders.VS_IDENTITY_TEXTURED_SCALED_OFFSET,
-					CommonShaders.FS_IDENTITY_TEXTURED_TONED);
-			vBufMan.setProgram("textProgram", textProgram);
-		}
 	}
 	
 	@Override
-	public boolean getReadyState() {return true;}
+	public boolean getReadyState() {
+		if (!ready) {
+			textProgram = vBufMan.getProgram("textProgram");
+			if (textProgram == null) {
+				textProgram = new GenericProgram(
+						CommonShaders.VS_IDENTITY_TEXTURED_SCALED_OFFSET,
+						CommonShaders.FS_IDENTITY_TEXTURED_TONED);
+				vBufMan.setProgram("textProgram", textProgram);
+			}
+			ready = true;
+		}
+		return true;
+	}
 	
 	@Override
 	public void notifyUpdate(Map<String, Object> updates) {}	// nothing

@@ -28,15 +28,15 @@ public class GameScene implements SceneRenderer {
 	// resources
 	private Renderer grid, status, eventCapturer;
 	private TextRenderer log, waitLabel;
-	private final Map<String, Renderer> dialogControl = new LinkedHashMap<>();	// IMPORTANT: necessary to maintain order of drawing
+	private Map<String, Renderer> dialogControl = new LinkedHashMap<>();	// IMPORTANT: necessary to maintain order of drawing
 	private float[] dialogMat;
 	private GenericProgram dialogProgram;
 	private boolean landscape;
 	private boolean hasDialog;
 	private LinkedList<String> logQueue = new LinkedList<>();
+	private boolean ready = false;
 	
 	public GameScene () {
-		dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
 		log = new TextRenderer();
 		waitLabel = new TextRenderer();
 	}
@@ -148,22 +148,25 @@ public class GameScene implements SceneRenderer {
 			mainRenderer.switchScene("Statistics", Collections.singletonMap("GameResult", (Object) "Lost"));
 		else if (updates.containsKey("Dialog"))
 			prepareDialog((String) updates.get("Dialog"), updates);
-		if (updates.containsKey("Log"))
+		if (updates.containsKey("Log")) {
 			logQueue.add((String) updates.get("Log"));
-		if (logQueue.size() > MAX_LOG_LENGTH)
-			logQueue.poll();
-		log.setTexts(logQueue.toArray(new String[logQueue.size()]));
+			if (logQueue.size() > MAX_LOG_LENGTH)
+				logQueue.poll();
+			log.setTexts(logQueue.toArray(new String[logQueue.size()]));
+		}
 		grid.notifyUpdate(updates);
 		status.notifyUpdate(updates);
 	}
 	
 	private void prepareDialog(String dialogType, Map<String, Object> options) {
 		hasDialog = false;
-		for (Renderer r : dialogControl.values())
+		Map<String, Renderer> oldDialogControl = dialogControl;
+		dialogControl = null;
+		for (Renderer r : oldDialogControl.values())
 			r.close();
-		dialogControl.clear();
 		switch (dialogType) {
 		case "Message": {
+			Map<String, Renderer> dialogControl = new HashMap<>();
 			// display message
 			if (landscape) {
 				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.5f, .9f, 1));
@@ -228,6 +231,7 @@ public class GameScene implements SceneRenderer {
 			t.setText("  OK  ");
 			dialogControl.put("OK", r);
 			dialogControl.put("OKLabel", t);
+			this.dialogControl = dialogControl;
 			hasDialog = true;
 			break;
 		}
@@ -236,6 +240,7 @@ public class GameScene implements SceneRenderer {
 			break;
 		}
 		case "ItemShop": {
+			Map<String, Renderer> dialogControl = new HashMap<>();
 			// display item shop
 			if (landscape) {
 				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.5f, .9f, 1));
@@ -321,13 +326,15 @@ public class GameScene implements SceneRenderer {
 			t.setTextColour(new float[]{0,0,0,0});
 			t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 			t.setRenderReady();
-			t.setMVP(FlatMatrix4x4Multiplication(
-					dialogMat,
-					FlatTranslationMatrix4x4(-.25f, -.8f, 0),
-					FlatScalingMatrix4x4(.5f / 5, .5f / 5, 1)), null, null);
+			t.setMVP(dialogMat, null, null);
+//			t.setMVP(FlatMatrix4x4Multiplication(
+//					dialogMat,
+//					FlatTranslationMatrix4x4(-.25f, -.8f, -1),
+//					FlatScalingMatrix4x4(.5f / 5, .5f / 5, 1)), null, null);
 			t.setText("Cancel");
 			dialogControl.put("Cancel", r);
 			dialogControl.put("CancelLabel", t);
+			this.dialogControl = dialogControl;
 			hasDialog = true;
 			break;
 		}
@@ -342,22 +349,29 @@ public class GameScene implements SceneRenderer {
 	
 	@Override
 	public boolean getReadyState() {
-		boolean success = grid.getReadyState() && status.getReadyState() && log.getReadyState();
-		for (Renderer r : dialogControl.values())
-			success &= r.getReadyState();
+		if (!ready) {
+			dialogProgram = new GenericProgram(CommonShaders.VS_IDENTITY_TEXTURED, CommonShaders.FS_IDENTITY_TEXTURED);
+			ready = true;
+		}
+		boolean success = grid.getReadyState() && status.getReadyState() && log.getReadyState() && waitLabel.getReadyState();
+		if (hasDialog)
+			for (Renderer r : dialogControl.values())
+				success &= r.getReadyState();
 		return success;
 	}
 
 	@Override
 	public void draw() {
-		grid.draw();
-		status.draw();
-		if (hasDialog)
-			drawDialog();
-		log.draw();
-		if (manager.getLongProcessingEventState() ||
-				!manager.getCurrentGameState().getCurrentCharacterName().equals(manager.getCurrentGameState().getPlayerCharacterName()))
-			drawWait();
+		if (ready) {
+			grid.draw();
+			status.draw();
+			if (hasDialog)
+				drawDialog();
+			log.draw();
+			if (manager.getLongProcessingEventState() ||
+					!manager.getCurrentGameState().getCurrentCharacterName().equals(manager.getCurrentGameState().getPlayerCharacterName()))
+				drawWait();
+		}
 	}
 	
 	private void drawDialog() {
