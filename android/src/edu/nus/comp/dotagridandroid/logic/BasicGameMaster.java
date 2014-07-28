@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.json.*;
 
+import android.graphics.YuvImage;
 import android.webkit.WebView.FindListener;
 import edu.nus.comp.dotagridandroid.appsupport.JsonConverter;
 
@@ -70,8 +71,8 @@ public class BasicGameMaster extends GameMaster {
 		state.setCharacterPosition("MyHero2", new int[]{19,19});
 		state.getCharacters().get("MyHero").setCharacterImage("MyHeroModel");	// actually this refers to an entry in objModels called MyHeroModel and a texture named MyHeroModel
 		state.getCharacters().get("MyHero2").setCharacterImage("MyHeroModel");
-		state.setCharacterThumbnail("MyHero", "SampleThumbnail");
-		state.setCharacterThumbnail("MyHero2", "SampleThumbnail");
+		state.setCharacterThumbnail("MyHero", "MyHeroThumbnail");
+		state.setCharacterThumbnail("MyHero2", "MyHeroThumbnail");
 		Item itm = new Item("TestItem", 0, 0, 0, true, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 		itm.setItemImage("DefaultButton");
 		state.setItemInShop("TestItem", itm);
@@ -163,7 +164,7 @@ public class BasicGameMaster extends GameMaster {
 					state.setCharacterProperty(name, "order", tower.get("order"));
 					state.setCharacterProperty(name, "characterImage", tower.get("model"));
 					state.setCharacterProperty(name, "sight", tower.get("sight"));
-					state.setCharacterThumbnail(name, "SampleThumbnail");
+					state.setCharacterThumbnail(name, tower.get("thumbnail").toString());
 					towerCharacter.initialise();
 				}
 		} catch (Exception e) {
@@ -193,7 +194,7 @@ public class BasicGameMaster extends GameMaster {
 					state.setCharacterPosition(name,
 							((List<Number>) ancientConfig.get("position")).get(0).intValue(),
 							((List<Number>) ancientConfig.get("position")).get(0).intValue());
-					state.setCharacterThumbnail(name, "SampleThumbnail");
+					state.setCharacterThumbnail(name, ancientConfig.get("thumbnail").toString());
 				}
 				// record team strength (tower)
 				if (teamNumber > 0) {
@@ -241,7 +242,7 @@ public class BasicGameMaster extends GameMaster {
 				state.setCharacterPosition(name,
 						((List<Number>) barrack.get("position")).get(0).intValue(),
 						((List<Number>) barrack.get("position")).get(1).intValue());
-				state.setCharacterThumbnail(name, "SampleThumbnail");
+				state.setCharacterThumbnail(name, barrack.get("thumbnail").toString());
 				obj.initialise();
 				// count into strength
 				if (!teamStrength.containsKey(team))
@@ -510,7 +511,7 @@ public class BasicGameMaster extends GameMaster {
 												((List<Number>) front.get("creepSpawnPoint")).get(0).intValue(),
 												((List<Number>) front.get("creepSpawnPoint")).get(1).intValue()
 										}));
-										state.setCharacterThumbnail(name, "SampleThumbnail");
+										state.setCharacterThumbnail(name, config.get("thumbnail").toString());
 									}
 							frontNumber++;
 						}
@@ -580,6 +581,13 @@ public class BasicGameMaster extends GameMaster {
 		switch (actionName) {
 		case "GameAction":
 			switch ((String) options.get("Action")) {
+			case "Peek" :{
+				final int teamNumber = state.getCharacters().get(character).getTeamNumber();
+				final int[] targetGrid = state.getChosenGrid();
+				return state.getCharacterType(state.getCharacterAtPosition(targetGrid)) > 0
+						&& teamSharedSight.containsKey(teamNumber)
+						&& teamSharedSight.get(teamNumber)[targetGrid[0] + state.getGridWidth() * targetGrid[1]];
+			}
 			case "Move" : {
 				final int[] targetGrid = state.getChosenGrid(), heroGrid = state.getCharacterPosition(character);
 				if (!character.equals(state.getCurrentCharacterName()))

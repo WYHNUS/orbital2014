@@ -348,7 +348,8 @@ public class StatusRenderer implements Renderer {
 					manager.getCurrentGameState().areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Move"))).get("GameAction")
 					);
 			final String targetCharacter = state.getCharacterAtPosition(state.getChosenGrid());
-			if (targetCharacter != null) {
+			if (targetCharacter != null
+					&& state.areActionPossible(Collections.singletonMap("GameAction", Collections.singletonMap("Action", (Object) "Peek"))).get("GameAction")) {
 				// update thumbnail
 				ButtonRenderer button = (ButtonRenderer) controls.get("ThumbnailButton");
 				button.setButtonTexture(state.getModelTexture(state.getCharacterThumbnail(targetCharacter)).getTexture());

@@ -166,7 +166,7 @@ public class GameScene implements SceneRenderer {
 			r.close();
 		switch (dialogType) {
 		case "Message": {
-			Map<String, Renderer> dialogControl = new HashMap<>();
+			Map<String, Renderer> dialogControl = new LinkedHashMap<>();
 			// display message
 			if (landscape) {
 				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.5f, .9f, 1));
@@ -240,7 +240,7 @@ public class GameScene implements SceneRenderer {
 			break;
 		}
 		case "ItemShop": {
-			Map<String, Renderer> dialogControl = new HashMap<>();
+			Map<String, Renderer> dialogControl = new LinkedHashMap<>();
 			// display item shop
 			if (landscape) {
 				dialogMat = FlatMatrix4x4Multiplication(FlatTranslationMatrix4x4(0, 0, -1), FlatScalingMatrix4x4(.5f, .9f, 1));
@@ -326,11 +326,10 @@ public class GameScene implements SceneRenderer {
 			t.setTextColour(new float[]{0,0,0,0});
 			t.setTextFont(new TextFont(textures.get("DefaultTextFontMap")));
 			t.setRenderReady();
-			t.setMVP(dialogMat, null, null);
-//			t.setMVP(FlatMatrix4x4Multiplication(
-//					dialogMat,
-//					FlatTranslationMatrix4x4(-.25f, -.8f, -1),
-//					FlatScalingMatrix4x4(.5f / 5, .5f / 5, 1)), null, null);
+			t.setMVP(FlatMatrix4x4Multiplication(
+					dialogMat,
+					FlatTranslationMatrix4x4(-.25f, -.8f, 0),
+					FlatScalingMatrix4x4(.5f / 5, .5f / 5, 1)), null, null);
 			t.setText("Cancel");
 			dialogControl.put("Cancel", r);
 			dialogControl.put("CancelLabel", t);
@@ -402,8 +401,8 @@ public class GameScene implements SceneRenderer {
 		glDrawElements(GL_TRIANGLE_STRIP, 4, GL_UNSIGNED_SHORT, iOffset);
 		glDisableVertexAttribArray(vPosition);
 		glDisableVertexAttribArray(textureCoord);
-		for (Renderer r : dialogControl.values())
-			r.draw();
+		for (Map.Entry<String, Renderer> r : dialogControl.entrySet())
+			r.getValue().draw();
 	}
 
 	private void drawWait() {
