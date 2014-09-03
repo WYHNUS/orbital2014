@@ -505,7 +505,7 @@ public class GameButtonActions {
 	}
 
 
-	private void zoomOutGameGrid() {
+	public static void zoomOutGameGrid() {
 		// zoom out game grid screen
 		GridFrame.setGridColNumberInScreen((int) (GridFrame.getGridColNumberInScreen() * zoomFactor));
 		GridFrame.setGridRowNumberInScreen((int) (GridFrame.getGridRowNumberInScreen() * zoomFactor));
@@ -528,7 +528,7 @@ public class GameButtonActions {
 	}
 
 
-	private void zoomInGameGrid() {
+	public static void zoomInGameGrid() {
 		if (GridFrame.isMaxMapShown) {
 			// hard code to adjust the screen display
 			GridFrame.setGridColNumberInScreen(80);

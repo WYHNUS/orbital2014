@@ -69,6 +69,19 @@ public class KeyHandler implements KeyListener {
 				GameFrame.allGameButtons.get(52).setNeededToHighlight(true);
 				GameButtonActions.gameGridMoveDown();
 				break;
+				
+			case 45:
+				// key zoom out
+				GameFrame.allGameButtons.get(54).setNeededToHighlight(true);
+				GameButtonActions.zoomOutGameGrid();
+				break;
+				
+			case 61:
+				// key zoom in
+				GameFrame.allGameButtons.get(53).setNeededToHighlight(true);
+				GameButtonActions.zoomInGameGrid();
+				break;
+		
 		}
 		
 	}
