@@ -298,7 +298,7 @@ public class GridFrame {
 			gridButtonMap[selectedXPos][selectedYPos].actionPerformed();
 		}		
 
-		//GridFrame.updateSightMap();
+		GridFrame.updateSightMap();
 	}
 	
 	
